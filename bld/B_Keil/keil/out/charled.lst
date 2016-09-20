@@ -1,0 +1,4152 @@
+L 1 "..\..\..\..\hldd\src\charled.c"
+N/******************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*******************************************************************************
+N*   DESCRIPTION : Display data on Character LED's 
+N*
+N*                 Below is some useful information for driving the LED on bord
+N*
+N*                 --select the Char-LED( {CSO, A27, A26} = L,1,0
+N*                
+N*                  LED PIN  :: Cap-Bt
+N*                  ------------------
+N*                  WR   = 1 :: EBIF_WE 
+N*                  RSTn = 1 :: 
+N*
+N*                  A27, A26 = 1, 0 : 
+N*                 
+N*                  FLn  = 1 :: EBIF_AEX5
+N*                  A4, A3 = 1, 1 :: EBIF_AEX4, EBIF_AEX3
+N*                  A2, A1, A0 = <LED Num> :: EBIF_AEX2, EBIF_AEX1, EBIF_AEX0
+N*
+N*                  D7=1 :: EBIF_AD7
+N*                  D6 .. D0 = <ASCI Code> :: EBIF_AD6 .. EBIF_AD0
+N*
+N*******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn Software
+N*   LIBRARIES   :
+N*******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:18 $
+N*   TAG         : $Name: HLDD_1_1 $
+N*******************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include <string.h>
+L 1 "C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\string.h" 1
+N/* string.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.11 */
+N/* Copyright (C) Codemist Ltd., 1988-1993.                        */
+N/* Copyright 1991-1993 ARM Limited. All rights reserved.          */
+N/* version 0.04 */
+N
+N/*
+N * RCS $Revision: 185525 $
+N * Checkin $Date: 2014-05-29 12:44:48 +0100 (Thu, 29 May 2014) $
+N */
+N
+N/*
+N * string.h declares one type and several functions, and defines one macro
+N * useful for manipulating character arrays and other objects treated as
+N * character arrays. Various methods are used for determining the lengths of
+N * the arrays, but in all cases a char * or void * argument points to the
+N * initial (lowest addresses) character of the array. If an array is written
+N * beyond the end of an object, the behaviour is undefined.
+N */
+N
+N#ifndef __string_h
+N#define __string_h
+N#define __ARMCLIB_VERSION 5050157
+N
+N#define _ARMABI __declspec(__nothrow)
+N
+N  #ifndef __STRING_DECLS
+N  #define __STRING_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S        namespace std {
+S        #define __CLIBNS std::
+S        extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 0L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+N#endif
+N
+N#undef NULL
+N#define NULL 0                   /* see <stddef.h> */
+N
+Nextern _ARMABI void *memcpy(void * __restrict /*s1*/,
+Xextern __declspec(__nothrow) void *memcpy(void * __restrict  ,
+N                    const void * __restrict /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * copies n characters from the object pointed to by s2 into the object
+N    * pointed to by s1. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: the value of s1.
+N    */
+Nextern _ARMABI void *memmove(void * /*s1*/,
+Xextern __declspec(__nothrow) void *memmove(void *  ,
+N                    const void * /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * copies n characters from the object pointed to by s2 into the object
+N    * pointed to by s1. Copying takes place as if the n characters from the
+N    * object pointed to by s2 are first copied into a temporary array of n
+N    * characters that does not overlap the objects pointed to by s1 and s2,
+N    * and then the n characters from the temporary array are copied into the
+N    * object pointed to by s1.
+N    * Returns: the value of s1.
+N    */
+Nextern _ARMABI char *strcpy(char * __restrict /*s1*/, const char * __restrict /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strcpy(char * __restrict  , const char * __restrict  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * copies the string pointed to by s2 (including the terminating nul
+N    * character) into the array pointed to by s1. If copying takes place
+N    * between objects that overlap, the behaviour is undefined.
+N    * Returns: the value of s1.
+N    */
+Nextern _ARMABI char *strncpy(char * __restrict /*s1*/, const char * __restrict /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strncpy(char * __restrict  , const char * __restrict  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * copies not more than n characters (characters that follow a null
+N    * character are not copied) from the array pointed to by s2 into the array
+N    * pointed to by s1. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: the value of s1.
+N    */
+N
+Nextern _ARMABI char *strcat(char * __restrict /*s1*/, const char * __restrict /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strcat(char * __restrict  , const char * __restrict  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * appends a copy of the string pointed to by s2 (including the terminating
+N    * null character) to the end of the string pointed to by s1. The initial
+N    * character of s2 overwrites the null character at the end of s1.
+N    * Returns: the value of s1.
+N    */
+Nextern _ARMABI char *strncat(char * __restrict /*s1*/, const char * __restrict /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strncat(char * __restrict  , const char * __restrict  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * appends not more than n characters (a null character and characters that
+N    * follow it are not appended) from the array pointed to by s2 to the end of
+N    * the string pointed to by s1. The initial character of s2 overwrites the
+N    * null character at the end of s1. A terminating null character is always
+N    * appended to the result.
+N    * Returns: the value of s1.
+N    */
+N
+N/*
+N * The sign of a nonzero value returned by the comparison functions is
+N * determined by the sign of the difference between the values of the first
+N * pair of characters (both interpreted as unsigned char) that differ in the
+N * objects being compared.
+N */
+N
+Nextern _ARMABI int memcmp(const void * /*s1*/, const void * /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int memcmp(const void *  , const void *  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares the first n characters of the object pointed to by s1 to the
+N    * first n characters of the object pointed to by s2.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the object pointed to by s1 is greater than, equal to, or
+N    *          less than the object pointed to by s2.
+N    */
+Nextern _ARMABI int strcmp(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int strcmp(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares the string pointed to by s1 to the string pointed to by s2.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the string pointed to by s1 is greater than, equal to, or
+N    *          less than the string pointed to by s2.
+N    */
+Nextern _ARMABI int strncmp(const char * /*s1*/, const char * /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int strncmp(const char *  , const char *  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares not more than n characters (characters that follow a null
+N    * character are not compared) from the array pointed to by s1 to the array
+N    * pointed to by s2.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the string pointed to by s1 is greater than, equal to, or
+N    *          less than the string pointed to by s2.
+N    */
+Nextern _ARMABI int strcasecmp(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int strcasecmp(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares the string pointed to by s1 to the string pointed to by s2,
+N    * case-insensitively as defined by the current locale.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the string pointed to by s1 is greater than, equal to, or
+N    *          less than the string pointed to by s2.
+N    */
+Nextern _ARMABI int strncasecmp(const char * /*s1*/, const char * /*s2*/, size_t /*n*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int strncasecmp(const char *  , const char *  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares not more than n characters (characters that follow a null
+N    * character are not compared) from the array pointed to by s1 to the array
+N    * pointed to by s2, case-insensitively as defined by the current locale.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the string pointed to by s1 is greater than, equal to, or
+N    *          less than the string pointed to by s2.
+N    */
+Nextern _ARMABI int strcoll(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) int strcoll(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * compares the string pointed to by s1 to the string pointed to by s2, both
+N    * interpreted as appropriate to the LC_COLLATE category of the current
+N    * locale.
+N    * Returns: an integer greater than, equal to, or less than zero, according
+N    *          as the string pointed to by s1 is greater than, equal to, or
+N    *          less than the string pointed to by s2 when both are interpreted
+N    *          as appropriate to the current locale.
+N    */
+N
+Nextern _ARMABI size_t strxfrm(char * __restrict /*s1*/, const char * __restrict /*s2*/, size_t /*n*/) __attribute__((__nonnull__(2)));
+Xextern __declspec(__nothrow) size_t strxfrm(char * __restrict  , const char * __restrict  , size_t  ) __attribute__((__nonnull__(2)));
+N   /*
+N    * transforms the string pointed to by s2 and places the resulting string
+N    * into the array pointed to by s1. The transformation function is such that
+N    * if the strcmp function is applied to two transformed strings, it returns
+N    * a value greater than, equal to or less than zero, corresponding to the
+N    * result of the strcoll function applied to the same two original strings.
+N    * No more than n characters are placed into the resulting array pointed to
+N    * by s1, including the terminating null character. If n is zero, s1 is
+N    * permitted to be a null pointer. If copying takes place between objects
+N    * that overlap, the behaviour is undefined.
+N    * Returns: The length of the transformed string is returned (not including
+N    *          the terminating null character). If the value returned is n or
+N    *          more, the contents of the array pointed to by s1 are
+N    *          indeterminate.
+N    */
+N
+N
+N#ifdef __cplusplus
+Sextern _ARMABI const void *memchr(const void * /*s*/, int /*c*/, size_t /*n*/) __attribute__((__nonnull__(1)));
+Sextern "C++" void *memchr(void * __s, int __c, size_t __n) __attribute__((__nonnull__(1)));
+Sextern "C++" inline void *memchr(void * __s, int __c, size_t __n)
+S    { return const_cast<void *>(memchr(const_cast<const void *>(__s), __c, __n)); }
+N#else
+Nextern _ARMABI void *memchr(const void * /*s*/, int /*c*/, size_t /*n*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) void *memchr(const void *  , int  , size_t  ) __attribute__((__nonnull__(1)));
+N#endif
+N   /*
+N    * locates the first occurence of c (converted to an unsigned char) in the
+N    * initial n characters (each interpreted as unsigned char) of the object
+N    * pointed to by s.
+N    * Returns: a pointer to the located character, or a null pointer if the
+N    *          character does not occur in the object.
+N    */
+N
+N#ifdef __cplusplus
+Sextern _ARMABI const char *strchr(const char * /*s*/, int /*c*/) __attribute__((__nonnull__(1)));
+Sextern "C++" char *strchr(char * __s, int __c) __attribute__((__nonnull__(1)));
+Sextern "C++" inline char *strchr(char * __s, int __c)
+S    { return const_cast<char *>(strchr(const_cast<const char *>(__s), __c)); }
+N#else
+Nextern _ARMABI char *strchr(const char * /*s*/, int /*c*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) char *strchr(const char *  , int  ) __attribute__((__nonnull__(1)));
+N#endif
+N   /*
+N    * locates the first occurence of c (converted to an char) in the string
+N    * pointed to by s (including the terminating null character).
+N    * Returns: a pointer to the located character, or a null pointer if the
+N    *          character does not occur in the string.
+N    */
+N
+Nextern _ARMABI size_t strcspn(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) size_t strcspn(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * computes the length of the initial segment of the string pointed to by s1
+N    * which consists entirely of characters not from the string pointed to by
+N    * s2. The terminating null character is not considered part of s2.
+N    * Returns: the length of the segment.
+N    */
+N
+N#ifdef __cplusplus
+Sextern _ARMABI const char *strpbrk(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Sextern "C++" char *strpbrk(char * __s1, const char * __s2) __attribute__((__nonnull__(1,2)));
+Sextern "C++" inline char *strpbrk(char * __s1, const char * __s2)
+S    { return const_cast<char *>(strpbrk(const_cast<const char *>(__s1), __s2)); }
+N#else
+Nextern _ARMABI char *strpbrk(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strpbrk(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N#endif
+N   /*
+N    * locates the first occurence in the string pointed to by s1 of any
+N    * character from the string pointed to by s2.
+N    * Returns: returns a pointer to the character, or a null pointer if no
+N    *          character form s2 occurs in s1.
+N    */
+N
+N#ifdef __cplusplus
+Sextern _ARMABI const char *strrchr(const char * /*s*/, int /*c*/) __attribute__((__nonnull__(1)));
+Sextern "C++" char *strrchr(char * __s, int __c) __attribute__((__nonnull__(1)));
+Sextern "C++" inline char *strrchr(char * __s, int __c)
+S    { return const_cast<char *>(strrchr(const_cast<const char *>(__s), __c)); }
+N#else
+Nextern _ARMABI char *strrchr(const char * /*s*/, int /*c*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) char *strrchr(const char *  , int  ) __attribute__((__nonnull__(1)));
+N#endif
+N   /*
+N    * locates the last occurence of c (converted to a char) in the string
+N    * pointed to by s. The terminating null character is considered part of
+N    * the string.
+N    * Returns: returns a pointer to the character, or a null pointer if c does
+N    *          not occur in the string.
+N    */
+N
+Nextern _ARMABI size_t strspn(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) size_t strspn(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * computes the length of the initial segment of the string pointed to by s1
+N    * which consists entirely of characters from the string pointed to by S2
+N    * Returns: the length of the segment.
+N    */
+N
+N#ifdef __cplusplus
+Sextern _ARMABI const char *strstr(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Sextern "C++" char *strstr(char * __s1, const char * __s2) __attribute__((__nonnull__(1,2)));
+Sextern "C++" inline char *strstr(char * __s1, const char * __s2)
+S    { return const_cast<char *>(strstr(const_cast<const char *>(__s1), __s2)); }
+N#else
+Nextern _ARMABI char *strstr(const char * /*s1*/, const char * /*s2*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) char *strstr(const char *  , const char *  ) __attribute__((__nonnull__(1,2)));
+N#endif
+N   /*
+N    * locates the first occurence in the string pointed to by s1 of the
+N    * sequence of characters (excluding the terminating null character) in the
+N    * string pointed to by s2.
+N    * Returns: a pointer to the located string, or a null pointer if the string
+N    *          is not found.
+N    */
+N
+Nextern _ARMABI char *strtok(char * __restrict /*s1*/, const char * __restrict /*s2*/) __attribute__((__nonnull__(2)));
+Xextern __declspec(__nothrow) char *strtok(char * __restrict  , const char * __restrict  ) __attribute__((__nonnull__(2)));
+Nextern _ARMABI char *_strtok_r(char * /*s1*/, const char * /*s2*/, char ** /*ptr*/) __attribute__((__nonnull__(2,3)));
+Xextern __declspec(__nothrow) char *_strtok_r(char *  , const char *  , char **  ) __attribute__((__nonnull__(2,3)));
+N#ifndef __STRICT_ANSI__
+Nextern _ARMABI char *strtok_r(char * /*s1*/, const char * /*s2*/, char ** /*ptr*/) __attribute__((__nonnull__(2,3)));
+Xextern __declspec(__nothrow) char *strtok_r(char *  , const char *  , char **  ) __attribute__((__nonnull__(2,3)));
+N#endif
+N   /*
+N    * A sequence of calls to the strtok function breaks the string pointed to
+N    * by s1 into a sequence of tokens, each of which is delimited by a
+N    * character from the string pointed to by s2. The first call in the
+N    * sequence has s1 as its first argument, and is followed by calls with a
+N    * null pointer as their first argument. The separator string pointed to by
+N    * s2 may be different from call to call.
+N    * The first call in the sequence searches for the first character that is
+N    * not contained in the current separator string s2. If no such character
+N    * is found, then there are no tokens in s1 and the strtok function returns
+N    * a null pointer. If such a character is found, it is the start of the
+N    * first token.
+N    * The strtok function then searches from there for a character that is
+N    * contained in the current separator string. If no such character is found,
+N    * the current token extends to the end of the string pointed to by s1, and
+N    * subsequent searches for a token will fail. If such a character is found,
+N    * it is overwritten by a null character, which terminates the current
+N    * token. The strtok function saves a pointer to the following character,
+N    * from which the next search for a token will start.
+N    * Each subsequent call, with a null pointer as the value for the first
+N    * argument, starts searching from the saved pointer and behaves as
+N    * described above.
+N    * Returns: pointer to the first character of a token, or a null pointer if
+N    *          there is no token.
+N    *
+N    * strtok_r() is a common extension which works exactly like
+N    * strtok(), but instead of storing its state in a hidden
+N    * library variable, requires the user to pass in a pointer to a
+N    * char * variable which will be used instead. Any sequence of
+N    * calls to strtok_r() passing the same char ** pointer should
+N    * behave exactly like the corresponding sequence of calls to
+N    * strtok(). This means that strtok_r() can safely be used in
+N    * multi-threaded programs, and also that you can tokenise two
+N    * strings in parallel.
+N    */
+N
+Nextern _ARMABI void *memset(void * /*s*/, int /*c*/, size_t /*n*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) void *memset(void *  , int  , size_t  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * copies the value of c (converted to an unsigned char) into each of the
+N    * first n charactes of the object pointed to by s.
+N    * Returns: the value of s.
+N    */
+Nextern _ARMABI char *strerror(int /*errnum*/);
+Xextern __declspec(__nothrow) char *strerror(int  );
+N   /*
+N    * maps the error number in errnum to an error message string.
+N    * Returns: a pointer to the string, the contents of which are
+N    *          implementation-defined. The array pointed to shall not be
+N    *          modified by the program, but may be overwritten by a
+N    *          subsequent call to the strerror function.
+N    */
+Nextern _ARMABI size_t strlen(const char * /*s*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) size_t strlen(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * computes the length of the string pointed to by s.
+N    * Returns: the number of characters that precede the terminating null
+N    *          character.
+N    */
+N
+Nextern _ARMABI size_t strlcpy(char * /*dst*/, const char * /*src*/, size_t /*len*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) size_t strlcpy(char *  , const char *  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * copies the string src into the string dst, using no more than
+N    * len bytes of dst. Always null-terminates dst _within the
+N    * length len (i.e. will copy at most len-1 bytes of string plus
+N    * a NUL), unless len is actually zero.
+N    * 
+N    * Return value is the length of the string that _would_ have
+N    * been written, i.e. the length of src. Thus, the operation
+N    * succeeded without truncation if and only if ret < len;
+N    * otherwise, the value in ret tells you how big to make dst if
+N    * you decide to reallocate it. (That value does _not_ include
+N    * the NUL.)
+N    * 
+N    * This is a BSD-derived library extension, which we are
+N    * permitted to declare in a standard header because ISO defines
+N    * function names beginning with 'str' as reserved for future
+N    * expansion of <string.h>.
+N    */
+N
+Nextern _ARMABI size_t strlcat(char * /*dst*/, const char * /*src*/, size_t /*len*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) size_t strlcat(char *  , const char *  , size_t  ) __attribute__((__nonnull__(1,2)));
+N   /*
+N    * concatenates the string src to the string dst, using no more
+N    * than len bytes of dst. Always null-terminates dst _within the
+N    * length len (i.e. will copy at most len-1 bytes of string plus
+N    * a NUL), unless len is actually zero.
+N    * 
+N    * Return value is the length of the string that _would_ have
+N    * been written, i.e. the length of src plus the original length
+N    * of dst. Thus, the operation succeeded without truncation if
+N    * and only if ret < len; otherwise, the value in ret tells you
+N    * how big to make dst if you decide to reallocate it. (That
+N    * value does _not_ include the NUL.)
+N    * 
+N    * If no NUL is encountered within the first len bytes of dst,
+N    * then the length of dst is considered to have been equal to
+N    * len for the purposes of the return value (as if there were a
+N    * NUL at dst[len]). Thus, the return value in this case is len
+N    * + strlen(src).
+N    * 
+N    * This is a BSD-derived library extension, which we are
+N    * permitted to declare in a standard header because ISO defines
+N    * function names beginning with 'str' as reserved for future
+N    * expansion of <string.h>.
+N    */
+N
+Nextern _ARMABI void _membitcpybl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpybl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitcpybb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpybb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitcpyhl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpyhl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitcpyhb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpyhb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitcpywl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpywl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitcpywb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitcpywb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovebl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovebl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovebb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovebb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovehl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovehl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovehb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovehb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovewl(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovewl(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+Nextern _ARMABI void _membitmovewb(void * /*dest*/, const void * /*src*/, int /*destoffset*/, int /*srcoffset*/, size_t /*nbits*/) __attribute__((__nonnull__(1,2)));
+Xextern __declspec(__nothrow) void _membitmovewb(void *  , const void *  , int  , int  , size_t  ) __attribute__((__nonnull__(1,2)));
+N    /*
+N     * Copies or moves a piece of memory from one place to another,
+N     * with one-bit granularity. So you can start or finish a copy
+N     * part way through a byte, and you can copy between regions
+N     * with different alignment within a byte.
+N     * 
+N     * All these functions have the same prototype: two void *
+N     * pointers for destination and source, then two integers
+N     * giving the bit offset from those pointers, and finally the
+N     * number of bits to copy.
+N     * 
+N     * Just like memcpy and memmove, the "cpy" functions copy as
+N     * fast as they can in the assumption that the memory regions
+N     * do not overlap, while the "move" functions cope correctly
+N     * with overlap.
+N     *
+N     * Treating memory as a stream of individual bits requires
+N     * defining a convention about what order those bits are
+N     * considered to be arranged in. The above functions support
+N     * multiple conventions:
+N     * 
+N     *  - the "bl" functions consider the unit of memory to be the
+N     *    byte, and consider the bits within each byte to be
+N     *    arranged in little-endian fashion, so that the LSB comes
+N     *    first. (For example, membitcpybl(a,b,0,7,1) would copy
+N     *    the MSB of the byte at b to the LSB of the byte at a.)
+N     * 
+N     *  - the "bb" functions consider the unit of memory to be the
+N     *    byte, and consider the bits within each byte to be
+N     *    arranged in big-endian fashion, so that the MSB comes
+N     *    first.
+N     * 
+N     *  - the "hl" functions consider the unit of memory to be the
+N     *    16-bit halfword, and consider the bits within each word
+N     *    to be arranged in little-endian fashion.
+N     * 
+N     *  - the "hb" functions consider the unit of memory to be the
+N     *    16-bit halfword, and consider the bits within each word
+N     *    to be arranged in big-endian fashion.
+N     * 
+N     *  - the "wl" functions consider the unit of memory to be the
+N     *    32-bit word, and consider the bits within each word to be
+N     *    arranged in little-endian fashion.
+N     * 
+N     *  - the "wb" functions consider the unit of memory to be the
+N     *    32-bit word, and consider the bits within each word to be
+N     *    arranged in big-endian fashion.
+N     */
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STRING_DECLS */
+N
+N  #ifdef __cplusplus
+S    #ifndef __STRING_NO_EXPORTS
+S      using ::std::size_t;
+S      using ::std::memcpy;
+S      using ::std::memmove;
+S      using ::std::strcpy;
+S      using ::std::strncpy;
+S      using ::std::strcat;
+S      using ::std::strncat;
+S      using ::std::memcmp;
+S      using ::std::strcmp;
+S      using ::std::strncmp;
+S      using ::std::strcasecmp;
+S      using ::std::strncasecmp;
+S      using ::std::strcoll;
+S      using ::std::strxfrm;
+S      using ::std::memchr;
+S      using ::std::strchr;
+S      using ::std::strcspn;
+S      using ::std::strpbrk;
+S      using ::std::strrchr;
+S      using ::std::strspn;
+S      using ::std::strstr;
+S      using ::std::strtok;
+S#ifndef __STRICT_ANSI__
+S      using ::std::strtok_r;
+S#endif
+S      using ::std::_strtok_r;
+S      using ::std::memset;
+S      using ::std::strerror;
+S      using ::std::strlen;
+S      using ::std::strlcpy;
+S      using ::std::strlcat;
+S      using ::std::_membitcpybl;
+S      using ::std::_membitcpybb;
+S      using ::std::_membitcpyhl;
+S      using ::std::_membitcpyhb;
+S      using ::std::_membitcpywl;
+S      using ::std::_membitcpywb;
+S      using ::std::_membitmovebl;
+S      using ::std::_membitmovebb;
+S      using ::std::_membitmovehl;
+S      using ::std::_membitmovehb;
+S      using ::std::_membitmovewl;
+S      using ::std::_membitmovewb;
+S    #endif /* __STRING_NO_EXPORTS */
+N  #endif /* __cplusplus */
+N
+N#endif
+N
+N/* end of string.h */
+N
+L 41 "..\..\..\..\hldd\src\charled.c" 2
+N
+N#include "core.h"
+L 1 "..\..\..\..\common\inc\core.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core access utilities definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Core
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CORE_H
+N#define CORE_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                     /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\common\inc\core.h" 2
+N#include "cr4_pmu.h"
+L 1 "..\..\..\..\cortex_r4_keil\inc\cr4_pmu.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Performance monitor unit routines based on ARM's V7 sample code
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TSM-SHE Firmware System Longrun Test (Cortex-R4)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef _CR4_PMU_H
+N#define _CR4_PMU_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_GetPMN
+N *
+N * Purpose:       Returns the number of progammable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Programmable counters count
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_GetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_PMNConfig
+N *
+N * Purpose:       Sets the event for a programmable counter to record
+N *
+N * Inputs:        u32Counter: Which counter to program  (e.g. 0 for PMN0, 1 for PMN1)
+N *                u32Even:    The event code (ARM Architecture Reference Manual)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMNConfig(uint32_t u32Counter, uint32_t u32Event);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_SetCntDivider
+N *
+N * Purpose:       Enables/disables the divider (1/64) on CCNT
+N *
+N * Inputs:        u32Divider: 0 - disable, all others enable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_SetCntDivider(uint32_t u32Divider);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMU
+N *
+N * Purpose:       Global PMU enable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMU(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMU
+N *
+N * Purpose:       Global PMU disable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMU(void);
+N
+N
+N /****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNT
+N *
+N * Purpose:       Enable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNT
+N *
+N * Purpose:       Disable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMN
+N *
+N * Purpose:       Enable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to enable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMN
+N *
+N * Purpose:       Disable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to disable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      uCR4_32ReadCCNT
+N *
+N * Purpose:       Returns the value of CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Cycle counter value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadPMN
+N *
+N * Purpose:       Returns the value of PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to read (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       PMNn counter
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadPMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadFlags
+N *
+N * Purpose:       Returns the value of the overflow flags
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Overflow flags
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadFlags(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_WriteFlags
+N *
+N * Purpose:       Writes the overflow flags
+N *
+N * Inputs:        u32Flags: flags to write
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_WriteFlags(uint32_t u32Flags);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNTIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNTIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePmnIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to enable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePmnIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMNIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to disable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMNIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the programmable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Writes to software increment register
+N *
+N * Inputs:        u32Counter: The counter to increment (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMUSoftwareIncrement(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMUUserAccess
+N *
+N * Purpose:       Enables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMUUserAccess(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMUUserAccess
+N *
+N * Purpose:       Disables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMUUserAccess(void);
+N
+N
+N#endif /* _CR4_PMU_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\common\inc\core.h" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1862  /* Rule 19.7 : disable function-like macro not allowed */
+N#endif
+N/**********************************************/
+N
+N/* Physical translation in un-cached area */
+N#define PHYSICAL_ADDR_MASK                  0xFFFFFFFFU
+N#define PHYSICAL(addr)                      (((uint32_t)(addr) & PHYSICAL_ADDR_MASK))
+N
+N/* copy function */
+N#define asm_copyfunction                    (asm_copy_word)
+N#define asm_copyfunction_hword              (asm_copy_hword)
+N#define asm_copyfunction_byte               (asm_copy_byte)
+N
+N/* PMU enable */
+N#define PMU_ENABLE()                        (vCR4_EnablePMU())
+N
+N/* Timer Enable */
+N#define TIMER_ENABLE()                      (vCR4_EnableCCNT())
+N
+N/* Timer Reset */
+N#define TIMER_RESET()                       (vCR4_ResetCCNT())
+N
+N/* Timer Get */
+N#define TIMER_GET()                         (u32CR4_ReadCCNT())
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Enumerations                *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      __DSB
+N *
+N * Purpose:       Data barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __DSB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      __ISB
+N *
+N * Purpose:       Instruction barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __ISB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_int
+N *
+N * Purpose:       Enable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_int
+N *
+N * Purpose:       Disable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_fast_int
+N *
+N * Purpose:       Enable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_fast_int
+N *
+N * Purpose:       Disable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_vic_port
+N *
+N * Purpose:       Enable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_vic_port(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_vic_port
+N *
+N * Purpose:       Disable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_vic_port(void);
+N
+N
+N#endif /* CORE_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 43 "..\..\..\..\hldd\src\charled.c" 2
+N#include "charled.h"
+L 1 "..\..\..\..\hldd\inc\charled.h" 1
+N/******************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*******************************************************************************
+N*   DESCRIPTION : use caracter display led
+N*******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn Software
+N*   LIBRARIES   :
+N*******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: HLDD_1_1 $
+N*******************************************************************************/
+N#ifndef CHARLED_H
+N#define CHARLED_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N
+N/**********************************************
+N*            Forward declarations             *
+N**********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      initCLED
+N *
+N * Purpose:       initialisation of character LCD
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid initCLED(void);
+N
+N/****************************************************************************
+N *
+N * Function:      setCLED
+N *
+N * Purpose:       output text on character LED
+N *                (Usage: setCLED("Xyz..");
+N *
+N * Inputs:        text - pointer to text
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid setCLED(char *text);
+N
+N/****************************************************************************
+N *
+N * Function:      hexCLED
+N *
+N * Purpose:       output hexadecimal value on character LED
+N *                (converts the decimal to hex and displays on LED)
+N *
+N * Inputs:        number - hex value
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid hexCLED(unsigned long number);
+N
+N/****************************************************************************
+N *
+N * Function:      DecCLED
+N *
+N * Purpose:       output decimal time value on character LED
+N *                Units in Pico-Sec. Usage : Pass the number in pico resolution
+N *
+N * Inputs:        text - number in picoseconds
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid DecCLED(unsigned long long text);
+N
+N/****************************************************************************
+N *
+N * Function:      disp_rtc_time_on_CLED
+N *
+N * Purpose:       Function to print out the RTC time on CLED's. Displays time in HH-MM-SS format
+N *                void disp_rtc_time_on_CLED (unsigned short hh, unsigned short mm, unsigned short ss)
+N *
+N * Inputs:        text - number in picoseconds
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid disp_rtc_time_on_CLED(void);
+N
+N/****************************************************************************
+N *
+N * Function:      setNORflash_interface_gdc1
+N *
+N * Purpose:       On the Ref-Board, Using the EBIF interface under the FG group for
+N *                driving LED's. So configure PIMUX CMC* group to EBIF(NOR-Flash)
+N *
+N * Inputs:        text - number in picoseconds
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid setNORflash_interface_gdc1(void);
+N
+N/****************************************************************************/
+N
+N#endif	/* CHARLED_H */
+N
+N/****************************************************************************/
+N
+N/*************************  BEGIN of DISCLAIMER   ***************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices,” or
+N  “TOSHIBA Semiconductor Reliability Handbook” etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage”).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N***************************  END of DISCALIMER  ****************************/
+N
+L 44 "..\..\..\..\hldd\src\charled.c" 2
+N#include "gpio.h"
+L 1 "..\..\..\..\lldd\inc\gpio.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : General Purpose Input Output Port Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : General Purpose Input Output Port (GPIO)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.12 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef GPIO_H
+N#define GPIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_GPIO_H_REVISION     "$Revision: 1.12 $"
+N#define LLDD_GPIO_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N#define PORT_DDR_DQ0_AS_GPIO               0
+N#define PORT_DDR_DQ0_AS_ESEI1MISO          1
+N#define PORT_DDR_DQ0_AS_PWMOUT00           2
+N
+N#define PORT_DDR_DQ1_AS_GPIO               0
+N#define PORT_DDR_DQ1_AS_ESEI1MOSI          1
+N#define PORT_DDR_DQ1_AS_PWMOUT01           2
+N
+N#define PORT_DDR_DQ2_AS_GPIO               0
+N#define PORT_DDR_DQ2_AS_ESEI1SCLK          1
+N#define PORT_DDR_DQ2_AS_PWMOUT02           2
+N
+N#define PORT_DDR_DQ3_AS_GPIO               0
+N#define PORT_DDR_DQ3_AS_ESEI1SSOI          1
+N#define PORT_DDR_DQ3_AS_PWMOUR03           2
+N
+N#define PORT_DDR_DQ4_AS_GPIO               0
+N#define PORT_DDR_DQ4_AS_PWMOUT04           1
+N#define PORT_DDR_DQ4_AS_TBIO0              2
+N
+N#define PORT_DDR_DQ5_AS_GPIO               0
+N#define PORT_DDR_DQ5_AS_PWMOUT05           1
+N#define PORT_DDR_DQ5_AS_TBIO1              2
+N
+N#define PORT_DDR_DQ6_AS_GPIO               0
+N#define PORT_DDR_DQ6_AS_PWMOUT06           1
+N#define PORT_DDR_DQ6_AS_TBIO2              2
+N
+N#define PORT_DDR_DQ7_AS_GPIO               0
+N#define PORT_DDR_DQ7_AS_PWMOUT07           1
+N#define PORT_DDR_DQ7_AS_TBIO3              2
+N
+N#define PORT_DDR_DQ8_AS_GPIO               0
+N#define PORT_DDR_DQ8_AS_PWMOUT08           1
+N#define PORT_DDR_DQ8_AS_TBIO6              2
+N
+N#define PORT_DDR_DQ9_AS_GPIO               0
+N#define PORT_DDR_DQ9_AS_PWMOUT09           1
+N#define PORT_DDR_DQ9_AS_TBIO7              2
+N
+N#define PORT_DDR_DQ10_AS_GPIO              0
+N#define PORT_DDR_DQ10_AS_PWMOUT10          1
+N#define PORT_DDR_DQ10_AS_TBIO8             2
+N
+N#define PORT_DDR_DQ11_AS_GPIO              0
+N#define PORT_DDR_DQ11_AS_PWMOUT11          1
+N#define PORT_DDR_DQ11_AS_TBIO9             2
+N
+N#define PORT_DDR_DQ12_AS_GPIO              0
+N#define PORT_DDR_DQ12_AS_UART0RX           1
+N#define PORT_DDR_DQ12_AS_PWMOUT12          2
+N
+N#define PORT_DDR_DQ13_AS_GPIO              0
+N#define PORT_DDR_DQ13_AS_UART0TX           1
+N#define PORT_DDR_DQ13_AS_PWMOUT13          2
+N
+N#define PORT_DDR_DQ14_AS_GPIO              0
+N#define PORT_DDR_DQ14_AS_UART1RX           1
+N#define PORT_DDR_DQ14_AS_PWMOUT14          2
+N
+N#define PORT_DDR_DQ15_AS_GPIO              0
+N#define PORT_DDR_DQ15_AS_UART1TX           1
+N#define PORT_DDR_DQ15_AS_PWMOUT15          2
+N
+N#define PORT_DDR_DM0_AS_GPIO               0
+N#define PORT_DDR_DM0_AS_PWMOUT16           1
+N
+N#define PORT_DDR_DM1_AS_GPIO               0
+N#define PORT_DDR_DM1_AS_PWMOUT17           1
+N
+N#define PORT_DDR_WE_AS_GPIO                0
+N#define PORT_DDR_WE_AS_PWMOUT18            1
+N
+N#define PORT_DDR_RAS_AS_GPIO               0
+N#define PORT_DDR_RAS_AS_PWMOUT19           1
+N
+N#define PORT_DDR_CAS_AS_GPIO               0
+N#define PORT_DDR_CAS_AS_PWMOUT20           1
+N
+N#define PORT_DDR_CS_AS_GPIO                0
+N#define PORT_DDR_CS_AS_PWMOUT21            1
+N
+N#define PORT_DDR_CKE_AS_GPIO               0
+N#define PORT_DDR_CKE_AS_PWMOUT22           1
+N
+N#define PORT_DDR_BA0_AS_GPIO               0
+N#define PORT_DDR_BA0_AS_QSPI1_SCLK         1
+N#define PORT_DDR_BA0_AS_PWMOUT23           2
+N
+N#define PORT_DDR_BA1_AS_GPIO               0
+N#define PORT_DDR_BA1_AS_QSPI1_SIO0         1
+N#define PORT_DDR_BA1_AS_HSPWM0             2
+N
+N#define PORT_DDR_A0_AS_GPIO                0
+N#define PORT_DDR_A0_AS_QSPI1_SIO1          1
+N#define PORT_DDR_A0_AS_HSPWM0N             2
+N
+N#define PORT_DDR_A1_AS_GPIO                0
+N#define PORT_DDR_A1_AS_QSPI1_SIO2          1
+N#define PORT_DDR_A1_AS_HSPWM1              2
+N
+N#define PORT_DDR_A2_AS_GPIO                0
+N#define PORT_DDR_A2_AS_QSPI1_SIO3          1
+N#define PORT_DDR_A2_AS_HSPWM1N             2
+N
+N#define PORT_DDR_A3_AS_GPIO                0
+N#define PORT_DDR_A3_AS_QSPI1_CS0           1
+N#define PORT_DDR_A3_AS_HSPWM2              2
+N
+N#define PORT_DDR_A4_AS_GPIO                0
+N#define PORT_DDR_A4_AS_QSPI1_CS1           1
+N#define PORT_DDR_A4_AS_HSPWM2N             2
+N
+N#define PORT_DDR_A5_AS_GPIO                0
+N#define PORT_DDR_A5_AS_IRQ0                1
+N#define PORT_DDR_A5_AS_HSPWM3              2
+N
+N#define PORT_DDR_A6_AS_GPIO                0
+N#define PORT_DDR_A6_AS_EBIF_AD08           1
+N#define PORT_DDR_A6_AS_HSPWM3N             2
+N
+N#define PORT_DDR_A7_AS_GPIO                0
+N#define PORT_DDR_A7_AS_CMRGB0              1
+N#define PORT_DDR_A7_AS_EBIF_AD09           2
+N
+N#define PORT_DDR_A8_AS_GPIO                0
+N#define PORT_DDR_A8_AS_CMRGB1              1
+N#define PORT_DDR_A8_AS_EBIF_AD10           2
+N
+N#define PORT_DDR_A9_AS_GPIO                0
+N#define PORT_DDR_A9_AS_CMRGB2              1
+N#define PORT_DDR_A9_AS_EBIF_AD11           2
+N
+N#define PORT_DDR_A10_AS_GPIO               0
+N#define PORT_DDR_A10_AS_CMRGB3             1
+N#define PORT_DDR_A10_AS_EBIF_AD12          2
+N
+N#define PORT_DDR_A11_AS_GPIO               0
+N#define PORT_DDR_A11_AS_CMRGB4             1
+N#define PORT_DDR_A11_AS_EBIF_AD13          2
+N
+N#define PORT_DDR_A12_AS_GPIO               0
+N#define PORT_DDR_A12_AS_CMRGB5             1
+N#define PORT_DDR_A12_AS_EBIF_AD14          2
+N
+N#define PORT_DDR_A13_AS_GPIO               0
+N#define PORT_DDR_A13_AS_CMRGB6             1
+N#define PORT_DDR_A13_AS_EBIF_AD15          2
+N#define PORT_DDR_A13_AS_IRQ1               3
+N
+N#define PORT_DDR_DQS0_AS_GPIO              0
+N#define PORT_DDR_DQS0_AS_GDC0_PWM          1
+N#define PORT_DDR_DQS0_AS_CMRGB7            2
+N#define PORT_DDR_DQS0_AS_EBIF_CS1          3
+N#define PORT_DDR_DQS0_AS_IRQ5              4
+N
+N#define PORT_DDR_DQS1_AS_GPIO              0
+N#define PORT_DDR_DQS1_AS_GDC1_PWM          1
+N#define PORT_DDR_DQS1_AS_CMFOOD            2
+N#define PORT_DDR_DQS1_AS_IRQ4              3
+N
+N#define PORT_DDR_DQS2_AS_GPIO              0
+N#define PORT_DDR_DQS2_AS_CMCBCR0           1
+N#define PORT_DDR_DQS2_AS_EBIF_AD00         2
+N#define PORT_DDR_DQS2_AS_NF_DATA0          3
+N#define PORT_DDR_DQS2_AS_IRQ3              4
+N#define PORT_DDR_DQS2_AS_PWMOUT04          5
+N#define PORT_DDR_DQS2_AS_HSPWM1            6
+N
+N#define PORT_DDR_DQS3_AS_GPIO              0
+N#define PORT_DDR_DQS3_AS_CMCBCR1           1
+N#define PORT_DDR_DQS3_AS_EBIF_AD01         2
+N#define PORT_DDR_DQS3_AS_NF_DATA1          3
+N#define PORT_DDR_DQS3_AS_IRQ2              4
+N#define PORT_DDR_DQS3_AS_PWMOUT05          5
+N#define PORT_DDR_DQS3_AS_HSPWM1N           6
+N
+N#define PORT_DDR_DM2_AS_GPIO               0
+N#define PORT_DDR_DM2_AS_D0RGB0             1
+N#define PORT_DDR_DM2_AS_CMCBCR2            2
+N#define PORT_DDR_DM2_AS_EBIF_AD02          3
+N#define PORT_DDR_DM2_AS_NF_DATA2           4
+N#define PORT_DDR_DM2_AS_PWMOUT06           5
+N
+N#define PORT_DDR_DM3_AS_GPIO               0
+N#define PORT_DDR_DM3_AS_D0RGB1             1
+N#define PORT_DDR_DM3_AS_CMCBCR3            2
+N#define PORT_DDR_DM3_AS_EBIF_AD03          3
+N#define PORT_DDR_DM3_AS_NF_DATA3           4
+N#define PORT_DDR_DM3_AS_PWMOUT07           5
+N
+N#define PORT_DDR_DQ16_AS_GPIO              0
+N#define PORT_DDR_DQ16_AS_D0RGB8            1
+N#define PORT_DDR_DQ16_AS_CMCBCR4           2
+N#define PORT_DDR_DQ16_AS_EBIF_AD04         3
+N#define PORT_DDR_DQ16_AS_NF_DATA4          4
+N#define PORT_DDR_DQ16_AS_PWMOUT08          5
+N
+N#define PORT_DDR_DQ17_AS_GPIO              0
+N#define PORT_DDR_DQ17_AS_D0RGB9            1
+N#define PORT_DDR_DQ17_AS_CMCBCR5           2
+N#define PORT_DDR_DQ17_AS_EBIF_AD05         3
+N#define PORT_DDR_DQ17_AS_NF_DATA5          4
+N#define PORT_DDR_DQ17_AS_PWMOUT09          5
+N
+N#define PORT_DDR_DQ18_AS_GPIO              0
+N#define PORT_DDR_DQ18_AS_D0RGB16           1
+N#define PORT_DDR_DQ18_AS_CMCBCR6           2
+N#define PORT_DDR_DQ18_AS_EBIF_AD06         3
+N#define PORT_DDR_DQ18_AS_NF_DATA6          4
+N#define PORT_DDR_DQ18_AS_PWMOUT10          5
+N
+N#define PORT_DDR_DQ19_AS_GPIO              0
+N#define PORT_DDR_DQ19_AS_D0RGB17           1
+N#define PORT_DDR_DQ19_AS_CMCBCR7           2
+N#define PORT_DDR_DQ19_AS_EBIF_AD07         3
+N#define PORT_DDR_DQ19_AS_NF_DATA7          4
+N#define PORT_DDR_DQ19_AS_PWMOUT11          5
+N
+N#define PORT_DDR_DQ20_AS_GPIO              0
+N#define PORT_DDR_DQ20_AS_CMCLK             1
+N#define PORT_DDR_DQ20_AS_EBIF_ALE          2
+N#define PORT_DDR_DQ20_AS_NF_ALE            3
+N#define PORT_DDR_DQ20_AS_PWMOUT12          4
+N
+N#define PORT_DDR_DQ21_AS_GPIO              0
+N#define PORT_DDR_DQ21_AS_CMHDISP           1
+N#define PORT_DDR_DQ21_AS_EBIF_CS0          2
+N#define PORT_DDR_DQ21_AS_NF_CLE            3
+N#define PORT_DDR_DQ21_AS_PWMOUT13          4
+N
+N#define PORT_DDR_DQ22_AS_GPIO              0
+N#define PORT_DDR_DQ22_AS_CMHSYNC           1
+N#define PORT_DDR_DQ22_AS_EBIF_OE           2
+N#define PORT_DDR_DQ22_AS_NF_RE             3
+N#define PORT_DDR_DQ22_AS_PWMOUT14          4
+N
+N#define PORT_DDR_DQ23_AS_GPIO              0
+N#define PORT_DDR_DQ23_AS_CMVSYNC           1
+N#define PORT_DDR_DQ23_AS_EBIF_WE           2
+N#define PORT_DDR_DQ23_AS_NF_WE             3
+N#define PORT_DDR_DQ23_AS_PWMOUT15          4
+N
+N#define PORT_DDR_DQ24_AS_GPIO              0
+N#define PORT_DDR_DQ24_AS_CMY0              1
+N#define PORT_DDR_DQ24_AS_EBIF_AEX0         2
+N#define PORT_DDR_DQ24_AS_NF_BUSYN          3
+N#define PORT_DDR_DQ24_AS_PWMOUT16          4
+N
+N#define PORT_DDR_DQ25_AS_GPIO              0
+N#define PORT_DDR_DQ25_AS_CMY1              1
+N#define PORT_DDR_DQ25_AS_EBIF_AEX1         2
+N#define PORT_DDR_DQ25_AS_NF_CSN            3
+N#define PORT_DDR_DQ25_AS_PWMOUT17          4
+N
+N#define PORT_DDR_DQ26_AS_GPIO              0
+N#define PORT_DDR_DQ26_AS_CMY2              1
+N#define PORT_DDR_DQ26_AS_EBIF_AEX2         2
+N#define PORT_DDR_DQ26_AS_NF_CSN2           3
+N#define PORT_DDR_DQ26_AS_PWMOUT18          4
+N
+N#define PORT_DDR_DQ27_AS_GPIO              0
+N#define PORT_DDR_DQ27_AS_CMY3              1
+N#define PORT_DDR_DQ27_AS_EBIF_AEX3         2
+N#define PORT_DDR_DQ27_AS_PWMOUT19          3
+N
+N#define PORT_DDR_DQ28_AS_GPIO              0
+N#define PORT_DDR_DQ28_AS_CMY4              1
+N#define PORT_DDR_DQ28_AS_EBIF_AEX4         2
+N#define PORT_DDR_DQ28_AS_ESEI1MISO         3
+N#define PORT_DDR_DQ28_AS_PWMOUT20          4
+N
+N#define PORT_DDR_DQ29_AS_GPIO              0
+N#define PORT_DDR_DQ29_AS_CMY5              1
+N#define PORT_DDR_DQ29_AS_EBIF_AEX5         2
+N#define PORT_DDR_DQ29_AS_ESEI1MOSI         3
+N#define PORT_DDR_DQ29_AS_PWMOUT21          4
+N
+N#define PORT_DDR_DQ30_AS_GPIO              0
+N#define PORT_DDR_DQ30_AS_CMY6              1
+N#define PORT_DDR_DQ30_RESERVED             2
+N#define PORT_DDR_DQ30_AS_ESEI1_SCLK        3
+N#define PORT_DDR_DQ30_AS_PWMOUT22          4
+N
+N#define PORT_DDR_DQ31_AS_GPIO              0
+N#define PORT_DDR_DQ31_AS_CMY7              1
+N#define PORT_DDR_DQ31_AS_ESEI1SSOI         2
+N#define PORT_DDR_DQ31_AS_PWMOUT23          3
+N
+N#define PORT_QSPI0_SIO0_AS_GPIO            0
+N#define PORT_QSPI0_SIO0_AS_QSPI0_SIO0      1
+N#define PORT_QSPI0_SIO0_AS_QSPI1_SIO0      2
+N#define PORT_QSPI0_SIO0_AS_EBIF_WAITN      3
+N#define PORT_QSPI0_SIO0_AS_NF_BUSYN        4
+N
+N#define PORT_QSPI0_SIO1_AS_GPIO            0
+N#define PORT_QSPI0_SIO1_AS_QSPI0_SIO1      1
+N#define PORT_QSPI0_SIO1_AS_QSPI1_SIO1      2
+N#define PORT_QSPI0_SIO1_AS_EBIF_OE         3
+N#define PORT_QSPI0_SIO1_AS_NF_RE           4
+N
+N#define PORT_QSPI0_SIO2_AS_GPIO            0
+N#define PORT_QSPI0_SIO2_AS_QSPI0_SIO2      1
+N#define PORT_QSPI0_SIO2_AS_QSPI1_SIO2      2
+N#define PORT_QSPI0_SIO2_AS_EBIF_WE         3
+N#define PORT_QSPI0_SIO2_AS_NF_WE           4
+N
+N#define PORT_QSPI0_SIO3_AS_GPIO            0
+N#define PORT_QSPI0_SIO3_AS_QSPI0_SIO3      1
+N#define PORT_QSPI0_SIO3_AS_QSPI1_SIO3      2
+N#define PORT_QSPI0_SIO3_AS_EBIF_ALE        3
+N#define PORT_QSPI0_SIO3_AS_NF_ALE          4
+N
+N#define PORT_QSPI0_CS0_AS_GPIO             0
+N#define PORT_QSPI0_CS0_AS_QSPI0_CS0        1
+N#define PORT_QSPI0_CS0_AS_QSPI1_CS0        2
+N#define PORT_QSPI0_CS0_AS_EBIF_CS0         3
+N#define PORT_QSPI0_CS0_AS_NF_CSN           4
+N
+N#define PORT_QSPI0_SCLK_AS_GPIO            0
+N#define PORT_QSPI0_SCLK_AS_QSPI0_SCLK      1
+N#define PORT_QSPI0_SCLK_AS_QSPI1_SCLK      2
+N#define PORT_QSPI0_SCLK_AS_EBIF_SYSCLK0    3
+N#define PORT_QSPI0_SCLK_AS_NF_CLE          4
+N
+N#define PORT_D0HDISP_AS_GPIO               0
+N#define PORT_D0HDISP_AS_D0HDISP            1
+N
+N#define PORT_D0HSYNC_AS_GPIO               0
+N#define PORT_D0HSYNC_AS_D0HSYNC            1
+N
+N#define PORT_D0VSYNC_AS_GPIO               0
+N#define PORT_D0VSYNC_AS_D0VSYNC            1
+N
+N#define PORT_D0DOTCLK_AS_GPIO              0
+N#define PORT_D0DOTCLK_AS_D0DOTCLK          1
+N
+N#define PORT_D0RGB0_AS_GPIO                0
+N#define PORT_D0RGB0_AS_D0RGB0              1
+N#define PORT_D0RGB0_AS_GDC0PWM             2
+N
+N#define PORT_D0RGB1_AS_GPIO                0
+N#define PORT_D0RGB1_AS_D0RGB1              1
+N
+N#define PORT_D0RGB2_AS_GPIO                0
+N#define PORT_D0RGB2_AS_D0RGB2              1
+N#define PORT_D0RGB2_AS_DSU_TRACED08        2
+N
+N#define PORT_D0RGB3_AS_GPIO                0
+N#define PORT_D0RGB3_AS_D0RGB3              1
+N#define PORT_D0RGB3_AS_DSU_TRACED11        2
+N
+N#define PORT_D0RGB4_AS_GPIO                0
+N#define PORT_D0RGB4_AS_D0RGB4              1
+N#define PORT_D0RGB4_AS_DSU_TRACECLK        2
+N
+N#define PORT_D0RGB5_AS_GPIO                0
+N#define PORT_D0RGB5_AS_D0RGB5              1
+N#define PORT_D0RGB5_AS_DSU_TRACED02        2
+N
+N#define PORT_D0RGB6_AS_GPIO                0
+N#define PORT_D0RGB6_AS_D0RGB6              1
+N#define PORT_D0RGB6_AS_DSU_TRACE05         2
+N
+N#define PORT_D0RGB7_AS_GPIO                0
+N#define PORT_D0RGB7_AS_D0RGB7              1
+N#define PORT_D0RGB7_AS_DSU_TRACED14        2
+N
+N#define PORT_D0RGB8_AS_GPIO                0
+N#define PORT_D0RGB8_AS_D0RGB8              1
+N
+N#define PORT_D0RGB9_AS_GPIO                0
+N#define PORT_D0RGB9_AS_D0RGB9              1
+N
+N#define PORT_D0RGB10_AS_GPIO               0
+N#define PORT_D0RGB10_AS_D0RGB10            1
+N#define PORT_D0RGB10_AS_DSU_TRACED09       2
+N
+N#define PORT_D0RGB11_AS_GPIO               0
+N#define PORT_D0RGB11_AS_D0RGB11            1
+N#define PORT_D0RGB11_AS_DSU_TRACED12       2
+N
+N#define PORT_D0RGB12_AS_GPIO               0
+N#define PORT_D0RGB12_AS_D0RGB12            1
+N#define PORT_D0RGB12_AS_DSU_TRACED00       2
+N
+N#define PORT_D0RGB13_AS_GPIO               0
+N#define PORT_D0RGB13_AS_D0RGB13            1
+N#define PORT_D0RGB13_AS_DSU_TRACED03       2
+N
+N#define PORT_D0RGB14_AS_GPIO               0
+N#define PORT_D0RGB14_AS_D0RGB14            1
+N#define PORT_D0RGB14_AS_DSU_TRACED06       2
+N
+N#define PORT_D0RGB15_AS_TSM_TPC0_GTDO      0
+N#define PORT_D0RGB15_AS_D0RGB15            1
+N#define PORT_D0RGB15_AS_DSU_TRACED15       2
+N#define PORT_D0RGB15_AS_GPIO               3
+N
+N#define PORT_D0RGB16_AS_GPIO               0
+N#define PORT_D0RGB16_AS_D0RGB16            1
+N
+N#define PORT_D0RGB17_AS_GPIO               0
+N#define PORT_D0RGB17_AS_D0RGB17            1
+N
+N#define PORT_D0RGB18_AS_GPIO               0
+N#define PORT_D0RGB18_AS_D0RGB18            1
+N#define PORT_D0RGB18_AS_DSU_TRACED10       2
+N
+N#define PORT_D0RGB19_AS_GPIO               0
+N#define PORT_D0RGB19_AS_D0RGB19            1
+N#define PORT_D0RGB19_AS_DSU_TRACED13       2
+N
+N#define PORT_D0RGB20_AS_GPIO               0
+N#define PORT_D0RGB20_AS_D0RGB20            1
+N#define PORT_D0RGB20_AS_DSU_TRACED01       2
+N
+N#define PORT_D0RGB21_AS_GPIO               0
+N#define PORT_D0RGB21_AS_D0RGB21            1
+N#define PORT_D0RGB21_AS_DSU_TRACECTL       2
+N
+N#define PORT_D0RGB22_AS_GPIO               0
+N#define PORT_D0RGB22_AS_D0RGB22            1
+N#define PORT_D0RGB22_AS_DSU_TRACED07       2
+N
+N#define PORT_D0RGB23_AS_GPIO               0
+N#define PORT_D0RGB23_AS_D0RGB23            1
+N#define PORT_D0RGB23_AS_DSU_TRACED04       2
+N
+N#define PORT_DOTCLKIN_AS_GPIO              0
+N#define PORT_DOTCLKIN_AS_DOTCLKIN          1
+N#define PORT_DOTCLKIN_AS_QSPI1_CS1         2
+N#define PORT_DOTCLKIN_AS_EBIF_CS1          3
+N#define PORT_DOTCLKIN_AS_NF_CSN2           4
+N
+N#define PORT_PNLGPP0_AS_TSM_GTMS           0
+N#define PORT_PNLGPP0_AS_PNLGPP0            1
+N#define PORT_PNLGPP0_AS_QSPI1_CS0          2
+N#define PORT_PNLGPP0_AS_EBIF_AD08          3
+N#define PORT_PNLGPP0_AS_NF_DATA8           4
+N#define PORT_PNLGPP0_AS_I2S0SD             5
+N#define PORT_PNLGPP0_AS_ESEI0MISO          6
+N#define PORT_PNLGPP0_AS_TBIO0              7
+N
+N#define PORT_PNLGPP1_AS_TSM_GTDI           0
+N#define PORT_PNLGPP1_AS_PNLGPP1            1
+N#define PORT_PNLGPP1_AS_QSPI1_SIO0         2
+N#define PORT_PNLGPP1_AS_EBIF_AD09          3
+N#define PORT_PNLGPP1_AS_NF_DATA9           4
+N#define PORT_PNLGPP1_AS_I2S0WS             5
+N#define PORT_PNLGPP1_AS_ESEI0MOSI          6
+N#define PORT_PNLGPP1_AS_TBIO1              7
+N
+N#define PORT_PNLGPP2_AS_TSM_GTCK           0
+N#define PORT_PNLGPP2_AS_PNLGPP2            1
+N#define PORT_PNLGPP2_AS_QSPI1_SCLK         2
+N#define PORT_PNLGPP2_AS_EBIF_AD10          3
+N#define PORT_PNLGPP2_AS_NF_DATA10          4
+N#define PORT_PNLGPP2_AS_I2S0CLK            5
+N#define PORT_PNLGPP2_AS_ESEI0SCLK          6
+N#define PORT_PNLGPP2_AS_TBIO6              7
+N
+N#define PORT_PNLGPP3_AS_TSM_GTRST          0
+N#define PORT_PNLGPP3_AS_PNLGPP3            1
+N#define PORT_PNLGPP3_AS_QSPI1_SIO1         2
+N#define PORT_PNLGPP3_AS_EBIF_AD11          3
+N#define PORT_PNLGPP3_AS_NF_DATA11          4
+N#define PORT_PNLGPP3_AS_I2SMCLK            5
+N#define PORT_PNLGPP3_AS_ESEI0SSOI          6
+N#define PORT_PNLGPP3_AS_TBIO7              4
+N
+N#define PORT_PNLGPP4_AS_GPIO               0
+N#define PORT_PNLGPP4_AS_PNLGPP4            1
+N#define PORT_PNLGPP4_AS_QSPI1_SIO2         2
+N#define PORT_PNLGPP4_AS_EBIF_AD12          3
+N#define PORT_PNLGPP4_AS_NF_DATA12          4
+N#define PORT_PNLGPP4_AS_PWMOUT18           5
+N
+N#define PORT_PNLGPP5_AS_GPIO               0
+N#define PORT_PNLGPP5_AS_PNLGPP5            1
+N#define PORT_PNLGPP5_AS_QSPI1_SIO3         2
+N#define PORT_PNLGPP5_AS_EBIF_AD13          3
+N#define PORT_PNLGPP5_AS_NF_DATA13          4
+N#define PORT_PNLGPP5_AS_PWMOUT19           5
+N
+N#define PORT_PNLGPP6_AS_GPIO               0
+N#define PORT_PNLGPP6_AS_PNLGPP6            1
+N#define PORT_PNLGPP6_AS_GDC0PWM            2
+N#define PORT_PNLGPP6_AS_EBIF_AD14          3
+N#define PORT_PNLGPP6_AS_NF_DATA14          4
+N#define PORT_PNLGPP6_AS_PWMOUT20           5
+N
+N#define PORT_PNLGPP7_AS_GPIO               0
+N#define PORT_PNLGPP7_AS_PNLGPP7            1
+N#define PORT_PNLGPP7_AS_GDC1PWM            2
+N#define PORT_PNLGPP7_AS_EBIF_AD15          3
+N#define PORT_PNLGPP7_AS_NF_DATA15          4
+N#define PORT_PNLGPP7_AS_PWMOUT21           5
+N
+N#define PORT_D1HDISP_AS_GPIO               0
+N#define PORT_D1HDISP_AS_D1HDISP            1
+N#define PORT_D1HDISP_AS_EBIF_AEX3          2
+N
+N#define PORT_D1HSYNC_AS_GPIO               0
+N#define PORT_D1HSYNC_AS_D1HSYNC            1
+N#define PORT_D1HSYNC_AS_EBIF_AEX4          2
+N
+N#define PORT_D1VSYNC_AS_GPIO               0
+N#define PORT_D1VSYNC_AS_D1VSYNC            1
+N#define PORT_D1VSYNC_AS_EBIF_AEX5          2
+N#define PORT_D1VSYNC_AS_DMA_REQ            3
+N#define PORT_D1VSYNC_AS_DSU_TRACED08       4
+N
+N#define PORT_D1DOTCLK_AS_GPIO              0
+N#define PORT_D1DOTCLK_AS_D1DOTCLK          1
+N#define PORT_D1DOTCLK_AS_DMA_ACK           2
+N#define PORT_D1DOTCLK_AS_DSU_TRACED11      3
+N
+N#define PORT_D1RGB0_AS_GPIO                0
+N#define PORT_D1RGB0_AS_D1RGB0              1
+N#define PORT_D1RGB0_AS_GDC1PWM             2
+N#define PORT_D1RGB0_AS_EBIF_ALE            3
+N#define PORT_D1RGB0_AS_EBIF_AEX0           4
+N#define PORT_D1RGB0_AS_NF_BUSYN            5
+N#define PORT_D1RGB0_AS_HSPWM1              6
+N#define PORT_D1RGB0_AS_DSU_TRACECLK        7
+N
+N#define PORT_D1RGB1_AS_GPIO                0
+N#define PORT_D1RGB1_AS_D1RGB1              1
+N#define PORT_D1RGB1_AS_EBIF_CS0            2
+N#define PORT_D1RGB1_AS_EBIF_AEX1           3
+N#define PORT_D1RGB1_AS_NF_CSN              4
+N#define PORT_D1RGB1_AS_PWMOUT11            5
+N#define PORT_D1RGB1_AS_HSPWM1N             6
+N#define PORT_D1RGB1_AS_DSU_TRACED02        7
+N
+N#define PORT_D1RGB2_AS_GPIO                0
+N#define PORT_D1RGB2_AS_D1RGB2              1
+N#define PORT_D1RGB2_AS_RESERVED            2
+N#define PORT_D1RGB2_AS_NF_ALE              3
+N#define PORT_D1RGB2_AS_DSU_TRACED05        4
+N
+N#define PORT_D1RGB3_AS_GPIO                0
+N#define PORT_D1RGB3_AS_D1RGB3              1
+N#define PORT_D1RGB3_AS_EBIF_OE             2
+N#define PORT_D1RGB3_AS_NF_CLE              3
+N#define PORT_D1RGB3_AS_DSU_TRACED14        4
+N
+N#define PORT_D1RGB4_AS_GPIO                0
+N#define PORT_D1RGB4_AS_D1RGB4              1
+N#define PORT_D1RGB4_AS_EBIF_WE             2
+N#define PORT_D1RGB4_AS_NF_WE               3
+N
+N#define PORT_D1RGB5_AS_GPIO                0
+N#define PORT_D1RGB5_AS_D1RGB5              1
+N#define PORT_D1RGB5_AS_EBIF_AD00           2
+N#define PORT_D1RGB5_AS_NF_RE               3
+N
+N#define PORT_D1RGB6_AS_GPIO                0
+N#define PORT_D1RGB6_AS_D1RGB6              1
+N#define PORT_D1RGB6_AS_EBIF_AD01           2
+N#define PORT_D1RGB6_AS_NF_DATA0            3
+N#define PORT_D1RGB6_AS_DSU_TRACED09        4
+N
+N#define PORT_D1RGB7_AS_GPIO                0
+N#define PORT_D1RGB7_AS_D1RGB7              1
+N#define PORT_D1RGB7_AS_EBIF_AD02           2
+N#define PORT_D1RGB7_AS_NF_DATA1            3
+N#define PORT_D1RGB7_AS_DSU_TRACED12        4
+N
+N#define PORT_D1RGB8_AS_GPIO                0
+N#define PORT_D1RGB8_AS_D1RGB8              1
+N#define PORT_D1RGB8_AS_EBIF_AD03           2
+N#define PORT_D1RGB8_AS_EBIF_AEX2           3
+N#define PORT_D1RGB8_AS_NFDATA2             4
+N#define PORT_D1RGB8_AS_HSPWM2              5
+N#define PORT_D1RGB8_AS_DSU_TRACED00        6
+N
+N#define PORT_D1RGB9_AS_GPIO                0
+N#define PORT_D1RGB9_AS_D1RGB9              1
+N#define PORT_D1RGB9_AS_EBIF_AD04           2
+N#define PORT_D1RGB9_AS_EBIF_AEX3           3
+N#define PORT_D1RGB9_AS_NF_DATA3            4
+N#define PORT_D1RGB9_AS_PWMOUT12            5
+N#define PORT_D1RGB9_AS_HSPWM2N             6
+N#define PORT_D1RGB9_AS_DSU_TRACED03        7
+N
+N#define PORT_D1RGB10_AS_GPIO               0
+N#define PORT_D1RGB10_AS_D1RGB10            1
+N#define PORT_D1RGB10_AS_EBIF_AD05          2
+N#define PORT_D1RGB10_AS_NF_DATA4           3
+N#define PORT_D1RGB10_AS_DSU_TRACED06       4
+N
+N#define PORT_D1RGB11_AS_GPIO               0
+N#define PORT_D1RGB11_AS_D1RGB11            1
+N#define PORT_D1RGB11_AS_EBIF_AD06          2
+N#define PORT_D1RGB11_AS_NF_DATA5           3
+N#define PORT_D1RGB11_AS_DSU_TRACED15       4
+N
+N#define PORT_D1RGB12_AS_GPIO               0
+N#define PORT_D1RGB12_AS_D1RGB12            1
+N#define PORT_D1RGB12_AS_EBIF_AD07          2
+N#define PORT_D1RGB12_AS_NF_DATA6           3
+N
+N#define PORT_D1RGB13_AS_GPIO               0
+N#define PORT_D1RGB13_AS_D1RGB13            1
+N#define PORT_D1RGB13_AS_EBIF_AD08          2
+N#define PORT_D1RGB13_AS_NF_DATA7           3
+N
+N#define PORT_D1RGB14_AS_GPIO               0
+N#define PORT_D1RGB14_AS_D1RGB14            1
+N#define PORT_D1RGB14_AS_EBIF_AD09          2
+N#define PORT_D1RGB14_AS_NF_DATA8           3
+N#define PORT_D1RGB14_AS_DSU_TRACED10       4
+N
+N#define PORT_D1RGB15_AS_GPIO               0
+N#define PORT_D1RGB15_AS_D1RGB15            1
+N#define PORT_D1RGB15_AS_EBIF_AD10          2
+N#define PORT_D1RGB15_AS_NF_DATA9           3
+N#define PORT_D1RGB15_AS_DSU_TRACED13       4
+N
+N#define PORT_D1RGB16_AS_GPIO               0
+N#define PORT_D1RGB16_AS_D1RGB16            1
+N#define PORT_D1RGB16_AS_EBIF_AD11          2
+N#define PORT_D1RGB16_AS_EBIF_AEX4          3
+N#define PORT_D1RGB16_AS_NF_DATA10          4
+N#define PORT_D1RGB16_AS_HSPWM3             5
+N#define PORT_D1RGB16_AS_DSU_TRACED01       6
+N
+N#define PORT_D1RGB17_AS_GPIO               0
+N#define PORT_D1RGB17_AS_D1RGB17            1
+N#define PORT_D1RGB17_AS_EBIF_AD12          2
+N#define PORT_D1RGB17_AS_EBIF_AEX5          3
+N#define PORT_D1RGB17_AS_NF_DATA11          4
+N#define PORT_D1RGB17_AS_PWMOUT13           5
+N#define PORT_D1RGB17_AS_HSPWM3N            6
+N#define PORT_D1RGB17_AS_DSU_TRACETL        7
+N
+N#define PORT_D1RGB18_AS_GPIO               0
+N#define PORT_D1RGB18_AS_D1RGB18            1
+N#define PORT_D1RGB18_AS_EBIF_AD13          2
+N#define PORT_D1RGB18_AS_NF_DATA12          3
+N#define PORT_D1RGB18_AS_DSU_TRACED07       4
+N
+N#define PORT_D1RGB19_AS_GPIO               0
+N#define PORT_D1RGB19_AS_D1RGB19            1
+N#define PORT_D1RGB19_AS_EBIF_AD14          2
+N#define PORT_D1RGB19_AS_NF_DATA13          3
+N#define PORT_D1RGB19_AS_DSU_TRACED04       4
+N
+N#define PORT_D1RGB20_AS_GPIO               0
+N#define PORT_D1RGB20_AS_D1RGB20            1
+N#define PORT_D1RGB20_AS_EBIF_AD15          2
+N#define PORT_D1RGB20_AS_NF_DATA14          3
+N
+N#define PORT_D1RGB21_AS_GPIO               0
+N#define PORT_D1RGB21_AS_D1RGB21            1
+N#define PORT_D1RGB21_AS_EBIF_AEX0          2
+N#define PORT_D1RGB21_AS_NF_DATA15          3
+N
+N#define PORT_D1RGB22_AS_GPIO               0
+N#define PORT_D1RGB22_AS_D1RGB22            1
+N#define PORT_D1RGB22_AS_EBIF_AEX1          2
+N#define PORT_D1RGB22_AS_NF_CSN2            3
+N
+N#define PORT_D1RGB23_AS_GPIO               0
+N#define PORT_D1RGB23_AS_D1RGB23            1
+N#define PORT_D1RGB23_AS_EBIF_AEX2          2
+N
+N#define PORT_CMCBCR0_AS_CMCBCR0            0
+N#define PORT_CMCBCR0_AS_EBIF_AD08          1
+N#define PORT_CMCBCR0_AS_PWMOUT01           2
+N#define PORT_CMCBCR0_AS_GPIO               3
+N
+N#define PORT_CMCBCR1_AS_CMCBCR1            0
+N#define PORT_CMCBCR1_AS_EBIF_AD09          1
+N#define PORT_CMCBCR1_AS_NF_CSN2            2
+N#define PORT_CMCBCR1_AS_PWMOUT02           3
+N#define PORT_CMCBCR1_AS_GPIO               4
+N
+N#define PORT_CMCBCR2_AS_CMCBCR2            0
+N#define PORT_CMCBCR2_AS_EBIF_AD10          1
+N#define PORT_CMCBCR2_AS_NF_BUSYN           2
+N#define PORT_CMCBCR2_AS_PWMOUT03           3
+N#define PORT_CMCBCR2_AS_GPIO               4
+N
+N#define PORT_CMCBCR3_AS_CMCBCR3            0
+N#define PORT_CMCBCR3_AS_EBIF_AD11          1
+N#define PORT_CMCBCR3_AS_NF_CSN             2
+N#define PORT_CMCBCR3_AS_PWMOUT04           3
+N#define PORT_CMCBCR3_AS_GPIO               4
+N
+N#define PORT_CMCBCR4_AS_CMCBCR4            0
+N#define PORT_CMCBCR4_AS_EBIF_AD12          1
+N#define PORT_CMCBCR4_AS_NF_ALE             2
+N#define PORT_CMCBCR4_AS_PWMOUT05           3
+N#define PORT_CMCBCR4_AS_GPIO               4
+N
+N#define PORT_CMCBCR5_AS_CMCBR5             0
+N#define PORT_CMCBCR5_AS_EBIF_AD13          1
+N#define PORT_CMCBCR5_AS_NF_CLE             2
+N#define PORT_CMCBCR5_AS_PWMOUT06           3
+N#define PORT_CMCBCR5_AS_GPIO               4
+N
+N#define PORT_CMCBCR6_AS_CMCBCR6            0
+N#define PORT_CMCBCR6_AS_EBIF_AD14          1
+N#define PORT_CMCBCR6_AS_NF_WE              2
+N#define PORT_CMCBCR6_AS_PWMOUT07           3
+N#define PORT_CMCBCR6_AS_GPIO               4
+N
+N#define PORT_CMCBCR7_AS_CMCBCR7            0
+N#define PORT_CMCBCR7_AS_EBIF_AD15          1
+N#define PORT_CMCBCR7_AS_NF_RE              2
+N#define PORT_CMCBCR7_AS_PWMOUT08           3
+N#define PORT_CMCBCR7_AS_GPIO               4
+N
+N#define PORT_CMCLK_AS_CMCLK                0
+N#define PORT_CMCLK_AS_EBIF_ALE             1
+N#define PORT_CMCLK_AS_PWMOUT09             2
+N#define PORT_CMCLK_AS_GPIO                 3
+N
+N#define PORT_CMFOOD_AS_CMFOOD              0
+N#define PORT_CMFOOD_AS_EBIF_CS0            1
+N#define PORT_CMFOOD_AS_PWMOUT10            2
+N#define PORT_CMFOOD_AS_GPIO                3
+N
+N#define PORT_CMHDISP_AS_CMHDISP            0
+N#define PORT_CMHDISP_AS_RESERVED           1
+N#define PORT_CMHDISP_AS_PWMOUT11           2
+N#define PORT_CMHDISP_AS_GPIO               3
+N
+N#define PORT_CMHSYNC_AS_CMHSYNC            0
+N#define PORT_CMHSYNC_AS_EBIF_OE            1
+N#define PORT_CMHSYNC_AS_PWMOUT12           2
+N#define PORT_CMHSYNC_AS_GPIO               3
+N
+N#define PORT_CMVSYNC_AS_CMVSYNC            0
+N#define PORT_CMVSYNC_AS_EBIF_WE            1
+N#define PORT_CMVSYNC_AS_PWMOUT13           2
+N#define PORT_CMVSYNC_AS_GPIO               3
+N
+N#define PORT_CMY0_AS_CMY0                  0
+N#define PORT_CMY0_AS_EBIF_AEX0             1
+N#define PORT_CMY0_AS_NF_DATA8              2
+N#define PORT_CMY0_AS_PWMOUT14              3
+N#define PORT_CMY0_AS_GPIO                  4
+N
+N#define PORT_CMY1_AS_CMY1                  0
+N#define PORT_CMY1_AS_EBIF_AEX1             1
+N#define PORT_CMY1_AS_NF_DATA9              2
+N#define PORT_CMY1_AS_PWMOUT15              3
+N#define PORT_CMY1_AS_GPIO                  4
+N
+N#define PORT_CMY2_AS_CMY2                  0
+N#define PORT_CMY2_AS_EBIF_AEX2             1
+N#define PORT_CMY2_AS_NF_DATA10             2
+N#define PORT_CMY2_AS_PWMOUT16              3
+N#define PORT_CMY2_AS_GPIO                  4
+N
+N#define PORT_CMY3_AS_CMY3                  0
+N#define PORT_CMY3_AS_EBIF_AEX3             1
+N#define PORT_CMY3_AS_NF_DATA11             2
+N#define PORT_CMY3_AS_PWMOUT17              3
+N#define PORT_CMY3_AS_GPIO                  4
+N
+N#define PORT_CMY4_AS_CMY4                  0
+N#define PORT_CMY4_AS_EBIF_AEX4             1
+N#define PORT_CMY4_AS_NF_DATA12             2
+N#define PORT_CMY4_AS_PWMOUT18              3
+N#define PORT_CMY4_AS_GPIO                  4
+N
+N#define PORT_CMY5_AS_CMY5                  0
+N#define PORT_CMY5_AS_EBIF_AEX5             1
+N#define PORT_CMY5_AS_NF_DATA13             2
+N#define PORT_CMY5_AS_PWMOUT19              3
+N#define PORT_CMY5_AS_GPIO                  4
+N
+N#define PORT_CMY6_AS_CMY6                  0
+N#define PORT_CMY6_AS_EBIF_CS1              1
+N#define PORT_CMY6_AS_NF_DATA14             2
+N#define PORT_CMY6_AS_DMA_REQ               3
+N#define PORT_CMY6_AS_PWMOUT20              4
+N#define PORT_CMY6_AS_GPIO                  5
+N
+N#define PORT_CMY7_AS_CMY7                  0
+N#define PORT_CMY7_AS_NF_DATA15             1
+N#define PORT_CMY7_AS_DMA_ACK               2
+N#define PORT_CMY7_AS_PWMOUT21              3
+N#define PORT_CMY7_AS_GPIO                  4
+N
+N#define PORT_CMRGB0_AS_CMRGB0              0
+N#define PORT_CMRGB0_AS_EBIF_AD00           1
+N#define PORT_CMRGB0_AS_EBIF_AD00S          2
+N#define PORT_CMRGB0_AS_NF_DATA0            3
+N#define PORT_CMRGB0_AS_NF_DATA0S           4
+N#define PORT_CMRGB0_AS_IRQ2                5
+N#define PORT_CMRGB0_AS_ESEI1MISO           6
+N#define PORT_CMRGB0_AS_GPIO                7
+N
+N#define PORT_CMRGB1_AS_CMRGB1              0
+N#define PORT_CMRGB1_AS_EBIF_AD01           1
+N#define PORT_CMRGB1_AS_EBIF_AD01S          2
+N#define PORT_CMRGB1_AS_NF_DATA1            3
+N#define PORT_CMRGB1_AS_NF_DATA1S           4
+N#define PORT_CMRGB1_AS_IRQ3                5
+N#define PORT_CMRGB1_AS_ESEI1MOSI           6
+N#define PORT_CMRGB1_AS_GPIO                7
+N
+N#define PORT_CMRGB2_AS_CMRGB2              0
+N#define PORT_CMRGB2_AS_EBIF_AD02           1
+N#define PORT_CMRGB2_AS_EBIF_AD02S          2
+N#define PORT_CMRGB2_AS_NF_DATA2            3
+N#define PORT_CMRGB2_AS_NF_DATA2S           4
+N#define PORT_CMRGB2_AS_IRQ4                5
+N#define PORT_CMRGB2_AS_ESEI1SCLK           6
+N#define PORT_CMRGB2_AS_GPIO                7
+N
+N#define PORT_CMRGB3_AS_CMRGB3              0
+N#define PORT_CMRGB3_AS_EBIF_AD03           1
+N#define PORT_CMRGB3_AS_EBIF_AD03S          2
+N#define PORT_CMRGB3_AS_NF_DATA3            3
+N#define PORT_CMRGB3_AS_NF_DATA3S           4
+N#define PORT_CMRGB3_AS_IRQ5                5
+N#define PORT_CMRGB3_AS_ESEI1SSOI           6
+N#define PORT_CMRGB3_AS_GPIO                7
+N
+N#define PORT_CMRGB4_AS_CMRGB4              0
+N#define PORT_CMRGB4_AS_EBIF_AD04           1
+N#define PORT_CMRGB4_AS_EBIF_AD04S          2
+N#define PORT_CMRGB4_AS_NF_DATA4            3
+N#define PORT_CMRGB4_AS_NF_DATA4S           4
+N#define PORT_CMRGB4_AS_IRQ0                5
+N#define PORT_CMRGB4_AS_UART1RX             6
+N#define PORT_CMRGB4_AS_GPIO                7
+N
+N#define PORT_CMRGB5_AS_CMRGB5              0
+N#define PORT_CMRGB5_AS_EBIF_AD05           1
+N#define PORT_CMRGB5_AS_EBIF_AD05S          2
+N#define PORT_CMRGB5_AS_NF_DATA5            3
+N#define PORT_CMRGB5_AS_NF_DATA5S           4
+N#define PORT_CMRGB5_AS_IRQ1                5
+N#define PORT_CMRGB5_AS_UART1TX             6
+N#define PORT_CMRGB5_AS_GPIO                7
+N
+N#define PORT_CMRGB6_AS_CMRGB6              0
+N#define PORT_CMRGB6_AS_EBIF_AD06           1
+N#define PORT_CMRGB6_AS_EBIF_AD06S          2
+N#define PORT_CMRGB6_AS_NF_DATA6            3
+N#define PORT_CMRGB6_AS_NF_DATA6S           4
+N#define PORT_CMRGB6_AS_CANRX2              5
+N#define PORT_CMRGB6_AS_PWMOUT22            6
+N#define PORT_CMRGB6_AS_GPIO                7
+N
+N#define PORT_CMRGB7_AS_CMRGB7              0
+N#define PORT_CMRGB7_AS_EBIF_AD07           1
+N#define PORT_CMRGB7_AS_EBIF_AD07S          2
+N#define PORT_CMRGB7_AS_NF_DATA7            3
+N#define PORT_CMRGB7_AS_NF_DATA7S           4
+N#define PORT_CMRGB7_AS_CANTX2              5
+N#define PORT_CMRGB7_AS_PWMOUT23            6
+N#define PORT_CMRGB7_AS_GPIO                7
+N
+N#define PORT_I2CCLK_AS_GPIO                0
+N#define PORT_I2CCLK_AS_DOTCLKIN            1
+N#define PORT_I2CCLK_AS_UART1RX             2
+N#define PORT_I2CCLK_AS_I2CCLK              3
+N
+N#define PORT_I2CDATA_AS_GPIO               0
+N#define PORT_I2CDATA_AS_UART1TX            1
+N#define PORT_I2CDATA_AS_I2CDATA            2
+N
+N#define PORT_CANRX0_AS_GPIO                0
+N#define PORT_CANRX0_AS_DMA_REQ             1
+N#define PORT_CANRX0_AS_CANRX0              2
+N#define PORT_CANRX0_AS_HSPWM2              3
+N
+N#define PORT_CANTX0_AS_GPIO                0
+N#define PORT_CANTX0_AS_DMA_ACK             1
+N#define PORT_CANTX0_AS_CANTX0              2
+N#define PORT_CANTX0_AS_HSPWM2N             3
+N
+N#define PORT_CANRX1_AS_GPIO                0
+N#define PORT_CANRX1_AS_UART0RX             1
+N#define PORT_CANRX1_AS_CANRX1              2
+N#define PORT_CANRX1_AS_PWMOUT17            3
+N
+N#define PORT_CANTX1_AS_GPIO                0
+N#define PORT_CANTX1_AS_UART0TX             1
+N#define PORT_CANTX1_AS_CANTX1              2
+N#define PORT_CANTX1_AS_PWMOUT18            3
+N
+N#define PORT_ESEI0MISO_AS_GPIO             0
+N#define PORT_ESEI0MISO_AS_ESEI0MISO        1
+N#define PORT_ESEI0MISO_AS_TBIO2            2
+N
+N#define PORT_ESEI0MOSI_AS_GPIO             0
+N#define PORT_ESEI0MOSI_AS_ESEI0MOSI        1
+N#define PORT_ESEI0MOSI_AS_TBIO3            2
+N
+N#define PORT_ESEI0SCLK_AS_GPIO             0
+N#define PORT_ESEI0SCLK_AS_IRQ0             1
+N#define PORT_ESEI0SCLK_AS_ESEI0CLK         2
+N#define PORT_ESEI0SCLK_AS_TBIO8            3
+N
+N#define PORT_ESEI0SSOI_AS_GPIO             0
+N#define PORT_ESEI0SSOI_AS_IRQ1             1
+N#define PORT_ESEI0SSOI_AS_ESEI0SSOI        2
+N#define PORT_ESEI0SSOI_AS_PWMOUT19         3
+N#define PORT_ESEI0SSOI_AS_TBIO9            4
+N
+N#define PORT_I2S0CLK_AS_GPIO               0
+N#define PORT_I2S0CLK_AS_IRQ2               1
+N#define PORT_I2S0CLK_AS_I2S0CLK            2
+N#define PORT_I2S0CLK_AS_ESEI1MISO          3
+N#define PORT_I2S0CLK_AS_PWMOUT20           4
+N#define PORT_I2S0CLK_AS_TBIO0              5
+N
+N#define PORT_I2S0WS_AS_GPIO                0
+N#define PORT_I2S0WS_AS_IRQ3                1
+N#define PORT_I2S0WS_AS_I2S0WS              2
+N#define PORT_I2S0WS_AS_ESEI1MOSI           3
+N#define PORT_I2S0WS_AS_PWMOUT21            4
+N#define PORT_I2S0WS_AS_TBIO1               5
+N
+N#define PORT_I2S0SD_AS_GPIO                0
+N#define PORT_I2S0SD_AS_IRQ4                1
+N#define PORT_I2S0SD_AS_I2S0SD              2
+N#define PORT_I2S0SD_AS_ESEI1SCLK           3
+N#define PORT_I2S0SD_AS_PWMOUT22            4
+N#define PORT_I2S0SD_AS_TBIO6               5
+N
+N#define PORT_I2SMCLK_AS_GPIO               0
+N#define PORT_I2SMCLK_AS_I2SMCLK            1
+N#define PORT_I2SMCLK_AS_ESEI1SSOI          2
+N#define PORT_I2SMCLK_AS_PWMOUT23           3
+N#define PORT_I2SMCLK_AS_TBIO7              4
+N
+N#define PORT_PWMOUT00_AS_GPIO              0
+N#define PORT_PWMOUT00_AS_PWMOUT0           1
+N
+N#define PORT_HSPWM0_AS_GPIO                0
+N#define PORT_HSPWM0_AS_GDC0PWM             1
+N#define PORT_HSPWM0_AS_IRQ2                2
+N#define PORT_HSPWM0_AS_PWMOUT01            3
+N#define PORT_HSPWM0_AS_HSPWM0              4
+N
+N#define PORT_HSPWM0N_AS_GPIO               0
+N#define PORT_HSPWM0N_AS_I2S1CLK            1
+N#define PORT_HSPWM0N_AS_PWMOUT02           2
+N#define PORT_HSPWM0N_AS_HSPWM0N            3
+N
+N#define PORT_HSPWM1_AS_GPIO                0
+N#define PORT_HSPWM1_AS_GDC1PWM             1
+N#define PORT_HSPWM1_AS_I2S1WS              2
+N#define PORT_HSPWM1_AS_CANRX2              3
+N#define PORT_HSPWM1_AS_PWMOUT03            4
+N#define PORT_HSPWM1_AS_HSPWM1              5
+N
+N#define PORT_HSPWM1N_AS_GPIO               0
+N#define PORT_HSPWM1N_AS_I2S1SD             1
+N#define PORT_HSPWM1N_AS_CANTX2             2
+N#define PORT_HSPWM1N_AS_PWMOUT04           3
+N#define PORT_HSPWM1N_AS_HSPWM1N            4
+N
+N#define PORT_UART0RX_AS_GPIO               0
+N#define PORT_UART0RX_AS_UART0RX            1
+N#define PORT_UART0RX_AS_PWMOUT05           2
+N
+N#define PORT_UART0TX_AS_GPIO               0
+N#define PORT_UART0TX_AS_UART0TX            1
+N#define PORT_UART0TX_AS_PWMOUT06           2
+N
+N#define PORT_ADC_IN0_AS_ADC_IN0            0
+N#define PORT_ADC_IN0_AS_IRQ1               1
+N#define PORT_ADC_IN0_AS_GPIO               2
+N
+N#define PORT_ADC_IN1_AS_ADC_IN1            0
+N#define PORT_ADC_IN1_AS_IRQ0               1
+N#define PORT_ADC_IN1_AS_GPIO               2
+N
+N#define PORT_ADC_IN2_AS_ADC_IN2            0
+N#define PORT_ADC_IN2_AS_IRQ5               1
+N#define PORT_ADC_IN2_AS_GPIO               2
+N
+N#define PORT_ADC_IN3_AS_ADC_IN3            0
+N#define PORT_ADC_IN3_AS_IRQ4               1
+N#define PORT_ADC_IN3_AS_GPIO               2
+N
+N#define PORT_ADC_IN4_AS_ADC_IN4            0
+N#define PORT_ADC_IN4_AS_IRQ3               1
+N#define PORT_ADC_IN4_AS_GPIO               2
+N
+N#define PORT_ADC_IN5_AS_ADC_IN5            0
+N#define PORT_ADC_IN5_AS_IRQ2               1
+N#define PORT_ADC_IN5_AS_GPIO               2
+N                                    
+N#define PORT_ADC_IN6_AS_ADC_IN6            0
+N#define PORT_ADC_IN6_AS_IRQ1               1
+N#define PORT_ADC_IN6_AS_GPIO               2
+N                                    
+N#define PORT_ADC_IN7_AS_ADC_IN7            0
+N#define PORT_ADC_IN7_AS_IRQ0               1
+N#define PORT_ADC_IN7_AS_GPIO               2
+N
+N#define PORT_SC0_C0_LEFT_AS_SC0_C0_LEFT    0
+N#define PORT_SC0_C0_LEFT_AS_PWMOUT11       1
+N#define PORT_SC0_C0_LEFT_AS_GPIO           2
+N
+N#define PORT_SC0_C0_RIGHT_AS_SC0_C0_RIGHT  0
+N#define PORT_SC0_C0_RIGHT_AS_PWMOUT10      1
+N#define PORT_SC0_C0_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC0_C1_LEFT_AS_SC0_C1_LEFT    0
+N#define PORT_SC0_C1_LEFT_AS_PWMOUT09       1
+N#define PORT_SC0_C1_LEFT_AS_GPIO           2
+N
+N#define PORT_SC0_C1_RIGHT_AS_SC0_C1_RIGHT  0
+N#define PORT_SC0_C1_RIGHT_AS_PWMOUT08      1
+N#define PORT_SC0_C1_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC1_C0_LEFT_AS_SC1_C0_LEFT    0
+N#define PORT_SC1_C0_LEFT_AS_PWMOUT07       1
+N#define PORT_SC1_C0_LEFT_AS_GPIO           2
+N
+N#define PORT_SC1_C0_RIGHT_AS_SC1_C0_RIGHT  0
+N#define PORT_SC1_C0_RIGHT_AS_PWMOUT06      1
+N#define PORT_SC1_C0_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC1_C1_LEFT_AS_SC1_C1_LEFT    0
+N#define PORT_SC1_C1_LEFT_AS_PWMOUT05       1
+N#define PORT_SC1_C1_LEFT_AS_GPIO           2
+N
+N#define PORT_SC1_C1_RIGHT_AS_SC1_C1_RIGHT  0
+N#define PORT_SC1_C1_RIGHT_AS_PWMOUT04      1
+N#define PORT_SC1_C1_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC2_C0_LEFT_AS_SC2_C0_LEFT    0
+N#define PORT_SC2_C0_LEFT_AS_PWMOUT03       1
+N#define PORT_SC2_C0_LEFT_AS_GPIO           2
+N
+N#define PORT_SC2_C0_RIGHT_AS_SC2_C0_RIGHT  0
+N#define PORT_SC2_C0_RIGHT_AS_PWMOUT02      1
+N#define PORT_SC2_C0_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC2_C1_LEFT_AS_SC2_C1_LEFT    0
+N#define PORT_SC2_C1_LEFT_AS_IRQ5           1
+N#define PORT_SC2_C1_LEFT_AS_PWMOUT01       2
+N#define PORT_SC2_C1_LEFT_AS_GPIO           3
+N
+N#define PORT_SC2_C1_RIGHT_AS_SC2_C1_RIGHT  0
+N#define PORT_SC2_C1_RIGHT_AS_IRQ4          1
+N#define PORT_SC2_C1_RIGHT_AS_PWMOUT00      2
+N#define PORT_SC2_C1_RIGHT_AS_GPIO          3
+N
+N#define PORT_SC3_C0_LEFT_AS_SC3_C0_LEFT    0
+N#define PORT_SC3_C0_LEFT_AS_IRQ3           1
+N#define PORT_SC3_C0_LEFT_AS_PWMOUT23       2
+N#define PORT_SC3_C0_LEFT_AS_TBIO2          3
+N#define PORT_SC3_C0_LEFT_AS_GPIO           4
+N
+N#define PORT_SC3_C0_RIGHT_AS_SC3_C0_RIGHT  0
+N#define PORT_SC3_C0_RIGHT_AS_IRQ2          1
+N#define PORT_SC3_C0_RIGHT_AS_PWMOUT22      2
+N#define PORT_SC3_C0_RIGHT_AS_TBIO3         3
+N#define PORT_SC3_C0_RIGHT_AS_GPIO          4
+N
+N#define PORT_SC3_C1_LEFT_AS_SC3_C1_LEFT    0
+N#define PORT_SC3_C1_LEFT_AS_IRQ1           1
+N#define PORT_SC3_C1_LEFT_AS_PWMOUT21       2
+N#define PORT_SC3_C1_LEFT_AS_TBIO8          3
+N#define PORT_SC3_C1_LEFT_AS_GPIO           4
+N
+N#define PORT_SC3_C1_RIGHT_AS_SC3_C1_RIGHT  0
+N#define PORT_SC3_C1_RIGHT_AS_IRQ0          1
+N#define PORT_SC3_C1_RIGHT_AS_PWMOUT20      2
+N#define PORT_SC3_C1_RIGHT_AS_TBIO9         3
+N#define PORT_SC3_C1_RIGHT_AS_GPIO          4
+N
+N#define PORT_SC4_C0_LEFT_AS_SC4_C0_LEFT    0
+N#define PORT_SC4_C0_LEFT_AS_PWMOUT19       1
+N#define PORT_SC4_C0_LEFT_AS_GPIO           2
+N
+N#define PORT_SC4_C0_RIGHT_AS_SC4_C0_RIGHT  0
+N#define PORT_SC4_C0_RIGHT_AS_PWMOUT18      1
+N#define PORT_SC4_C0_RIGHT_AS_GPIO          2
+N
+N#define PORT_SC4_C1_LEFT_AS_SC4_C1_LEFT    0
+N#define PORT_SC4_C1_LEFT_AS_PWMOUT17       1
+N#define PORT_SC4_C1_LEFT_AS_GPIO           2
+N
+N#define PORT_SC4_C1_RIGHT_AS_SC4_C1_RIGHT  0
+N#define PORT_SC4_C1_RIGHT_AS_PWMOUT16      1
+N#define PORT_SC4_C1_RIGHT_AS_GPIO          2
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/* List of all pins */
+Ntypedef enum tag_portpin_e
+N{
+N    PORT_DDR_DQ0 = 0,
+N    PORT_DDR_DQ1,
+N    PORT_DDR_DQ2,
+N    PORT_DDR_DQ3,
+N    PORT_DDR_DQ4,
+N    PORT_DDR_DQ5,
+N    PORT_DDR_DQ6,
+N    PORT_DDR_DQ7,
+N    PORT_DDR_DQ8,
+N    PORT_DDR_DQ9,
+N    PORT_DDR_DQ10,
+N    PORT_DDR_DQ11,
+N    PORT_DDR_DQ12,
+N    PORT_DDR_DQ13,
+N    PORT_DDR_DQ14,
+N    PORT_DDR_DQ15,
+N    PORT_DDR_DM0,
+N    PORT_DDR_DM1,
+N    PORT_DDR_WE,
+N    PORT_DDR_RAS,
+N    PORT_DDR_CAS,
+N    PORT_DDR_CS,
+N    PORT_DDR_CKE,
+N    PORT_DDR_CK,
+N    PORT_DDR_CKN,
+N    PORT_DDR_BA0,
+N    PORT_DDR_BA1,
+N    PORT_DDR_A0,
+N    PORT_DDR_A1,
+N    PORT_DDR_A2,
+N    PORT_DDR_A3,
+N    PORT_DDR_A4,
+N    PORT_DDR_A5,
+N    PORT_DDR_A6,
+N    PORT_DDR_A7,
+N    PORT_DDR_A8,
+N    PORT_DDR_A9,
+N    PORT_DDR_A10,
+N    PORT_DDR_A11,
+N    PORT_DDR_A12,
+N    PORT_DDR_A13,
+N    PORT_DDR_DQS0,
+N    PORT_DDR_DQS1,
+N    PORT_DUMMY_0,
+N    PORT_DUMMY_1,
+N    PORT_DUMMY_2,
+N    PORT_DUMMY_3,
+N    PORT_DUMMY_4,
+N    PORT_DDR_DQS2,
+N    PORT_DDR_DQS3,
+N    PORT_DDR_DM2,
+N    PORT_DDR_DM3,
+N    PORT_DDR_DQ16,
+N    PORT_DDR_DQ17,
+N    PORT_DDR_DQ18,
+N    PORT_DDR_DQ19,
+N    PORT_DDR_DQ20,
+N    PORT_DDR_DQ21,
+N    PORT_DDR_DQ22,
+N    PORT_DDR_DQ23,
+N    PORT_DDR_DQ24,
+N    PORT_DDR_DQ25,
+N    PORT_DDR_DQ26,
+N    PORT_DDR_DQ27,
+N    PORT_DDR_DQ28,
+N    PORT_DDR_DQ29,
+N    PORT_DDR_DQ30,
+N    PORT_DDR_DQ31,
+N    PORT_DUMMY_5,
+N    PORT_DUMMY_6,
+N    PORT_DUMMY_7,
+N    PORT_DUMMY_8,
+N    PORT_DUMMY_9,
+N    PORT_DUMMY_10,
+N    PORT_DUMMY_11,
+N    PORT_DUMMY_12,
+N    PORT_DUMMY_13,
+N    PORT_DUMMY_14,
+N    PORT_DUMMY_15,
+N    PORT_DUMMY_16,
+N    PORT_QSPI0_SIO0,
+N    PORT_QSPI0_SIO1,
+N    PORT_QSPI0_SIO2,
+N    PORT_QSPI0_SIO3,
+N    PORT_QSPI0_CS0,
+N    PORT_QSPI0_SCLK,
+N    PORT_DUMMY_17,
+N    PORT_DUMMY_18,
+N    PORT_DUMMY_19,
+N    PORT_DUMMY_20,
+N    PORT_DUMMY_21,
+N    PORT_DUMMY_22,
+N    PORT_DUMMY_23,
+N    PORT_DUMMY_24,
+N    PORT_DUMMY_25,
+N    PORT_DUMMY_26,
+N    PORT_D0HDISP,
+N    PORT_D0HSYNC,
+N    PORT_D0VSYNC,
+N    PORT_D0DOTCLK,
+N    PORT_D0RGB0,
+N    PORT_D0RGB1,
+N    PORT_D0RGB2,
+N    PORT_D0RGB3,
+N    PORT_D0RGB4,
+N    PORT_D0RGB5,
+N    PORT_D0RGB6,
+N    PORT_D0RGB7,
+N    PORT_D0RGB8,
+N    PORT_D0RGB9,
+N    PORT_D0RGB10,
+N    PORT_D0RGB11,
+N    PORT_D0RGB12,
+N    PORT_D0RGB13,
+N    PORT_D0RGB14,
+N    PORT_D0RGB15,
+N    PORT_D0RGB16,
+N    PORT_D0RGB17,
+N    PORT_D0RGB18,
+N    PORT_D0RGB19,
+N    PORT_D0RGB20,
+N    PORT_D0RGB21,
+N    PORT_D0RGB22,
+N    PORT_D0RGB23,
+N    PORT_DUMMY_27,
+N    PORT_DUMMY_28,
+N    PORT_DUMMY_29,
+N    PORT_DUMMY_30,
+N    PORT_DUMMY_31,
+N    PORT_DUMMY_32,
+N    PORT_DUMMY_33,
+N    PORT_DUMMY_34,
+N    PORT_DUMMY_35,
+N    PORT_DUMMY_36,
+N    PORT_DUMMY_37,
+N    PORT_DUMMY_38,
+N    PORT_DOTCLKIN,
+N    PORT_DUMMY_39,
+N    PORT_PNLGPP0,
+N    PORT_PNLGPP1,
+N    PORT_PNLGPP2,
+N    PORT_PNLGPP3,
+N    PORT_PNLGPP4,
+N    PORT_PNLGPP5,
+N    PORT_PNLGPP6,
+N    PORT_PNLGPP7,
+N    PORT_DUMMY_40,
+N    PORT_DUMMY_41,
+N    PORT_DUMMY_42,
+N    PORT_DUMMY_43,
+N    PORT_DUMMY_44,
+N    PORT_DUMMY_45,
+N    PORT_D1HDISP,
+N    PORT_D1HSYNC,
+N    PORT_D1VSYNC,
+N    PORT_D1DOTCLK,
+N    PORT_D1RGB0,
+N    PORT_D1RGB1,
+N    PORT_D1RGB2,
+N    PORT_D1RGB3,
+N    PORT_D1RGB4,
+N    PORT_D1RGB5,
+N    PORT_D1RGB6,
+N    PORT_D1RGB7,
+N    PORT_D1RGB8,
+N    PORT_D1RGB9,
+N    PORT_D1RGB10,
+N    PORT_D1RGB11,
+N    PORT_D1RGB12,
+N    PORT_D1RGB13,
+N    PORT_D1RGB14,
+N    PORT_D1RGB15,
+N    PORT_D1RGB16,
+N    PORT_D1RGB17,
+N    PORT_D1RGB18,
+N    PORT_D1RGB19,
+N    PORT_D1RGB20,
+N    PORT_D1RGB21,
+N    PORT_D1RGB22,
+N    PORT_D1RGB23,
+N    PORT_DUMMY_46,
+N    PORT_DUMMY_47,
+N    PORT_DUMMY_48,
+N    PORT_DUMMY_49,
+N    PORT_DUMMY_50,
+N    PORT_DUMMY_51,
+N    PORT_DUMMY_52,
+N    PORT_DUMMY_53,
+N    PORT_DUMMY_54,
+N    PORT_DUMMY_55,
+N    PORT_DUMMY_56,
+N    PORT_DUMMY_57,
+N    PORT_CMCBCR0,
+N    PORT_CMCBCR1,
+N    PORT_CMCBCR2,
+N    PORT_CMCBCR3,
+N    PORT_CMCBCR4,
+N    PORT_CMCBCR5,
+N    PORT_CMCBCR6,
+N    PORT_CMCBCR7,
+N    PORT_CMCLK,
+N    PORT_DUMMY_58,
+N    PORT_CMFOOD,
+N    PORT_CMHDISP,
+N    PORT_CMHSYNC,
+N    PORT_CMVSYNC,
+N    PORT_CMY0,        
+N    PORT_CMY1,        
+N    PORT_CMY2,        
+N    PORT_CMY3,        
+N    PORT_CMY4,        
+N    PORT_CMY5,        
+N    PORT_CMY6,        
+N    PORT_CMY7,        
+N    PORT_CMRGB0,        
+N    PORT_CMRGB1,        
+N    PORT_CMRGB2,        
+N    PORT_CMRGB3,        
+N    PORT_CMRGB4,        
+N    PORT_CMRGB5,        
+N    PORT_CMRGB6,        
+N    PORT_CMRGB7,        
+N    PORT_DUMMY_59,
+N    PORT_DUMMY_60,
+N    PORT_DUMMY_61,
+N    PORT_DUMMY_62,
+N    PORT_DUMMY_63,
+N    PORT_DUMMY_64,
+N    PORT_DUMMY_65,
+N    PORT_DUMMY_66,
+N    PORT_DUMMY_67,
+N    PORT_DUMMY_68,
+N    PORT_DUMMY_69,
+N    PORT_DUMMY_70,
+N    PORT_DUMMY_71,
+N    PORT_DUMMY_72,
+N    PORT_DUMMY_73,
+N    PORT_DUMMY_74,
+N    PORT_DUMMY_75,
+N    PORT_DUMMY_76,
+N    PORT_I2CCLK,
+N    PORT_I2CDATA,
+N    PORT_CANRX0,
+N    PORT_CANTX0,
+N    PORT_CANRX1,
+N    PORT_CANTX1,
+N    PORT_MLBDAT_IO,
+N    PORT_MLBSIG_IO,
+N    PORT_MLBCLK,
+N    PORT_DUMMY_77,
+N    PORT_ESEI0MISO,
+N    PORT_ESEI0MOSI,
+N    PORT_ESEI0SCLK,
+N    PORT_ESEI0SSOI,
+N    PORT_I2S0CLK,
+N    PORT_I2S0WS,
+N    PORT_I2S0SD,
+N    PORT_I2SMCLK,
+N    PORT_PWMOUT00,
+N    PORT_DUMMY_78,
+N    PORT_HSPWM0,
+N    PORT_HSPWM0N,
+N    PORT_HSPWM1,
+N    PORT_HSPWM1N,
+N    PORT_UART0RX,
+N    PORT_UART0TX,
+N    PORT_DUMMY_79,
+N    PORT_DUMMY_80,
+N    PORT_DUMMY_81,
+N    PORT_DUMMY_82,
+N    PORT_DUMMY_83,
+N    PORT_DUMMY_84,
+N    PORT_SIP_QSPI_SIO0,
+N    PORT_SIP_QSPI_SIO1,
+N    PORT_SIP_QSPI_SIO2,
+N    PORT_SIP_QSPI_SIO3,
+N    PORT_SIP_QSPI_CS,
+N    PORT_SIP_QSPI_SCLK,
+N    PORT_DUMMY_85,
+N    PORT_DUMMY_86,
+N    PORT_NMI,
+N    PORT_RESETN,
+N    PORT_DSU_JTAG_SEL,
+N    PORT_DSU_GTCK,
+N    PORT_DSU_GTDI,
+N    PORT_DSU_GTMS,
+N    PORT_DSU_GTRST,
+N    PORT_DSU_TPC0_GTDO,
+N    PORT_DUMMY_87,
+N    PORT_DUMMY_88,
+N    PORT_DUMMY_89,
+N    PORT_DUMMY_90,
+N    PORT_DUMMY_91,
+N    PORT_DUMMY_92,
+N    PORT_DUMMY_93,
+N    PORT_DUMMY_94,
+N    PORT_ADC_IN0,
+N    PORT_ADC_IN1,
+N    PORT_ADC_IN2,
+N    PORT_ADC_IN3,
+N    PORT_ADC_IN4,
+N    PORT_ADC_IN5,
+N    PORT_ADC_IN6,
+N    PORT_ADC_IN7,
+N    PORT_ADC_IN8,
+N    PORT_ADC_IN9,
+N    PORT_ADC_IN10,
+N    PORT_ADC_IN11,
+N    PORT_ADC_IN12,
+N    PORT_ADC_IN13,
+N    PORT_DUMMY_95,
+N    PORT_DUMMY_96,
+N    PORT_DUMMY_97,
+N    PORT_DUMMY_98,
+N    PORT_DUMMY_99,
+N    PORT_DUMMY_100,
+N    PORT_DUMMY_101,
+N    PORT_DUMMY_102,
+N    PORT_DUMMY_103,
+N    PORT_DUMMY_104,
+N    PORT_SC0_C0_LEFT,
+N    PORT_SC0_C0_RIGHT,
+N    PORT_SC0_C1_LEFT,
+N    PORT_SC0_C1_RIGHT,
+N    PORT_SC1_C0_LEFT,
+N    PORT_SC1_C0_RIGHT,
+N    PORT_SC1_C1_LEFT,
+N    PORT_SC1_C1_RIGHT,
+N    PORT_SC2_C0_LEFT,
+N    PORT_SC2_C0_RIGHT,
+N    PORT_SC2_C1_LEFT,
+N    PORT_SC2_C1_RIGHT,
+N    PORT_SC3_C0_LEFT,
+N    PORT_SC3_C0_RIGHT,
+N    PORT_SC3_C1_LEFT,
+N    PORT_SC3_C1_RIGHT,
+N    PORT_SC4_C0_LEFT,
+N    PORT_SC4_C0_RIGHT,
+N    PORT_SC4_C1_LEFT,
+N    PORT_SC4_C1_RIGHT
+N} gpio_portpin_e;
+N
+N/* Enable/disable */
+Ntypedef enum tag_gpio_en_e
+N{
+N    GPIO_DISABLE = 0x0,                       /* Disable */
+N    GPIO_ENABLE  = 0x1                        /* Enable */
+N} gpio_en_e;
+N
+N/* Output resistance */
+Ntypedef enum tag_gpio_output_resistance_e
+N{
+N    GPIO_OUTPUT_RESISTANCE_25  = 0x0,         /* Output_resistance 25 Ohm */
+N    GPIO_OUTPUT_RESISTANCE_50  = 0x1,         /* Output_resistance 50 Ohm */
+N    GPIO_OUTPUT_RESISTANCE_75  = 0x2,         /* Output_resistance 75 Ohm */
+N    GPIO_OUTPUT_RESISTANCE_150 = 0x3          /* Output_resistance 150 Ohm */
+N} gpio_output_resistance_e;
+N
+N/* SMC macro */
+Ntypedef enum tag_gpio_smcmacro_e
+N{
+N    GPIO_SMC_MACRO_0 = 0x0,                   /* SMC macro 0 */
+N    GPIO_SMC_MACRO_1 = 0x1,                   /* SMC macro 1 */
+N    GPIO_SMC_MACRO_2 = 0x2,                   /* SMC macro 2 */
+N    GPIO_SMC_MACRO_3 = 0x3,                   /* SMC macro 3 */
+N    GPIO_SMC_MACRO_4 = 0x4                    /* SMC macro 4 */
+N} gpio_smcmacro_e;
+N
+N/* Memory configuration */
+Ntypedef enum tag_gpio_mem_config_e
+N{
+N    GPIO_MEM_CONFIG_NO_SDRAM = 0x0,           /* no SDRAM -> GPIO functionality */
+N    GPIO_MEM_CONFIG_LPDDR_32 = 0x1,           /* LPDDR 32 bit */
+N    GPIO_MEM_CONFIG_SDRAM_32 = 0x2,           /* SDRAM 32 bit */
+N    GPIO_MEM_CONFIG_LPDDR_16 = 0x3            /* LPDDR 16 bit */
+N} gpio_mem_config_e;
+N
+N/* Direction */
+Ntypedef enum tag_gpio_direction_e
+N{
+N    GPIO_OUTPUT = 0x0,                        /* Output */
+N    GPIO_INPUT  = 0x1                         /* Input */
+N} gpio_direction_e;
+N
+N/* GPIO state */
+Ntypedef enum tag_gpio_state_e
+N{
+N    GPIO_LOW  = 0x0,                          /* Low */
+N    GPIO_HIGH = 0x1                           /* High */
+N} gpio_state_e;
+N
+N/****************************************************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vGPIO_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGPIO_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_EnablePullUp
+N *
+N * Purpose:       Enable/disable pull-up
+N *
+N * Inputs:        ePin    Pin type
+N *                eEn     Enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_EnablePullUp(gpio_portpin_e ePin, gpio_en_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_EnablePullDown
+N *
+N * Purpose:       Enable/disable pull-down
+N *
+N * Inputs:        ePin    Pin type
+N *                eEn     Enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_EnablePullDown(gpio_portpin_e ePin, gpio_en_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_EnableSchmittTrigger
+N *
+N * Purpose:       Enable/disable schmitt trigger
+N *
+N * Inputs:        ePin    Pin type
+N *                eEn     Enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_EnableSchmittTrigger(gpio_portpin_e ePin, gpio_en_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_SetOutputResistance
+N *
+N * Purpose:       Set output resistance
+N *
+N * Inputs:        ePin                  Pin type
+N *                eOutputResistance     Output resistance
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_SetOutputResistance(gpio_portpin_e ePin, gpio_output_resistance_e eOutputResistance);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_EnableLatchFunction
+N *
+N * Purpose:       Enable/disable latch function
+N *
+N * Inputs:        ePin    Pin type
+N *                eEn     Enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_EnableLatchFunction(gpio_portpin_e ePin, gpio_en_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_EnableSMCMacro
+N *
+N * Purpose:       Enable/disable SMC macro
+N *
+N * Inputs:        eSMCMacro    SMC macro
+N *                eEn          Enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_EnableSMCMacro(gpio_smcmacro_e eSMCMacro, gpio_en_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_SetPinFunction
+N *
+N * Purpose:       Set pin function
+N *
+N * Inputs:        ePin             Pin type
+N *                u8PinFunction    Pin function
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_SetPinFunction(gpio_portpin_e ePin, uint8_t u8PinFunction);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_SetPinDirection
+N *
+N * Purpose:       Set pin direction
+N *
+N * Inputs:        ePin             port pin no.
+N *                ePinDirection    pin direction
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_SetPinDirection(gpio_portpin_e ePin, gpio_direction_e ePinDirection);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_SetPinState
+N *
+N * Purpose:       Set pin state
+N *
+N * Inputs:        ePin         port pin no.
+N *                ePinState    pin state
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_SetPinState(gpio_portpin_e ePin, gpio_state_e ePinState);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_GetPinState
+N *
+N * Purpose:       Set pin state
+N *
+N * Inputs:        ePin         port pin no.
+N *
+N * Outputs:       ePinState    pin state
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_GetPinState(gpio_portpin_e ePin, gpio_state_e * ePinState);
+N
+N/****************************************************************************
+N *
+N * Function:      i32GPIO_SelectMemoryInterfaceConfiguration
+N *
+N * Purpose:       Set memory interface configuration
+N *
+N * Inputs:        eMemConfig    Memory interface configuration
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nint32_t i32GPIO_SelectMemoryInterfaceConfiguration(gpio_mem_config_e eMemConfig);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* GPIO_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 45 "..\..\..\..\hldd\src\charled.c" 2
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*NOR CS0 --> 0x18000000 to 0x19FFFFFF. CS1 --> 0x1C000000 to 0x1CDFFFFF  for
+N  NOR CS0 --> 0x20000000 to 0x21FFFFFF. CS1 --> 0x22000000 to 0x23FFFFFF  for
+N  *2 chip of 512mbits                                                    */
+N
+N#define CHIP0_ADDRESS  0x30000000
+N#define CHIP1_ADDRESS  0x22000000
+N#define NOR_MASK0_0    0x000000FF
+N#define NOR_MATCH0_0   0x00003000
+N#define NOR_MASK0_1    0x00FE0000
+N#define NOR_MATCH0_1   0x22000000
+N
+N
+N/*NAND CS0 --> 0x24000000 to 0x23FFFFFF. CS1 --> 0x25000000 to 0x24FFFFFF  for
+N * 2 chip of  arbitary valid non-overlapping address space             */
+N#define NAND_MASK1_0    0x000000FF
+N#define NAND_MATCH1_0   0x00002400
+N#define NAND_MASK1_1    0x00FF0000
+N#define NAND_MATCH1_1   0x25000000
+N
+N#define PL353           0xc0200000
+N#define NOR_CHIP0       0x100
+N#define NOR_CHIP1       0x120
+N#define NAND_CHIP0      0x180
+N#define NAND_CHIP1      0x1A0
+N
+N#define SET_OPMODE_REG     (*(volatile unsigned long *) (PL353 + 0x018))
+N#define SET_CYCLE          (*(volatile unsigned long *) (PL353 + 0x014))
+N#define SET_DIRECT_CMD_REG (*(volatile unsigned long *) (PL353 + 0x010))
+N
+N#define CCR_KEYR               (*(volatile unsigned long *) (SYSC + 0x0000))
+N#define SYSC              0xC0000000  
+N#define CCR_GENERIC_REG2  0xC000006C 
+N#define CCR_GENERIC_REG3  0xC0000070 
+N
+N/**********************************************
+N*   Local variables and forward declarations  *
+N**********************************************/
+N
+N
+N/**********************************************
+N*                  Functions                  *
+N**********************************************/
+N
+Nvoid initCLED(void)
+N{
+N    unsigned long long ReadVal32;
+N    volatile unsigned long  *pWord;
+N    unsigned long  wrWord;
+N    unsigned long set_burst_align;
+N    unsigned long set_bls;
+N    unsigned long set_adv;
+N    unsigned long set_baa;
+N    unsigned long set_wr_bl;
+N    unsigned long set_wr_sync;
+N    unsigned long set_rd_bl;
+N    unsigned long set_rd_sync;
+N    unsigned long set_mw;
+N  
+N    unsigned long chip_select;
+N    unsigned long cmd_type;
+N    unsigned long set_cre;
+N    unsigned long cmd_addr_match;
+N
+N    // setup Interface GDC1 for NOR Flash
+N    setNORflash_interface_gdc1();
+N
+N    // All chip select must be configured otherwise reset ("0") values will generate
+N    // chip select constantly
+N    //Program Interface 0 CCR with 2 chips selects. Chip0 -> first 256Mbit, 
+N    //Chip1 -> second 256Mbit
+N
+N    CCR_KEYR  = 0xA5C0F17B; // unlock SYSC registers
+X    (*(volatile unsigned long *) (0xC0000000 + 0x0000))  = 0xA5C0F17B; 
+N    //CCR Match and MASK to interface 0
+N    pWord    =  (volatile unsigned long *) CCR_GENERIC_REG2;  
+X    pWord    =  (volatile unsigned long *) 0xC000006C;  
+N    wrWord   = NOR_MATCH0_1 + NOR_MASK0_1 + NOR_MATCH0_0 + NOR_MASK0_0; 
+X    wrWord   = 0x22000000 + 0x00FE0000 + 0x00003000 + 0x000000FF; 
+N    *pWord   = wrWord; 
+N
+N    //Program Interface 1 CCR with 2 chips selects. 
+N    //with valid values
+N    CCR_KEYR = 0xA5C0F17B; // unlock SYSC registers
+X    (*(volatile unsigned long *) (0xC0000000 + 0x0000)) = 0xA5C0F17B; 
+N    //CCR Match and MASK to interface 1
+N    pWord  = (volatile unsigned long *) CCR_GENERIC_REG3;  
+X    pWord  = (volatile unsigned long *) 0xC0000070;  
+N    wrWord = NAND_MATCH1_1 + NAND_MASK1_1 + NAND_MATCH1_0 + NAND_MASK1_0; 
+X    wrWord = 0x25000000 + 0x00FF0000 + 0x00002400 + 0x000000FF; 
+N    *pWord = wrWord; 
+N
+N    // reconfigure reserved_m clock to 
+N    *(volatile unsigned int*)(SYSC) = 0xA5C0F17B;
+X    *(volatile unsigned int*)(0xC0000000) = 0xA5C0F17B;
+N    *(volatile unsigned short*)(SYSC+0x000E) = 1024;
+X    *(volatile unsigned short*)(0xC0000000+0x000E) = 1024;
+N
+N    //SRAM_CYCLES0_0 
+N    pWord     = (volatile unsigned long *) (PL353 + NOR_CHIP0);
+X    pWord     = (volatile unsigned long *) (0xc0200000 + 0x100);
+N    ReadVal32 = *pWord;
+N    SET_CYCLE  = (ReadVal32 & 0xFFFFF8F0) | 0x0000010F; // we_time = 0, t_ceoe = 1, t_rc = 15
+X    (*(volatile unsigned long *) (0xc0200000 + 0x014))  = (ReadVal32 & 0xFFFFF8F0) | 0x0000010F; 
+N  
+N    // user_status
+N    pWord     = (volatile unsigned long *) (PL353 + 0x200);
+X    pWord     = (volatile unsigned long *) (0xc0200000 + 0x200);
+N    ReadVal32 = *pWord;
+N
+N    //            set_burst_align set_bls set_adv set_baa set_wr_bl set_wr_sync set_rd_bl set_rd_sync  mw
+N    //set_opmode {[15:13],        [12],   [11],   [10],   [9:7],    [6],        [5:3],    [2],         [1:0]},
+N    set_burst_align =  0x0000 << 13;
+N    set_bls         =  0x0000 << 12;
+N    set_adv         =  0x0000 << 11;  // a MUST
+N    set_baa         =  0x0000 << 10;
+N    set_wr_bl       =  0x0000 << 7;
+N    set_wr_sync     =  0x0000 << 6;
+N    set_rd_bl       =  0x0000 << 3;
+N    set_rd_sync     =  0x0000 << 2;    // QPSIO _CLK gets clk_out when set 1 (eyeball this once and it worked along with fb_clk) 
+N    set_mw          =  0x0001; 
+N    SET_OPMODE_REG  =  set_burst_align + set_bls + set_adv + set_baa + set_wr_bl + set_wr_sync + set_rd_bl + set_rd_sync + set_mw; 
+X    (*(volatile unsigned long *) (0xc0200000 + 0x018))  =  set_burst_align + set_bls + set_adv + set_baa + set_wr_bl + set_wr_sync + set_rd_bl + set_rd_sync + set_mw; 
+N
+N    //program direct commmand register to update opmode settings 
+N    chip_select    = 0x0000 << 23;  // interface 0 chip 0
+N    cmd_type       = 0x0002 << 21;  // UpdateReg
+N    set_cre        = 0x0000 << 20;  // NA
+N    cmd_addr_match = 0x0000;        // NA in UpdateReg
+N
+N    SET_DIRECT_CMD_REG = chip_select + cmd_type + set_cre + cmd_addr_match;
+X    (*(volatile unsigned long *) (0xc0200000 + 0x010)) = chip_select + cmd_type + set_cre + cmd_addr_match;
+N
+N    //SRAM_CYCLES0_1 
+N    pWord     = (volatile unsigned long *) (PL353 + NOR_CHIP1);
+X    pWord     = (volatile unsigned long *) (0xc0200000 + 0x120);
+N    ReadVal32 = *pWord;
+N    SET_CYCLE = (ReadVal32 & 0xFFFFF8F0) | 0x0000010F; // we_time = 0, t_ceoe = 1, t_rc = 15
+X    (*(volatile unsigned long *) (0xc0200000 + 0x014)) = (ReadVal32 & 0xFFFFF8F0) | 0x0000010F; 
+N
+N    chip_select = 0x0001 << 23;  // interface 0 chip 1
+N    SET_DIRECT_CMD_REG = chip_select + cmd_type + set_cre + cmd_addr_match;
+X    (*(volatile unsigned long *) (0xc0200000 + 0x010)) = chip_select + cmd_type + set_cre + cmd_addr_match;
+N
+N    //opmode0_0 
+N    pWord     = (volatile unsigned long *) (PL353 + NOR_CHIP0 + 4);
+X    pWord     = (volatile unsigned long *) (0xc0200000 + 0x100 + 4);
+N    ReadVal32 = *pWord;
+N   
+N    //opmode0_1 
+N    pWord     = (volatile unsigned long *) (PL353 + NOR_CHIP1 + 4);
+X    pWord     = (volatile unsigned long *) (0xc0200000 + 0x120 + 4);
+N    ReadVal32 = *pWord;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid setCLED(char *text)
+N{
+N    int i=0;
+N    int size = strlen(text);
+N    if(size>8) size = 8;
+N
+N    // blank display
+N    for(i=0;i<8;i++)
+N    {
+N        *(volatile unsigned short*) (CHIP0_ADDRESS + (0x38 + i << 1)) = ' ';
+X        *(volatile unsigned short*) (0x30000000 + (0x38 + i << 1)) = ' ';
+N        __DSB();
+N    }
+N
+N    // put text on display right handed
+N    for(i=0;i<size;i++)
+N    {
+N        *(volatile unsigned short*) (CHIP0_ADDRESS + (0x38 + i << 1)) = text[i];
+X        *(volatile unsigned short*) (0x30000000 + (0x38 + i << 1)) = text[i];
+N        __DSB();
+N    }
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid hexCLED(unsigned long number)
+N{
+N    unsigned short i=0;
+N    unsigned short charnum = 0;
+N
+N    // put number on display right handed
+N    for(i=0;i<8;i++)
+N    {
+N        charnum = ((number>>(28-i*4)) & 0x0000000f)+48;
+N        if(charnum>48+9) charnum +=7;
+N        *(volatile unsigned short*) (CHIP0_ADDRESS + (0x38 + i << 1)) = charnum;
+X        *(volatile unsigned short*) (0x30000000 + (0x38 + i << 1)) = charnum;
+N    }
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid decCLED (unsigned long long text)
+N{
+N    int i=0;
+N    unsigned int number = 0;
+N    unsigned int unit = 112;    // "p"
+N
+N    if (text > 1000000000)
+N    {
+N        text = text / 1000000000;
+N        unit = 109;             // "m"
+N    }
+N    else if (text > 1000000)
+N    {
+N        text = text / 1000000;
+N        unit = 117;             // "u"
+N    }
+N    else if (text > 1000)
+N    {
+N        text = text / 1000;
+N        unit = 110;             // "n"
+N    }
+N
+N    *(volatile unsigned short*) (CHIP0_ADDRESS + (0x38 + 7 << 1)) = unit;
+X    *(volatile unsigned short*) (0x30000000 + (0x38 + 7 << 1)) = unit;
+N
+N    // put text on display right-handed
+N    for(i=0;i<7;i++)
+N    {
+N        if (i == 0)
+N            number = text % 10;
+N        else
+N        {
+N            text = text / 10;
+N            number = text % 10;
+N        }
+N
+N        *(volatile unsigned short*) (CHIP0_ADDRESS + (0x38 + (6-i) << 1)) = number + 48;
+X        *(volatile unsigned short*) (0x30000000 + (0x38 + (6-i) << 1)) = number + 48;
+N    }
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid disp_rtc_time_on_CLED (void)
+N{
+N     unsigned short   tt;
+N     unsigned char  read_val_8b, tt_c;
+N     unsigned long   time_1, time_2;
+N
+N      //Read the timer 2 times and process only if both times got the same value
+N      time_1 = *(volatile unsigned long *) (0xC0001000);
+N      time_2 = *(volatile unsigned long *) (0xC0001000);
+N      while (time_1 != time_2)
+N      {
+N        time_1 = *(volatile unsigned long *) (0xC0001000);
+N        time_2 = *(volatile unsigned long *) (0xC0001000);
+N      } 
+N
+N      //1. Display the seconds data
+N      tt=0;
+N      //read_val_8b = *(volatile unsigned char *) (0xC0001000 + 0x00);
+N      read_val_8b = time_2;
+N
+N      tt = tt + (((read_val_8b >> 0) & 0x1 ) * 1 ) ;
+N      tt = tt + (((read_val_8b >> 1) & 0x1 ) * 2 ) ;
+N      tt = tt + (((read_val_8b >> 2) & 0x1 ) * 4 ) ;
+N      tt = tt + (((read_val_8b >> 3) & 0x1 ) * 8 ) ;
+N      tt = tt + (((read_val_8b >> 4) & 0x1 ) * 10 ) ;
+N      tt = tt + (((read_val_8b >> 5) & 0x1 ) * 20 ) ;
+N      tt = tt + (((read_val_8b >> 6) & 0x1 ) * 40 ) ;
+N
+N      //--Print upper char
+N      tt_c = (tt/10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 6 << 1)) = tt_c;
+N        
+N      //--Print lowar char
+N      tt_c = (tt/10) ;
+N      tt_c = tt - (tt_c*10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 7 << 1)) = tt_c;
+N
+N      //--Display the '-'
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 5 << 1)) = ':';
+N
+N      //2. Display the minutes data
+N      tt=0;
+N      //read_val_8b = *(volatile unsigned char *) (0xC0001000 + 0x01);
+N      read_val_8b = (time_2 >> 8);
+N
+N      tt = tt + (((read_val_8b >> 0) & 0x1 ) * 1 ) ;
+N      tt = tt + (((read_val_8b >> 1) & 0x1 ) * 2 ) ;
+N      tt = tt + (((read_val_8b >> 2) & 0x1 ) * 4 ) ;
+N      tt = tt + (((read_val_8b >> 3) & 0x1 ) * 8 ) ;
+N      tt = tt + (((read_val_8b >> 4) & 0x1 ) * 10 ) ;
+N      tt = tt + (((read_val_8b >> 5) & 0x1 ) * 20 ) ;
+N      tt = tt + (((read_val_8b >> 6) & 0x1 ) * 40 ) ;
+N
+N      //--Print upper char
+N      tt_c = (tt/10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 3 << 1)) = tt_c;
+N        
+N      //--Print lowar char
+N      tt_c = (tt/10) ;
+N      tt_c = tt - (tt_c*10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 4 << 1)) = tt_c;
+N
+N      //--Display the '-'
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 2 << 1)) = ':';
+N
+N      //3. Display the hours data
+N      tt=0;
+N      //read_val_8b = *(volatile unsigned char *) (0xC0001002 + 0x00);
+N      read_val_8b = (time_2 >> 16);
+N
+N      tt = tt + (((read_val_8b >> 0) & 0x1 ) * 1 ) ;
+N      tt = tt + (((read_val_8b >> 1) & 0x1 ) * 2 ) ;
+N      tt = tt + (((read_val_8b >> 2) & 0x1 ) * 4 ) ;
+N      tt = tt + (((read_val_8b >> 3) & 0x1 ) * 8 ) ;
+N      tt = tt + (((read_val_8b >> 4) & 0x1 ) * 10 ) ;
+N      tt = tt + (((read_val_8b >> 5) & 0x1 ) * 20 ) ;
+N
+N      //--Print upper char
+N      tt_c = (tt/10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 0 << 1)) = tt_c;
+N        
+N      //--Print lowar char
+N      tt_c = (tt/10) ;
+N      tt_c = tt - (tt_c*10) + 48;
+N      *(volatile unsigned short*) (0x30000000 + (0x38 + 1 << 1)) = tt_c;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid setNORflash_interface_gdc1()
+N{
+N    // EBIF_AD00 
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB5, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB5, PORT_D1RGB5_AS_EBIF_AD00);
+X    i32GPIO_SetPinFunction(PORT_D1RGB5, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB5, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB5, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD01 
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB6, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB6, PORT_D1RGB6_AS_EBIF_AD01);
+X    i32GPIO_SetPinFunction(PORT_D1RGB6, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB6, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB6, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD02 
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB7, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB7, PORT_D1RGB7_AS_EBIF_AD02);
+X    i32GPIO_SetPinFunction(PORT_D1RGB7, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB7, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB7, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD03 
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB8, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB8, PORT_D1RGB8_AS_EBIF_AD03);
+X    i32GPIO_SetPinFunction(PORT_D1RGB8, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB8, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB8, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD04
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB9, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB9, PORT_D1RGB9_AS_EBIF_AD04);
+X    i32GPIO_SetPinFunction(PORT_D1RGB9, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB9, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB9, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD05
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB10, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB10, PORT_D1RGB10_AS_EBIF_AD05);
+X    i32GPIO_SetPinFunction(PORT_D1RGB10, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB10, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB10, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD06
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB11, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB11, PORT_D1RGB11_AS_EBIF_AD06);
+X    i32GPIO_SetPinFunction(PORT_D1RGB11, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB11, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB11, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD07
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB12, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB12, PORT_D1RGB12_AS_EBIF_AD07);
+X    i32GPIO_SetPinFunction(PORT_D1RGB12, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB12, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB12, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD08
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB13, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB13, PORT_D1RGB13_AS_EBIF_AD08);
+X    i32GPIO_SetPinFunction(PORT_D1RGB13, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB13, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB13, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD09
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB14, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB14, PORT_D1RGB14_AS_EBIF_AD09);
+X    i32GPIO_SetPinFunction(PORT_D1RGB14, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB14, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB14, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD10
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB15, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB15, PORT_D1RGB15_AS_EBIF_AD10);
+X    i32GPIO_SetPinFunction(PORT_D1RGB15, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB15, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB15, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD11
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB16, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB16, PORT_D1RGB16_AS_EBIF_AD11);
+X    i32GPIO_SetPinFunction(PORT_D1RGB16, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB16, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB16, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD12
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB17, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB17, PORT_D1RGB17_AS_EBIF_AD12);
+X    i32GPIO_SetPinFunction(PORT_D1RGB17, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB17, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB17, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD13
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB18, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB18, PORT_D1RGB18_AS_EBIF_AD13);
+X    i32GPIO_SetPinFunction(PORT_D1RGB18, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB18, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB18, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD14
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB19, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB19, PORT_D1RGB19_AS_EBIF_AD14);
+X    i32GPIO_SetPinFunction(PORT_D1RGB19, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB19, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB19, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AD15
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB20, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB20, PORT_D1RGB20_AS_EBIF_AD15);
+X    i32GPIO_SetPinFunction(PORT_D1RGB20, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB20, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB20, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX0
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB21, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB21, PORT_D1RGB21_AS_EBIF_AEX0);
+X    i32GPIO_SetPinFunction(PORT_D1RGB21, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB21, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB21, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX1
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB22, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB22, PORT_D1RGB22_AS_EBIF_AEX1);
+X    i32GPIO_SetPinFunction(PORT_D1RGB22, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB22, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB22, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX2
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB23, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB23, PORT_D1RGB23_AS_EBIF_AEX2);
+X    i32GPIO_SetPinFunction(PORT_D1RGB23, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB23, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB23, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX3
+N    i32GPIO_EnableLatchFunction(PORT_D1HDISP, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1HDISP, PORT_D1HDISP_AS_EBIF_AEX3);
+X    i32GPIO_SetPinFunction(PORT_D1HDISP, 2);
+N    i32GPIO_EnablePullUp(PORT_D1HDISP, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1HDISP, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX4
+N    i32GPIO_EnableLatchFunction(PORT_D1HSYNC, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1HSYNC, PORT_D1HSYNC_AS_EBIF_AEX4);
+X    i32GPIO_SetPinFunction(PORT_D1HSYNC, 2);
+N    i32GPIO_EnablePullUp(PORT_D1HSYNC, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1HSYNC, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_AEX5
+N    i32GPIO_EnableLatchFunction(PORT_D1VSYNC, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1VSYNC, PORT_D1VSYNC_AS_EBIF_AEX5);
+X    i32GPIO_SetPinFunction(PORT_D1VSYNC, 2);
+N    i32GPIO_EnablePullUp(PORT_D1VSYNC, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1VSYNC, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_ALE
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB0, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB0, PORT_D1RGB0_AS_EBIF_ALE);
+X    i32GPIO_SetPinFunction(PORT_D1RGB0, 3);
+N    i32GPIO_EnablePullUp(PORT_D1RGB0, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB0, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_CS0
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB1, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB1, PORT_D1RGB1_AS_EBIF_CS0);
+X    i32GPIO_SetPinFunction(PORT_D1RGB1, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB1, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB1, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_OE
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB3, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB3, PORT_D1RGB3_AS_EBIF_OE);
+X    i32GPIO_SetPinFunction(PORT_D1RGB3, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB3, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB3, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_WE
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB4, GPIO_DISABLE);
+N    i32GPIO_SetPinFunction(PORT_D1RGB4, PORT_D1RGB4_AS_EBIF_WE);
+X    i32GPIO_SetPinFunction(PORT_D1RGB4, 2);
+N    i32GPIO_EnablePullUp(PORT_D1RGB4, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB4, GPIO_OUTPUT_RESISTANCE_50);
+N    // EBIF_WAITN
+N    i32GPIO_EnableLatchFunction(PORT_D1RGB2, GPIO_DISABLE);
+N    i32GPIO_EnablePullUp(PORT_D1RGB2, GPIO_DISABLE);
+N    i32GPIO_SetOutputResistance(PORT_D1RGB2, GPIO_OUTPUT_RESISTANCE_50);
+N}
+N
+N/****************************************************************************/
+N
+N/*************************  BEGIN of DISCLAIMER   ***************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices,” or
+N  “TOSHIBA Semiconductor Reliability Handbook” etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage”).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N***************************  END of DISCALIMER  ****************************/
+N

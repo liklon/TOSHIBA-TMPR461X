@@ -1,0 +1,1777 @@
+L 1 "..\..\Pictures\LeftIcon\Parking_OFF.c"
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 2.00
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 14.03.2016 @ 16:57
+N * Output format: FMT_RGBA32
+N * Image Dimensions : Width=63, Height=40
+N * Input Filename: E:\产品资料\东芝\image\图标\lefticon\Parking_OFF.png
+N ************************************************************************/
+N
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer�s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 14 "..\..\Pictures\LeftIcon\Parking_OFF.c" 2
+N#include "images_defs.h"
+L 1 "..\..\usecases\images\inc\images_defs.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved 
+N*   Toshiba Electronics Europe GmbH 
+N*   European LSI Design and Engineering Center (ELDEC)
+N****************************************************************************** 
+N*   File Name   : $RCSfile: $ 
+N*   Description : Image file
+N****************************************************************************** 
+N*   PROJECT     : Capricorn 
+N*   MODULE      : Graphics 
+N*               : $Name: $ 
+N*   LIBRARIES   : None 
+N*   AUTHOR      : $Author: $
+N****************************************************************************** 
+N*   VERSION     : $Revision: $ 
+N*   RELEASE     : Preliminary & Confidential 
+N*   DATE        : $Date: $ 
+N*   SOURCE MOD. : $Source: $ 
+N*   LOG:        : please have a look at the end of the file
+N*****************************************************************************/
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 2.00
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 21.01.2016 @ 10:59
+N ************************************************************************/
+N#ifndef IMAGES_DEFS_H
+N#define IMAGES_DEFS_H
+N
+N
+N#define NEEDLE_1_SIZE (2915)
+N#define NEEDLE_1_HEIGHT (219)
+N#define NEEDLE_1_WIDTH (60)
+N#define NEEDLE_1_XPOS (0)
+N#define NEEDLE_1_YPOS (0)
+N#define NEEDLE_1_XCPOS (30)
+N#define NEEDLE_1_YCPOS (189)
+N
+N#define FIRSTLOGO_SIZE (537600)
+N#define FIRSTLOGO_HEIGHT (420)
+N#define FIRSTLOGO_WIDTH (1280)
+N#define FIRSTLOGO_XPOS (0)
+N#define FIRSTLOGO_YPOS (0)
+N#define FIRSTLOGO_XCPOS (0)
+N#define FIRSTLOGO_YCPOS (0)
+N
+N#define MAINSHOW_SIZE (537600)
+N#define MAINSHOW_HEIGHT (420)
+N#define MAINSHOW_WIDTH (1280)
+N#define MAINSHOW_XPOS (0)
+N#define MAINSHOW_YPOS (0)
+N#define MAINSHOW_XCPOS (0)
+N#define MAINSHOW_YCPOS (0)
+N
+N#define LEDOFFLEFT_SIZE (1764)
+N#define LEDOFFLEFT_HEIGHT (42)
+N#define LEDOFFLEFT_WIDTH (42)
+N#define LEDOFFLEFT_XPOS (0)
+N#define LEDOFFLEFT_YPOS (0)
+N#define LEDOFFLEFT_XCPOS (0)
+N#define LEDOFFLEFT_YCPOS (0)
+N
+N#define LEDOFFRIGHT_SIZE (1764)
+N#define LEDOFFRIGHT_HEIGHT (42)
+N#define LEDOFFRIGHT_WIDTH (42)
+N#define LEDOFFRIGHT_XPOS (0)
+N#define LEDOFFRIGHT_YPOS (0)
+N#define LEDOFFRIGHT_XCPOS (0)
+N#define LEDOFFRIGHT_YCPOS (0)
+N
+N#define LEDONLEFT_SIZE (1764)
+N#define LEDONLEFT_HEIGHT (42)
+N#define LEDONLEFT_WIDTH (42)
+N#define LEDONLEFT_XPOS (0)
+N#define LEDONLEFT_YPOS (0)
+N#define LEDONLEFT_XCPOS (0)
+N#define LEDONLEFT_YCPOS (0)
+N
+N#define LEDONRIGHT_SIZE (1764)
+N#define LEDONRIGHT_HEIGHT (42)
+N#define LEDONRIGHT_WIDTH (42)
+N#define LEDONRIGHT_XPOS (0)
+N#define LEDONRIGHT_YPOS (0)
+N#define LEDONRIGHT_XCPOS (0)
+N#define LEDONRIGHT_YCPOS (0)
+N
+N/***************************************************************************/
+N
+N#define DIGIFONT_0_SIZE (162)
+N#define DIGIFONT_0_HEIGHT (24)
+N#define DIGIFONT_0_WIDTH (18)
+N#define DIGIFONT_0_XPOS (0)
+N#define DIGIFONT_0_YPOS (0)
+N#define DIGIFONT_0_XCPOS (0)
+N#define DIGIFONT_0_YCPOS (0)
+N#define STIMAGE_DIGIFONT_SIZE_X (11)
+N#define STIMAGE_DIGIFONT_SIZE_Y (1)
+N
+N#define DIGIFONT_1_SIZE (82)
+N#define DIGIFONT_1_HEIGHT (24)
+N#define DIGIFONT_1_WIDTH (18)
+N#define DIGIFONT_1_XPOS (0)
+N#define DIGIFONT_1_YPOS (0)
+N#define DIGIFONT_1_XCPOS (0)
+N#define DIGIFONT_1_YCPOS (0)
+N
+N#define DIGIFONT_2_SIZE (119)
+N#define DIGIFONT_2_HEIGHT (24)
+N#define DIGIFONT_2_WIDTH (18)
+N#define DIGIFONT_2_XPOS (0)
+N#define DIGIFONT_2_YPOS (0)
+N#define DIGIFONT_2_XCPOS (0)
+N#define DIGIFONT_2_YCPOS (0)
+N
+N#define DIGIFONT_3_SIZE (121)
+N#define DIGIFONT_3_HEIGHT (24)
+N#define DIGIFONT_3_WIDTH (18)
+N#define DIGIFONT_3_XPOS (0)
+N#define DIGIFONT_3_YPOS (0)
+N#define DIGIFONT_3_XCPOS (0)
+N#define DIGIFONT_3_YCPOS (0)
+N
+N#define DIGIFONT_4_SIZE (130)
+N#define DIGIFONT_4_HEIGHT (24)
+N#define DIGIFONT_4_WIDTH (18)
+N#define DIGIFONT_4_XPOS (0)
+N#define DIGIFONT_4_YPOS (0)
+N#define DIGIFONT_4_XCPOS (0)
+N#define DIGIFONT_4_YCPOS (0)
+N
+N#define DIGIFONT_5_SIZE (121)
+N#define DIGIFONT_5_HEIGHT (24)
+N#define DIGIFONT_5_WIDTH (18)
+N#define DIGIFONT_5_XPOS (0)
+N#define DIGIFONT_5_YPOS (0)
+N#define DIGIFONT_5_XCPOS (0)
+N#define DIGIFONT_5_YCPOS (0)
+N
+N#define DIGIFONT_6_SIZE (144)
+N#define DIGIFONT_6_HEIGHT (24)
+N#define DIGIFONT_6_WIDTH (18)
+N#define DIGIFONT_6_XPOS (0)
+N#define DIGIFONT_6_YPOS (0)
+N#define DIGIFONT_6_XCPOS (0)
+N#define DIGIFONT_6_YCPOS (0)
+N
+N#define DIGIFONT_7_SIZE (95)
+N#define DIGIFONT_7_HEIGHT (24)
+N#define DIGIFONT_7_WIDTH (18)
+N#define DIGIFONT_7_XPOS (0)
+N#define DIGIFONT_7_YPOS (0)
+N#define DIGIFONT_7_XCPOS (0)
+N#define DIGIFONT_7_YCPOS (0)
+N
+N#define DIGIFONT_8_SIZE (167)
+N#define DIGIFONT_8_HEIGHT (24)
+N#define DIGIFONT_8_WIDTH (18)
+N#define DIGIFONT_8_XPOS (0)
+N#define DIGIFONT_8_YPOS (0)
+N#define DIGIFONT_8_XCPOS (0)
+N#define DIGIFONT_8_YCPOS (0)
+N
+N#define DIGIFONT_9_SIZE (145)
+N#define DIGIFONT_9_HEIGHT (24)
+N#define DIGIFONT_9_WIDTH (18)
+N#define DIGIFONT_9_XPOS (0)
+N#define DIGIFONT_9_YPOS (0)
+N#define DIGIFONT_9_XCPOS (0)
+N#define DIGIFONT_9_YCPOS (0)
+N
+N#define DIGIFONT_DP_SIZE (42)
+N#define DIGIFONT_DP_HEIGHT (24)
+N#define DIGIFONT_DP_WIDTH (10)
+N#define DIGIFONT_DP_XPOS (0)
+N#define DIGIFONT_DP_YPOS (0)
+N#define DIGIFONT_DP_XCPOS (0)
+N#define DIGIFONT_DP_YCPOS (0)
+N
+N
+N
+N
+N#define AIRBAG_OFF_SIZE (2322)
+N#define AIRBAG_OFF_HEIGHT (43)
+N#define AIRBAG_OFF_WIDTH (54)
+N#define AIRBAG_OFF_XPOS (0)
+N#define AIRBAG_OFF_YPOS (0)
+N#define AIRBAG_OFF_XCPOS (0)
+N#define AIRBAG_OFF_YCPOS (0)
+N
+N#define AIRBAG_ON_SIZE (2322)
+N#define AIRBAG_ON_HEIGHT (43)
+N#define AIRBAG_ON_WIDTH (54)
+N#define AIRBAG_ON_XPOS (0)
+N#define AIRBAG_ON_YPOS (0)
+N#define AIRBAG_ON_XCPOS (0)
+N#define AIRBAG_ON_YCPOS (0)
+N
+N#define ASB_OFF_SIZE (2709)
+N#define ASB_OFF_HEIGHT (43)
+N#define ASB_OFF_WIDTH (63)
+N#define ASB_OFF_XPOS (0)
+N#define ASB_OFF_YPOS (0)
+N#define ASB_OFF_XCPOS (0)
+N#define ASB_OFF_YCPOS (0)
+N
+N#define ASB_ON_SIZE (2709)
+N#define ASB_ON_HEIGHT (43)
+N#define ASB_ON_WIDTH (63)
+N#define ASB_ON_XPOS (0)
+N#define ASB_ON_YPOS (0)
+N#define ASB_ON_XCPOS (0)
+N#define ASB_ON_YCPOS (0)
+N
+N#define A_FOGLAMP_OFF_SIZE (2560)
+N#define A_FOGLAMP_OFF_HEIGHT (40)
+N#define A_FOGLAMP_OFF_WIDTH (64)
+N#define A_FOGLAMP_OFF_XPOS (0)
+N#define A_FOGLAMP_OFF_YPOS (0)
+N#define A_FOGLAMP_OFF_XCPOS (0)
+N#define A_FOGLAMP_OFF_YCPOS (0)
+N
+N#define A_FOGLAMP_ON_SIZE (2560)
+N#define A_FOGLAMP_ON_HEIGHT (40)
+N#define A_FOGLAMP_ON_WIDTH (64)
+N#define A_FOGLAMP_ON_XPOS (0)
+N#define A_FOGLAMP_ON_YPOS (0)
+N#define A_FOGLAMP_ON_XCPOS (0)
+N#define A_FOGLAMP_ON_YCPOS (0)
+N
+N#define BRAKEFLUID_OFF_SIZE (2580)
+N#define BRAKEFLUID_OFF_HEIGHT (43)
+N#define BRAKEFLUID_OFF_WIDTH (60)
+N#define BRAKEFLUID_OFF_XPOS (0)
+N#define BRAKEFLUID_OFF_YPOS (0)
+N#define BRAKEFLUID_OFF_XCPOS (0)
+N#define BRAKEFLUID_OFF_YCPOS (0)
+N
+N#define BRAKEFLUID_ON_SIZE (2580)
+N#define BRAKEFLUID_ON_HEIGHT (43)
+N#define BRAKEFLUID_ON_WIDTH (60)
+N#define BRAKEFLUID_ON_XPOS (0)
+N#define BRAKEFLUID_ON_YPOS (0)
+N#define BRAKEFLUID_ON_XCPOS (0)
+N#define BRAKEFLUID_ON_YCPOS (0)
+N
+N#define CARLOCK_OFF_SIZE (2360)
+N#define CARLOCK_OFF_HEIGHT (40)
+N#define CARLOCK_OFF_WIDTH (59)
+N#define CARLOCK_OFF_XPOS (0)
+N#define CARLOCK_OFF_YPOS (0)
+N#define CARLOCK_OFF_XCPOS (0)
+N#define CARLOCK_OFF_YCPOS (0)
+N
+N#define CARLOCK_ON_SIZE (2360)
+N#define CARLOCK_ON_HEIGHT (40)
+N#define CARLOCK_ON_WIDTH (59)
+N#define CARLOCK_ON_XPOS (0)
+N#define CARLOCK_ON_YPOS (0)
+N#define CARLOCK_ON_XCPOS (0)
+N#define CARLOCK_ON_YCPOS (0)
+N
+N#define CHARGE_OFF_SIZE (2600)
+N#define CHARGE_OFF_HEIGHT (40)
+N#define CHARGE_OFF_WIDTH (65)
+N#define CHARGE_OFF_XPOS (0)
+N#define CHARGE_OFF_YPOS (0)
+N#define CHARGE_OFF_XCPOS (0)
+N#define CHARGE_OFF_YCPOS (0)
+N
+N#define CHARGE_ON_SIZE (2600)
+N#define CHARGE_ON_HEIGHT (40)
+N#define CHARGE_ON_WIDTH (65)
+N#define CHARGE_ON_XPOS (0)
+N#define CHARGE_ON_YPOS (0)
+N#define CHARGE_ON_XCPOS (0)
+N#define CHARGE_ON_YCPOS (0)
+N
+N#define CHARGPLUG_OFF_SIZE (2760)
+N#define CHARGPLUG_OFF_HEIGHT (40)
+N#define CHARGPLUG_OFF_WIDTH (69)
+N#define CHARGPLUG_OFF_XPOS (0)
+N#define CHARGPLUG_OFF_YPOS (0)
+N#define CHARGPLUG_OFF_XCPOS (0)
+N#define CHARGPLUG_OFF_YCPOS (0)
+N
+N#define CHARGPLUG_ON_SIZE (2760)
+N#define CHARGPLUG_ON_HEIGHT (40)
+N#define CHARGPLUG_ON_WIDTH (69)
+N#define CHARGPLUG_ON_XPOS (0)
+N#define CHARGPLUG_ON_YPOS (0)
+N#define CHARGPLUG_ON_XCPOS (0)
+N#define CHARGPLUG_ON_YCPOS (0)
+N
+N#define DCDC_OFF_SIZE (2400)
+N#define DCDC_OFF_HEIGHT (40)
+N#define DCDC_OFF_WIDTH (60)
+N#define DCDC_OFF_XPOS (0)
+N#define DCDC_OFF_YPOS (0)
+N#define DCDC_OFF_XCPOS (0)
+N#define DCDC_OFF_YCPOS (0)
+N
+N#define DCDC_ON_SIZE (2400)
+N#define DCDC_ON_HEIGHT (40)
+N#define DCDC_ON_WIDTH (60)
+N#define DCDC_ON_XPOS (0)
+N#define DCDC_ON_YPOS (0)
+N#define DCDC_ON_XCPOS (0)
+N#define DCDC_ON_YCPOS (0)
+N
+N#define DIPPEDHEADLIGHT_OFF_SIZE (2752)
+N#define DIPPEDHEADLIGHT_OFF_HEIGHT (43)
+N#define DIPPEDHEADLIGHT_OFF_WIDTH (64)
+N#define DIPPEDHEADLIGHT_OFF_XPOS (0)
+N#define DIPPEDHEADLIGHT_OFF_YPOS (0)
+N#define DIPPEDHEADLIGHT_OFF_XCPOS (0)
+N#define DIPPEDHEADLIGHT_OFF_YCPOS (0)
+N
+N#define DIPPEDHEADLIGHT_ON_SIZE (2752)
+N#define DIPPEDHEADLIGHT_ON_HEIGHT (43)
+N#define DIPPEDHEADLIGHT_ON_WIDTH (64)
+N#define DIPPEDHEADLIGHT_ON_XPOS (0)
+N#define DIPPEDHEADLIGHT_ON_YPOS (0)
+N#define DIPPEDHEADLIGHT_ON_XCPOS (0)
+N#define DIPPEDHEADLIGHT_ON_YCPOS (0)
+N
+N#define DOOR_OFF_SIZE (2967)
+N#define DOOR_OFF_HEIGHT (43)
+N#define DOOR_OFF_WIDTH (69)
+N#define DOOR_OFF_XPOS (0)
+N#define DOOR_OFF_YPOS (0)
+N#define DOOR_OFF_XCPOS (0)
+N#define DOOR_OFF_YCPOS (0)
+N
+N#define DOOR_ON_SIZE (2967)
+N#define DOOR_ON_HEIGHT (43)
+N#define DOOR_ON_WIDTH (69)
+N#define DOOR_ON_XPOS (0)
+N#define DOOR_ON_YPOS (0)
+N#define DOOR_ON_XCPOS (0)
+N#define DOOR_ON_YCPOS (0)
+N
+N#define EPS_OFF_SIZE (2560)
+N#define EPS_OFF_HEIGHT (40)
+N#define EPS_OFF_WIDTH (64)
+N#define EPS_OFF_XPOS (0)
+N#define EPS_OFF_YPOS (0)
+N#define EPS_OFF_XCPOS (0)
+N#define EPS_OFF_YCPOS (0)
+N
+N#define EPS_ON_SIZE (2560)
+N#define EPS_ON_HEIGHT (40)
+N#define EPS_ON_WIDTH (64)
+N#define EPS_ON_XPOS (0)
+N#define EPS_ON_YPOS (0)
+N#define EPS_ON_XCPOS (0)
+N#define EPS_ON_YCPOS (0)
+N
+N#define F_FOGLAMP_OFF_SIZE (2537)
+N#define F_FOGLAMP_OFF_HEIGHT (43)
+N#define F_FOGLAMP_OFF_WIDTH (59)
+N#define F_FOGLAMP_OFF_XPOS (0)
+N#define F_FOGLAMP_OFF_YPOS (0)
+N#define F_FOGLAMP_OFF_XCPOS (0)
+N#define F_FOGLAMP_OFF_YCPOS (0)
+N
+N#define F_FOGLAMP_ON_SIZE (2537)
+N#define F_FOGLAMP_ON_HEIGHT (43)
+N#define F_FOGLAMP_ON_WIDTH (59)
+N#define F_FOGLAMP_ON_XPOS (0)
+N#define F_FOGLAMP_ON_YPOS (0)
+N#define F_FOGLAMP_ON_XCPOS (0)
+N#define F_FOGLAMP_ON_YCPOS (0)
+N
+N#define HIGHBEAM_OFF_SIZE (2752)
+N#define HIGHBEAM_OFF_HEIGHT (43)
+N#define HIGHBEAM_OFF_WIDTH (64)
+N#define HIGHBEAM_OFF_XPOS (0)
+N#define HIGHBEAM_OFF_YPOS (0)
+N#define HIGHBEAM_OFF_XCPOS (0)
+N#define HIGHBEAM_OFF_YCPOS (0)
+N
+N#define HIGHBEAM_ON_SIZE (2752)
+N#define HIGHBEAM_ON_HEIGHT (43)
+N#define HIGHBEAM_ON_WIDTH (64)
+N#define HIGHBEAM_ON_XPOS (0)
+N#define HIGHBEAM_ON_YPOS (0)
+N#define HIGHBEAM_ON_XCPOS (0)
+N#define HIGHBEAM_ON_YCPOS (0)
+N
+N#define INSULATIONERR_OFF_SIZE (2160)
+N#define INSULATIONERR_OFF_HEIGHT (40)
+N#define INSULATIONERR_OFF_WIDTH (54)
+N#define INSULATIONERR_OFF_XPOS (0)
+N#define INSULATIONERR_OFF_YPOS (0)
+N#define INSULATIONERR_OFF_XCPOS (0)
+N#define INSULATIONERR_OFF_YCPOS (0)
+N
+N#define INSULATIONERR_ON_SIZE (2160)
+N#define INSULATIONERR_ON_HEIGHT (40)
+N#define INSULATIONERR_ON_WIDTH (54)
+N#define INSULATIONERR_ON_XPOS (0)
+N#define INSULATIONERR_ON_YPOS (0)
+N#define INSULATIONERR_ON_XCPOS (0)
+N#define INSULATIONERR_ON_YCPOS (0)
+N
+N#define MOTORERR_OFF_SIZE (2795)
+N#define MOTORERR_OFF_HEIGHT (43)
+N#define MOTORERR_OFF_WIDTH (65)
+N#define MOTORERR_OFF_XPOS (0)
+N#define MOTORERR_OFF_YPOS (0)
+N#define MOTORERR_OFF_XCPOS (0)
+N#define MOTORERR_OFF_YCPOS (0)
+N
+N#define MOTORERR_ON_SIZE (2795)
+N#define MOTORERR_ON_HEIGHT (43)
+N#define MOTORERR_ON_WIDTH (65)
+N#define MOTORERR_ON_XPOS (0)
+N#define MOTORERR_ON_YPOS (0)
+N#define MOTORERR_ON_XCPOS (0)
+N#define MOTORERR_ON_YCPOS (0)
+N
+N#define MOTOROT_OFF_SIZE (2623)
+N#define MOTOROT_OFF_HEIGHT (43)
+N#define MOTOROT_OFF_WIDTH (61)
+N#define MOTOROT_OFF_XPOS (0)
+N#define MOTOROT_OFF_YPOS (0)
+N#define MOTOROT_OFF_XCPOS (0)
+N#define MOTOROT_OFF_YCPOS (0)
+N
+N#define MOTOROT_ON_SIZE (2623)
+N#define MOTOROT_ON_HEIGHT (43)
+N#define MOTOROT_ON_WIDTH (61)
+N#define MOTOROT_ON_XPOS (0)
+N#define MOTOROT_ON_YPOS (0)
+N#define MOTOROT_ON_XCPOS (0)
+N#define MOTOROT_ON_YCPOS (0)
+N
+N#define MOTORSPEED_OFF_SIZE (2580)
+N#define MOTORSPEED_OFF_HEIGHT (43)
+N#define MOTORSPEED_OFF_WIDTH (60)
+N#define MOTORSPEED_OFF_XPOS (0)
+N#define MOTORSPEED_OFF_YPOS (0)
+N#define MOTORSPEED_OFF_XCPOS (0)
+N#define MOTORSPEED_OFF_YCPOS (0)
+N
+N#define MOTORSPEED_ON_SIZE (2580)
+N#define MOTORSPEED_ON_HEIGHT (43)
+N#define MOTORSPEED_ON_WIDTH (60)
+N#define MOTORSPEED_ON_XPOS (0)
+N#define MOTORSPEED_ON_YPOS (0)
+N#define MOTORSPEED_ON_XCPOS (0)
+N#define MOTORSPEED_ON_YCPOS (0)
+N
+N#define PARKING_OFF_SIZE (2520)
+N#define PARKING_OFF_HEIGHT (40)
+N#define PARKING_OFF_WIDTH (63)
+N#define PARKING_OFF_XPOS (0)
+N#define PARKING_OFF_YPOS (0)
+N#define PARKING_OFF_XCPOS (0)
+N#define PARKING_OFF_YCPOS (0)
+N
+N#define PARKING_ON_SIZE (2520)
+N#define PARKING_ON_HEIGHT (40)
+N#define PARKING_ON_WIDTH (63)
+N#define PARKING_ON_XPOS (0)
+N#define PARKING_ON_YPOS (0)
+N#define PARKING_ON_XCPOS (0)
+N#define PARKING_ON_YCPOS (0)
+N
+N#define POWERBATTERYCUT_OFF_SIZE (2440)
+N#define POWERBATTERYCUT_OFF_HEIGHT (40)
+N#define POWERBATTERYCUT_OFF_WIDTH (61)
+N#define POWERBATTERYCUT_OFF_XPOS (0)
+N#define POWERBATTERYCUT_OFF_YPOS (0)
+N#define POWERBATTERYCUT_OFF_XCPOS (0)
+N#define POWERBATTERYCUT_OFF_YCPOS (0)
+N
+N#define POWERBATTERYCUT_ON_SIZE (2440)
+N#define POWERBATTERYCUT_ON_HEIGHT (40)
+N#define POWERBATTERYCUT_ON_WIDTH (61)
+N#define POWERBATTERYCUT_ON_XPOS (0)
+N#define POWERBATTERYCUT_ON_YPOS (0)
+N#define POWERBATTERYCUT_ON_XCPOS (0)
+N#define POWERBATTERYCUT_ON_YCPOS (0)
+N
+N#define POWERBATTERY_OFF_SIZE (2320)
+N#define POWERBATTERY_OFF_HEIGHT (40)
+N#define POWERBATTERY_OFF_WIDTH (58)
+N#define POWERBATTERY_OFF_XPOS (0)
+N#define POWERBATTERY_OFF_YPOS (0)
+N#define POWERBATTERY_OFF_XCPOS (0)
+N#define POWERBATTERY_OFF_YCPOS (0)
+N
+N#define POWERBATTERY_ON_SIZE (2320)
+N#define POWERBATTERY_ON_HEIGHT (40)
+N#define POWERBATTERY_ON_WIDTH (58)
+N#define POWERBATTERY_ON_XPOS (0)
+N#define POWERBATTERY_ON_YPOS (0)
+N#define POWERBATTERY_ON_XCPOS (0)
+N#define POWERBATTERY_ON_YCPOS (0)
+N
+N#define SAFETYBELT_OFF_SIZE (2400)
+N#define SAFETYBELT_OFF_HEIGHT (40)
+N#define SAFETYBELT_OFF_WIDTH (60)
+N#define SAFETYBELT_OFF_XPOS (0)
+N#define SAFETYBELT_OFF_YPOS (0)
+N#define SAFETYBELT_OFF_XCPOS (0)
+N#define SAFETYBELT_OFF_YCPOS (0)
+N
+N#define SAFETYBELT_ON_SIZE (2400)
+N#define SAFETYBELT_ON_HEIGHT (40)
+N#define SAFETYBELT_ON_WIDTH (60)
+N#define SAFETYBELT_ON_XPOS (0)
+N#define SAFETYBELT_ON_YPOS (0)
+N#define SAFETYBELT_ON_XCPOS (0)
+N#define SAFETYBELT_ON_YCPOS (0)
+N
+N#define SMALLLIGHT_OFF_SIZE (2360)
+N#define SMALLLIGHT_OFF_HEIGHT (40)
+N#define SMALLLIGHT_OFF_WIDTH (59)
+N#define SMALLLIGHT_OFF_XPOS (0)
+N#define SMALLLIGHT_OFF_YPOS (0)
+N#define SMALLLIGHT_OFF_XCPOS (0)
+N#define SMALLLIGHT_OFF_YCPOS (0)
+N
+N#define SMALLLIGHT_ON_SIZE (2360)
+N#define SMALLLIGHT_ON_HEIGHT (40)
+N#define SMALLLIGHT_ON_WIDTH (59)
+N#define SMALLLIGHT_ON_XPOS (0)
+N#define SMALLLIGHT_ON_YPOS (0)
+N#define SMALLLIGHT_ON_XCPOS (0)
+N#define SMALLLIGHT_ON_YCPOS (0)
+N
+N#define SOC_OFF_SIZE (2494)
+N#define SOC_OFF_HEIGHT (43)
+N#define SOC_OFF_WIDTH (58)
+N#define SOC_OFF_XPOS (0)
+N#define SOC_OFF_YPOS (0)
+N#define SOC_OFF_XCPOS (0)
+N#define SOC_OFF_YCPOS (0)
+N
+N#define SOC_ON_SIZE (2494)
+N#define SOC_ON_HEIGHT (43)
+N#define SOC_ON_WIDTH (58)
+N#define SOC_ON_XPOS (0)
+N#define SOC_ON_YPOS (0)
+N#define SOC_ON_XCPOS (0)
+N#define SOC_ON_YCPOS (0)
+N
+N#define SYSTEMERR_OFF_SIZE (2537)
+N#define SYSTEMERR_OFF_HEIGHT (43)
+N#define SYSTEMERR_OFF_WIDTH (59)
+N#define SYSTEMERR_OFF_XPOS (0)
+N#define SYSTEMERR_OFF_YPOS (0)
+N#define SYSTEMERR_OFF_XCPOS (0)
+N#define SYSTEMERR_OFF_YCPOS (0)
+N
+N#define SYSTEMERR_ON_SIZE (2537)
+N#define SYSTEMERR_ON_HEIGHT (43)
+N#define SYSTEMERR_ON_WIDTH (59)
+N#define SYSTEMERR_ON_XPOS (0)
+N#define SYSTEMERR_ON_YPOS (0)
+N#define SYSTEMERR_ON_XCPOS (0)
+N#define SYSTEMERR_ON_YCPOS (0)
+N
+N
+N
+N#define BATDOWNINVAL_SIZE (630)
+N#define BATDOWNINVAL_HEIGHT (14)
+N#define BATDOWNINVAL_WIDTH (45)
+N#define BATDOWNINVAL_XPOS (0)
+N#define BATDOWNINVAL_YPOS (0)
+N#define BATDOWNINVAL_XCPOS (0)
+N#define BATDOWNINVAL_YCPOS (0)
+N
+N#define BATDOWNVAL_SIZE (630)
+N#define BATDOWNVAL_HEIGHT (14)
+N#define BATDOWNVAL_WIDTH (45)
+N#define BATDOWNVAL_XPOS (0)
+N#define BATDOWNVAL_YPOS (0)
+N#define BATDOWNVAL_XCPOS (0)
+N#define BATDOWNVAL_YCPOS (0)
+N
+N#define BATINVAL_SIZE (495)
+N#define BATINVAL_HEIGHT (11)
+N#define BATINVAL_WIDTH (45)
+N#define BATINVAL_XPOS (0)
+N#define BATINVAL_YPOS (0)
+N#define BATINVAL_XCPOS (0)
+N#define BATINVAL_YCPOS (0)
+N
+N#define BATUP_SIZE (900)
+N#define BATUP_HEIGHT (20)
+N#define BATUP_WIDTH (45)
+N#define BATUP_XPOS (0)
+N#define BATUP_YPOS (0)
+N#define BATUP_XCPOS (0)
+N#define BATUP_YCPOS (0)
+N
+N#define BATVAL_SIZE (495)
+N#define BATVAL_HEIGHT (11)
+N#define BATVAL_WIDTH (45)
+N#define BATVAL_XPOS (0)
+N#define BATVAL_YPOS (0)
+N#define BATVAL_XCPOS (0)
+N#define BATVAL_YCPOS (0)
+N
+N#define PROINVAL_SIZE (189)
+N#define PROINVAL_HEIGHT (21)
+N#define PROINVAL_WIDTH (9)
+N#define PROINVAL_XPOS (0)
+N#define PROINVAL_YPOS (0)
+N#define PROINVAL_XCPOS (0)
+N#define PROINVAL_YCPOS (0)
+N
+N#define PROLEFT_SIZE (252)
+N#define PROLEFT_HEIGHT (21)
+N#define PROLEFT_WIDTH (12)
+N#define PROLEFT_XPOS (0)
+N#define PROLEFT_YPOS (0)
+N#define PROLEFT_XCPOS (0)
+N#define PROLEFT_YCPOS (0)
+N
+N#define PRORIGHT_SIZE (210)
+N#define PRORIGHT_HEIGHT (21)
+N#define PRORIGHT_WIDTH (10)
+N#define PRORIGHT_XPOS (0)
+N#define PRORIGHT_YPOS (0)
+N#define PRORIGHT_XCPOS (0)
+N#define PRORIGHT_YCPOS (0)
+N
+N#define PROVAL_SIZE (210)
+N#define PROVAL_HEIGHT (21)
+N#define PROVAL_WIDTH (10)
+N#define PROVAL_XPOS (0)
+N#define PROVAL_YPOS (0)
+N#define PROVAL_XCPOS (0)
+N#define PROVAL_YCPOS (0)
+N
+N
+N
+N#define FONT0_SIZE (165)
+N#define FONT0_HEIGHT (15)
+N#define FONT0_WIDTH (11)
+N#define FONT0_XPOS (0)
+N#define FONT0_YPOS (0)
+N#define FONT0_XCPOS (0)
+N#define FONT0_YCPOS (0)
+N
+N#define FONT1_SIZE (160)
+N#define FONT1_HEIGHT (16)
+N#define FONT1_WIDTH (10)
+N#define FONT1_XPOS (0)
+N#define FONT1_YPOS (0)
+N#define FONT1_XCPOS (0)
+N#define FONT1_YCPOS (0)
+N
+N#define FONT2_SIZE (165)
+N#define FONT2_HEIGHT (15)
+N#define FONT2_WIDTH (11)
+N#define FONT2_XPOS (0)
+N#define FONT2_YPOS (0)
+N#define FONT2_XCPOS (0)
+N#define FONT2_YCPOS (0)
+N
+N#define FONT3_SIZE (165)
+N#define FONT3_HEIGHT (15)
+N#define FONT3_WIDTH (11)
+N#define FONT3_XPOS (0)
+N#define FONT3_YPOS (0)
+N#define FONT3_XCPOS (0)
+N#define FONT3_YCPOS (0)
+N
+N#define FONT4_SIZE (180)
+N#define FONT4_HEIGHT (15)
+N#define FONT4_WIDTH (12)
+N#define FONT4_XPOS (0)
+N#define FONT4_YPOS (0)
+N#define FONT4_XCPOS (0)
+N#define FONT4_YCPOS (0)
+N
+N#define FONT5_SIZE (150)
+N#define FONT5_HEIGHT (15)
+N#define FONT5_WIDTH (10)
+N#define FONT5_XPOS (0)
+N#define FONT5_YPOS (0)
+N#define FONT5_XCPOS (0)
+N#define FONT5_YCPOS (0)
+N
+N#define FONT6_SIZE (165)
+N#define FONT6_HEIGHT (15)
+N#define FONT6_WIDTH (11)
+N#define FONT6_XPOS (0)
+N#define FONT6_YPOS (0)
+N#define FONT6_XCPOS (0)
+N#define FONT6_YCPOS (0)
+N
+N#define FONT7_SIZE (165)
+N#define FONT7_HEIGHT (15)
+N#define FONT7_WIDTH (11)
+N#define FONT7_XPOS (0)
+N#define FONT7_YPOS (0)
+N#define FONT7_XCPOS (0)
+N#define FONT7_YCPOS (0)
+N
+N#define FONT8_SIZE (165)
+N#define FONT8_HEIGHT (15)
+N#define FONT8_WIDTH (11)
+N#define FONT8_XPOS (0)
+N#define FONT8_YPOS (0)
+N#define FONT8_XCPOS (0)
+N#define FONT8_YCPOS (0)
+N
+N#define FONT9_SIZE (165)
+N#define FONT9_HEIGHT (15)
+N#define FONT9_WIDTH (11)
+N#define FONT9_XPOS (0)
+N#define FONT9_YPOS (0)
+N#define FONT9_XCPOS (0)
+N#define FONT9_YCPOS (0)
+N
+N#define FONTDP_SIZE (42)
+N#define FONTDP_HEIGHT (6)
+N#define FONTDP_WIDTH (7)
+N#define FONTDP_XPOS (0)
+N#define FONTDP_YPOS (0)
+N#define FONTDP_XCPOS (0)
+N#define FONTDP_YCPOS (0)
+N
+N
+N
+N#define KM_SIZE (256)
+N#define KM_HEIGHT (16)
+N#define KM_WIDTH (16)
+N#define KM_XPOS (0)
+N#define KM_YPOS (0)
+N#define KM_XCPOS (0)
+N#define KM_YCPOS (0)
+N
+N#define TOTALDISTANCE_SIZE (960)
+N#define TOTALDISTANCE_HEIGHT (16)
+N#define TOTALDISTANCE_WIDTH (60)
+N#define TOTALDISTANCE_XPOS (0)
+N#define TOTALDISTANCE_YPOS (0)
+N#define TOTALDISTANCE_XCPOS (0)
+N#define TOTALDISTANCE_YCPOS (0)
+N
+N#define TRIPDISTANCE_SIZE (1200)
+N#define TRIPDISTANCE_HEIGHT (16)
+N#define TRIPDISTANCE_WIDTH (75)
+N#define TRIPDISTANCE_XPOS (0)
+N#define TRIPDISTANCE_YPOS (0)
+N#define TRIPDISTANCE_XCPOS (0)
+N#define TRIPDISTANCE_YCPOS (0)
+N
+N#define WFONT0_SIZE (128)
+N#define WFONT0_HEIGHT (16)
+N#define WFONT0_WIDTH (8)
+N#define WFONT0_XPOS (0)
+N#define WFONT0_YPOS (0)
+N#define WFONT0_XCPOS (0)
+N#define WFONT0_YCPOS (0)
+N
+N#define WFONT1_SIZE (128)
+N#define WFONT1_HEIGHT (16)
+N#define WFONT1_WIDTH (8)
+N#define WFONT1_XPOS (0)
+N#define WFONT1_YPOS (0)
+N#define WFONT1_XCPOS (0)
+N#define WFONT1_YCPOS (0)
+N
+N#define WFONT2_SIZE (128)
+N#define WFONT2_HEIGHT (16)
+N#define WFONT2_WIDTH (8)
+N#define WFONT2_XPOS (0)
+N#define WFONT2_YPOS (0)
+N#define WFONT2_XCPOS (0)
+N#define WFONT2_YCPOS (0)
+N
+N#define WFONT3_SIZE (128)
+N#define WFONT3_HEIGHT (16)
+N#define WFONT3_WIDTH (8)
+N#define WFONT3_XPOS (0)
+N#define WFONT3_YPOS (0)
+N#define WFONT3_XCPOS (0)
+N#define WFONT3_YCPOS (0)
+N
+N#define WFONT4_SIZE (128)
+N#define WFONT4_HEIGHT (16)
+N#define WFONT4_WIDTH (8)
+N#define WFONT4_XPOS (0)
+N#define WFONT4_YPOS (0)
+N#define WFONT4_XCPOS (0)
+N#define WFONT4_YCPOS (0)
+N
+N#define WFONT5_SIZE (128)
+N#define WFONT5_HEIGHT (16)
+N#define WFONT5_WIDTH (8)
+N#define WFONT5_XPOS (0)
+N#define WFONT5_YPOS (0)
+N#define WFONT5_XCPOS (0)
+N#define WFONT5_YCPOS (0)
+N
+N#define WFONT6_SIZE (128)
+N#define WFONT6_HEIGHT (16)
+N#define WFONT6_WIDTH (8)
+N#define WFONT6_XPOS (0)
+N#define WFONT6_YPOS (0)
+N#define WFONT6_XCPOS (0)
+N#define WFONT6_YCPOS (0)
+N
+N#define WFONT7_SIZE (128)
+N#define WFONT7_HEIGHT (16)
+N#define WFONT7_WIDTH (8)
+N#define WFONT7_XPOS (0)
+N#define WFONT7_YPOS (0)
+N#define WFONT7_XCPOS (0)
+N#define WFONT7_YCPOS (0)
+N
+N#define WFONT8_SIZE (128)
+N#define WFONT8_HEIGHT (16)
+N#define WFONT8_WIDTH (8)
+N#define WFONT8_XPOS (0)
+N#define WFONT8_YPOS (0)
+N#define WFONT8_XCPOS (0)
+N#define WFONT8_YCPOS (0)
+N
+N#define WFONT9_SIZE (128)
+N#define WFONT9_HEIGHT (16)
+N#define WFONT9_WIDTH (8)
+N#define WFONT9_XPOS (0)
+N#define WFONT9_YPOS (0)
+N#define WFONT9_XCPOS (0)
+N#define WFONT9_YCPOS (0)
+N
+N#define WFONTDP_SIZE (128)
+N#define WFONTDP_HEIGHT (16)
+N#define WFONTDP_WIDTH (8)
+N#define WFONTDP_XPOS (0)
+N#define WFONTDP_YPOS (0)
+N#define WFONTDP_XCPOS (0)
+N#define WFONTDP_YCPOS (0)
+N
+N
+N#define CHARGETIME_SIZE (1800)
+N#define CHARGETIME_HEIGHT (24)
+N#define CHARGETIME_WIDTH (75)
+N#define CHARGETIME_XPOS (0)
+N#define CHARGETIME_YPOS (0)
+N#define CHARGETIME_XCPOS (0)
+N#define CHARGETIME_YCPOS (0)
+N
+N#define HOUR_SIZE (432)
+N#define HOUR_HEIGHT (24)
+N#define HOUR_WIDTH (18)
+N#define HOUR_XPOS (0)
+N#define HOUR_YPOS (0)
+N#define HOUR_XCPOS (0)
+N#define HOUR_YCPOS (0)
+N
+N#define MINUTE_SIZE (432)
+N#define MINUTE_HEIGHT (24)
+N#define MINUTE_WIDTH (18)
+N#define MINUTE_XPOS (0)
+N#define MINUTE_YPOS (0)
+N#define MINUTE_XCPOS (0)
+N#define MINUTE_YCPOS (0)
+N
+N
+N
+N
+N#define ERR1_SIZE (4096)
+N#define ERR1_HEIGHT (32)
+N#define ERR1_WIDTH (128)
+N#define ERR1_XPOS (0)
+N#define ERR1_YPOS (0)
+N#define ERR1_XCPOS (0)
+N#define ERR1_YCPOS (0)
+N
+N#define ERR10_SIZE (4096)
+N#define ERR10_HEIGHT (32)
+N#define ERR10_WIDTH (128)
+N#define ERR10_XPOS (0)
+N#define ERR10_YPOS (0)
+N#define ERR10_XCPOS (0)
+N#define ERR10_YCPOS (0)
+N
+N#define ERR11_SIZE (4096)
+N#define ERR11_HEIGHT (32)
+N#define ERR11_WIDTH (128)
+N#define ERR11_XPOS (0)
+N#define ERR11_YPOS (0)
+N#define ERR11_XCPOS (0)
+N#define ERR11_YCPOS (0)
+N
+N#define ERR12_SIZE (4096)
+N#define ERR12_HEIGHT (32)
+N#define ERR12_WIDTH (128)
+N#define ERR12_XPOS (0)
+N#define ERR12_YPOS (0)
+N#define ERR12_XCPOS (0)
+N#define ERR12_YCPOS (0)
+N
+N#define ERR13_SIZE (4096)
+N#define ERR13_HEIGHT (32)
+N#define ERR13_WIDTH (128)
+N#define ERR13_XPOS (0)
+N#define ERR13_YPOS (0)
+N#define ERR13_XCPOS (0)
+N#define ERR13_YCPOS (0)
+N
+N#define ERR14_SIZE (4096)
+N#define ERR14_HEIGHT (32)
+N#define ERR14_WIDTH (128)
+N#define ERR14_XPOS (0)
+N#define ERR14_YPOS (0)
+N#define ERR14_XCPOS (0)
+N#define ERR14_YCPOS (0)
+N
+N#define ERR15_SIZE (4096)
+N#define ERR15_HEIGHT (32)
+N#define ERR15_WIDTH (128)
+N#define ERR15_XPOS (0)
+N#define ERR15_YPOS (0)
+N#define ERR15_XCPOS (0)
+N#define ERR15_YCPOS (0)
+N
+N#define ERR16_SIZE (4096)
+N#define ERR16_HEIGHT (32)
+N#define ERR16_WIDTH (128)
+N#define ERR16_XPOS (0)
+N#define ERR16_YPOS (0)
+N#define ERR16_XCPOS (0)
+N#define ERR16_YCPOS (0)
+N
+N#define ERR17_SIZE (4096)
+N#define ERR17_HEIGHT (32)
+N#define ERR17_WIDTH (128)
+N#define ERR17_XPOS (0)
+N#define ERR17_YPOS (0)
+N#define ERR17_XCPOS (0)
+N#define ERR17_YCPOS (0)
+N
+N#define ERR18_SIZE (4096)
+N#define ERR18_HEIGHT (32)
+N#define ERR18_WIDTH (128)
+N#define ERR18_XPOS (0)
+N#define ERR18_YPOS (0)
+N#define ERR18_XCPOS (0)
+N#define ERR18_YCPOS (0)
+N
+N#define ERR19_SIZE (6848)
+N#define ERR19_HEIGHT (32)
+N#define ERR19_WIDTH (214)
+N#define ERR19_XPOS (0)
+N#define ERR19_YPOS (0)
+N#define ERR19_XCPOS (0)
+N#define ERR19_YCPOS (0)
+N
+N#define ERR2_SIZE (4096)
+N#define ERR2_HEIGHT (32)
+N#define ERR2_WIDTH (128)
+N#define ERR2_XPOS (0)
+N#define ERR2_YPOS (0)
+N#define ERR2_XCPOS (0)
+N#define ERR2_YCPOS (0)
+N
+N#define ERR3_SIZE (4096)
+N#define ERR3_HEIGHT (32)
+N#define ERR3_WIDTH (128)
+N#define ERR3_XPOS (0)
+N#define ERR3_YPOS (0)
+N#define ERR3_XCPOS (0)
+N#define ERR3_YCPOS (0)
+N
+N#define ERR4_SIZE (4096)
+N#define ERR4_HEIGHT (32)
+N#define ERR4_WIDTH (128)
+N#define ERR4_XPOS (0)
+N#define ERR4_YPOS (0)
+N#define ERR4_XCPOS (0)
+N#define ERR4_YCPOS (0)
+N
+N#define ERR5_SIZE (6848)
+N#define ERR5_HEIGHT (32)
+N#define ERR5_WIDTH (214)
+N#define ERR5_XPOS (0)
+N#define ERR5_YPOS (0)
+N#define ERR5_XCPOS (0)
+N#define ERR5_YCPOS (0)
+N
+N#define ERR6_SIZE (4096)
+N#define ERR6_HEIGHT (32)
+N#define ERR6_WIDTH (128)
+N#define ERR6_XPOS (0)
+N#define ERR6_YPOS (0)
+N#define ERR6_XCPOS (0)
+N#define ERR6_YCPOS (0)
+N
+N#define ERR7_SIZE (4096)
+N#define ERR7_HEIGHT (32)
+N#define ERR7_WIDTH (128)
+N#define ERR7_XPOS (0)
+N#define ERR7_YPOS (0)
+N#define ERR7_XCPOS (0)
+N#define ERR7_YCPOS (0)
+N
+N#define ERR8_SIZE (4096)
+N#define ERR8_HEIGHT (32)
+N#define ERR8_WIDTH (128)
+N#define ERR8_XPOS (0)
+N#define ERR8_YPOS (0)
+N#define ERR8_XCPOS (0)
+N#define ERR8_YCPOS (0)
+N
+N#define ERR9_SIZE (4096)
+N#define ERR9_HEIGHT (32)
+N#define ERR9_WIDTH (128)
+N#define ERR9_XPOS (0)
+N#define ERR9_YPOS (0)
+N#define ERR9_XCPOS (0)
+N#define ERR9_YCPOS (0)
+N
+N
+N
+N#define FONTA_SIZE (128)
+N#define FONTA_HEIGHT (16)
+N#define FONTA_WIDTH (8)
+N#define FONTA_XPOS (0)
+N#define FONTA_YPOS (0)
+N#define FONTA_XCPOS (0)
+N#define FONTA_YCPOS (0)
+N
+N#define FONTE_SIZE (128)
+N#define FONTE_HEIGHT (16)
+N#define FONTE_WIDTH (8)
+N#define FONTE_XPOS (0)
+N#define FONTE_YPOS (0)
+N#define FONTE_XCPOS (0)
+N#define FONTE_YCPOS (0)
+N
+N#define FONTF_SIZE (128)
+N#define FONTF_HEIGHT (16)
+N#define FONTF_WIDTH (8)
+N#define FONTF_XPOS (0)
+N#define FONTF_YPOS (0)
+N#define FONTF_XCPOS (0)
+N#define FONTF_YCPOS (0)
+N
+N#define FONTSOC_SIZE (384)
+N#define FONTSOC_HEIGHT (16)
+N#define FONTSOC_WIDTH (24)
+N#define FONTSOC_XPOS (0)
+N#define FONTSOC_YPOS (0)
+N#define FONTSOC_XCPOS (0)
+N#define FONTSOC_YCPOS (0)
+N
+N#define FONTV_SIZE (128)
+N#define FONTV_HEIGHT (16)
+N#define FONTV_WIDTH (8)
+N#define FONTV_XPOS (0)
+N#define FONTV_YPOS (0)
+N#define FONTV_XCPOS (0)
+N#define FONTV_YCPOS (0)
+N
+N
+N#define LEV_D_SIZE (450)
+N#define LEV_D_HEIGHT (30)
+N#define LEV_D_WIDTH (15)
+N#define LEV_D_XPOS (0)
+N#define LEV_D_YPOS (0)
+N#define LEV_D_XCPOS (0)
+N#define LEV_D_YCPOS (0)
+N
+N#define LEV_N_SIZE (450)
+N#define LEV_N_HEIGHT (30)
+N#define LEV_N_WIDTH (15)
+N#define LEV_N_XPOS (0)
+N#define LEV_N_YPOS (0)
+N#define LEV_N_XCPOS (0)
+N#define LEV_N_YCPOS (0)
+N
+N#define LEV_P_SIZE (450)
+N#define LEV_P_HEIGHT (30)
+N#define LEV_P_WIDTH (15)
+N#define LEV_P_XPOS (0)
+N#define LEV_P_YPOS (0)
+N#define LEV_P_XCPOS (0)
+N#define LEV_P_YCPOS (0)
+N
+N#define LEV_R_SIZE (450)
+N#define LEV_R_HEIGHT (30)
+N#define LEV_R_WIDTH (15)
+N#define LEV_R_XPOS (0)
+N#define LEV_R_YPOS (0)
+N#define LEV_R_XCPOS (0)
+N#define LEV_R_YCPOS (0)
+N
+N#define LEV_S_SIZE (450)
+N#define LEV_S_HEIGHT (30)
+N#define LEV_S_WIDTH (15)
+N#define LEV_S_XPOS (0)
+N#define LEV_S_YPOS (0)
+N#define LEV_S_XCPOS (0)
+N#define LEV_S_YCPOS (0)
+N
+N
+N#define READY_OFF_SIZE (912)
+N#define READY_OFF_HEIGHT (19)
+N#define READY_OFF_WIDTH (48)
+N#define READY_OFF_XPOS (0)
+N#define READY_OFF_YPOS (0)
+N#define READY_OFF_XCPOS (0)
+N#define READY_OFF_YCPOS (0)
+N
+N#define READY_ON_SIZE (912)
+N#define READY_ON_HEIGHT (19)
+N#define READY_ON_WIDTH (48)
+N#define READY_ON_XPOS (0)
+N#define READY_ON_YPOS (0)
+N#define READY_ON_XCPOS (0)
+N#define READY_ON_YCPOS (0)
+N
+N
+N#define FONT_NE_SIZE (165)
+N#define FONT_NE_HEIGHT (15)
+N#define FONT_NE_WIDTH (11)
+N#define FONT_NE_XPOS (0)
+N#define FONT_NE_YPOS (0)
+N#define FONT_NE_XCPOS (0)
+N#define FONT_NE_YCPOS (0)
+N
+N#define FONT_WNE_SIZE (128)
+N#define FONT_WNE_HEIGHT (16)
+N#define FONT_WNE_WIDTH (8)
+N#define FONT_WNE_XPOS (0)
+N#define FONT_WNE_YPOS (0)
+N#define FONT_WNE_XCPOS (0)
+N#define FONT_WNE_YCPOS (0)
+N
+N#define NEEDLEA_SIZE (15834)
+N#define NEEDLEA_HEIGHT (182)
+N#define NEEDLEA_WIDTH (87)
+N#define NEEDLEA_XPOS (0)
+N#define NEEDLEA_YPOS (0)
+N#define NEEDLEA_XCPOS (42)
+N#define NEEDLEA_YCPOS (143)
+N
+N#define NEEDLEB_SIZE (6138)
+N#define NEEDLEB_HEIGHT (99)
+N#define NEEDLEB_WIDTH (62)
+N#define NEEDLEB_XPOS (0)
+N#define NEEDLEB_YPOS (0)
+N#define NEEDLEB_XCPOS (32)
+N#define NEEDLEB_YCPOS (74)
+N
+N
+N#define DOOR_1_SIZE (1764)
+N#define DOOR_1_HEIGHT (42)
+N#define DOOR_1_WIDTH (42)
+N#define DOOR_1_XPOS (0)
+N#define DOOR_1_YPOS (0)
+N#define DOOR_1_XCPOS (0)
+N#define DOOR_1_YCPOS (0)
+N
+N#define DOOR_2_SIZE (1764)
+N#define DOOR_2_HEIGHT (42)
+N#define DOOR_2_WIDTH (42)
+N#define DOOR_2_XPOS (0)
+N#define DOOR_2_YPOS (0)
+N#define DOOR_2_XCPOS (0)
+N#define DOOR_2_YCPOS (0)
+N
+N#define ERR_RED_SIZE (5103)
+N#define ERR_RED_HEIGHT (63)
+N#define ERR_RED_WIDTH (81)
+N#define ERR_RED_XPOS (0)
+N#define ERR_RED_YPOS (0)
+N#define ERR_RED_XCPOS (0)
+N#define ERR_RED_YCPOS (0)
+N
+N#define ERR_YELLOW_SIZE (5103)
+N#define ERR_YELLOW_HEIGHT (63)
+N#define ERR_YELLOW_WIDTH (81)
+N#define ERR_YELLOW_XPOS (0)
+N#define ERR_YELLOW_YPOS (0)
+N#define ERR_YELLOW_XCPOS (0)
+N#define ERR_YELLOW_YCPOS (0)
+N
+N
+N/***************************************************************************/
+N
+N
+N#endif
+N/****************************************************************************/
+N
+N/************************** BEGIN of DISCLAIMER   **************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of   
+N  its products. Nevertheless, semiconductor devices in general can
+N  malfunction or fail due to their inherent electrical sensitivity and 
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of
+N  human life, bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications.
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  �Handling Guide for Semiconductor Devices,�?or 
+N  �TOSHIBA Semiconductor Reliability Handbook�?etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (�Unintended Usage�?. Unintended Usage include atomic energy control
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customer�s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use. 
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+N/********************************* BEGIN OF LOG ******************************
+N*
+N* $Log: $
+N*
+N*********************************** END OF LOG ******************************/
+L 15 "..\..\Pictures\LeftIcon\Parking_OFF.c" 2
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section rodata = ".ROMgraphics"
+S#define ALIGNED
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .rodata ".ROMgraphics"
+S/* fixme: specify alignment */
+S#define ALIGNED
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rodata = ".ROMgraphics"
+N#define ALIGNED __align(8)
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma alignvar(8)
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+NALIGNED const uint32_t u32_Parking_OFF[PARKING_OFF_SIZE] = {
+X__align(8) const uint32_t u32_Parking_OFF[(2520)] = {
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6B666602, 0x67686804, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x6667660E, 0x66676808, 0x00000000, 0x00000000, 0x66666704, 0x66666702, 0x66666806, 
+N0x6666680A, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x84797980, 0xBEA0A1EB, 0x726C6C30, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6A6C6D2E, 
+N0xA49B9BE3, 0xB09495D9, 0xBD9697DD, 0xC49A9BE4, 0xC39F9FEA, 0xBF9C9CE5, 0xB49191D2, 0x998485B0, 
+N0x68676914, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0xA88B8CC6, 0x917B7B87, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x6E6F7045, 0xC9B7B7FB, 0xCCCCCCFF, 0xB39192D3, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6E6B6D30, 0xAD8888BC, 0xCCBEBEFD, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDBEBEFE, 
+N0xB99393D5, 0x7F72735C, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x88797A7F, 
+N0xCCCCCCFF, 0xCCC7C7FF, 0x7170703F, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0xBD9A9BE2, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x9F8181A0, 0x00000000, 
+N0x00000000, 0x00000000, 0xA98A8ABF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xBC9C9CE6, 0x6668680A, 0x00000000, 0x00000000, 0x81707145, 0xCCCBCBFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCBADADF7, 0x66686A08, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6A666602, 0x00000000, 
+N0xA28989BD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x967B7D8B, 0x00000000, 0x726F6F43, 
+N0xC9B1B1F8, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDC6C6FF, 
+N0xCDB8B8FC, 0xCEB1B1F9, 0xCDBDBDFD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCDC3C3FE, 0x867A7A83, 0x00000000, 0x7F6F7238, 0xCCCACAFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xBD9F9FEA, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x7471714D, 0xCDC7C7FF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x9F8B8BC4, 0x00000000, 0x7C727252, 0xCDC7C7FF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDB8B8FC, 0xAE8C8DC7, 0x8575776B, 0x70717252, 0x726E6E35, 
+N0x00000000, 0x66686816, 0x7D737257, 0xA68B8CC6, 0xCAB1B1F9, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x95808099, 0x00000000, 0x7973755D, 0xCDC4C4FF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0x957E7E97, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xB89091D1, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xB69797DD, 0x00000000, 0x706D6E33, 0xCDC2C2FE, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCACAFF, 0xA18586B3, 0x6668690C, 0x00000000, 0x66666804, 0x66666702, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x8B7A7B84, 0xCCBABAFD, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x9B8888BC, 0x00000000, 0x957E7F98, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCBB3B3FA, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x78737355, 0xCCCBCBFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCBB4B4FA, 
+N0x00000000, 0x00000000, 0xC4A3A3EE, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x817A7B81, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x66676914, 0xC6A8A8F2, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x77777879, 0x00000000, 0xC3A1A1EB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0x9880819E, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0xB69B9CE5, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x977E7E96, 0x00000000, 
+N0x9F8383A8, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDBFC0FE, 0x79767768, 0x00000000, 0x00000000, 
+N0x00000000, 0x6B677412, 0x776E6D35, 0x746A6921, 0x746A6A21, 0x746A6921, 0x786D6C26, 0x706D6F2A, 
+N0x00000000, 0x66686802, 0x00000000, 0x00000000, 0x6669690C, 0xC4A5A5F0, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xBE9B9BE3, 0x00000000, 0x7D727254, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xC7ADADF6, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x66686916, 0xCDBCBCFD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCBAFAFF7, 0x00000000, 0x66686814, 0xCCC2C2FE, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x82747564, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x9E75766D, 0xCCCCCCFF, 0xCDC7C7FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xBF9F9FE8, 
+N0x6E6D6E28, 0x00000000, 0x00000000, 0x00000000, 0x66676912, 0xCCB2B2F9, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0x87767874, 0x00000000, 0xBE9E9EE8, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x7F727357, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x8F797980, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xAD8B8BC5, 0x00000000, 0xA08181A4, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xAC8D8DCA, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xA175756D, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xC7A5A5EF, 0xC89C9CE5, 0xC7ABABF5, 0xCDC8C8FF, 0xCCCCCCFF, 0xCBB2B2F9, 
+N0x66686A12, 0x00000000, 0x00000000, 0x00000000, 0x937C7C8F, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xBF9A9BE3, 0x00000000, 0x88757665, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xA78485AE, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xAF8989C0, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x84787871, 0x00000000, 0xC7A9A9F3, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDBCBCFD, 
+N0x6B6E6E2A, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 
+N0xCDBEBEFE, 0x6667690E, 0x00000000, 0x00000000, 0x70727159, 0xCBBDBDFD, 0xCCCCCCFF, 0xA68788BB, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xC8A4A5EF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0x66686814, 0x00000000, 0xCCC6C6FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xC19B9BE4, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xC3A1A1EC, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCDBABAFC, 0x00000000, 0x736D6E28, 0xCCCACAFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xBA9494D9, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCDBDBDFD, 
+N0x66676A08, 0x00000000, 0x00000000, 0x00000000, 0xA78587B4, 0xCCCCCCFF, 0xC4A0A0EB, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0xA38586B3, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x8D75766D, 
+N0x00000000, 0xC3A5A5F1, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCAFAFF7, 0x6A6B6C1D, 0x66676702, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x6667670C, 0xCBB0B0F9, 0xCCCCCCFF, 0xCCCCCCFF, 0xC3A1A1ED, 
+N0x00000000, 0x947C7B8E, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x9A7F809C, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCDBEBEFD, 0x6667690A, 
+N0x00000000, 0x00000000, 0x00000000, 0x9C7B7C8E, 0xCCCCCCFF, 0xC9A8A8F3, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x7771714B, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xAD8A8AC4, 0x00000000, 
+N0xAF8D8FCB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDC3C3FF, 0x706F703A, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0xCEB5B5FB, 0xCCCCCCFF, 0xCCCCCCFF, 0xD19393D8, 0x00000000, 
+N0x9E8383AD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x80717154, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCDBDBDFD, 0x66676906, 0x00000000, 
+N0x00000000, 0x00000000, 0xB18E8ECC, 0xCCCCCCFF, 0xBFA1A1EB, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x6B6C6D28, 0xCCBBBBFD, 0xCCCCCCFF, 0xCCCCCCFF, 0xBC9696DD, 0x00000000, 0x9C8283AD, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCBCBFF, 0xA56C6D37, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x806C6D28, 0xCDC6C6FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCC8D8DC9, 0x00000000, 0xA98585B5, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x796F6F45, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCCC9C9FF, 0x82737561, 0x896C6D26, 0x726D6F35, 
+N0x9F8181A3, 0xCCCCCCFF, 0xCCCCCCFF, 0x9480809E, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0xCAACACF6, 0xCCCCCCFF, 0xCCCCCCFF, 0xBF999AE2, 0x00000000, 0xA9767676, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xA4727155, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x806C6C2A, 0xCDC6C6FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xB68C8CC8, 0x00000000, 0xAF8989C1, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x7870714B, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xB39393D5, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0xCBACACF6, 0xCCCCCCFF, 0xCCCCCCFF, 0xC09A9BE3, 0x00000000, 0xB4767671, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0x7E727255, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x66676806, 
+N0xCDB7B7FC, 0xCCCCCCFF, 0xCCCCCCFF, 0xBC9696DE, 0x00000000, 0xA68A8BC2, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0x8476776E, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x9E75756D, 0xCCCCCCFF, 0xCCCCCCFF, 0xCBB5B5FB, 0xCCADADF6, 0xCCBBBBFD, 0xC6ADADF7, 0x998181A6, 
+N0x66676814, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6667690C, 0xCCBABAFD, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xBB9595DC, 0x00000000, 0x9D8182A3, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCBCBFF, 
+N0x7D70714D, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xCAABABF5, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xC7A9A9F4, 0x00000000, 0x9077787A, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0x9D8080A1, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 
+N0xCCCCCCFF, 0xCDBFBFFE, 0x66686910, 0x00000000, 0x66686A0A, 0x6667690A, 0x00000000, 0x68676804, 
+N0x6A666902, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x7C74755D, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xA98687B5, 0x00000000, 0xAF8C8CC7, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDC2C2FE, 0x6F6D6E33, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xC3A3A3EE, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCDBBBBFD, 0x00000000, 0x68686810, 0xCDC7C7FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xBD9797DC, 
+N0x00000000, 0x66686804, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 
+N0xCDBDBDFD, 0x66676906, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xA78989BD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0x8B757567, 0x00000000, 0xC2A2A1EC, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDABACF6, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xAB8989BD, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0x88757567, 0x00000000, 0xC2A2A2ED, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDC6C6FF, 0x78727461, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E75756D, 0xCCCCCCFF, 0xCDBEBEFD, 
+N0x6667690A, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x6B6C6D28, 0xCBB8B8FC, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDB9B9FC, 0x00000000, 
+N0x00000000, 0xCDBFBFFE, 0xCCCCCCFF, 0xCCCCCCFF, 0xC19697DD, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x8A777874, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xB28E8ECB, 0x00000000, 0x9980819D, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xB99C9CE7, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9F75756D, 0xCCCCCCFF, 0xCDBEBEFD, 0x6667690A, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0xA58B8BC5, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xB79394D8, 0x00000000, 0x947F809E, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xA18384AA, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x66686806, 0xCDB7B8FB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCBDBDFD, 
+N0x6667690A, 0x00000000, 0xCCB8B8FB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x8B787876, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0xA275756D, 0xCCCCCCFF, 0xCDC0C0FE, 0x66676A16, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6F6E6F33, 
+N0xCDC2C2FE, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x8074756A, 0x00000000, 0xC4ADADF6, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0x7A717252, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0xAB8A8AC2, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x9E7E7F98, 
+N0x00000000, 0x998080A0, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x80787974, 0x00000000, 
+N0x00000000, 0x00000000, 0x7D6B6D2E, 0xA88788B6, 0x9B8081A1, 0x67676714, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6A6C6D19, 0xC8AAAAF5, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xB79494D7, 0x00000000, 0x8776766D, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xC3A1A2EC, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x6E6C6E2E, 0xCDC3C3FE, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDBCBCFD, 0x6A6B6C1F, 
+N0x00000000, 0xBF9E9EE8, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x8D7C7D8F, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x7E7D7D92, 0xCCC7C7FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCBABAFD, 0x6A6B6C1B, 0x00000000, 0xC6A8A8F3, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x91797980, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0xAE898ABF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xC09E9EE8, 0x00000000, 
+N0x66686904, 0xCAB0B0F8, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xBCA1A1EB, 0x75757668, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x6D6E6F3C, 0xAB9191D1, 0xCDC7C7FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x80767773, 
+N0x00000000, 0xA68889BB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xC6A6A6F1, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x6A6C6B1F, 0xCCBCBCFD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xA68384AE, 0x00000000, 
+N0x66686912, 0xCBB5B5FB, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xC2A1A1EB, 
+N0x9D7E7E97, 0x7E737361, 0x7371714D, 0x726D6F35, 0x796F7045, 0x92797980, 0xB99696DE, 0xCCCACAFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDC7C6FF, 0x7E757767, 0x00000000, 0x88777670, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0x85767567, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x6B666606, 
+N0x00000000, 0x957D7D90, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xA38484AF, 0x00000000, 
+N0x6F71714B, 0xC3A6A6F1, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCBCBFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCB7B7FB, 0x756F7145, 0x00000000, 0x84706F43, 0xCDC6C7FF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xB69595DC, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0xB59596DC, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xA28282A4, 0x00000000, 0x00000000, 
+N0x00000000, 0x998183A4, 0xCCC8C8FF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCDCACAFF, 
+N0xB59A9BE3, 0x6E707146, 0x00000000, 0x00000000, 0x82727159, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xC7A6A6F1, 0x6668690C, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0xC19C9DE5, 0xCCCCCCFF, 0xB49090D1, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x686A6A04, 0xA38585B3, 0xCABBBBFD, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 
+N0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCCCCCFF, 0xCCB8B8FC, 0xAE9090D1, 0x726A6C21, 0x00000000, 
+N0x67666808, 0x6A676602, 0x00000000, 0x00000000, 0x8B7C7C8C, 0xCCCCCCFF, 0xCCBDBDFD, 0x6B6D6D2A, 
+N0x00000000, 0x67686B02, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x716D6E28, 0xAE9393D5, 0x756E6E3A, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x6A6B6D2C, 0x77727150, 0x8E767773, 0xA98384AF, 0xD58787BB, 0xDC8585B8, 
+N0xB28686B5, 0x997D7E96, 0x7B71714D, 0x66676A06, 0x66666904, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x9E8787BA, 0x8676776B, 0x00000000, 0x69666702, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x66686606, 0x6B676608, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x66676604, 0x66676706, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+N0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000
+N};
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section rodata = default
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .rodata "default"
+S/* fixme: specify alignment */
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rodata
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N

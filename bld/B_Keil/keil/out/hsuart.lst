@@ -1,0 +1,3387 @@
+L 1 "..\..\..\..\lldd\src\hsuart.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Reference High-Speed UART Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Asynchronous Serial Interface (HSUART)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.18 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "core.h"                           /* Generic Cortex utilities */ 
+L 1 "..\..\..\..\common\inc\core.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core access utilities definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Core
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CORE_H
+N#define CORE_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                     /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\common\inc\core.h" 2
+N#include "cr4_pmu.h"
+L 1 "..\..\..\..\cortex_r4_keil\inc\cr4_pmu.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Performance monitor unit routines based on ARM's V7 sample code
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TSM-SHE Firmware System Longrun Test (Cortex-R4)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef _CR4_PMU_H
+N#define _CR4_PMU_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_GetPMN
+N *
+N * Purpose:       Returns the number of progammable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Programmable counters count
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_GetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_PMNConfig
+N *
+N * Purpose:       Sets the event for a programmable counter to record
+N *
+N * Inputs:        u32Counter: Which counter to program  (e.g. 0 for PMN0, 1 for PMN1)
+N *                u32Even:    The event code (ARM Architecture Reference Manual)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMNConfig(uint32_t u32Counter, uint32_t u32Event);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_SetCntDivider
+N *
+N * Purpose:       Enables/disables the divider (1/64) on CCNT
+N *
+N * Inputs:        u32Divider: 0 - disable, all others enable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_SetCntDivider(uint32_t u32Divider);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMU
+N *
+N * Purpose:       Global PMU enable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMU(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMU
+N *
+N * Purpose:       Global PMU disable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMU(void);
+N
+N
+N /****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNT
+N *
+N * Purpose:       Enable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNT
+N *
+N * Purpose:       Disable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMN
+N *
+N * Purpose:       Enable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to enable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMN
+N *
+N * Purpose:       Disable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to disable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      uCR4_32ReadCCNT
+N *
+N * Purpose:       Returns the value of CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Cycle counter value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadPMN
+N *
+N * Purpose:       Returns the value of PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to read (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       PMNn counter
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadPMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadFlags
+N *
+N * Purpose:       Returns the value of the overflow flags
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Overflow flags
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadFlags(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_WriteFlags
+N *
+N * Purpose:       Writes the overflow flags
+N *
+N * Inputs:        u32Flags: flags to write
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_WriteFlags(uint32_t u32Flags);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNTIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNTIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePmnIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to enable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePmnIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMNIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to disable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMNIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the programmable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Writes to software increment register
+N *
+N * Inputs:        u32Counter: The counter to increment (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMUSoftwareIncrement(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMUUserAccess
+N *
+N * Purpose:       Enables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMUUserAccess(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMUUserAccess
+N *
+N * Purpose:       Disables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMUUserAccess(void);
+N
+N
+N#endif /* _CR4_PMU_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\common\inc\core.h" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1862  /* Rule 19.7 : disable function-like macro not allowed */
+N#endif
+N/**********************************************/
+N
+N/* Physical translation in un-cached area */
+N#define PHYSICAL_ADDR_MASK                  0xFFFFFFFFU
+N#define PHYSICAL(addr)                      (((uint32_t)(addr) & PHYSICAL_ADDR_MASK))
+N
+N/* copy function */
+N#define asm_copyfunction                    (asm_copy_word)
+N#define asm_copyfunction_hword              (asm_copy_hword)
+N#define asm_copyfunction_byte               (asm_copy_byte)
+N
+N/* PMU enable */
+N#define PMU_ENABLE()                        (vCR4_EnablePMU())
+N
+N/* Timer Enable */
+N#define TIMER_ENABLE()                      (vCR4_EnableCCNT())
+N
+N/* Timer Reset */
+N#define TIMER_RESET()                       (vCR4_ResetCCNT())
+N
+N/* Timer Get */
+N#define TIMER_GET()                         (u32CR4_ReadCCNT())
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Enumerations                *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      __DSB
+N *
+N * Purpose:       Data barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __DSB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      __ISB
+N *
+N * Purpose:       Instruction barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __ISB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_int
+N *
+N * Purpose:       Enable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_int
+N *
+N * Purpose:       Disable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_fast_int
+N *
+N * Purpose:       Enable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_fast_int
+N *
+N * Purpose:       Disable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_vic_port
+N *
+N * Purpose:       Enable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_vic_port(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_vic_port
+N *
+N * Purpose:       Disable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_vic_port(void);
+N
+N
+N#endif /* CORE_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\hsuart.c" 2
+N#include "hsuart_io.h"                      /* HSUART registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\hsuart_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : HSUART 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  17:55:36.218+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.12 $ 
+N/  Excel Sheet ver.             : vv1.7
+N/  Excel Sheet date             : 2013-Jun-21
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : HSUART low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : HSUART
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.12 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef HSUARTIO_H
+N#define HSUARTIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */ 
+N
+N/*********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1840  /* Rule 5.7  [A] : No reuse of identifiers */
+S  #pragma ghs nowarning 1835  /* Rule 11.4 [A] : No casting between different pointer to object */
+S  #pragma ghs nowarning 230   /* Rule 6.4  [R] : Bitfields can only have `unsigned int' or `signed int' types */
+N#endif
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_UART_IO_H_REVISION     "$Revision: 1.12 $"
+N#define LLDD_UART_IO_H_TAG          "$Name: LLDD_1_6 $"
+N     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SILCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404000                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SILCR_REG__       (0xC0404000U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   UMODE	:2; 	 /* 0..1  bit(s) R/W */
+N  uint16_t   USBL	:1; 	 /* 2..2  bit(s) R/W */
+N  uint16_t   UPEN	:1; 	 /* 3..3  bit(s) R/W */
+N  uint16_t   UEPS	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   RSRVD5	:1; 	 /* 5..5  bit(s) R/W */
+N  uint16_t   RSRVD6	:2; 	 /* 6..7  bit(s) R/W */
+N  uint16_t   LSBF	:1; 	 /* 8..8  bit(s) R/W */
+N  uint16_t   RSRVD9	:3; 	 /* 9..11  bit(s) R/W */
+N  uint16_t   RSRVD12	:1; 	 /* 12..12  bit(s) R/W */
+N  uint16_t   RSRVD13	:1; 	 /* 13..13  bit(s) R/W */
+N  uint16_t   TWUB	:1; 	 /* 14..14  bit(s) R/W */
+N  uint16_t   RWUB	:1; 	 /* 15..15  bit(s) R/W */                    
+N} SILCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SILCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SILCR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSILCR(ctrlr)     ((volatile SILCR_bit_view_st *)\
+N(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSILCR(ctrlr)     ((volatile SILCR_bit_view_st *)(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SILCR(ctrlr)     ((volatile SILCR_byte_view_st *)\
+N(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SILCR(ctrlr)     ((volatile SILCR_byte_view_st *)(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SILCR(ctrlr)     ((volatile u16SILCR_halfword_view *)\
+N(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SILCR(ctrlr)     ((volatile u16SILCR_halfword_view *)(SILCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSILCR_UMODE(ctrlr) (pst_bitSILCR(ctrlr) -> UMODE)
+N#define vSetSILCR_UMODE(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> UMODE=(ParValue))
+N#define biGetSILCR_USBL(ctrlr) (pst_bitSILCR(ctrlr) -> USBL)
+N#define vSetSILCR_USBL(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> USBL=(ParValue))
+N#define biGetSILCR_UPEN(ctrlr) (pst_bitSILCR(ctrlr) -> UPEN)
+N#define vSetSILCR_UPEN(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> UPEN=(ParValue))
+N#define biGetSILCR_UEPS(ctrlr) (pst_bitSILCR(ctrlr) -> UEPS)
+N#define vSetSILCR_UEPS(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> UEPS=(ParValue))
+N#define biGetSILCR_RSRVD5(ctrlr) (pst_bitSILCR(ctrlr) -> RSRVD5)
+N#define vSetSILCR_RSRVD5(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RSRVD5=(ParValue))
+N#define biGetSILCR_RSRVD6(ctrlr) (pst_bitSILCR(ctrlr) -> RSRVD6)
+N#define vSetSILCR_RSRVD6(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RSRVD6=(ParValue))
+N#define biGetSILCR_LSBF(ctrlr) (pst_bitSILCR(ctrlr) -> LSBF)
+N#define vSetSILCR_LSBF(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> LSBF=(ParValue))
+N#define biGetSILCR_RSRVD9(ctrlr) (pst_bitSILCR(ctrlr) -> RSRVD9)
+N#define vSetSILCR_RSRVD9(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RSRVD9=(ParValue))
+N#define biGetSILCR_RSRVD12(ctrlr) (pst_bitSILCR(ctrlr) -> RSRVD12)
+N#define vSetSILCR_RSRVD12(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RSRVD12=(ParValue))
+N#define biGetSILCR_RSRVD13(ctrlr) (pst_bitSILCR(ctrlr) -> RSRVD13)
+N#define vSetSILCR_RSRVD13(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RSRVD13=(ParValue))
+N#define biGetSILCR_TWUB(ctrlr) (pst_bitSILCR(ctrlr) -> TWUB)
+N#define vSetSILCR_TWUB(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> TWUB=(ParValue))
+N#define biGetSILCR_RWUB(ctrlr) (pst_bitSILCR(ctrlr) -> RWUB)
+N#define vSetSILCR_RWUB(ctrlr,ParValue)  (pst_bitSILCR(ctrlr) -> RWUB=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSILCRL(ctrlr,ParValue) (pst_u8SILCR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSILCRL(ctrlr) (pst_u8SILCR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSILCRH(ctrlr,ParValue) (pst_u8SILCR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSILCRH(ctrlr) (pst_u8SILCR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSILCR(ctrlr,ParValue) (*pu16SILCR(ctrlr)  = (ParValue))
+N#define u16GetSILCR(ctrlr) (*pu16SILCR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIDICR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404004                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIDICR_REG__       (0xC0404004U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   SIUB	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   SIAS	:1; 	 /* 1..1  bit(s) R/W */
+N  uint16_t   SITR	:1; 	 /* 2..2  bit(s) R/W */
+N  uint16_t   SIBRK	:1; 	 /* 3..3  bit(s) R/W */
+N  uint16_t   SICTS	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   SIOE	:1; 	 /* 5..5  bit(s) R/W */
+N  uint16_t   RXTOUT_EN	:1; 	 /* 6..6  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 7..8  bit(s) R */
+N  uint16_t   CTSAC	:2; 	 /* 9..10  bit(s) R/W */
+N  uint16_t   SPIR	:1; 	 /* 11..11  bit(s) R/W */
+N  uint16_t   RIR	:1; 	 /* 12..12  bit(s) R/W */
+N  uint16_t   TIR	:1; 	 /* 13..13  bit(s) R/W */
+N  uint16_t   RSRVD14	:2; 	 /* 14..15  bit(s) R/W */                    
+N} SIDICR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SIDICR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SIDICR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIDICR(ctrlr)     ((volatile SIDICR_bit_view_st *)\
+N(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIDICR(ctrlr)     ((volatile SIDICR_bit_view_st *)(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SIDICR(ctrlr)     ((volatile SIDICR_byte_view_st *)\
+N(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SIDICR(ctrlr)     ((volatile SIDICR_byte_view_st *)(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SIDICR(ctrlr)     ((volatile u16SIDICR_halfword_view *)\
+N(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SIDICR(ctrlr)     ((volatile u16SIDICR_halfword_view *)(SIDICR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSIDICR_SIUB(ctrlr) (pst_bitSIDICR(ctrlr) -> SIUB)
+N#define vSetSIDICR_SIUB(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SIUB=(ParValue))
+N#define biGetSIDICR_SIAS(ctrlr) (pst_bitSIDICR(ctrlr) -> SIAS)
+N#define vSetSIDICR_SIAS(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SIAS=(ParValue))
+N#define biGetSIDICR_SITR(ctrlr) (pst_bitSIDICR(ctrlr) -> SITR)
+N#define vSetSIDICR_SITR(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SITR=(ParValue))
+N#define biGetSIDICR_SIBRK(ctrlr) (pst_bitSIDICR(ctrlr) -> SIBRK)
+N#define vSetSIDICR_SIBRK(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SIBRK=(ParValue))
+N#define biGetSIDICR_SICTS(ctrlr) (pst_bitSIDICR(ctrlr) -> SICTS)
+N#define vSetSIDICR_SICTS(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SICTS=(ParValue))
+N#define biGetSIDICR_SIOE(ctrlr) (pst_bitSIDICR(ctrlr) -> SIOE)
+N#define vSetSIDICR_SIOE(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SIOE=(ParValue))
+N#define biGetSIDICR_RXTOUT_EN(ctrlr) (pst_bitSIDICR(ctrlr) -> RXTOUT_EN)
+N#define vSetSIDICR_RXTOUT_EN(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> RXTOUT_EN=(ParValue))
+N#define biGetSIDICR_CTSAC(ctrlr) (pst_bitSIDICR(ctrlr) -> CTSAC)
+N#define vSetSIDICR_CTSAC(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> CTSAC=(ParValue))
+N#define biGetSIDICR_SPIR(ctrlr) (pst_bitSIDICR(ctrlr) -> SPIR)
+N#define vSetSIDICR_SPIR(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> SPIR=(ParValue))
+N#define biGetSIDICR_RIR(ctrlr) (pst_bitSIDICR(ctrlr) -> RIR)
+N#define vSetSIDICR_RIR(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> RIR=(ParValue))
+N#define biGetSIDICR_TIR(ctrlr) (pst_bitSIDICR(ctrlr) -> TIR)
+N#define vSetSIDICR_TIR(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> TIR=(ParValue))
+N#define biGetSIDICR_RSRVD14(ctrlr) (pst_bitSIDICR(ctrlr) -> RSRVD14)
+N#define vSetSIDICR_RSRVD14(ctrlr,ParValue)  (pst_bitSIDICR(ctrlr) -> RSRVD14=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSIDICRL(ctrlr,ParValue) (pst_u8SIDICR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSIDICRL(ctrlr) (pst_u8SIDICR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSIDICRH(ctrlr,ParValue) (pst_u8SIDICR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSIDICRH(ctrlr) (pst_u8SIDICR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSIDICR(ctrlr,ParValue) (*pu16SIDICR(ctrlr)  = (ParValue))
+N#define u16GetSIDICR(ctrlr) (*pu16SIDICR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIDISR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404008                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIDISR_REG__       (0xC0404008U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   RFDN	:5; 	 /* 0..4  bit(s) R */
+N  uint16_t   	:1; 	 /* 5..5  bit(s) R */
+N  uint16_t   STIS	:1; 	 /* 6..6  bit(s) R/W0C */
+N  uint16_t   RDIS	:1; 	 /* 7..7  bit(s) R/W0C */
+N  uint16_t   TDIS	:1; 	 /* 8..8  bit(s) R/W0C */
+N  uint16_t   TOUT	:1; 	 /* 9..9  bit(s) R/W0C */
+N  uint16_t   ERI	:1; 	 /* 10..10  bit(s) R/W0C */
+N  uint16_t   RSRVD11	:1; 	 /* 11..11  bit(s) R */
+N  uint16_t   UPER	:1; 	 /* 12..12  bit(s) R */
+N  uint16_t   UFER	:1; 	 /* 13..13  bit(s) R */
+N  uint16_t   UVALID	:1; 	 /* 14..14  bit(s) R */
+N  uint16_t   UBRK	:1; 	 /* 15..15  bit(s) R */                    
+N} SIDISR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SIDISR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SIDISR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIDISR(ctrlr)     ((volatile SIDISR_bit_view_st *)\
+N(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIDISR(ctrlr)     ((volatile SIDISR_bit_view_st *)(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SIDISR(ctrlr)     ((volatile SIDISR_byte_view_st *)\
+N(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SIDISR(ctrlr)     ((volatile SIDISR_byte_view_st *)(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SIDISR(ctrlr)     ((volatile u16SIDISR_halfword_view *)\
+N(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SIDISR(ctrlr)     ((volatile u16SIDISR_halfword_view *)(SIDISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSIDISR_RFDN(ctrlr) (pst_bitSIDISR(ctrlr) -> RFDN)
+N#define biGetSIDISR_STIS(ctrlr) (pst_bitSIDISR(ctrlr) -> STIS)
+N#define vClrSIDISR_STIS(ctrlr) (pst_bitSIDISR(ctrlr) -> STIS=(0))
+N#define biGetSIDISR_RDIS(ctrlr) (pst_bitSIDISR(ctrlr) -> RDIS)
+N#define vClrSIDISR_RDIS(ctrlr) (pst_bitSIDISR(ctrlr) -> RDIS=(0))
+N#define biGetSIDISR_TDIS(ctrlr) (pst_bitSIDISR(ctrlr) -> TDIS)
+N#define vClrSIDISR_TDIS(ctrlr) (pst_bitSIDISR(ctrlr) -> TDIS=(0))
+N#define biGetSIDISR_TOUT(ctrlr) (pst_bitSIDISR(ctrlr) -> TOUT)
+N#define vClrSIDISR_TOUT(ctrlr) (pst_bitSIDISR(ctrlr) -> TOUT=(0))
+N#define biGetSIDISR_ERI(ctrlr) (pst_bitSIDISR(ctrlr) -> ERI)
+N#define vClrSIDISR_ERI(ctrlr) (pst_bitSIDISR(ctrlr) -> ERI=(0))            
+N#define biGetSIDISR_RSRVD11(ctrlr) (pst_bitSIDISR(ctrlr) -> RSRVD11)            
+N#define biGetSIDISR_UPER(ctrlr) (pst_bitSIDISR(ctrlr) -> UPER)            
+N#define biGetSIDISR_UFER(ctrlr) (pst_bitSIDISR(ctrlr) -> UFER)            
+N#define biGetSIDISR_UVALID(ctrlr) (pst_bitSIDISR(ctrlr) -> UVALID)            
+N#define biGetSIDISR_UBRK(ctrlr) (pst_bitSIDISR(ctrlr) -> UBRK)
+N            
+N/* L-struct byte access */
+N#define vSetSIDISRL(ctrlr,ParValue) (pst_u8SIDISR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSIDISRL(ctrlr) (pst_u8SIDISR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSIDISRH(ctrlr,ParValue) (pst_u8SIDISR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSIDISRH(ctrlr) (pst_u8SIDISR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSIDISR(ctrlr,ParValue) (*pu16SIDISR(ctrlr)  = (ParValue))
+N#define u16GetSIDISR(ctrlr) (*pu16SIDISR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SISCISR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC040400C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SISCISR_REG__       (0xC040400CU)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   UBRKD	:1; 	 /* 0..0  bit(s) R/W0C */
+N  uint8_t   TXALS	:1; 	 /* 1..1  bit(s) R */
+N  uint8_t   TRDY	:1; 	 /* 2..2  bit(s) R */
+N  uint8_t   RBRKD	:1; 	 /* 3..3  bit(s) R */
+N  uint8_t   CTSS	:1; 	 /* 4..4  bit(s) R */
+N  uint8_t   OERS	:1; 	 /* 5..5  bit(s) R/C */ 
+N  uint8_t   	:2; 	 /* 6..31  bit(s) R */                    
+N} SISCISR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SISCISR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSISCISR(ctrlr)     ((volatile SISCISR_bit_view_st *)\
+N(SISCISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSISCISR(ctrlr)     ((volatile SISCISR_bit_view_st *)(SISCISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SISCISR(ctrlr)     ((volatile u8SISCISR_byte_view *)\
+N(SISCISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SISCISR(ctrlr)     ((volatile u8SISCISR_byte_view *)(SISCISR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSISCISR_UBRKD(ctrlr) (pst_bitSISCISR(ctrlr) -> UBRKD)
+N#define vClrSISCISR_UBRKD(ctrlr) (pst_bitSISCISR(ctrlr) -> UBRKD=(0))            
+N#define biGetSISCISR_TXALS(ctrlr) (pst_bitSISCISR(ctrlr) -> TXALS)            
+N#define biGetSISCISR_TRDY(ctrlr) (pst_bitSISCISR(ctrlr) -> TRDY)            
+N#define biGetSISCISR_RBRKD(ctrlr) (pst_bitSISCISR(ctrlr) -> RBRKD)            
+N#define biGetSISCISR_CTSS(ctrlr) (pst_bitSISCISR(ctrlr) -> CTSS)
+N#define biGetSISCISR_OERS(ctrlr) (pst_bitSISCISR(ctrlr) -> OERS)
+N#define vSetSISCISR_OERS(ctrlr) (pst_bitSISCISR(ctrlr) -> OERS=(0))
+N            
+N/* byte access */
+N#define vSetSISCISR(ctrlr,ParValue) (*pu8SISCISR(ctrlr) = (ParValue))
+N#define u8GetSISCISR(ctrlr) (*pu8SISCISR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIFCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404010                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIFCR_REG__       (0xC0404010U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   FRSTEW	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   RFRST	:1; 	 /* 1..1  bit(s) R/W */
+N  uint16_t   TFRST	:1; 	 /* 2..2  bit(s) R/W */
+N  uint16_t   TDIL	:4; 	 /* 3..6  bit(s) R/W */
+N  uint16_t   RDIL	:4; 	 /* 7..10  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 11..12  bit(s) R */
+N  uint16_t   RSTST	:1; 	 /* 13..13  bit(s) R */
+N  uint16_t   	:1; 	 /* 14..14  bit(s) R */
+N  uint16_t   SWRST	:1; 	 /* 15..15  bit(s) W */                    
+N} SIFCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SIFCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SIFCR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIFCR(ctrlr)     ((volatile SIFCR_bit_view_st *)\
+N(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIFCR(ctrlr)     ((volatile SIFCR_bit_view_st *)(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SIFCR(ctrlr)     ((volatile SIFCR_byte_view_st *)\
+N(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SIFCR(ctrlr)     ((volatile SIFCR_byte_view_st *)(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SIFCR(ctrlr)     ((volatile u16SIFCR_halfword_view *)\
+N(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SIFCR(ctrlr)     ((volatile u16SIFCR_halfword_view *)(SIFCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSIFCR_FRSTEW(ctrlr) (pst_bitSIFCR(ctrlr) -> FRSTEW)
+N#define vSetSIFCR_FRSTEW(ctrlr,ParValue)  (pst_bitSIFCR(ctrlr) -> FRSTEW=(ParValue))
+N#define biGetSIFCR_RFRST(ctrlr) (pst_bitSIFCR(ctrlr) -> RFRST)
+N#define vSetSIFCR_RFRST(ctrlr,ParValue)  (pst_bitSIFCR(ctrlr) -> RFRST=(ParValue))
+N#define biGetSIFCR_TFRST(ctrlr) (pst_bitSIFCR(ctrlr) -> TFRST)
+N#define vSetSIFCR_TFRST(ctrlr,ParValue)  (pst_bitSIFCR(ctrlr) -> TFRST=(ParValue))
+N#define biGetSIFCR_TDIL(ctrlr) (pst_bitSIFCR(ctrlr) -> TDIL)
+N#define vSetSIFCR_TDIL(ctrlr,ParValue)  (pst_bitSIFCR(ctrlr) -> TDIL=(ParValue))
+N#define biGetSIFCR_RDIL(ctrlr) (pst_bitSIFCR(ctrlr) -> RDIL)
+N#define vSetSIFCR_RDIL(ctrlr,ParValue)  (pst_bitSIFCR(ctrlr) -> RDIL=(ParValue))            
+N#define biGetSIFCR_RSTST(ctrlr) (pst_bitSIFCR(ctrlr) -> RSTST) 
+N#define vSetSIFCR_SWRST(ctrlr,ParValue) (pst_bitSIFCR(ctrlr) -> SWRST=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSIFCRL(ctrlr,ParValue) (pst_u8SIFCR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSIFCRL(ctrlr) (pst_u8SIFCR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSIFCRH(ctrlr,ParValue) (pst_u8SIFCR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSIFCRH(ctrlr) (pst_u8SIFCR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSIFCR(ctrlr,ParValue) (*pu16SIFCR(ctrlr)  = (ParValue))
+N#define u16GetSIFCR(ctrlr) (*pu16SIFCR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIFLCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404014                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIFLCR_REG__       (0xC0404014U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   TBRK	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   RTSTL	:4; 	 /* 1..4  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 5..6  bit(s) R */
+N  uint16_t   TSDR	:1; 	 /* 7..7  bit(s) R/W */
+N  uint16_t   RSDR	:1; 	 /* 8..8  bit(s) R/W */
+N  uint16_t   RTSSC	:1; 	 /* 9..9  bit(s) R/W */
+N  uint16_t   	:1; 	 /* 10..10  bit(s) R */
+N  uint16_t   TRS	:1; 	 /* 11..11  bit(s) R/W */
+N  uint16_t   RCS	:1; 	 /* 12..12  bit(s) R/W */ 
+N  uint16_t   	:3; 	 /* 13..31  bit(s) R */                    
+N} SIFLCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SIFLCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SIFLCR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIFLCR(ctrlr)     ((volatile SIFLCR_bit_view_st *)\
+N(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIFLCR(ctrlr)     ((volatile SIFLCR_bit_view_st *)(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SIFLCR(ctrlr)     ((volatile SIFLCR_byte_view_st *)\
+N(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SIFLCR(ctrlr)     ((volatile SIFLCR_byte_view_st *)(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SIFLCR(ctrlr)     ((volatile u16SIFLCR_halfword_view *)\
+N(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SIFLCR(ctrlr)     ((volatile u16SIFLCR_halfword_view *)(SIFLCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSIFLCR_TBRK(ctrlr) (pst_bitSIFLCR(ctrlr) -> TBRK)
+N#define vSetSIFLCR_TBRK(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> TBRK=(ParValue))
+N#define biGetSIFLCR_RTSTL(ctrlr) (pst_bitSIFLCR(ctrlr) -> RTSTL)
+N#define vSetSIFLCR_RTSTL(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> RTSTL=(ParValue))
+N#define biGetSIFLCR_TSDR(ctrlr) (pst_bitSIFLCR(ctrlr) -> TSDR)
+N#define vSetSIFLCR_TSDR(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> TSDR=(ParValue))
+N#define biGetSIFLCR_RSDR(ctrlr) (pst_bitSIFLCR(ctrlr) -> RSDR)
+N#define vSetSIFLCR_RSDR(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> RSDR=(ParValue))
+N#define biGetSIFLCR_RTSSC(ctrlr) (pst_bitSIFLCR(ctrlr) -> RTSSC)
+N#define vSetSIFLCR_RTSSC(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> RTSSC=(ParValue))
+N#define biGetSIFLCR_TRS(ctrlr) (pst_bitSIFLCR(ctrlr) -> TRS)
+N#define vSetSIFLCR_TRS(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> TRS=(ParValue))
+N#define biGetSIFLCR_RCS(ctrlr) (pst_bitSIFLCR(ctrlr) -> RCS)
+N#define vSetSIFLCR_RCS(ctrlr,ParValue)  (pst_bitSIFLCR(ctrlr) -> RCS=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSIFLCRL(ctrlr,ParValue) (pst_u8SIFLCR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSIFLCRL(ctrlr) (pst_u8SIFLCR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSIFLCRH(ctrlr,ParValue) (pst_u8SIFLCR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSIFLCRH(ctrlr) (pst_u8SIFLCR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSIFLCR(ctrlr,ParValue) (*pu16SIFLCR(ctrlr)  = (ParValue))
+N#define u16GetSIFLCR(ctrlr) (*pu16SIFLCR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIBGR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404018                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIBGR_REG__       (0xC0404018U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   BRD	:8; 	 /* 0..7  bit(s) R/W */
+N  uint16_t   BCLK	:3; 	 /* 8..10  bit(s) R/W */ 
+N  uint16_t   	:5; 	 /* 11..31  bit(s) R */                    
+N} SIBGR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SIBGR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SIBGR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIBGR(ctrlr)     ((volatile SIBGR_bit_view_st *)\
+N(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIBGR(ctrlr)     ((volatile SIBGR_bit_view_st *)(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SIBGR(ctrlr)     ((volatile SIBGR_byte_view_st *)\
+N(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SIBGR(ctrlr)     ((volatile SIBGR_byte_view_st *)(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SIBGR(ctrlr)     ((volatile u16SIBGR_halfword_view *)\
+N(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SIBGR(ctrlr)     ((volatile u16SIBGR_halfword_view *)(SIBGR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSIBGR_BRD(ctrlr) (pst_bitSIBGR(ctrlr) -> BRD)
+N#define vSetSIBGR_BRD(ctrlr,ParValue)  (pst_bitSIBGR(ctrlr) -> BRD=(ParValue))
+N#define biGetSIBGR_BCLK(ctrlr) (pst_bitSIBGR(ctrlr) -> BCLK)
+N#define vSetSIBGR_BCLK(ctrlr,ParValue)  (pst_bitSIBGR(ctrlr) -> BCLK=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSIBGRL(ctrlr,ParValue) (pst_u8SIBGR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSIBGRL(ctrlr) (pst_u8SIBGR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSIBGRH(ctrlr,ParValue) (pst_u8SIBGR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSIBGRH(ctrlr) (pst_u8SIBGR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSIBGR(ctrlr,ParValue) (*pu16SIBGR(ctrlr)  = (ParValue))
+N#define u16GetSIBGR(ctrlr) (*pu16SIBGR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SITFIFO                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC040401C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SITFIFO_REG__       (0xC040401CU)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   TXD	:8; 	 /* 0..7  bit(s) W */                    
+N} SITFIFO_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SITFIFO_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSITFIFO(ctrlr)     ((volatile SITFIFO_bit_view_st *)\
+N(SITFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSITFIFO(ctrlr)     ((volatile SITFIFO_bit_view_st *)(SITFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SITFIFO(ctrlr)     ((volatile u8SITFIFO_byte_view *)\
+N(SITFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SITFIFO(ctrlr)     ((volatile u8SITFIFO_byte_view *)(SITFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetSITFIFO_TXD(ctrlr,ParValue) (pst_bitSITFIFO(ctrlr) -> TXD=(ParValue))
+N            
+N/* byte access */
+N#define vSetSITFIFO(ctrlr,ParValue) (*pu8SITFIFO(ctrlr) = (ParValue))
+N#define u8GetSITFIFO(ctrlr) (*pu8SITFIFO(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SIRFIFO                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0404020                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SIRFIFO_REG__       (0xC0404020U)
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   RXD	:8; 	 /* 0..7  bit(s) R */                    
+N} SIRFIFO_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SIRFIFO_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSIRFIFO(ctrlr)     ((volatile SIRFIFO_bit_view_st *)\
+N(SIRFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSIRFIFO(ctrlr)     ((volatile SIRFIFO_bit_view_st *)(SIRFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SIRFIFO(ctrlr)     ((volatile u8SIRFIFO_byte_view *)\
+N(SIRFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SIRFIFO(ctrlr)     ((volatile u8SIRFIFO_byte_view *)(SIRFIFO_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSIRFIFO_RXD(ctrlr) (pst_bitSIRFIFO(ctrlr) -> RXD)
+N            
+N/* byte access */
+N
+N#define u8GetSIRFIFO(ctrlr) (*pu8SIRFIFO(ctrlr) )
+N
+N/******************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */ 
+N/******************************************************************************/
+N    
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :   Deactivated:
+N** |     Not requested Rules: 
+N** |         Rule 5.7  [A] : disable No reuse of identifiers
+N** |         Rule 11.4 [A] : No casting between different pointer to object
+N** |
+N** |     Requested Rules:
+N** |         Rule 6.4  [R] : Bitfields can only have `unsigned int' or `signed int' types
+N** |                         Used for bit definitons generated by converter tool
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************/
+N/****************************************************************************/
+N
+N
+N#endif /* HSUARTIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 24 "..\..\..\..\lldd\src\hsuart.c" 2
+N#include "hsuart.h"                         /* HSUART LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\hsuart.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : High-Speed UART Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Asynchronous Serial Interface (HSUART)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.12 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef HSUART_H
+N#define HSUART_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_UART_H_REVISION     "$Revision: 1.12 $"
+N#define LLDD_UART_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N/****************************************************************************
+N*                          CHANNEL SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+N
+N/*!< UART channel */
+Ntypedef enum tag_UartCh_e
+N{
+N    UART_CH0 = 0,                       /*!< Channel 0 */
+N    UART_CH1                            /*!< Channel 1 */
+N} uart_Ch_e;
+N
+N
+N/*
+N *  SILCR parameter values
+N */
+N
+N/*!< SILCR.RWUB - Receive wake-up bit */
+Ntypedef enum tag_UartRwub_e
+N{
+N    UART_NOT_WAIT_WUB = 0,              /*!< Do not wait for a wake-up-bit */
+N    UART_WAIT_WUB                       /*!< Wait for a wake-up-bit */
+N} uart_Rwub_e;
+N
+N/*!< SILCR.TWUB - Transmit wake-up bit */
+Ntypedef enum tag_uart_Twub_e
+N{
+N    UART_NFRAME_DATA = 0,               /*!< Next frame contains data */
+N    UART_NFRAME_ADDR                    /*!< Next frame contains address */
+N} uart_Twub_e;
+N
+N/*!< SILCR.LSBF - LSBit/MSBit first */
+Ntypedef enum tag_uart_Lsbf_e
+N{
+N    UART_MSB = 0,                       /*!< Reads/sends the MSBit first */
+N    UART_LSB                            /*!< Reads/sends the LSBit first */
+N} uart_Lsbf_e;
+N
+N/*!< SILCR.UEPS - odd/even parity  */
+Ntypedef enum tag_uart_Ueps_e
+N{
+N    UART_ODD = 0,                       /*!< Odd parity */
+N    UART_EVEN                           /*!< Even parity */
+N} uart_Ueps_e;
+N
+N/*!< SILCR.UPEN - parity enable */
+Ntypedef enum tag_uart_Upen_e
+N{
+N    UART_PARITY_DIS = 0,                /*!< Disable parity check */
+N    UART_PARITY_EN                      /*!< Enable parity check */
+N} uart_Upen_e;
+N
+N/*!< SILCR.USBL - stop bit length */
+Ntypedef enum tag_uart_Usbl_e
+N{
+N    UART_ONE_BIT = 0,                   /*!< One bit */
+N    UART_TWO_BITS                       /*!< Two bits */
+N} uart_Usbl_e;
+N
+N/*!< SILCR.UMODE - mode of operation */
+Ntypedef enum tag_uart_Umode_e
+N{
+N    UART_8BIT = 0,                      /*!< 8-bit data length */
+N    UART_7BIT,                          /*!< 7-bit data length */
+N    UART_8BIT_MULTI,                    /*!< Multi-controller 8-bit data length */
+N    UART_7BIT_MULTI                     /*!< Multi-controller 7-bit data length */
+N} uart_Umode_e;
+N
+N
+N/*
+N *  SIDICR parameter values
+N */
+N
+N/*!< SIDICR.xxx - enable/disable values  */
+Ntypedef enum tag_uart_IrqEn_e
+N{
+N    UART_IRQ_DIS = 0,                   /*!< Disable interrupt  */
+N    UART_IRQ_EN                         /*!< Enable interrupt */
+N} uart_IrqEn_e;
+N
+N/*!< SIDICR.CTSAC - CTS status active condition */
+Ntypedef enum tag_uart_Ctsac_e
+N{
+N    UART_CTS_DIS = 0,                   /*!< Disable CTS */
+N    UART_CTS_RISE,                      /*!< CTS terminal rising edge */
+N    UART_CTS_FALL,                      /*!< CTS terminal falling edge */
+N    UART_CTS_BOTH                       /*!< CTS both edges */
+N} uart_Ctsac_e;
+N
+N/*!< SIDICR.SIUB - status interrupt on break of transfer */
+Ntypedef enum tag_uart_Siub_e
+N{
+N    UART_BRK_DET_DIS = 0,               /*!< Break detection disabled */
+N    UART_BRK_DET_EN                     /*!< Break detection enabled */
+N} uart_Siub_e;
+N
+N
+N/*
+N *  SIFCR parameter values
+N */
+N
+N/*!< SIFCR.SWRST - software reset */
+Ntypedef enum tag_uart_SwRst_e
+N{
+N    UART_RST_RELEASE = 0,               /*!< Normal operation */
+N    UART_RST_ACTIVE                     /*!< Reset activated */
+N} uart_SwRst_e;
+N
+N/*!< SIFCR.FRSTEW - FIFO reset allowance  */
+Ntypedef enum tag_uart_FrStew_e
+N{
+N    UART_FIFO_RST_DIS = 0,              /*!< Resets of Tx/Rx FIFO are inhibited */
+N    UART_FIFO_RST_EN                    /*!< Resets of Tx/Rx FIFO are possible */
+N} uart_FrStew_e;
+N
+N
+N/*
+N *  SIFLCR parameter values
+N */
+N
+N/*!< SIFLCR.RTSSC - RTS terminal level */
+Ntypedef enum tag_uart_Rtssc_e
+N{
+N    UART_RTS_LOW = 0,                   /*!< RTS terminal will be set to low  */
+N    UART_RTS_HIGH                       /*!< RTS terminal will be set to high */
+N} uart_Rtssc_e;
+N
+N/*!< SIFLCR.RSDR - Receive serial data request */
+Ntypedef enum tag_uart_Rsdr_e
+N{
+N    UART_DATA_STORE = 0,                /*!< Received data will be stored */
+N    UART_DATA_IGNORE                    /*!< Received data will not be stored */
+N} uart_Rsdr_e;
+N
+N/*!< SIFLCR.TSDR - Transmit serial data request */
+Ntypedef enum tag_uart_Tsdr_e
+N{
+N    UART_TRANS_RUN = 0,                 /*!< Transmission in progress */
+N    UART_TRANS_HALT                     /*!< Transmission halted */
+N} uart_Tsdr_e;
+N
+N/*!< SIFLCR.RTSTL - RTS trigger level */
+Ntypedef enum tag_uart_Rtstl_e
+N{
+N    UART_RTS_TRIGGER_LEVEL_1  = 0x0,    /*!< trigger level at  1 byte  */
+N    UART_RTS_TRIGGER_LEVEL_2  = 0x1,    /*!< trigger level at  2 bytes */
+N    UART_RTS_TRIGGER_LEVEL_3  = 0x2,    /*!< trigger level at  3 bytes */
+N    UART_RTS_TRIGGER_LEVEL_4  = 0x3,    /*!< trigger level at  4 bytes */
+N    UART_RTS_TRIGGER_LEVEL_5  = 0x4,    /*!< trigger level at  5 bytes */
+N    UART_RTS_TRIGGER_LEVEL_6  = 0x5,    /*!< trigger level at  6 bytes */
+N    UART_RTS_TRIGGER_LEVEL_7  = 0x6,    /*!< trigger level at  7 bytes */
+N    UART_RTS_TRIGGER_LEVEL_8  = 0x7,    /*!< trigger level at  8 bytes */
+N    UART_RTS_TRIGGER_LEVEL_9  = 0x8,    /*!< trigger level at  9 bytes */
+N    UART_RTS_TRIGGER_LEVEL_10 = 0x9,    /*!< trigger level at 10 bytes */
+N    UART_RTS_TRIGGER_LEVEL_11 = 0xA,    /*!< trigger level at 11 bytes */
+N    UART_RTS_TRIGGER_LEVEL_12 = 0xB,    /*!< trigger level at 12 bytes */
+N    UART_RTS_TRIGGER_LEVEL_13 = 0xC,    /*!< trigger level at 13 bytes */
+N    UART_RTS_TRIGGER_LEVEL_14 = 0xD,    /*!< trigger level at 14 bytes */
+N    UART_RTS_TRIGGER_LEVEL_15 = 0xE,    /*!< trigger level at 15 bytes */
+N    UART_RTS_TRIGGER_LEVEL_16 = 0xF     /*!< trigger level at 16 bytes */
+N} uart_Rtstl_e;
+N
+N/*!< SIFLCR.TBRK - Transmitter break */
+Ntypedef enum tag_uart_Tbrk_e
+N{
+N    UART_TRANS_NORM = 0,                /*!< Normal operation */
+N    UART_TRANS_BREAK                    /*!< Transmit a break */
+N} uart_Tbrk_e;
+N
+N/*!< SIFLCR.TRS - TX request select */
+Ntypedef enum tag_uart_Trs_e
+N{
+N    UART_BY_TSDR = 0,                   /*!< control by TRSD */
+N    UART_BY_CTS_TERMINAL                /*!< control by CTS terminal */
+N} uart_Trs_e;
+N
+N/*!< SIFLCR.RCS - RTS control select */
+Ntypedef enum tag_uart_Rcs_e
+N{
+N    UART_BY_SOFTWARE = 0,               /*!< control by software */
+N    UART_BY_SOFTWARE_OR_HARDWARE        /*!< control by software or hardware */
+N} uart_Rcs_e;
+N
+N
+N/*
+N *  SIBGR parameter values
+N */
+N
+N/*!< SIBGR.BCLK - Baud rate generator clock */
+Ntypedef enum tag_uart_Bclk_e
+N{
+N    UART_DIV_2   = 0x0,                 /*!< 1/2 system frequency */
+N    UART_DIV_8   = 0x1,                 /*!< 1/8 system frequency */
+N    UART_DIV_32  = 0x2,                 /*!< 1/32 system frequency */
+N    UART_DIV_128 = 0x3,                 /*!< 1/128 system frequency */
+N    UART_NO_DIV  = 0x4                  /*!< System frequency (no division) */
+N} uart_Bclk_e;
+N
+N
+N/*
+N *  SIDISR field masks
+N */
+N
+N/*!< DMA/Interrupt atatus bit-field masks */
+Ntypedef enum tag_uart_DmaIrqMask_e
+N{
+N    UART_MSK_UBRK   = 0x8000,           /*!< Break */
+N    UART_MSK_UVALID = 0x4000,           /*!< No data available */
+N    UART_MSK_ERI    = 0x0400,           /*!< Error interrupt */
+N    UART_MSK_TOUT   = 0x0200,           /*!< Receive time-out */
+N    UART_MSK_TDIS   = 0x0100,           /*!< Transmit DMA/Interrupt status */
+N    UART_MSK_RDIS   = 0x0080,           /*!< Receive DMA/Interrupt status */
+N    UART_MSK_STIS   = 0x0040            /*!< Status interrupt status */
+N} uart_DmaIrqMask_e;
+N
+N/*!< Status clear masks */
+Ntypedef enum tag_uart_Flag_e
+N{
+N    UART_FLG_ERI  = 0x0400,             /*!< Error interrupt */
+N    UART_FLG_TOUT = 0x0200,             /*!< Receive time-out */
+N    UART_FLG_TDIS = 0x0100,             /*!< Transmit DMA/Interrupt status */
+N    UART_FLG_RDIS = 0x0080,             /*!< Receive DMA/Interrupt status */
+N    UART_FLG_STIS = 0x0040,             /*!< Status interrupt status */
+N    UART_FLG_OERS = 0x0020,             /*!< Overrun error status */
+N    UART_FLG_UBRK = 0x0001              /*!< Break */
+N}uart_Flag_e;
+N
+N
+N/*
+N *  SISCISR field masks
+N */
+N
+N/*!< Status change register bit-field masks */
+Ntypedef enum tag_uart_SisMask_e
+N{
+N    UART_MSK_OERS  = 0x0020,            /*!< Overrun error status */    
+N    UART_MSK_CTSS  = 0x0010,            /*!< CTS timer status */    
+N    UART_MSK_RBRKD = 0x0008,            /*!< Receive break */
+N    UART_MSK_TRDY  = 0x0004,            /*!< TX ready */
+N    UART_MSK_TXALS = 0x0002,            /*!< TX all */
+N    UART_MSK_UBRKD = 0x0001             /*!< UART break detect */
+N} uart_SisMask_e;
+N
+N/*!< CTS terminal status */
+Ntypedef enum tag_uart_Ctss_e
+N{
+N    UART_CTS_DEASSERTED = 0x0,          /*!< CTS terminal is deasserted */    
+N    UART_CTS_ASSERTED   = 0x1           /*!< CTS terminal is asserted */
+N} uart_Ctss_e;
+N
+N
+N/*
+N *  Baud rate values
+N */
+N
+N/*!< Baud Rate value assuming system clock @ 160MHz - TODO */
+Ntypedef enum tag_uart_BdRate_e
+N{    
+N    UART_BR_4800   = 0x17A,             /*!< Prescaler 1/8, Divisor 122 */
+N    UART_BR_9600   = 0x13D,             /*!< Prescaler 1/8, Divisor  61 */
+N    UART_BR_14400  = 0x0A3,             /*!< Prescaler 1/2, Divisor 163 */
+N    UART_BR_19200  = 0x07A,             /*!< Prescaler 1/2, Divisor 122 */
+N    UART_BR_38400  = 0x03D,             /*!< Prescaler 1/2, Divisor  61 */ 
+N    UART_BR_57600  = 0x029,             /*!< Prescaler 1/2, Divisor  41 */ 
+N    UART_BR_115200 = 0x014              /*!< Prescaler 1/2, Divisor  20 */  
+N} uart_BdRate_e;    
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*!< Line/Data Format configuration structure */
+Ntypedef struct tag_uart_DataFmt_st
+N{
+N    uart_Rwub_e eRwub;                  /*!< Receive wake-up bit */
+N    uart_Twub_e eTwub;                  /*!< Transmit wake-up bit */
+N    uart_Lsbf_e eLsbf;                  /*!< LSB/MSB first */
+N    uart_Ueps_e eUeps;                  /*!< Parity */
+N    uart_Upen_e eUpen;                  /*!< Parity check */
+N    uart_Usbl_e eUsbl;                  /*!< Stop bit length */
+N    uart_Umode_e eUmode;                /*!< UART mode */
+N} uart_DataFmt_st;
+N
+N/*!< DMA/IRQ configuration structure */
+Ntypedef struct tag_uart_DmaIrq_st
+N{
+N    uart_IrqEn_e eTir;                 /*!< Transmit interrupt request on/off */
+N    uart_IrqEn_e eRir;                 /*!< Receive interrupt request on/off */
+N    uart_IrqEn_e eSpir;                /*!< Status interrupt request on/off */
+N    uart_Ctsac_e eCtsac;               /*!< Status active condition */
+N    uart_IrqEn_e eRxTout;              /*!< Interrupt on time-out on/off */
+N    uart_IrqEn_e eSioe;                /*!< Interrupt on overrun error on/off */
+N    uart_IrqEn_e eSicts;               /*!< Interrupt on receive of CTS on/off */
+N    uart_IrqEn_e eSibrk;               /*!< Interrupt on break of UART Transfer on/off */
+N    uart_IrqEn_e eSitr;                /*!< Interrupt on free space in TX-FIFO on/off */
+N    uart_IrqEn_e eSias;                /*!< Interrupt when all data sent on/off */
+N    uart_Siub_e  eSiub;                /*!< Interrupt on break of transfer on/off */
+N} uart_DmaIrq_st;
+N
+N/*!< FIFO configuration structure */
+Ntypedef struct tag_uart_Fifo_st
+N{
+N    uint8_t u8Rdil;                     /*!< Receive DMA/IRQ trigger level (0-15) */
+N    uint8_t u8Tdil;                     /*!< Transmit DMA/IRQ trigger level (0-15) */
+N    uart_FrStew_e eFrStew;              /*!< FIFO reset enable/disable */
+N} uart_Fifo_st;
+N
+N/*!< Flow control configuration structure */
+Ntypedef struct tag_uart_Flow_st
+N{
+N    uart_Rsdr_e eRsdr;                  /*!< Receive serial data request */
+N    uart_Tsdr_e eTsdr;                  /*!< Transmit serial data request */
+N    uart_Tbrk_e eTbrk;                  /*!< Transmitter break */
+N    uart_Trs_e eTrs;                    /*!< TX request select */
+N    uart_Rcs_e eRcs;                    /*!< RTS control select */
+N} uart_Flow_st;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/**
+N* @brief Implementation of function vUART_GetVersion
+N*
+N* Retrieve pointers to module and header revision and tag string
+N*
+N* @note No Limitations
+N*
+N* @param[in] None
+N*
+N* @param[in,out] pau8ModuleRevision - pointer to module revision string
+N* @param[in,out] pau8ModuleTag      - pointer to module tag string
+N* @param[in,out] pau8HeaderRevision - pointer to header revision string
+N* @param[in,out] pau8HeaderTag      - pointer to header tag string
+N* @param[in,out] pau8IORevision     - pointer to IO header revision string
+N* @param[in,out] pau8IOTag          - pointer to IO header tag string
+N*
+N* @return void
+N*/
+Nvoid vUART_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/**
+N* @brief Implementation of function vUART_Init
+N*
+N* HSUART initialization
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh         - Channel 
+N* @param[in] eBaudRate   - Baudrate 
+N* @param[in] stDataCfg   - Pointer to Line/Data format
+N* @param[in] stDmaIrqCfg - Pointer to DMA/IRQ configuration
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_Init(uart_Ch_e eCh, uart_BdRate_e eBaudRate,
+N                uart_DataFmt_st * stDataCfg, uart_DmaIrq_st * stDmaIrqCfg);
+N
+N
+N/**
+N* @brief Implementation of function vUART_DataFmtConfig
+N*
+N* Line/Data format configuration
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh        - Uart channel 
+N* @param[in] pstDataFmt - Pointer to Line/data format configuration request
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_DataFmtConfig(uart_Ch_e eCh, uart_DataFmt_st * pstDataFmt);
+N
+N
+N/**
+N* @brief Implementation of function vUART_DmaIrqConfig
+N*
+N* DMA / IRQ request configuration
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh       - Uart channel 
+N* @param[in] pstDmaIrq - Pointer to DMA/IRQ configuration request
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_DmaIrqConfig(uart_Ch_e eCh, uart_DmaIrq_st * pstDmaIrq);
+N
+N
+N/**
+N* @brief Implementation of function vUART_FifoConfig
+N*
+N* Transmit and receive FIFOs configuration
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh     - Uart channel 
+N* @param[in] pstFifo - Pointer to Fifo configuration
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_FifoConfig(uart_Ch_e eCh, uart_Fifo_st * pstFifo);
+N
+N
+N/**
+N* @brief Implementation of function vUART_FlowCtrlConfig
+N*
+N* Flow control configuration
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh     - Uart channel 
+N* @param[in] pstFlow - Pointer to Flow control request
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_FlowCtrlConfig(uart_Ch_e eCh, uart_Flow_st * pstFlow);
+N
+N
+N/**
+N* @brief Implementation of function vUART_SetRTSTerminalLevel
+N*
+N* Set level of RTS terminal
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel 
+N* @param[in] eLevel - Level on terminal
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_SetRTSTerminalLevel(uart_Ch_e eCh, uart_Rtssc_e eLevel);
+N
+N
+N/**
+N* @brief Implementation of function eUART_GetCTSTerminalStatus
+N*
+N* Read CTS terminal status
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel 
+N*
+N* @param[in,out] None
+N*
+N* @return UART_CTS_DEASSERTED if CTS terminal is deasserted    
+N* @return UART_CTS_ASSERTED if CTS terminal is asserted
+N*/
+Nuart_Ctss_e eUART_GetCTSTerminalStatus(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function vUART_SetRTSTriggerLevel
+N*
+N* Set level of RTS trigger level
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel 
+N* @param[in] eLevel - Trigger level
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_SetRTSTriggerLevel(uart_Ch_e eCh, uart_Rtstl_e eLevel);
+N
+N
+N/**
+N* @brief Implementation of function vUART_GetTransferStat
+N*
+N* Retrieve the status of the current transfer
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel 
+N*
+N*
+N* @param[in,out]  pu8Status - The value of the Status change (SISCISR) register
+N*                             Please use the masks defined in EUartSisMask to
+N*                             evaluate / parse the register value
+N*
+N* @return void
+N*/
+Nvoid vUART_GetTransferStat(uart_Ch_e eCh, uint8_t *pu8Status);
+N
+N
+N/**
+N* @brief Implementation of function vUART_SetBaudRate
+N*
+N* HSUART Baud-rate setting
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh       - Uart channel
+N* @param[in] eBaudRate - Baud-rate 
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_SetBaudRate(uart_Ch_e eCh, uart_BdRate_e eBaudRate);
+N
+N
+N/**
+N* @brief Implementation of function i32UART_GetBaudRate
+N*
+N* Retrieve current baud-rate value
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel 
+N*
+N* @param[in,out] pu32BaudRate - Current baud-rate value in [bps]
+N*
+N* @return C_SUCCESS if baudrate could be set
+N* @return C_FAILED in case of wrong baudrate
+N*/
+Nint32_t i32UART_GetBaudRate(uart_Ch_e eCh, uint32_t *pu32BaudRate);
+N
+N
+N/**
+N* @brief Implementation of function i32UART_WriteByte
+N*
+N* Write one data byte to the TX-FIFO
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel 
+N* @param[in] u8Data - Data byte to be sent
+N*
+N* @param[in,out] None
+N*
+N* @return C_SUCCESS on success
+N* @return C_FAILED  on fifo not ready
+N*/
+Nint32_t i32UART_WriteByte(uart_Ch_e eCh, uint8_t u8Data);
+N
+N
+N/**
+N* @brief Implementation of function u32UART_WriteData
+N*
+N* Write data buffer to the TX-FIFO (polling)
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh     - Uart channel
+N* @param[in] pu8Data - Data buffer to be transmitted
+N* @param[in] u32Len  - Number of bytes to be sent
+N*
+N* @param[in,out] None
+N*
+N* @return Number of written bytes
+N*/
+Nuint32_t u32UART_WriteData(uart_Ch_e eCh, const uint8_t *pu8Data, uint32_t u32Len);
+N
+N
+N/**
+N* @brief Implementation of function i32UART_ReadByte
+N*
+N* Retrieve one byte from the RX-FIFO
+N*
+N* @note A check for error occurance must be always made before
+N*       this function is invoked
+N*
+N* @param[in] eCh - Uart channel 
+N*
+N* @param[in,out] pu8Data - Data retrieved from FIFO
+N*
+N* @return C_SUCCESS if data are read from Rx FIFO
+N* @return C_FAILED if no data are in Rx FIFO
+N*/
+Nint32_t i32UART_ReadByte(uart_Ch_e eCh, uint8_t *pu8Data);
+N
+N
+N/**
+N* @brief Implementation of function i32UART_ReadData
+N*
+N* Retrieve all available data from the RX-FIFO
+N*
+N* @note Please note that function will stop reading data on 
+N*       occurence of any of the following events:
+N*          1. Parity error
+N*          2. Overrun error
+N*          3. Frame error
+N*
+N* @param[in] eCh - Uart channel
+N*
+N* @param[in,out] pu8Data - Data retrieved from FIFO
+N* @param[in,out] pu32Len - Number of retrieved data-bytes
+N*
+N* @return C_SUCCESS on success
+N* @return C_FAILED  on error detection
+N*/
+Nint32_t i32UART_ReadData(uart_Ch_e eCh, uint8_t *pu8Data, uint32_t *pu32Len);
+N
+N
+N/**
+N* @brief Implementation of function i32UART_IsTimeOut
+N*
+N* Check if receive time-out occured and clear the flag
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel selection
+N*
+N* @param[in,out] None
+N*
+N* @return Receive time-out status
+N*/
+Nint32_t i32UART_IsTimeOut(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function u16UART_GetDmaIrqStat
+N*
+N* Retrieves the status of Transmit/Receive DMA interrupt
+N* register. Please use the masks defined in uart_DmaIrqMask_e 
+N* enumeration for result parsing/evaluation
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel
+N*
+N* @param[in,out] None
+N*
+N* @return Current interrupt status
+N*/
+Nuint16_t u16UART_GetDmaIrqStat(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function vUART_ClearDmaIrqFlag
+N*
+N* Clear the status of selected transmit/receive DMA/Interrupt
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh   - Uart channel 
+N* @param[in] eFlag - Flag(s) to be cleared
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_ClearDmaIrqFlag(uart_Ch_e eCh, uart_Flag_e eFlag);
+N
+N
+N/**
+N* @brief Implementation of function u8UART_GetRxDataCnt
+N*
+N* Retrieve the total number of received data frames currently 
+N* stored in the RX-FIFO
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel 
+N*
+N* @param[in,out] None
+N*
+N* @return Number of data-bytes in the RX-FIFO
+N*/
+Nuint8_t u8UART_GetRxDataCnt(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function u32UART_IsTxFifoReady
+N*
+N* Check for free space in the TX-FIFO
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel
+N*
+N* @param[in,out] None
+N*
+N* @return 1 on TX-FIFO ready
+N* @return 0 on TX-FIFO not ready
+N*/
+Nuint32_t u32UART_IsTxFifoReady(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function u32UART_IsTxFifoFree
+N*
+N* Check if both the TX-FIFO and the shift register are empty
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh - Uart channel
+N*
+N* @param[in,out] None
+N*
+N* @return 1 on empty
+N* @return 0 when at least one is not empty
+N*/
+Nuint32_t u32UART_IsTxFifoFree(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function vUART_Reset
+N*
+N* Performs reset of a HSUART module
+N*
+N* @note The 5-cycle wait has to be applied when I-cache is used
+N*
+N* @param[in] eCh - Uart channel
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_Reset(uart_Ch_e eCh);
+N
+N
+N/**
+N* @brief Implementation of function vUART_FifoResetTx
+N*
+N* Reset the TX-FIFO
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel selection
+N* @param[in] eRstEn - Reset activation
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_FifoResetTx(uart_Ch_e eCh, uart_SwRst_e eRstEn);
+N
+N
+N/**
+N* @brief Implementation of function vUART_FifoResetRx
+N*
+N* Reset the RX-FIFO
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel
+N* @param[in] eRstEn - Reset activation
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_FifoResetRx(uart_Ch_e eCh, uart_SwRst_e eRstEn);
+N
+N
+N/**
+N* @brief Implementation of function vUART_TxRunCtrl
+N*
+N* Start/stop the current transmission
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh      - Uart channel
+N* @param[in] eRunCtrl - Start/stop requets
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_TxRunCtrl(uart_Ch_e eCh, uart_Tsdr_e eRunCtrl);
+N
+N
+N/**
+N* @brief Implementation of function vUART_TxBreak
+N*
+N* Forced break transmission configuration
+N*
+N* @note No Limitations
+N*
+N* @param[in] eCh    - Uart channel
+N* @param[in] eBreak - Breka/no break
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vUART_TxBreak(uart_Ch_e eCh, uart_Tbrk_e eBreak);
+N
+N
+N/****************************************************************************/
+N
+N
+N#endif /* _HSUART_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\src\hsuart.c" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_UART_C_REVISION     "$Revision: 1.18 $"
+N#define LLDD_UART_C_TAG          "$Name: LLDD_1_6 $"
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1834  /* Rule 11.3 [A] : Functions must always have prototype declarations */
+S
+S  #pragma ghs nowarning 1847  /* Rule 10.3 [R] : disable casting error */
+S  #pragma ghs nowarning 1866  /* Rule 10.1 [R] : Restrict implicit conversions for integer type expressions */
+S  #pragma ghs nowarning 1867  /* Rule 10.1 [R] : Restrict implicit conversions for integer type expressions */
+S  #pragma ghs nowarning 1849  /* Rule 10.5 [R] : Bitwise `~' and `<<' expressions on unsigned char or unsigned short .. */
+S  #pragma ghs nowarning 1752  /* Rule 17.4 [R] : allow access to data under pointer by array (used forc copy) */
+N #endif
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_UART_C_REVISION[]    = LLDD_UART_C_REVISION;
+Xstatic uint8_t au8LLDD_UART_C_REVISION[]    = "$Revision: 1.18 $";
+Nstatic uint8_t au8LLDD_UART_C_TAG[]         = LLDD_UART_C_TAG;
+Xstatic uint8_t au8LLDD_UART_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_UART_H_REVISION[]    = LLDD_UART_H_REVISION;
+Xstatic uint8_t au8LLDD_UART_H_REVISION[]    = "$Revision: 1.12 $";
+Nstatic uint8_t au8LLDD_UART_H_TAG[]         = LLDD_UART_H_TAG;
+Xstatic uint8_t au8LLDD_UART_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_UART_IO_H_REVISION[] = LLDD_UART_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_UART_IO_H_REVISION[] = "$Revision: 1.12 $";
+Nstatic uint8_t au8LLDD_UART_IO_H_TAG[]      = LLDD_UART_IO_H_TAG;
+Xstatic uint8_t au8LLDD_UART_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/* Waits for 15-cycles */
+Nstatic void vUART_Wait(void);
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+Nvoid vUART_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_UART_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_UART_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_UART_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_UART_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_UART_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_UART_IO_H_TAG[0];
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_Init(uart_Ch_e eCh, uart_BdRate_e eBaudRate, uart_DataFmt_st * stDataCfg,uart_DmaIrq_st * stDmaIrqCfg)
+N{
+N    /* Reset the UART */
+N    vUART_Reset(eCh);
+N
+N    /* Put both FIFOs in reset */
+N    vUART_FifoResetTx(eCh, UART_RST_ACTIVE);
+N    vUART_FifoResetRx(eCh, UART_RST_ACTIVE);
+N
+N    /* Set baud-rate */
+N    vUART_SetBaudRate(eCh, eBaudRate);
+N
+N    /* Configure line/data parameters */
+N    vUART_DataFmtConfig(eCh, stDataCfg);
+N
+N    /* Configure DMA/IRQ parameters */
+N    vUART_DmaIrqConfig(eCh, stDmaIrqCfg);
+N
+N    /* Release FIFO reset */
+N    vUART_FifoResetTx(eCh, UART_RST_RELEASE);
+N    vUART_FifoResetRx(eCh, UART_RST_RELEASE);
+N
+N    /* Switch off the open-drain */
+N    vSetSILCR_RSRVD12(eCh, (uint16_t)0U);    
+X    (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> RSRVD12=((uint16_t)0U));    
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_DataFmtConfig(uart_Ch_e eCh, uart_DataFmt_st * pstDataFmt)
+N{
+N    if (0x0U != pstDataFmt)
+N    {
+N        /* Configure the line control register fields */
+N        vSetSILCR_UMODE(eCh,(uint16_t) pstDataFmt->eUmode);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> UMODE=((uint16_t) pstDataFmt->eUmode));
+N        vSetSILCR_USBL(eCh, (uint16_t) pstDataFmt->eUsbl);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> USBL=((uint16_t) pstDataFmt->eUsbl));
+N        vSetSILCR_UPEN(eCh, (uint16_t) pstDataFmt->eUpen);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> UPEN=((uint16_t) pstDataFmt->eUpen));
+N        vSetSILCR_UEPS(eCh, (uint16_t) pstDataFmt->eUeps);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> UEPS=((uint16_t) pstDataFmt->eUeps));
+N        vSetSILCR_LSBF(eCh, (uint16_t) pstDataFmt->eLsbf);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> LSBF=((uint16_t) pstDataFmt->eLsbf));
+N        vSetSILCR_TWUB(eCh, (uint16_t) pstDataFmt->eTwub);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> TWUB=((uint16_t) pstDataFmt->eTwub));
+N        vSetSILCR_RWUB(eCh, (uint16_t) pstDataFmt->eRwub);
+X        (((volatile SILCR_bit_view_st *)((0xC0404000U) + ((uint8_t)(eCh) * 0x1000U) )) -> RWUB=((uint16_t) pstDataFmt->eRwub));
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_DmaIrqConfig(uart_Ch_e eCh, uart_DmaIrq_st * pstDmaIrq)
+N{
+N    if (0x0U != pstDmaIrq)
+N    {
+N        /* Configure all DMA/Interrupt register fields */
+N        vSetSIDICR_TIR(eCh, (uint16_t) pstDmaIrq->eTir);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> TIR=((uint16_t) pstDmaIrq->eTir));
+N        vSetSIDICR_RIR(eCh, (uint16_t) pstDmaIrq->eRir);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> RIR=((uint16_t) pstDmaIrq->eRir));
+N        vSetSIDICR_SPIR(eCh, (uint16_t) pstDmaIrq->eSpir);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SPIR=((uint16_t) pstDmaIrq->eSpir));
+N        vSetSIDICR_CTSAC(eCh, (uint16_t) pstDmaIrq->eCtsac);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> CTSAC=((uint16_t) pstDmaIrq->eCtsac));
+N        vSetSIDICR_RXTOUT_EN(eCh, (uint16_t) pstDmaIrq->eRxTout);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> RXTOUT_EN=((uint16_t) pstDmaIrq->eRxTout));
+N        vSetSIDICR_SIOE(eCh,  (uint16_t) pstDmaIrq->eSioe);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SIOE=((uint16_t) pstDmaIrq->eSioe));
+N        vSetSIDICR_SICTS(eCh, (uint16_t) pstDmaIrq->eSicts);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SICTS=((uint16_t) pstDmaIrq->eSicts));
+N        vSetSIDICR_SIBRK(eCh, (uint16_t) pstDmaIrq->eSibrk);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SIBRK=((uint16_t) pstDmaIrq->eSibrk));
+N        vSetSIDICR_SITR(eCh,  (uint16_t) pstDmaIrq->eSitr);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SITR=((uint16_t) pstDmaIrq->eSitr));
+N        vSetSIDICR_SIAS(eCh,  (uint16_t) pstDmaIrq->eSias);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SIAS=((uint16_t) pstDmaIrq->eSias));
+N        vSetSIDICR_SIUB(eCh,  (uint16_t) pstDmaIrq->eSiub);
+X        (((volatile SIDICR_bit_view_st *)((0xC0404004U) + ((uint8_t)(eCh) * 0x1000U) )) -> SIUB=((uint16_t) pstDmaIrq->eSiub));
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_FifoConfig(uart_Ch_e eCh, uart_Fifo_st * pstFifo)
+N{
+N    if (0x0U != pstFifo)
+N    {
+N        /* Configure all fifo control register fields */
+N        vSetSIFCR_RDIL(eCh, pstFifo->u8Rdil);
+X        (((volatile SIFCR_bit_view_st *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) -> RDIL=(pstFifo->u8Rdil));
+N        vSetSIFCR_TDIL(eCh, pstFifo->u8Tdil);
+X        (((volatile SIFCR_bit_view_st *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) -> TDIL=(pstFifo->u8Tdil));
+N        vSetSIFCR_FRSTEW(eCh, (uint16_t)pstFifo->eFrStew);
+X        (((volatile SIFCR_bit_view_st *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) -> FRSTEW=((uint16_t)pstFifo->eFrStew));
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_FlowCtrlConfig(uart_Ch_e eCh, uart_Flow_st * pstFlow)
+N{
+N    if (0x0U != pstFlow)
+N    {
+N        /* Configure all flow control register fields */
+N        vSetSIFLCR_RSDR(eCh,(uint16_t)pstFlow->eRsdr);
+X        (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> RSDR=((uint16_t)pstFlow->eRsdr));
+N        vSetSIFLCR_TSDR(eCh,(uint16_t)pstFlow->eTsdr);
+X        (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> TSDR=((uint16_t)pstFlow->eTsdr));
+N        vSetSIFLCR_TBRK(eCh,(uint16_t)pstFlow->eTbrk);
+X        (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> TBRK=((uint16_t)pstFlow->eTbrk));
+N        vSetSIFLCR_TRS(eCh, (uint16_t)pstFlow->eTrs);
+X        (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> TRS=((uint16_t)pstFlow->eTrs));
+N        vSetSIFLCR_RCS(eCh, (uint16_t)pstFlow->eRcs);
+X        (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> RCS=((uint16_t)pstFlow->eRcs));
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_SetRTSTerminalLevel(uart_Ch_e eCh, uart_Rtssc_e eLevel)
+N{
+N    vSetSIFLCR_RTSSC(eCh, (uint16_t)eLevel);
+X    (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> RTSSC=((uint16_t)eLevel));
+N}
+N
+N/****************************************************************************/
+N
+Nuart_Ctss_e eUART_GetCTSTerminalStatus(uart_Ch_e eCh)
+N{
+N    return (uart_Ctss_e)biGetSISCISR_CTSS(eCh);
+X    return (uart_Ctss_e)(((volatile SISCISR_bit_view_st *)((0xC040400CU) + ((uint8_t)(eCh) * 0x1000U) )) -> CTSS);
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_SetRTSTriggerLevel(uart_Ch_e eCh, uart_Rtstl_e eLevel)
+N{
+N    vSetSIFLCR_RTSTL(eCh, (uint16_t)eLevel);
+X    (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> RTSTL=((uint16_t)eLevel));
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_GetTransferStat(uart_Ch_e eCh, uint8_t *pu8Status)
+N{
+N    if (0x0U != pu8Status)
+N    {
+N        *pu8Status = u8GetSISCISR(eCh);
+X        *pu8Status = (*((volatile u8SISCISR_byte_view *)((0xC040400CU) + ((uint8_t)(eCh) * 0x1000U) )) );
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_SetBaudRate(uart_Ch_e eCh, uart_BdRate_e eBaudRate)
+N{
+N    vSetSIBGR(eCh, (uint16_t) eBaudRate);
+X    (*((volatile u16SIBGR_halfword_view *)((0xC0404018U) + ((uint8_t)(eCh) * 0x1000U) )) = ((uint16_t) eBaudRate));
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32UART_GetBaudRate(uart_Ch_e eCh, uint32_t *pu32BaudRate)
+N{
+N    uint8_t u8Bclk;
+N    uint8_t u8Preskal = 1U;
+N    uint16_t u16Div;
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (0x0U != pu32BaudRate)
+N    {
+N        u8Bclk = (uint8_t) biGetSIBGR_BCLK(eCh);
+X        u8Bclk = (uint8_t) (((volatile SIBGR_bit_view_st *)((0xC0404018U) + ((uint8_t)(eCh) * 0x1000U) )) -> BCLK);
+N        u16Div = (uint16_t) biGetSIBGR_BRD(eCh);
+X        u16Div = (uint16_t) (((volatile SIBGR_bit_view_st *)((0xC0404018U) + ((uint8_t)(eCh) * 0x1000U) )) -> BRD);
+N
+N        switch( u8Bclk )
+N        {
+N            case UART_NO_DIV: 
+N                u8Preskal = 1U;
+N                break;
+N
+N            case UART_DIV_2: 
+N                u8Preskal = 2U;
+N                break;
+N
+N            case UART_DIV_8: 
+N                u8Preskal = 8U;
+N                break;
+N
+N            case UART_DIV_32: 
+N                u8Preskal = 32U;
+N                break;
+N
+N            case UART_DIV_128: 
+N                u8Preskal = 128U;
+N                break;
+N
+N            default:        
+N                /* Incorrect prescaler value */
+N                i32Res =  C_FAILED;
+X                i32Res =  (-1);
+N            break;
+N        }
+N        if( C_SUCCESS == i32Res )
+X        if( (0) == i32Res )
+N        {
+N            /* 75MHz */
+N            *pu32BaudRate = ( (75000000U/ u8Preskal) / (u16Div + 1U) )/ 16U;
+N        }
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N        
+N    }
+N
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32UART_WriteByte(uart_Ch_e eCh, uint8_t u8Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if(1U == u32UART_IsTxFifoReady(eCh))
+N    {
+N        /* Write one byte */
+N        vSetSITFIFO(eCh, u8Data);
+X        (*((volatile u8SITFIFO_byte_view *)((0xC040401CU) + ((uint8_t)(eCh) * 0x1000U) )) = (u8Data));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+Nuint32_t u32UART_WriteData(uart_Ch_e eCh, const uint8_t pu8Data[], uint32_t u32Len)
+N{
+N    uint32_t u32FifoRdy = 1U;
+N    uint32_t u32Cnt     = 0U;
+N
+N    if (0x0U != pu8Data)
+N    {
+N        /* Send byte by byte */
+N        while((u32Cnt < u32Len) && (u32FifoRdy>0U))
+N        {
+N            if((1U == u32UART_IsTxFifoReady(eCh)))
+N            {
+N                /* Write one byte */
+N                vSetSITFIFO(eCh, pu8Data[u32Cnt]);
+X                (*((volatile u8SITFIFO_byte_view *)((0xC040401CU) + ((uint8_t)(eCh) * 0x1000U) )) = (pu8Data[u32Cnt]));
+N                u32Cnt++;
+N            }
+N            else
+N            {
+N                /* No more space in TX-FIFO */
+N                u32FifoRdy = 0U; 
+N            }
+N        }
+N    }
+N    return u32Cnt;
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32UART_ReadByte(uart_Ch_e eCh, uint8_t *pu8Data)
+N{
+N    int32_t i32Res = C_FAILED;  /* No data in Rx FIFO */
+X    int32_t i32Res = (-1);   
+N    
+N    if (0x0U != pu8Data)
+N    {
+N        if( biGetSIDISR_RFDN(eCh) > 0U )
+X        if( (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> RFDN) > 0U )
+N        {
+N            if( 0U == biGetSIDISR_ERI(eCh) )
+X            if( 0U == (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> ERI) )
+N            {
+N                *pu8Data = u8GetSIRFIFO(eCh);
+X                *pu8Data = (*((volatile u8SIRFIFO_byte_view *)((0xC0404020U) + ((uint8_t)(eCh) * 0x1000U) )) );
+N                i32Res = C_SUCCESS;  /* data in Rx FIFO */
+X                i32Res = (0);   
+N            }
+N        }
+N    }
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32UART_ReadData(uart_Ch_e eCh, uint8_t pu8Data[], uint32_t *pu32Len)
+N{
+N
+N    uint16_t u16DataFrames;
+N    uint16_t u16Error = 0U;
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if ( (0x0U != pu8Data) && (0x0U != pu32Len) )
+N    {
+N        *pu32Len = 0U;
+N
+N        /* Check if any data stored */
+N        u16DataFrames = biGetSIDISR_RFDN(eCh);
+X        u16DataFrames = (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> RFDN);
+N
+N        while( (*pu32Len < 32U) && (u16DataFrames > 0U) )
+N        {
+N            /* Check if error */
+N            u16Error = biGetSIDISR_ERI(eCh);
+X            u16Error = (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> ERI);
+N
+N            if( 0U == u16Error )
+N            {
+N                pu8Data[*pu32Len] = u8GetSIRFIFO(eCh);
+X                pu8Data[*pu32Len] = (*((volatile u8SIRFIFO_byte_view *)((0xC0404020U) + ((uint8_t)(eCh) * 0x1000U) )) );
+N                u16DataFrames = biGetSIDISR_RFDN(eCh);
+X                u16DataFrames = (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> RFDN);
+N                (*pu32Len)++;
+N            }
+N            else
+N            {
+N                i32Res = C_FAILED;  /* Error */
+X                i32Res = (-1);   
+N                break;
+N            }
+N        }
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32UART_IsTimeOut(uart_Ch_e eCh)
+N{
+N    int32_t i32TimeOut;
+N
+N    /* Read time-out status */
+N    i32TimeOut = (int32_t) biGetSIDISR_TOUT(eCh);
+X    i32TimeOut = (int32_t) (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> TOUT);
+N
+N    /* Clear the time-out flag */
+N    if(1 == i32TimeOut)
+N    {
+N        vClrSIDISR_TOUT(eCh);
+X        (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> TOUT=(0));
+N    }
+N
+N    return i32TimeOut;
+N}
+N
+N/****************************************************************************/
+N
+Nuint8_t u8UART_GetRxDataCnt(uart_Ch_e eCh)
+N{
+N    return (uint8_t) biGetSIDISR_RFDN(eCh);
+X    return (uint8_t) (((volatile SIDISR_bit_view_st *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) -> RFDN);
+N}
+N
+N/****************************************************************************/
+N
+Nuint32_t u32UART_IsTxFifoReady(uart_Ch_e eCh)
+N{
+N    return (uint32_t) biGetSISCISR_TRDY(eCh);
+X    return (uint32_t) (((volatile SISCISR_bit_view_st *)((0xC040400CU) + ((uint8_t)(eCh) * 0x1000U) )) -> TRDY);
+N}
+N
+N/****************************************************************************/
+N
+Nuint16_t u16UART_GetDmaIrqStat(uart_Ch_e eCh)
+N{
+N  uint16_t u16IrqStat;
+N
+N  /* Get register value */
+N  u16IrqStat = u16GetSIDISR(eCh);
+X  u16IrqStat = (*((volatile u16SIDISR_halfword_view *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) );
+N
+N  return u16IrqStat;
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_ClearDmaIrqFlag(uart_Ch_e eCh, uart_Flag_e eFlag)
+N{
+N    uint16_t u16Mask;
+N
+N    /* Mask for clearing */
+N    u16Mask = (uint16_t)(eFlag);
+N
+N    /* Select the register */
+N    if(eFlag > UART_FLG_OERS)
+N    {
+N        /* DIDISR register */
+N        vSetSIDISR(eCh, ~u16Mask);
+X        (*((volatile u16SIDISR_halfword_view *)((0xC0404008U) + ((uint8_t)(eCh) * 0x1000U) )) = (~u16Mask));
+N    }
+N    else
+N    {
+N       /* SISCISR register */
+N       vSetSISCISR(eCh, (uint8_t)(~u16Mask));
+X       (*((volatile u8SISCISR_byte_view *)((0xC040400CU) + ((uint8_t)(eCh) * 0x1000U) )) = ((uint8_t)(~u16Mask)));
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nuint32_t u32UART_IsTxFifoFree(uart_Ch_e eCh)
+N{
+N    return (uint32_t) biGetSISCISR_TXALS(eCh);
+X    return (uint32_t) (((volatile SISCISR_bit_view_st *)((0xC040400CU) + ((uint8_t)(eCh) * 0x1000U) )) -> TXALS);
+N}
+N
+N/****************************************************************************/
+Nstatic  void  vUART_Wait(void)
+N{
+N    volatile uint32_t  u32Cnt;
+N    /* Wait ~15 core cycles */
+N    for(u32Cnt = 0; u32Cnt < 15; u32Cnt++)
+N    {    
+N        /* violation of MISRA rule 1.1 due to necessary inline assembler */
+N/*        __asm("nop");*/                       /* PRQA S 1006 */
+N        ;
+N    }    
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vUART_Reset(uart_Ch_e eCh)
+N{
+N    /* Apply reset */
+N    vSetSIFCR_SWRST(eCh, 1);
+X    (((volatile SIFCR_bit_view_st *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) -> SWRST=(1));
+N
+N    /* 
+N     *  Make sure that the previous instrcution is completed
+N     *  ARM data barrier replaces the MIPS "sync"
+N     */
+N    /* violation of MISRA rule 1.1 due to necessary inline assembler */
+N
+N    __DSB(); 
+N
+N    /* Wait for reset to complete (TX49 frequency / EBUS frequency = 1 / 2) */
+N    vUART_Wait();
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_FifoResetTx(uart_Ch_e eCh, uart_SwRst_e eRstEn)
+N{
+N    uint16_t u16RegVal;
+N
+N    u16RegVal = u16GetSIFCR(eCh);
+X    u16RegVal = (*((volatile u16SIFCR_halfword_view *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) );
+N
+N    if(UART_RST_ACTIVE == eRstEn)
+N    {
+N        u16RegVal |= 0x05U;
+N    }
+N    else
+N    {
+N        u16RegVal &= 0xfffaU;
+N    }
+N
+N    vSetSIFCR(eCh, u16RegVal);
+X    (*((volatile u16SIFCR_halfword_view *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) = (u16RegVal));
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_FifoResetRx(uart_Ch_e eCh, uart_SwRst_e eRstEn)
+N{
+N    uint16_t u16RegVal;
+N
+N    u16RegVal = u16GetSIFCR(eCh);
+X    u16RegVal = (*((volatile u16SIFCR_halfword_view *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) );
+N
+N    if(UART_RST_ACTIVE == eRstEn)
+N    {
+N        u16RegVal |= 0x03U;
+N    }
+N    else
+N    {
+N        u16RegVal &= 0xfffcU;
+N    }
+N
+N    vSetSIFCR(eCh, u16RegVal);
+X    (*((volatile u16SIFCR_halfword_view *)((0xC0404010U) + ((uint8_t)(eCh) * 0x1000U) )) = (u16RegVal));
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_TxRunCtrl(uart_Ch_e eCh, uart_Tsdr_e eRunCtrl)
+N{
+N    vSetSIFLCR_TSDR(eCh, (uint16_t)eRunCtrl);
+X    (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> TSDR=((uint16_t)eRunCtrl));
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vUART_TxBreak(uart_Ch_e eCh, uart_Tbrk_e eBreak)
+N{
+N    vSetSIFLCR_TBRK(eCh, (uint16_t)eBreak);
+X    (((volatile SIFLCR_bit_view_st *)((0xC0404014U) + ((uint8_t)(eCh) * 0x1000U) )) -> TBRK=((uint16_t)eBreak));
+N}
+N
+N/****************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */   
+N
+N/****************************************************************************/
+N
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1847 / 10.3 - cast of complex integer expression with underlying type
+N** |                        "type" to non-integer type "type" not allowed 
+N** | CONS.  : disable
+N** | REASON : to use macros from i/o header files, unavoidable when addressing 
+N** |          memory mapped registers 
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :   Deactivated:
+N** |     Not requested Rules: 
+N** |         Rule 11.3 [A] : Functions must always have prototype declarations
+N** |
+N** |     Requested Rules:
+N** |         Rule 10.1 [R] : Restrict implicit conversions for integer type expressions:
+N** |                         Used to have access to register bits of I/O header files
+N** |         Rule 10.5 [R] : Bitwise `~' and `<<' expressions on unsigned char or unsigned short:
+N** |                         Used for bit manuplations of I/O header files
+N** |         Rule 17.4 [R] : No pointer arithmetic other than array indexing:
+N** |                         This is necessary to have access to macros generated by converter tool
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

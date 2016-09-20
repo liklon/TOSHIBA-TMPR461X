@@ -1,0 +1,47 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.16a
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: a liklon, b, LIC=LJWPC-7WLX1-HRLXN-YFEJ1-DGA92-PB7L9
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.16a
+Toolchain Path:  d:\Keil_v5\ARM\ARMCC_505u2\Bin
+C Compiler:      Armcc.exe V5.05 update 2 (build 169)
+Assembler:       Armasm.exe V5.05 update 2 (build 169)
+Linker/Locator:  ArmLink.exe V5.05 update 2 (build 169)
+Library Manager: ArmAr.exe V5.05 update 2 (build 169)
+Hex Converter:   FromElf.exe V5.05 update 2 (build 169)
+CPU DLL:         SARMCR4.DLL V5.16a
+Dialog DLL:      DLM.DLL V1.24.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.15.2
+Dialog DLL:      TLM.DLL V1.22.0.2
+ 
+<h2>Project:</h2>
+E:\产品资料\8.8液晶仪表\CM0046_CAN\CR_CM0046_SRC_201607051703\CR_CM0046_SRC\bld\B_Keil\keil\graphics\graphics.uvproj
+Project File Date:  09/20/2016
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.05 update 2 (build 169)', folder: 'd:\Keil_v5\ARM\ARMCC_505u2\Bin'
+Build Project 'graphics' - Target 'graphics'
+Before Build - User command #1: cmd.exe /c del /F "..\out\graphics.*"
+E:\产品资料\8.8液晶仪表\CM0046_CAN\CR_CM0046_SRC_201607051703\CR_CM0046_SRC\bld\B_Keil\keil\out\graphics.build_log.htm
+另一个程序正在使用此文件，进程无法访问。
+compiling needle_amp.c...
+compiling needle_speed.c...
+linking...
+..\out\graphics.axf: Warning: L6305W: Image does not have an entry point. (Not specified or not set due to multiple choices.)
+E:\产品资料\8.8液晶仪表\CM0046_CAN\CR_CM0046_SRC_201607051703\CR_CM0046_SRC\bld\B_Keil\keil\graphics.scat(34): warning: L6314W: No section matches pattern *(.ROMIntrographics).
+Program Size: Code=0 RO-data=3179568 RW-data=0 ZI-data=589760  
+Finished: 0 information, 2 warning and 0 error messages.
+FromELF: creating hex file...
+After Build - User command #1: fromelf --bincombined --bincombined_base=0x02100000  --output  "..\out\graphics.bin"  "..\out\graphics.axf"
+After Build - User command #2: fromelf.exe --m32 --output  "..\out\graphics.s32"  "..\out\graphics.axf"
+"..\out\graphics.axf" - 0 Error(s), 2 Warning(s).
+Build Time Elapsed:  00:00:06
+</pre>
+</body>
+</html>

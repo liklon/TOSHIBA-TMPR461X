@@ -1,0 +1,1082 @@
+L 1 "..\..\..\..\lldd\src\wdt.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : WDT low level driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : WDT
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "wdt_io.h"                   /* WDT registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\wdt_io.h" 1
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : WDT 
+N/  Date of creation (y-m-d:time): 2013-06-28+02:00  :  16:37:56.874+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.10 $ 
+N/  Excel Sheet ver.             : vv1.1
+N/  Excel Sheet date             : 2013-Jun-19
+N/  Excel Sheet author           : VAG
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION :
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : 
+N*   LIBRARIES   :
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.10 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef WDTIO_H
+N#define WDTIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"                      /* Core specific primitive type definitions */ 
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 39 "..\..\..\..\lldd\hdr\wdt_io.h" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_WDT_IO_H_REVISION     "$Revision: 1.10 $"
+N#define LLDD_WDT_IO_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N/* disable following Misra errors for io files */
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230   /* Rule 6.4  [R] : Bitfields can only have `unsigned int' or `signed int' types */
+N#endif    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: CNT                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0002000                             
+N*       ACCESS  : 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define CNT_REG__       0xC0002000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   CNT	:20; 	 /* 0..19  bit(s) R */ 
+N  uint32_t   	:12; 	 /* 20..31  bit(s) R */                    
+N} CNT_bit_view_st;
+N        
+N
+N/* WORD View */
+Ntypedef uint32_t u32CNT_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitCNT()     ((volatile CNT_bit_view_st *)\
+N(CNT_REG__ ))
+X#define pst_bitCNT()     ((volatile CNT_bit_view_st *)(CNT_REG__ ))
+N        
+N/* Pointer to WORD  */ 
+N#define pu32CNT()     ((volatile u32CNT_word_view *)\
+N(CNT_REG__ ))
+X#define pu32CNT()     ((volatile u32CNT_word_view *)(CNT_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetCNT_CNT() (pst_bitCNT() -> CNT)
+N            
+N/* Word access */
+N
+N#define u32GetCNT()  (*pu32CNT() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: MIN                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0002004                             
+N*       ACCESS  : 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define MIN_REG__       0xC0002004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   MIN	:20; 	 /* 0..19  bit(s) R/W */ 
+N  uint32_t   	:12; 	 /* 20..31  bit(s) R */                    
+N} MIN_bit_view_st;
+N        
+N
+N/* WORD View */
+Ntypedef uint32_t u32MIN_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitMIN()     ((volatile MIN_bit_view_st *)\
+N(MIN_REG__ ))
+X#define pst_bitMIN()     ((volatile MIN_bit_view_st *)(MIN_REG__ ))
+N        
+N/* Pointer to WORD  */ 
+N#define pu32MIN()     ((volatile u32MIN_word_view *)\
+N(MIN_REG__ ))
+X#define pu32MIN()     ((volatile u32MIN_word_view *)(MIN_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetMIN_MIN() (pst_bitMIN() -> MIN)
+N#define vSetMIN_MIN(ParValue)  (pst_bitMIN() -> MIN=(ParValue))
+N            
+N/* Word access */
+N#define vSetMIN(ParValue)  (*pu32MIN() = (ParValue))
+N#define u32GetMIN()  (*pu32MIN() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: MAX                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0002008                             
+N*       ACCESS  : 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define MAX_REG__       0xC0002008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   MAX	:20; 	 /* 0..19  bit(s) R/W */ 
+N  uint32_t   	:12; 	 /* 20..31  bit(s) R */                    
+N} MAX_bit_view_st;
+N        
+N
+N/* WORD View */
+Ntypedef uint32_t u32MAX_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitMAX()     ((volatile MAX_bit_view_st *)\
+N(MAX_REG__ ))
+X#define pst_bitMAX()     ((volatile MAX_bit_view_st *)(MAX_REG__ ))
+N        
+N/* Pointer to WORD  */ 
+N#define pu32MAX()     ((volatile u32MAX_word_view *)\
+N(MAX_REG__ ))
+X#define pu32MAX()     ((volatile u32MAX_word_view *)(MAX_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetMAX_MAX() (pst_bitMAX() -> MAX)
+N#define vSetMAX_MAX(ParValue)  (pst_bitMAX() -> MAX=(ParValue))
+N            
+N/* Word access */
+N#define vSetMAX(ParValue)  (*pu32MAX() = (ParValue))
+N#define u32GetMAX()  (*pu32MAX() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: CTL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC000200C                             
+N*       ACCESS  : BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define CTL_REG__       0xC000200CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   WDTDIS	:1; 	 /* 0..0  bit(s) R/W */ 
+N  uint8_t   	:7; 	 /* 1..31  bit(s) R */                    
+N} CTL_bit_view_st;
+N        
+N     
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitCTL()     ((volatile CTL_bit_view_st *)\
+N(CTL_REG__ ))
+X#define pst_bitCTL()     ((volatile CTL_bit_view_st *)(CTL_REG__ ))
+N             
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetCTL_WDTDIS() (pst_bitCTL() -> WDTDIS)
+N#define vSetCTL_WDTDIS(ParValue)  (pst_bitCTL() -> WDTDIS=(ParValue))     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: CMD                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0002010                             
+N*       ACCESS  : BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define CMD_REG__       0xC0002010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CMD	:16; 	 /* 0..15  bit(s) W */                    
+N} CMD_bit_view_st;
+N        
+N     
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitCMD()     ((volatile CMD_bit_view_st *)\
+N(CMD_REG__ ))
+X#define pst_bitCMD()     ((volatile CMD_bit_view_st *)(CMD_REG__ ))
+N             
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetCMD_CMD(ParValue) (pst_bitCMD() -> CMD=(ParValue))
+N
+N
+N/******************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */ 
+N/******************************************************************************/
+N    
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :   Deactivated:
+N** |     Requested Rules:
+N** |         Rule 6.4  [R] : Bitfields can only have `unsigned int' or `signed int' types
+N** |                         Used for bit definitons generated by converter tool
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************/
+N
+N#endif /* WDTIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\wdt.c" 2
+N#include "wdt.h"                      /* Own definitions */
+L 1 "..\..\..\..\lldd\inc\wdt.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : WDT low level driver header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : WDT
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef _WDT_H
+N#define _WDT_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_WDT_H_REVISION     "$Revision: 1.6 $"
+N#define LLDD_WDT_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N/* watchdog commands */
+Ntypedef enum tag_wdt_command_e
+N{
+N    WDT_STOP_AND_CLEAR = 0x5354,    /* stop and clear command */
+N    WDT_CLEAR          = 0x4352     /* clear command */
+N} wdt_command_e;
+N
+N/* watchdog commands */
+Ntypedef enum tag_wdt_enable_e
+N{
+N    WDT_ENABLE = 0,    /* start WDT */
+N    WDT_DISABLE        /* stop WDT */
+N} wdt_enable_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N/* watchdog configuration structure */
+Ntypedef struct tag_wdt_config_st
+N{
+N    uint32_t u32CountValue;    /* Reference counter value */
+N    uint32_t u32LowerLimit;    /* Lower window limit (MIN value) */
+N    uint32_t u32UpperLimit;    /* Upper window limit (MAX value) */
+N} wdt_config_st;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*            Forward declarations             *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vWDT_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_SetCounterValue
+N *
+N * Purpose:       Set Counter value
+N *
+N * Inputs:        u32Value     Counter value to be set
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_SetCounterValue(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      u32WDT_GetCounterValue
+N *
+N * Purpose:       Get Counter value
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: Counter value
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nuint32_t u32WDT_GetCounterValue(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_SetLowerLimit
+N *
+N * Purpose:       Set lower limit compare value
+N *
+N * Inputs:        u32Value     Lower limit compare value to be set
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_SetLowerLimit(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      u32WDT_GetLowerLimit
+N *
+N * Purpose:       Get lower limit compare value
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: Lower limit compare value
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nuint32_t u32WDT_GetLowerLimit(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_SetUpperLimit
+N *
+N * Purpose:       Set upper limit compare value
+N *
+N * Inputs:        u32Value     Upper limit compare value to be set
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_SetUpperLimit(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      u32WDT_GetUppererLimit
+N *
+N * Purpose:       Get upper limit compare value
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: Upper limit compare value
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nuint32_t u32WDT_GetUppererLimit(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_Enable
+N *
+N * Purpose:       Enable / disable WDT
+N *
+N * Inputs:        eEn     WDT_ENABLE / WDT_DISABLE
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_Enable(wdt_enable_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      eWDT_CheckIfEnabled
+N *
+N * Purpose:       Check if WDT is enabled
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: WDT_ENABLE / WDT_DISABLE
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nwdt_enable_e eWDT_CheckIfEnabled(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_SetCommand
+N *
+N * Purpose:       Set command
+N *
+N * Inputs:        eCommand     Command
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_SetCommand(wdt_command_e eCommand);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vWDT_Config
+N *
+N * Purpose:       Set configuration of WDT
+N *
+N * Inputs:        stConfig     Cofiguration values
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vWDT_Config(wdt_config_st stConfig);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* _WDT_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\wdt.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_WDT_C_REVISION     "$Revision: 1.8 $"
+N#define LLDD_WDT_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/ 
+N
+Nstatic uint8_t au8LLDD_WDT_C_REVISION[]    = LLDD_WDT_C_REVISION;
+Xstatic uint8_t au8LLDD_WDT_C_REVISION[]    = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_WDT_C_TAG[]         = LLDD_WDT_C_TAG;
+Xstatic uint8_t au8LLDD_WDT_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_WDT_H_REVISION[]    = LLDD_WDT_H_REVISION;
+Xstatic uint8_t au8LLDD_WDT_H_REVISION[]    = "$Revision: 1.6 $";
+Nstatic uint8_t au8LLDD_WDT_H_TAG[]         = LLDD_WDT_H_TAG;
+Xstatic uint8_t au8LLDD_WDT_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_WDT_IO_H_REVISION[] = LLDD_WDT_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_WDT_IO_H_REVISION[] = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_WDT_IO_H_TAG[]      = LLDD_WDT_IO_H_TAG;
+Xstatic uint8_t au8LLDD_WDT_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Function definition             *
+N**********************************************/
+N
+Nvoid vWDT_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_WDT_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_WDT_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_WDT_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_WDT_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_WDT_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_WDT_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32WDT_GetCounterValue(void)
+N{
+N    return u32GetCNT();
+X    return (*((volatile u32CNT_word_view *)(0xC0002000U )) );
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vWDT_SetLowerLimit(uint32_t u32Value)
+N{
+N    vSetMIN(u32Value);
+X    (*((volatile u32MIN_word_view *)(0xC0002004U )) = (u32Value));
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32WDT_GetLowerLimit(void)
+N{
+N    return u32GetMIN();
+X    return (*((volatile u32MIN_word_view *)(0xC0002004U )) );
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vWDT_SetUpperLimit(uint32_t u32Value)
+N{
+N    vSetMAX(u32Value);
+X    (*((volatile u32MAX_word_view *)(0xC0002008U )) = (u32Value));
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32WDT_GetUppererLimit(void)
+N{
+N    return u32GetMAX();
+X    return (*((volatile u32MAX_word_view *)(0xC0002008U )) );
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vWDT_Enable(wdt_enable_e eEn)
+N{
+N    vSetCTL_WDTDIS(eEn);
+X    (((volatile CTL_bit_view_st *)(0xC000200CU )) -> WDTDIS=(eEn));
+N}
+N
+N
+N/****************************************************************************/
+Nwdt_enable_e eWDT_CheckIfEnabled(void)
+N{
+N    return (wdt_enable_e)biGetCTL_WDTDIS();
+X    return (wdt_enable_e)(((volatile CTL_bit_view_st *)(0xC000200CU )) -> WDTDIS);
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vWDT_SetCommand(wdt_command_e eCommand)
+N{
+N    vSetCMD_CMD(eCommand);
+X    (((volatile CMD_bit_view_st *)(0xC0002010U )) -> CMD=(eCommand));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vWDT_Config(wdt_config_st stConfig)
+N{
+N    vSetMIN(stConfig.u32LowerLimit);
+X    (*((volatile u32MIN_word_view *)(0xC0002004U )) = (stConfig . u32LowerLimit));
+N    vSetMAX(stConfig.u32UpperLimit);
+X    (*((volatile u32MAX_word_view *)(0xC0002008U )) = (stConfig . u32UpperLimit));
+N}
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************/
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: wdt.c
+N**  $Revision: 1.8 $
+N**  $Date: 2015/05/04 09:07:15 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :  5 (0286) String literal contains character which is not a
+N** |                    member of the basic source character set.
+N** |           5 (0288) Source file '<TEXT>' has comments containing characters
+N** |                    which are not members of the basic source character set.
+N** |          22 (3218) File scope static, '<TEXT>', only accessed in one
+N** |                    function.
+N** |          45 (0303) Cast between a pointer to volatile object and an
+N** |                    integral type.
+N** |          52 (1503) The function '%1s' is defined but is not used within
+N** |                    this project.
+N** |
+N** | REASON : This is neccessary because of driver version control.
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N/****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

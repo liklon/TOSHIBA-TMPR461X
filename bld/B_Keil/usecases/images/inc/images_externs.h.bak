@@ -1,0 +1,276 @@
+/*****************************************************************************
+*   This software is copyright protected. All rights reserved 
+*   Toshiba Electronics Europe GmbH 
+*   European LSI Design and Engineering Center (ELDEC)
+****************************************************************************** 
+*   File Name   : $RCSfile: $ 
+*   Description : Image file
+****************************************************************************** 
+*   PROJECT     : Capricorn 
+*   MODULE      : Graphics 
+*               : $Name: $ 
+*   LIBRARIES   : None 
+*   AUTHOR      : $Author: $
+****************************************************************************** 
+*   VERSION     : $Revision: $ 
+*   RELEASE     : Preliminary & Confidential 
+*   DATE        : $Date: $ 
+*   SOURCE MOD. : $Source: $ 
+*   LOG:        : please have a look at the end of the file
+*****************************************************************************/
+/************************************************************************
+ * Generated using TEE Capricorn: Image to C Code Generator
+ * Version 2.00
+ * Toshiba Electronics Europe GmbH
+ * This software is copyright protected. All rights reserved
+ ************************************************************************
+ * Converted on: 21.01.2016 @ 10:59
+ ************************************************************************/
+#ifndef IMAGES_EXTERNS_H
+#define IMAGES_EXTERNS_H
+#include "images_defs.h"
+#include "captypes.h"
+#include "gf.h"
+
+/**
+	A__Z
+*/
+extern const uint32_t u32_AA0_RLE[AA0_SIZE];
+extern uint32_t u32_AA0_RLE_RAM[AA0_SIZE];
+
+extern const uint32_t u32_AA1_RLE[AA1_SIZE];
+extern uint32_t u32_AA1_RLE_RAM[AA1_SIZE];
+
+extern const uint32_t u32_AA10_RLE[AA10_SIZE];
+extern uint32_t u32_AA10_RLE_RAM[AA10_SIZE];
+
+extern const uint32_t u32_AA11_RLE[AA11_SIZE];
+extern uint32_t u32_AA11_RLE_RAM[AA11_SIZE];
+
+extern const uint32_t u32_AA12_RLE[AA12_SIZE];
+extern uint32_t u32_AA12_RLE_RAM[AA12_SIZE];
+
+extern const uint32_t u32_AA13_RLE[AA13_SIZE];
+extern uint32_t u32_AA13_RLE_RAM[AA13_SIZE];
+
+extern const uint32_t u32_AA14_RLE[AA14_SIZE];
+extern uint32_t u32_AA14_RLE_RAM[AA14_SIZE];
+
+extern const uint32_t u32_AA15_RLE[AA15_SIZE];
+extern uint32_t u32_AA15_RLE_RAM[AA15_SIZE];
+
+extern const uint32_t u32_AA16_RLE[AA16_SIZE];
+extern uint32_t u32_AA16_RLE_RAM[AA16_SIZE];
+
+extern const uint32_t u32_AA17_RLE[AA17_SIZE];
+extern uint32_t u32_AA17_RLE_RAM[AA17_SIZE];
+
+extern const uint32_t u32_AA18_RLE[AA18_SIZE];
+extern uint32_t u32_AA18_RLE_RAM[AA18_SIZE];
+
+extern const uint32_t u32_AA19_RLE[AA19_SIZE];
+extern uint32_t u32_AA19_RLE_RAM[AA19_SIZE];
+
+extern const uint32_t u32_AA2_RLE[AA2_SIZE];
+extern uint32_t u32_AA2_RLE_RAM[AA2_SIZE];
+
+extern const uint32_t u32_AA20_RLE[AA20_SIZE];
+extern uint32_t u32_AA20_RLE_RAM[AA20_SIZE];
+
+extern const uint32_t u32_AA21_RLE[AA21_SIZE];
+extern uint32_t u32_AA21_RLE_RAM[AA21_SIZE];
+
+extern const uint32_t u32_AA22_RLE[AA22_SIZE];
+extern uint32_t u32_AA22_RLE_RAM[AA22_SIZE];
+
+extern const uint32_t u32_AA23_RLE[AA23_SIZE];
+extern uint32_t u32_AA23_RLE_RAM[AA23_SIZE];
+
+extern const uint32_t u32_AA24_RLE[AA24_SIZE];
+extern uint32_t u32_AA24_RLE_RAM[AA24_SIZE];
+
+extern const uint32_t u32_AA25_RLE[AA25_SIZE];
+extern uint32_t u32_AA25_RLE_RAM[AA25_SIZE];
+
+extern const uint32_t u32_AA3_RLE[AA3_SIZE];
+extern uint32_t u32_AA3_RLE_RAM[AA3_SIZE];
+
+extern const uint32_t u32_AA4_RLE[AA4_SIZE];
+extern uint32_t u32_AA4_RLE_RAM[AA4_SIZE];
+
+extern const uint32_t u32_AA5_RLE[AA5_SIZE];
+extern uint32_t u32_AA5_RLE_RAM[AA5_SIZE];
+
+extern const uint32_t u32_AA6_RLE[AA6_SIZE];
+extern uint32_t u32_AA6_RLE_RAM[AA6_SIZE];
+
+extern const uint32_t u32_AA7_RLE[AA7_SIZE];
+extern uint32_t u32_AA7_RLE_RAM[AA7_SIZE];
+
+extern const uint32_t u32_AA8_RLE[AA8_SIZE];
+extern uint32_t u32_AA8_RLE_RAM[AA8_SIZE];
+
+extern const uint32_t u32_AA9_RLE[AA9_SIZE];
+extern gf_image_st stImage_AA[];
+extern uint32_t u32_AA9_RLE_RAM[AA9_SIZE];
+
+/*************************************************************************END A__Z***/
+
+/**
+	a_z
+*/
+extern const uint32_t u32_a0_RLE[A0_SIZE];
+extern uint32_t u32_a0_RLE_RAM[A0_SIZE];
+
+extern const uint32_t u32_a1_RLE[A1_SIZE];
+extern uint32_t u32_a1_RLE_RAM[A1_SIZE];
+
+extern const uint32_t u32_a10_RLE[A10_SIZE];
+extern uint32_t u32_a10_RLE_RAM[A10_SIZE];
+
+extern const uint32_t u32_a11_RLE[A11_SIZE];
+extern uint32_t u32_a11_RLE_RAM[A11_SIZE];
+
+extern const uint32_t u32_a12_RLE[A12_SIZE];
+extern uint32_t u32_a12_RLE_RAM[A12_SIZE];
+
+extern const uint32_t u32_a13_RLE[A13_SIZE];
+extern uint32_t u32_a13_RLE_RAM[A13_SIZE];
+
+extern const uint32_t u32_a14_RLE[A14_SIZE];
+extern uint32_t u32_a14_RLE_RAM[A14_SIZE];
+
+extern const uint32_t u32_a15_RLE[A15_SIZE];
+extern uint32_t u32_a15_RLE_RAM[A15_SIZE];
+
+extern const uint32_t u32_a16_RLE[A16_SIZE];
+extern uint32_t u32_a16_RLE_RAM[A16_SIZE];
+
+extern const uint32_t u32_a17_RLE[A17_SIZE];
+extern uint32_t u32_a17_RLE_RAM[A17_SIZE];
+
+extern const uint32_t u32_a18_RLE[A18_SIZE];
+extern uint32_t u32_a18_RLE_RAM[A18_SIZE];
+
+extern const uint32_t u32_a19_RLE[A19_SIZE];
+extern uint32_t u32_a19_RLE_RAM[A19_SIZE];
+
+extern const uint32_t u32_a2_RLE[A2_SIZE];
+extern uint32_t u32_a2_RLE_RAM[A2_SIZE];
+
+extern const uint32_t u32_a20_RLE[A20_SIZE];
+extern uint32_t u32_a20_RLE_RAM[A20_SIZE];
+
+extern const uint32_t u32_a21_RLE[A21_SIZE];
+extern uint32_t u32_a21_RLE_RAM[A21_SIZE];
+
+extern const uint32_t u32_a22_RLE[A22_SIZE];
+extern uint32_t u32_a22_RLE_RAM[A22_SIZE];
+
+extern const uint32_t u32_a23_RLE[A23_SIZE];
+extern uint32_t u32_a23_RLE_RAM[A23_SIZE];
+
+extern const uint32_t u32_a24_RLE[A24_SIZE];
+extern uint32_t u32_a24_RLE_RAM[A24_SIZE];
+
+extern const uint32_t u32_a25_RLE[A25_SIZE];
+extern uint32_t u32_a25_RLE_RAM[A25_SIZE];
+
+extern const uint32_t u32_a3_RLE[A3_SIZE];
+extern uint32_t u32_a3_RLE_RAM[A3_SIZE];
+
+extern const uint32_t u32_a4_RLE[A4_SIZE];
+extern uint32_t u32_a4_RLE_RAM[A4_SIZE];
+
+extern const uint32_t u32_a5_RLE[A5_SIZE];
+extern uint32_t u32_a5_RLE_RAM[A5_SIZE];
+
+extern const uint32_t u32_a6_RLE[A6_SIZE];
+extern uint32_t u32_a6_RLE_RAM[A6_SIZE];
+
+extern const uint32_t u32_a7_RLE[A7_SIZE];
+extern uint32_t u32_a7_RLE_RAM[A7_SIZE];
+
+extern const uint32_t u32_a8_RLE[A8_SIZE];
+extern uint32_t u32_a8_RLE_RAM[A8_SIZE];
+
+extern const uint32_t u32_a9_RLE[A9_SIZE];
+extern gf_image_st stImage_a[];
+extern uint32_t u32_a9_RLE_RAM[A9_SIZE];
+
+/*************************************************************************END  a_z****/
+
+
+
+
+
+
+
+void vGfCopyImagesROMtoRAM(void);
+void vGfInitImages(void);
+
+#endif
+/****************************************************************************/
+
+/************************** BEGIN of DISCLAIMER   **************************
+
+- TOSHIBA is continually working to improve the quality and reliability of   
+  its products. Nevertheless, semiconductor devices in general can
+  malfunction or fail due to their inherent electrical sensitivity and 
+  vulnerability to physical stress. It is the responsibility of the buyer, 
+  when utilizing TOSHIBA products, to comply with the standards of safety 
+  in making a safe design for the entire system, and to avoid situations in 
+  which a malfunction or failure of such TOSHIBA products could cause loss of
+  human life, bodily injury or damage to property.
+
+  In developing your designs, please ensure that TOSHIBA products are used 
+  within specified operating ranges as set forth in the most recent TOSHIBA
+  products specifications.
+  Also, please keep in mind the precautions and conditions set forth in the 
+  ï¿½Handling Guide for Semiconductor Devices,ï¿?or 
+  ï¿½TOSHIBA Semiconductor Reliability Handbookï¿?etc..
+
+- The Toshiba products listed in this document are intended for usage in 
+  general electronics applications (computer, personal equipment, office 
+  equipment, measuring equipment, industrial robotics, domestic appliances,
+  etc.). 
+  These Toshiba products are neither intended nor warranted for usage in 
+  equipment that requires extraordinarily high quality and/or reliability or
+  a malfunction or failure of which may cause loss of human life or bodily 
+  injury (ï¿½Unintended Usageï¿?. Unintended Usage include atomic energy control
+  instruments, airplane or spaceship instruments, transportation instruments, 
+  traffic signal instruments, combustion control instruments, medical 
+  instruments, all types of safety devices, etc.. 
+  Unintended Usage of Toshiba products listed in this document shall be 
+  made at the customerï¿½s own risk.
+
+- Toshiba assumes no liability for any damage or losses (including but not
+  limited to, loss of business profit,business interruption, loss of business
+  information,and other pecuniary losses) occurring 
+  from the use of, or inability to use, this product.
+
+- The products described in this document are subject to the foreign exchange
+  and foreign trade laws.
+
+- The products described in this document contain components made in the
+  United States and subject to export control of the U.S. authorities. 
+  Diversion contrary to the U.S. law is prohibited.
+
+- The information contained herein is presented only as a guide for the
+  applications of our products. 
+  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+  of intellectual property or other rights of the third parties which may 
+  result from its use. 
+  No license is granted by implication or otherwise under any intellectual 
+  property or other rights of TOSHIBA CORPORATION or others.
+
+- The information contained herein is subject to change without notice.
+
+****************************  END of DISCLAIMER ****************************/
+
+/********************************* BEGIN OF LOG ******************************
+*
+* $Log: $
+*
+*********************************** END OF LOG ******************************/
+

@@ -1,0 +1,3803 @@
+L 1 "..\..\..\..\lldd\src\esei.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Reference ESEI Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Extended Serial Expansion Interface (ESEI)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "esei_io.h"                      /* ESEI registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\esei_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : ESEI 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  17:53:46.122+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.11 $ 
+N/  Excel Sheet ver.             : vv1.1
+N/  Excel Sheet date             : 2013-Jun-21
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : ESEI low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : ESEI
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.11 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef X_ESEIIO_H   /* for MISRA 2004 check ESEIIO_H not possible */
+N#define X_ESEIIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 40 "..\..\..\..\lldd\hdr\esei_io.h" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_ESEI_IO_H_REVISION     "$Revision: 1.11 $"
+N#define LLDD_ESEI_IO_H_TAG          "$Name: LLDD_1_6 $"
+N     
+N/****************************************************************************
+N*                          CHANNEL SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+Ntypedef enum tag_esei_ch_def_e
+N{
+N    ESEI_0__ = 0x0,                       /* Channel 0 */
+N    ESEI_1__ = 0x1000                     /* Channel 1 */
+N} esei_ch_def_e; 
+N
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEMCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322000                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEMCR_REG__       0xC0322000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   BCLR	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   SESTP	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   DLOOP	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   	:3; 	 /* 3..5  bit(s) R */
+N  uint8_t   OPMODE	:2; 	 /* 6..7  bit(s) R/W */                    
+N} SEMCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SEMCR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEMCR(ctrlr)     ((volatile SEMCR_bit_view_st *)\
+N(SEMCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEMCR(ctrlr)     ((volatile SEMCR_bit_view_st *)(SEMCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SEMCR(ctrlr)     ((volatile u8SEMCR_byte_view *)\
+N(SEMCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SEMCR(ctrlr)     ((volatile u8SEMCR_byte_view *)(SEMCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSEMCR_BCLR(ctrlr) (pst_bitSEMCR(ctrlr) -> BCLR)
+N#define vSetSEMCR_BCLR(ctrlr,ParValue)  (pst_bitSEMCR(ctrlr) -> BCLR=(ParValue))
+N#define biGetSEMCR_SESTP(ctrlr) (pst_bitSEMCR(ctrlr) -> SESTP)
+N#define vSetSEMCR_SESTP(ctrlr,ParValue)  (pst_bitSEMCR(ctrlr) -> SESTP=(ParValue))
+N#define biGetSEMCR_DLOOP(ctrlr) (pst_bitSEMCR(ctrlr) -> DLOOP)
+N#define vSetSEMCR_DLOOP(ctrlr,ParValue)  (pst_bitSEMCR(ctrlr) -> DLOOP=(ParValue))
+N#define biGetSEMCR_OPMODE(ctrlr) (pst_bitSEMCR(ctrlr) -> OPMODE)
+N#define vSetSEMCR_OPMODE(ctrlr,ParValue)  (pst_bitSEMCR(ctrlr) -> OPMODE=(ParValue))
+N            
+N/* byte access */
+N#define vSetSEMCR(ctrlr,ParValue) (*pu8SEMCR(ctrlr) = (ParValue))
+N#define u8GetSEMCR(ctrlr) (*pu8SEMCR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SECR0                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322004                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SECR0_REG__       0xC0322004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   SPOL	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   SPHA	:1; 	 /* 1..1  bit(s) R/W */
+N  uint16_t   SBOS	:1; 	 /* 2..2  bit(s) R/W */
+N  uint16_t   MSTR	:1; 	 /* 3..3  bit(s) R/W */
+N  uint16_t   IFSPSE	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   SSIVAL	:1; 	 /* 5..5  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 6..7  bit(s) R */
+N  uint16_t   STFIE	:1; 	 /* 8..8  bit(s) R/W */
+N  uint16_t   SUEIE	:1; 	 /* 9..9  bit(s) R/W */
+N  uint16_t   SOEIE	:1; 	 /* 10..10  bit(s) R/W */
+N  uint16_t   SILIE	:1; 	 /* 11..11  bit(s) R/W */ 
+N  uint16_t   	:4; 	 /* 12..31  bit(s) R */                    
+N} SECR0_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SECR0_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SECR0_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSECR0(ctrlr)     ((volatile SECR0_bit_view_st *)\
+N(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSECR0(ctrlr)     ((volatile SECR0_bit_view_st *)(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SECR0(ctrlr)     ((volatile SECR0_byte_view_st *)\
+N(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SECR0(ctrlr)     ((volatile SECR0_byte_view_st *)(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SECR0(ctrlr)     ((volatile u16SECR0_halfword_view *)\
+N(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SECR0(ctrlr)     ((volatile u16SECR0_halfword_view *)(SECR0_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSECR0_SPOL(ctrlr) (pst_bitSECR0(ctrlr) -> SPOL)
+N#define vSetSECR0_SPOL(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SPOL=(ParValue))
+N#define biGetSECR0_SPHA(ctrlr) (pst_bitSECR0(ctrlr) -> SPHA)
+N#define vSetSECR0_SPHA(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SPHA=(ParValue))
+N#define biGetSECR0_SBOS(ctrlr) (pst_bitSECR0(ctrlr) -> SBOS)
+N#define vSetSECR0_SBOS(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SBOS=(ParValue))
+N#define biGetSECR0_MSTR(ctrlr) (pst_bitSECR0(ctrlr) -> MSTR)
+N#define vSetSECR0_MSTR(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> MSTR=(ParValue))
+N#define biGetSECR0_IFSPSE(ctrlr) (pst_bitSECR0(ctrlr) -> IFSPSE)
+N#define vSetSECR0_IFSPSE(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> IFSPSE=(ParValue))
+N#define biGetSECR0_SSIVAL(ctrlr) (pst_bitSECR0(ctrlr) -> SSIVAL)
+N#define vSetSECR0_SSIVAL(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SSIVAL=(ParValue))
+N#define biGetSECR0_STFIE(ctrlr) (pst_bitSECR0(ctrlr) -> STFIE)
+N#define vSetSECR0_STFIE(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> STFIE=(ParValue))
+N#define biGetSECR0_SUEIE(ctrlr) (pst_bitSECR0(ctrlr) -> SUEIE)
+N#define vSetSECR0_SUEIE(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SUEIE=(ParValue))
+N#define biGetSECR0_SOEIE(ctrlr) (pst_bitSECR0(ctrlr) -> SOEIE)
+N#define vSetSECR0_SOEIE(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SOEIE=(ParValue))
+N#define biGetSECR0_SILIE(ctrlr) (pst_bitSECR0(ctrlr) -> SILIE)
+N#define vSetSECR0_SILIE(ctrlr,ParValue)  (pst_bitSECR0(ctrlr) -> SILIE=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSECR0L(ctrlr,ParValue) (pst_u8SECR0(ctrlr) -> u8L = (ParValue))
+N#define u8GetSECR0L(ctrlr) (pst_u8SECR0(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSECR0H(ctrlr,ParValue) (pst_u8SECR0(ctrlr) -> u8H = (ParValue))
+N#define u8GetSECR0H(ctrlr) (pst_u8SECR0(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSECR0(ctrlr,ParValue) (*pu16SECR0(ctrlr)  = (ParValue))
+N#define u16GetSECR0(ctrlr) (*pu16SECR0(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SECR1                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322008                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SECR1_REG__       0xC0322008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   SSZ	:5; 	 /* 0..4  bit(s) R/W */
+N  uint16_t   	:3; 	 /* 5..7  bit(s) R */
+N  uint16_t   SER	:8; 	 /* 8..15  bit(s) R/W */                    
+N} SECR1_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SECR1_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SECR1_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSECR1(ctrlr)     ((volatile SECR1_bit_view_st *)\
+N(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSECR1(ctrlr)     ((volatile SECR1_bit_view_st *)(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SECR1(ctrlr)     ((volatile SECR1_byte_view_st *)\
+N(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SECR1(ctrlr)     ((volatile SECR1_byte_view_st *)(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SECR1(ctrlr)     ((volatile u16SECR1_halfword_view *)\
+N(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SECR1(ctrlr)     ((volatile u16SECR1_halfword_view *)(SECR1_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSECR1_SSZ(ctrlr) (pst_bitSECR1(ctrlr) -> SSZ)
+N#define vSetSECR1_SSZ(ctrlr,ParValue)  (pst_bitSECR1(ctrlr) -> SSZ=(ParValue))
+N#define biGetSECR1_SER(ctrlr) (pst_bitSECR1(ctrlr) -> SER)
+N#define vSetSECR1_SER(ctrlr,ParValue)  (pst_bitSECR1(ctrlr) -> SER=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSECR1L(ctrlr,ParValue) (pst_u8SECR1(ctrlr) -> u8L = (ParValue))
+N#define u8GetSECR1L(ctrlr) (pst_u8SECR1(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSECR1H(ctrlr,ParValue) (pst_u8SECR1(ctrlr) -> u8H = (ParValue))
+N#define u8GetSECR1H(ctrlr) (pst_u8SECR1(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSECR1(ctrlr,ParValue) (*pu16SECR1(ctrlr)  = (ParValue))
+N#define u16GetSECR1(ctrlr) (*pu16SECR1(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEFSR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC032200C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEFSR_REG__       0xC032200CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   IFS	:10; 	 /* 0..9  bit(s) R/W */ 
+N  uint16_t   	:6; 	 /* 10..31  bit(s) R */                    
+N} SEFSR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SEFSR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SEFSR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEFSR(ctrlr)     ((volatile SEFSR_bit_view_st *)\
+N(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEFSR(ctrlr)     ((volatile SEFSR_bit_view_st *)(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SEFSR(ctrlr)     ((volatile SEFSR_byte_view_st *)\
+N(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SEFSR(ctrlr)     ((volatile SEFSR_byte_view_st *)(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SEFSR(ctrlr)     ((volatile u16SEFSR_halfword_view *)\
+N(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SEFSR(ctrlr)     ((volatile u16SEFSR_halfword_view *)(SEFSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSEFSR_IFS(ctrlr) (pst_bitSEFSR(ctrlr) -> IFS)
+N#define vSetSEFSR_IFS(ctrlr,ParValue)  (pst_bitSEFSR(ctrlr) -> IFS=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSEFSRL(ctrlr,ParValue) (pst_u8SEFSR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSEFSRL(ctrlr) (pst_u8SEFSR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSEFSRH(ctrlr,ParValue) (pst_u8SEFSR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSEFSRH(ctrlr) (pst_u8SEFSR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSEFSR(ctrlr,ParValue) (*pu16SEFSR(ctrlr)  = (ParValue))
+N#define u16GetSEFSR(ctrlr) (*pu16SEFSR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SSSR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322010                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SSSR_REG__       0xC0322010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   SSS	:8; 	 /* 0..7  bit(s) R/W */                    
+N} SSSR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SSSR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSSSR(ctrlr)     ((volatile SSSR_bit_view_st *)\
+N(SSSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSSSR(ctrlr)     ((volatile SSSR_bit_view_st *)(SSSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SSSR(ctrlr)     ((volatile u8SSSR_byte_view *)\
+N(SSSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SSSR(ctrlr)     ((volatile u8SSSR_byte_view *)(SSSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSSSR_SSS(ctrlr) (pst_bitSSSR(ctrlr) -> SSS)
+N#define vSetSSSR_SSS(ctrlr,ParValue)  (pst_bitSSSR(ctrlr) -> SSS=(ParValue))
+N            
+N/* byte access */
+N#define vSetSSSR(ctrlr,ParValue) (*pu8SSSR(ctrlr) = (ParValue))
+N#define u8GetSSSR(ctrlr) (*pu8SSSR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SESR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322014                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SESR_REG__       0xC0322014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   SRRDY	:1; 	 /* 0..0  bit(s) R */
+N  uint32_t   STRDY	:1; 	 /* 1..1  bit(s) R */
+N  uint32_t   SIDLE	:1; 	 /* 2..2  bit(s) R */
+N  uint32_t   IFSD	:1; 	 /* 3..3  bit(s) R */
+N  uint32_t   	:1; 	 /* 4..4  bit(s) R */
+N  uint32_t   SETF	:1; 	 /* 5..5  bit(s) R/W1C */
+N  uint32_t   SEUE	:1; 	 /* 6..6  bit(s) R/W1C */
+N  uint32_t   SEOE	:1; 	 /* 7..7  bit(s) R/W1C */
+N  uint32_t   	:6; 	 /* 8..13  bit(s) R */
+N  uint32_t   RBSI	:1; 	 /* 14..14  bit(s) R */
+N  uint32_t   TBSI	:1; 	 /* 15..15  bit(s) R */
+N  uint32_t   SEILC	:1; 	 /* 16..16  bit(s) R */
+N  uint32_t   PAR	:1; 	 /* 17..17  bit(s) R/W1C */
+N  uint32_t   RBF	:1; 	 /* 18..18  bit(s) R */
+N  uint32_t   TBF	:1; 	 /* 19..19  bit(s) R */ 
+N  uint32_t   	:12; 	 /* 20..31  bit(s) R */                    
+N} SESR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} SESR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} SESR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32SESR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSESR(ctrlr)     ((volatile SESR_bit_view_st *)\
+N(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSESR(ctrlr)     ((volatile SESR_bit_view_st *)(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SESR(ctrlr)     ((volatile SESR_byte_view_st *)\
+N(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SESR(ctrlr)     ((volatile SESR_byte_view_st *)(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16SESR(ctrlr)     ((volatile SESR_halfword_view_st *)\
+N(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u16SESR(ctrlr)     ((volatile SESR_halfword_view_st *)(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32SESR(ctrlr)     ((volatile u32SESR_word_view *)\
+N(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32SESR(ctrlr)     ((volatile u32SESR_word_view *)(SESR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSESR_SRRDY(ctrlr) (pst_bitSESR(ctrlr) -> SRRDY)            
+N#define biGetSESR_STRDY(ctrlr) (pst_bitSESR(ctrlr) -> STRDY)            
+N#define biGetSESR_SIDLE(ctrlr) (pst_bitSESR(ctrlr) -> SIDLE)            
+N#define biGetSESR_IFSD(ctrlr) (pst_bitSESR(ctrlr) -> IFSD)
+N#define biGetSESR_SETF(ctrlr) (pst_bitSESR(ctrlr) -> SETF)
+N#define vClrSESR_SETF(ctrlr) (pst_bitSESR(ctrlr) -> SETF = (1))
+N#define biGetSESR_SEUE(ctrlr) (pst_bitSESR(ctrlr) -> SEUE)
+N#define vClrSESR_SEUE(ctrlr) (pst_bitSESR(ctrlr) -> SEUE = (1))
+N#define biGetSESR_SEOE(ctrlr) (pst_bitSESR(ctrlr) -> SEOE)
+N#define vClrSESR_SEOE(ctrlr) (pst_bitSESR(ctrlr) -> SEOE = (1))            
+N#define biGetSESR_RBSI(ctrlr) (pst_bitSESR(ctrlr) -> RBSI)            
+N#define biGetSESR_TBSI(ctrlr) (pst_bitSESR(ctrlr) -> TBSI)            
+N#define biGetSESR_SEILC(ctrlr) (pst_bitSESR(ctrlr) -> SEILC)
+N#define biGetSESR_PAR(ctrlr) (pst_bitSESR(ctrlr) -> PAR)
+N#define vClrSESR_PAR(ctrlr) (pst_bitSESR(ctrlr) -> PAR = (1))            
+N#define biGetSESR_RBF(ctrlr) (pst_bitSESR(ctrlr) -> RBF)            
+N#define biGetSESR_TBF(ctrlr) (pst_bitSESR(ctrlr) -> TBF)
+N            
+N/* LL-struct byte access */
+N#define vSetSESRLL(ctrlr,ParValue) (pst_u8SESR(ctrlr) -> u8LL = (ParValue))
+N#define u8GetSESRLL(ctrlr) (pst_u8SESR(ctrlr) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSESRLH(ctrlr,ParValue) (pst_u8SESR(ctrlr) -> u8LH = (ParValue))
+N#define u8GetSESRLH(ctrlr) (pst_u8SESR(ctrlr) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSESRHL(ctrlr,ParValue) (pst_u8SESR(ctrlr) -> u8HL = (ParValue))
+N#define u8GetSESRHL(ctrlr) (pst_u8SESR(ctrlr) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSESRHH(ctrlr,ParValue) (pst_u8SESR(ctrlr) -> u8HH = (ParValue))
+N#define u8GetSESRHH(ctrlr) (pst_u8SESR(ctrlr) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSESRL(ctrlr,ParValue) (pst_u16SESR(ctrlr) -> u16L = (ParValue))
+N#define u16GetSESRL(ctrlr) (pst_u16SESR(ctrlr) -> u16L)
+N#define vSetSESRH(ctrlr,ParValue) (pst_u16SESR(ctrlr) -> u16H = (ParValue))
+N#define u16GetSESRH(ctrlr) (pst_u16SESR(ctrlr) -> u16H)
+N            
+N/* Word access */
+N#define vSetSESR(ctrlr,ParValue)  (*pu32SESR(ctrlr) = (ParValue))
+N#define u32GetSESR(ctrlr)  (*pu32SESR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEDR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322018                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEDR_REG__       0xC0322018U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   DR	:16; 	 /* 0..15  bit(s) R/W */                    
+N} SEDR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SEDR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SEDR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEDR(ctrlr)     ((volatile SEDR_bit_view_st *)\
+N(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEDR(ctrlr)     ((volatile SEDR_bit_view_st *)(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SEDR(ctrlr)     ((volatile SEDR_byte_view_st *)\
+N(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SEDR(ctrlr)     ((volatile SEDR_byte_view_st *)(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SEDR(ctrlr)     ((volatile u16SEDR_halfword_view *)\
+N(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SEDR(ctrlr)     ((volatile u16SEDR_halfword_view *)(SEDR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSEDR_DR(ctrlr) (pst_bitSEDR(ctrlr) -> DR)
+N#define vSetSEDR_DR(ctrlr,ParValue)  (pst_bitSEDR(ctrlr) -> DR=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSEDRL(ctrlr,ParValue) (pst_u8SEDR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSEDRL(ctrlr) (pst_u8SEDR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSEDRH(ctrlr,ParValue) (pst_u8SEDR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSEDRH(ctrlr) (pst_u8SEDR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSEDR(ctrlr,ParValue) (*pu16SEDR(ctrlr)  = (ParValue))
+N#define u16GetSEDR(ctrlr) (*pu16SEDR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SERSR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC032201C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SERSR_REG__       0xC032201CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   RS	:16; 	 /* 0..15  bit(s) R */                    
+N} SERSR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SERSR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SERSR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSERSR(ctrlr)     ((volatile SERSR_bit_view_st *)\
+N(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSERSR(ctrlr)     ((volatile SERSR_bit_view_st *)(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SERSR(ctrlr)     ((volatile SERSR_byte_view_st *)\
+N(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SERSR(ctrlr)     ((volatile SERSR_byte_view_st *)(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SERSR(ctrlr)     ((volatile u16SERSR_halfword_view *)\
+N(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SERSR(ctrlr)     ((volatile u16SERSR_halfword_view *)(SERSR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSERSR_RS(ctrlr) (pst_bitSERSR(ctrlr) -> RS)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetSERSRL(ctrlr) (pst_u8SERSR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetSERSRH(ctrlr) (pst_u8SERSR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetSERSR(ctrlr) (*pu16SERSR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEFLR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322020                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEFLR_REG__       0xC0322020U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   SRBFL	:5; 	 /* 0..4  bit(s) R */
+N  uint16_t   	:3; 	 /* 5..7  bit(s) R */
+N  uint16_t   STBFL	:5; 	 /* 8..12  bit(s) R */ 
+N  uint16_t   	:3; 	 /* 13..31  bit(s) R */                    
+N} SEFLR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SEFLR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SEFLR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEFLR(ctrlr)     ((volatile SEFLR_bit_view_st *)\
+N(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEFLR(ctrlr)     ((volatile SEFLR_bit_view_st *)(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SEFLR(ctrlr)     ((volatile SEFLR_byte_view_st *)\
+N(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SEFLR(ctrlr)     ((volatile SEFLR_byte_view_st *)(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SEFLR(ctrlr)     ((volatile u16SEFLR_halfword_view *)\
+N(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SEFLR(ctrlr)     ((volatile u16SEFLR_halfword_view *)(SEFLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSEFLR_SRBFL(ctrlr) (pst_bitSEFLR(ctrlr) -> SRBFL)            
+N#define biGetSEFLR_STBFL(ctrlr) (pst_bitSEFLR(ctrlr) -> STBFL)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetSEFLRL(ctrlr) (pst_u8SEFLR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetSEFLRH(ctrlr) (pst_u8SEFLR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetSEFLR(ctrlr) (*pu16SEFLR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEILR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322024                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEILR_REG__       0xC0322024U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   RXIFL	:5; 	 /* 0..4  bit(s) R/W */
+N  uint16_t   	:3; 	 /* 5..7  bit(s) R */
+N  uint16_t   TXIFL	:5; 	 /* 8..12  bit(s) R/W */ 
+N  uint16_t   	:3; 	 /* 13..31  bit(s) R */                    
+N} SEILR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} SEILR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16SEILR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEILR(ctrlr)     ((volatile SEILR_bit_view_st *)\
+N(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEILR(ctrlr)     ((volatile SEILR_bit_view_st *)(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8SEILR(ctrlr)     ((volatile SEILR_byte_view_st *)\
+N(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8SEILR(ctrlr)     ((volatile SEILR_byte_view_st *)(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16SEILR(ctrlr)     ((volatile u16SEILR_halfword_view *)\
+N(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16SEILR(ctrlr)     ((volatile u16SEILR_halfword_view *)(SEILR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSEILR_RXIFL(ctrlr) (pst_bitSEILR(ctrlr) -> RXIFL)
+N#define vSetSEILR_RXIFL(ctrlr,ParValue)  (pst_bitSEILR(ctrlr) -> RXIFL=(ParValue))
+N#define biGetSEILR_TXIFL(ctrlr) (pst_bitSEILR(ctrlr) -> TXIFL)
+N#define vSetSEILR_TXIFL(ctrlr,ParValue)  (pst_bitSEILR(ctrlr) -> TXIFL=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetSEILRL(ctrlr,ParValue) (pst_u8SEILR(ctrlr) -> u8L = (ParValue))
+N#define u8GetSEILRL(ctrlr) (pst_u8SEILR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetSEILRH(ctrlr,ParValue) (pst_u8SEILR(ctrlr) -> u8H = (ParValue))
+N#define u8GetSEILRH(ctrlr) (pst_u8SEILR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetSEILR(ctrlr,ParValue) (*pu16SEILR(ctrlr)  = (ParValue))
+N#define u16GetSEILR(ctrlr) (*pu16SEILR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEPR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322028                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEPR_REG__       0xC0322028U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   SPISE	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   SPIE	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   SPEO	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   	:1; 	 /* 3..3  bit(s) R */
+N  uint8_t   SPEN	:1; 	 /* 4..4  bit(s) R/W */
+N  uint8_t   SPP01	:2; 	 /* 5..6  bit(s) R/W */ 
+N  uint8_t   	:1; 	 /* 7..31  bit(s) R */                    
+N} SEPR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SEPR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSEPR(ctrlr)     ((volatile SEPR_bit_view_st *)\
+N(SEPR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSEPR(ctrlr)     ((volatile SEPR_bit_view_st *)(SEPR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SEPR(ctrlr)     ((volatile u8SEPR_byte_view *)\
+N(SEPR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SEPR(ctrlr)     ((volatile u8SEPR_byte_view *)(SEPR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSEPR_SPISE(ctrlr) (pst_bitSEPR(ctrlr) -> SPISE)
+N#define vSetSEPR_SPISE(ctrlr,ParValue)  (pst_bitSEPR(ctrlr) -> SPISE=(ParValue))
+N#define biGetSEPR_SPIE(ctrlr) (pst_bitSEPR(ctrlr) -> SPIE)
+N#define vSetSEPR_SPIE(ctrlr,ParValue)  (pst_bitSEPR(ctrlr) -> SPIE=(ParValue))
+N#define biGetSEPR_SPEO(ctrlr) (pst_bitSEPR(ctrlr) -> SPEO)
+N#define vSetSEPR_SPEO(ctrlr,ParValue)  (pst_bitSEPR(ctrlr) -> SPEO=(ParValue))
+N#define biGetSEPR_SPEN(ctrlr) (pst_bitSEPR(ctrlr) -> SPEN)
+N#define vSetSEPR_SPEN(ctrlr,ParValue)  (pst_bitSEPR(ctrlr) -> SPEN=(ParValue))
+N#define biGetSEPR_SPP01(ctrlr) (pst_bitSEPR(ctrlr) -> SPP01)
+N#define vSetSEPR_SPP01(ctrlr,ParValue)  (pst_bitSEPR(ctrlr) -> SPP01=(ParValue))
+N            
+N/* byte access */
+N#define vSetSEPR(ctrlr,ParValue) (*pu8SEPR(ctrlr) = (ParValue))
+N#define u8GetSEPR(ctrlr) (*pu8SEPR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SELCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC032202C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SELCR_REG__       0xC032202CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   SLB	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   SLTB	:1; 	 /* 1..1  bit(s) R/W */ 
+N  uint8_t   	:6; 	 /* 2..31  bit(s) R */                    
+N} SELCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8SELCR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSELCR(ctrlr)     ((volatile SELCR_bit_view_st *)\
+N(SELCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitSELCR(ctrlr)     ((volatile SELCR_bit_view_st *)(SELCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8SELCR(ctrlr)     ((volatile u8SELCR_byte_view *)\
+N(SELCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8SELCR(ctrlr)     ((volatile u8SELCR_byte_view *)(SELCR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSELCR_SLB(ctrlr) (pst_bitSELCR(ctrlr) -> SLB)
+N#define vSetSELCR_SLB(ctrlr,ParValue)  (pst_bitSELCR(ctrlr) -> SLB=(ParValue))
+N#define biGetSELCR_SLTB(ctrlr) (pst_bitSELCR(ctrlr) -> SLTB)
+N#define vSetSELCR_SLTB(ctrlr,ParValue)  (pst_bitSELCR(ctrlr) -> SLTB=(ParValue))
+N            
+N/* byte access */
+N#define vSetSELCR(ctrlr,ParValue) (*pu8SELCR(ctrlr) = (ParValue))
+N#define u8GetSELCR(ctrlr) (*pu8SELCR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEDER_R                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322030                             
+N*       ACCESS  : 32,                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEDER_R_REG__       0xC0322030U
+N     
+N/************************       STRUCTURES        ***************************/
+N        
+N/* WORD View */
+Ntypedef uint32_t u32SEDER_R_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to WORD  */ 
+N#define pu32SEDER_R(ctrlr)     ((volatile u32SEDER_R_word_view *)\
+N(SEDER_R_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32SEDER_R(ctrlr)     ((volatile u32SEDER_R_word_view *)(SEDER_R_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N            
+N/* Word access */
+N
+N#define u32GetSEDER_R(ctrlr)  (*pu32SEDER_R(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: SEDER_W                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0322030                             
+N*       ACCESS  : 32,                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define SEDER_W_REG__       0xC0322030U
+N     
+N/************************       STRUCTURES        ***************************/
+N        
+N/* WORD View */
+Ntypedef uint32_t u32SEDER_W_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to WORD  */ 
+N#define pu32SEDER_W(ctrlr)     ((volatile u32SEDER_W_word_view *)\
+N(SEDER_W_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32SEDER_W(ctrlr)     ((volatile u32SEDER_W_word_view *)(SEDER_W_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N            
+N/* Word access */
+N#define vSetSEDER_W(ctrlr,ParValue)  (*pu32SEDER_W(ctrlr) = (ParValue))
+N#define u32GetSEDER_W(ctrlr)  (*pu32SEDER_W(ctrlr) )
+N            
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/    
+N
+N#endif /* X_ESEIIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\esei.c" 2
+N#include "esei.h"                         /* ESEI LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\esei.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : ESEI low level driver header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : ESEI
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.9 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef ESEI_H
+N#define ESEI_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N/* disable following Misra errors for io files */
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1861  /* Rule 20.1 [R] : No definition, redefinition, or undefinition of reserved words and standard library names */
+N#endif
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_ESEI_H_REVISION     "$Revision: 1.9 $"
+N#define LLDD_ESEI_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/* Depth of the TX FIFO */
+N#define ESEI_TXFIFO_DEPTH                   20
+N                                            
+N/* Depth of the RX FIFO */                      
+N#define ESEI_RXFIFO_DEPTH                   20
+N
+N/* RX Buffer ready timeout  */
+N#define ESEI_RX_RDY_TIMEOUT                 20000000
+N
+N/* TX Buffer ready timeout  */
+N#define ESEI_TX_RDY_TIMEOUT                 2000000
+N
+N/* Minimal bit rate */
+N#define ESEI_MIN_BITRATE                    (((140 * 1000000) / (2*(0xFF + 1))) / 1000)
+N
+N/* Maximal bit rate */
+N#define ESEI_MAX_BITRATE                    (((140 * 1000000) / 2) / 1000)
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N/****************************************************************************
+N*                          CHANNEL SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+N
+Ntypedef enum tag_esei_ch_e
+N{
+N    ESEI_0 = 0x0,                       /* Channel 0 */
+N    ESEI_1 = 0x1000                     /* Channel 1 */
+N} esei_ch_e; 
+N
+N/* Enable/disable channel */                        
+Ntypedef enum tag_esei_en_e                  
+N{                                           
+N    ESEI_DISABLE = 0x0,                     /* Enable */
+N    ESEI_ENABLE  = 0x1                      /* Disable */
+N} esei_en_e;                                
+N                                            
+N/* IRQ status  */                           
+Ntypedef enum tag_esei_irq_e                 
+N{                                           
+N    ESEI_IRQ_NONE   = 0x0,                  /* IRQ inactive */
+N    ESEI_IRQ_ACTIVE = 0x1                   /* IRQ active */
+N} esei_irq_e;
+N
+N/* *** */
+N
+N/*
+N *  SEMCR parameter values
+N */
+N
+N/* SEMCR.OPMODE - Operational mode  */
+Ntypedef enum tag_esei_opmode_e
+N{
+N    ESEI_OPM_CFG = 0x1,                     /* Configuration mode */
+N    ESEI_OPM_ACT = 0x2                      /* Active mode */
+N} esei_opmode_e;
+N
+N/* SEMCR.SESTP - SEI stop */
+Ntypedef enum tag_esei_sestp_e
+N{
+N    ESEI_START = 0x0,                       /* Normal operation */
+N    ESEI_STOP  = 0x1                        /* Stop after the current transfer */
+N} esei_sestp_e;
+N
+N/* *** */
+N
+N/*
+N *  SECR0 parameter values
+N */
+N
+N/* SECR0.SSIVAL - SSI valid */
+Ntypedef enum tag_esei_ssival_e
+N{
+N    ESEI_SSI_INVALID = 0x0,                 /* SSI not valid in Master mode */
+N    ESEI_SSI_VALID   = 0x1                  /* SSI valid in Master mode */
+N} esei_ssival_e;
+N
+N/* SECR0.MSTR - Master/slave mode */
+Ntypedef enum tag_esei_mstr_e
+N{
+N    ESEI_MODE_SLAVE  = 0x0,                 /* Slave mode */
+N    ESEI_MODE_MASTER = 0x1                  /* Master mode */
+N} esei_mstr_e;
+N
+N/* SECR0.SBOS - Bit order */
+Ntypedef enum tag_esei_sbos_e
+N{
+N    ESEI_BIT_LSB = 0x0,                     /* LSB is shifted first */
+N    ESEI_BIT_MSB = 0x1                      /* MSB is shifted first */
+N} esei_sbos_e;
+N
+N/* SECR0.SPHA - Clock phase */
+Ntypedef enum tag_esei_spha_e
+N{
+N    ESEI_ACT_HI = 0x0,                      /* Active high clock selected */
+N    ESEI_ACT_LO = 0x1                       /* Active low clock selected */
+N} esei_spha_e;
+N
+N/* SECR0.SPOL - Polarity */
+Ntypedef enum tag_esei_spol_e
+N{
+N    ESEI_POL_SAMPLE = 0x0,                  /* Sample on 1-st edge, shift on 2-nd */
+N    ESEI_POL_SHIFT  = 0x1                   /* Shift on 1-st edge, sample on 2-nd */
+N} esei_spol_e;
+N
+N/* *** */
+N
+N/*
+N *  SECR1 parameter values
+N */
+N
+N/* SECR1.SSZ - Transfer size */
+Ntypedef enum tag_esei_ssz_e
+N{
+N    ESEI_TXSIZE_SFL  = 0x00,                /* spec.in SEDER.SFL(Master Mode only)*/
+N    ESEI_TXSIZE_5    = 0x05,                /* 5 bits */
+N    ESEI_TXSIZE_6    = 0x06,                /* 6 bits */
+N    ESEI_TXSIZE_7    = 0x07,                /* 7 bits */                
+N    ESEI_TXSIZE_8    = 0x08,                /* 8 bits */                
+N    ESEI_TXSIZE_9    = 0x09,                /* 9 bits */                
+N    ESEI_TXSIZE_10   = 0x0a,                /* 10 bits */                
+N    ESEI_TXSIZE_11   = 0x0b,                /* 11 bits */                
+N    ESEI_TXSIZE_12   = 0x0c,                /* 12 bits */                
+N    ESEI_TXSIZE_13   = 0x0d,                /* 13 bits */                
+N    ESEI_TXSIZE_14   = 0x0e,                /* 14 bits */                
+N    ESEI_TXSIZE_15   = 0x0f,                /* 15 bits */                
+N    ESEI_TXSIZE_16   = 0x10,                /* 16 bits */
+N    ESEI_TXSIZE_17   = 0x11                 /* 17 bits */
+N} esei_ssz_e;
+N
+N/* SECR1.SER - Transfer rate TODO */
+Ntypedef enum tag_esei_ser_e
+N{
+N    ESEI_BRATE_60M   = 0x01,                /* 60Mbps (full-duplex) Peak Data Rate*/
+N    ESEI_BRATE_40M   = 0x02,                /* 40Mbps (full-duplex) */
+N    ESEI_BRATE_30M   = 0x03,                /* 30Mbps (full-duplex) */
+N    ESEI_BRATE_24M   = 0x04,                /* 24Mbps (full-duplex) */
+N    ESEI_BRATE_20M   = 0x05,                /* 20Mbps (full-duplex) */
+N    ESEI_BRATE_17M14 = 0x06,                /* 17.14Mbps (full-duplex) */
+N    ESEI_BRATE_7M5   = 0x0f,                /* 7.5Mbps (full-duplex) */
+N    ESEI_BRATE_1M    = 0x77                 /* 1Mbps (full-duplex) */
+N} esei_ser_e;
+N
+N/* *** */
+N
+N/*
+N *  SESR parameter values
+N */
+N
+N/* SESR.SEILC - Loop completed */
+Ntypedef enum tag_esei_seilc_e
+N{
+N    ESEI_LOOP_NOELPSD = 0x0,                /* Loop Not Elapsed*/
+N    ESEI_LOOP_ELPSD   = 0x1                 /* Loop Elapsed */
+N} esei_seilc_e;
+N
+N/* SESR.SEOE/SESR.SEUE/SESR.SETF/SESR.PAR - Error status */
+Ntypedef enum tag_esei_errstat_e
+N{
+N    ESEI_NOERR = 0x0,                       /* No error */
+N    ESEI_ERROR = 0x1                        /* Error occured */
+N} esei_errstat_e;
+N
+N/* SESR.SIDLE - Idle indicator */
+Ntypedef enum tag_esei_seidle_e
+N{
+N    ESEI_ACTIVE  = 0x0,                     /* SEI is active */
+N    ESEI_IDLE    = 0x1                      /* SEI is in idle state */
+N} esei_sidle_e;
+N
+N/* SESR.STRDY/SRRDY - Transmit ready indicator */
+Ntypedef enum tag_esei_rdy_e
+N{
+N    ESEI_NOT_READY = 0x0,                   /* SEI Transmit/receive ready */
+N    ESEI_READY     = 0x1                    /* SEI Transmit/receive not ready */
+N} esei_rdy_e;
+N
+N/* SESR.IFSD - Inter-frame space delay indicator */
+Ntypedef enum tag_esei_ifsd_e
+N{
+N    ESEI_CNT_STOPPED = 0x0,                 /* Counter stopped */
+N    ESEI_CNT_RUNS    = 0x1                  /* Counter running */
+N} esei_ifsd_e;
+N
+N/* *** */
+N
+N/*
+N *  SEPR parameter values
+N */
+N
+N/* SEPR.SPP01 - Set ESEI parity */
+Ntypedef enum tag_esei_spp01_e
+N{
+N    ESEI_PARITY_BIT = 0x0,                  /* Added bit is real parity bit */
+N    ESEI_ALWAYS_0   = 0x2,                  /* Added parity bit is always 0 */
+N    ESEI_ALWAYS_1   = 0x3                   /* Added parity bit is always 1 */
+N} esei_spp01_e;
+N
+N/* SEPR.SPEO - Parity */
+Ntypedef enum tag_esei_speo_e
+N{
+N    ESEI_PARITY_EVEN = 0x0,                 /* Even parity */
+N    ESEI_PARITY_ODD  = 0x1                  /* Odd parity */
+N} esei_speo_e;
+N
+N/* *** */
+N
+N/*
+N *  SELCR parameter values
+N */
+N
+N/* SELCR.SLB - Loop blocking */
+Ntypedef enum tag_esei_slb_e
+N{
+N    ESEI_RELEASED = 0x0,                    /* Transmission released */
+N    ESEI_BLOCKED  = 0x1                     /* Transmission blocked */
+N} esei_slb_e;
+N
+N/* *** */
+N
+N/*
+N *  SEDER parameter values
+N */
+N
+N/* SEDER.PR - Parity report */
+Ntypedef enum tag_esei_pr_e
+N{
+N    ESEI_PARITY_OK  = 0x0,                  /* Parity correct */
+N    ESEI_PARITY_ERR = 0x1                   /* Parity error in the frame */
+N} esei_pr_e;
+N
+N/* SEDER.SCID - Chip select ID */
+Ntypedef enum tag_esei_scid_e
+N{
+N    ESEI_CS0  = 0x0,                        /* Chip select 0 */
+N    ESEI_CS1  = 0x1,                        /* Chip select 1 */
+N    ESEI_CS2  = 0x2,                        
+N    ESEI_CS3  = 0x3,                        
+N    ESEI_CS4  = 0x4,                        
+N    ESEI_CS5  = 0x5,                        
+N    ESEI_CS6  = 0x6,                        
+N    ESEI_CS7  = 0x7                         /* Chip select 8 */
+N} esei_scid_e;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/* Control configuration */
+Ntypedef struct tag_esei_ctrlcfg_st
+N{
+N    esei_mstr_e eMode;                      /* Master/Slave mode select */
+N    esei_sbos_e eBitOrder;                  /* Bit order (LSB/MSB) selection */
+N    esei_ssival_e eSsiValid;                /* SSI valid in master mode */
+N    esei_spha_e ePhase;                     /* SEI Phase selection */
+N    esei_spol_e ePolarity;                  /* SEI Polarity (TX format) */
+N} esei_ctrlcfg_st;
+N
+N/* IRQ configuration */
+Ntypedef struct tag_esei_irqcfg_st
+N{
+N    esei_en_e eIdleIrqEn;                   /* IDLE IRQ enable */
+N    esei_en_e eOvflowIrqEn;                 /* Overflow IRQ enable */
+N    esei_en_e eUndflowIrqEn;                /* Underflow IRQ enable */
+N    esei_en_e eTransFmtIrqEn;               /* Transfer format error IRQ enable */
+N    esei_en_e eParityIrqEn;                 /* Parity IRQ enable */
+N} esei_irqcfg_st;
+N
+N/* Sent entry data structure */
+Ntypedef struct tag_esei_dSEntry_st
+N{
+N    esei_scid_e eSlaveId;                   /* Chip Select ID of the slave */
+N    esei_ssz_e eFrameSize;                  /* Frame Size */
+N    uint16_t u16Data;                       /* Data entry */
+N} esei_dSEntry_st;
+N
+N/* Receive entry data structure */
+Ntypedef struct tag_esei_dREntry_st
+N{
+N    esei_scid_e eSlaveId;                   /* Chip Select ID of the slave */
+N    esei_ssz_e eFrameSize;                  /* Frame size */
+N    esei_pr_e eParityErr;                   /* Parity error report (RX data only) */
+N    uint16_t u16Data;                       /* Data entry */
+N} esei_dREntry_st;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_Config
+N *
+N * Purpose:       ESEI module configuration
+N *
+N * Inputs:        eCh    ESEI Channel
+N *                stCfg  ESEI configuration structure
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   Calling this function will switch ESEI module
+N *                to configuration mode, and then back to Previous.
+N *                Please note that any running transfers will be
+N *                immediately stopped (even within current frame).
+N *
+N ***************************************************************************/
+Nvoid vESEI_Config(esei_ch_e eCh, esei_ctrlcfg_st stCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_SetOpMode
+N *
+N * Purpose:       Set the ESEI operation mode
+N *
+N * Inputs:        eCh    ESEI Channel
+N *                eMode  ESEI operation mode
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   Please note that when switching to configuration mode
+N *                any running transfers will be immediately stopped
+N *                (even within current frame).
+N *
+N ***************************************************************************/
+Nvoid vESEI_SetOpMode(esei_ch_e eCh, esei_opmode_e eMode);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_SetTransferSize
+N *
+N * Purpose:       Set the frame transfer size
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                eTxSize  Transfer frame size
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function switches temporary to Configuration mode.
+N *                Please note that any running transfers will be immediately
+N *                stopped (even within current frame).
+N *
+N ***************************************************************************/
+Nvoid vESEI_SetTransferSize(esei_ch_e eCh, esei_ssz_e eTxSize);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_SetBitRate
+N *
+N * Purpose:       Set the bit rate
+N *
+N * Inputs:        eCh         ESEI Channel
+N *                u32BitRate  Bit Rate value in [kbps]
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on bit rate out of range
+N *
+N * Limitations:   This function switches temporary to Configuration mode.
+N *                The function will always check if the target frequency
+N *                can be reached in current configuration.
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_SetBitRate(esei_ch_e eCh, uint32_t u32BitRate);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ParityConfig
+N *
+N * Purpose:       Set the parity options
+N *
+N * Inputs:        eCh       ESEI Channel
+N *                eBitType  Type of the parity bit
+N *                eMode     Parity mode (odd/even)
+N *                eStopEn   ESEI stop on parity error enable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   Calling this function will switch ESEI module
+N *                to configuration mode, and then back to Previous.
+N *                Please note that any running transfers will be
+N *                immediately stopped (even within current frame).
+N *
+N ***************************************************************************/
+Nvoid vESEI_ParityConfig(esei_ch_e eCh, esei_spp01_e eBitType,
+N                        esei_speo_e eMode, esei_en_e eStopEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ParityEnable
+N *
+N * Purpose:       Enable/sisable parity
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                eEnable  Enable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ParityEnable(esei_ch_e eCh, esei_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_SetTiming
+N *
+N * Purpose:       Set the Inter-Frame Space and Slave Slect Space
+N *
+N * Inputs:        eCh         ESEI Channel
+N *                ePrscal     Enables/disables IFS prescaler
+N *                u16IfCount  Inter-Frame Space (10-bit counter value)
+N *                u8SSCount   Slave Select Space counter value
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   When ESEI is in Slave Mode and SPHA is set to
+N *                Active low clock select, the Slave Select Space
+N *                counter will be forced to value 4. For more info,
+N *                please see Capricorn Hardware Specification.
+N *
+N ***************************************************************************/
+Nvoid vESEI_SetTiming(esei_ch_e eCh, esei_en_e ePrescal,
+N                     uint16_t u16IfCount, uint8_t u8SSCount);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_SetRunCtrl
+N *
+N * Purpose:       Start/stop the current transfer
+N *
+N * Inputs:        eCh     ESEI Channel
+N *                eStart  Transfer run control
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on wrong mode
+N *
+N * Limitations:   This function only has effect during Master mode.
+N *                The function will start the transfer only when
+N *                ESEI module is in Active- and Master- mode.
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_SetRunCtrl(esei_ch_e eCh, esei_sestp_e eStart);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eESEI_GetRunCtrl
+N *
+N * Purpose:       Retrieve the current transfer mode as it can be changed
+N *                by the hardware
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: Current run control status
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nesei_sestp_e eESEI_GetRunCtrl(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_ClearBuffer
+N *
+N * Purpose:       Clear the TX/RX buffers
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on mode/state does not allow the operation 
+N *
+N * Limitations:   The function will check whether the ESEI is in master mode,
+N *                if the current transfer is stopped and module is already
+N *                in IDLE mode. If any of these conditions are not met
+N *                the function will not clear buffers and will exit with
+N *                C_FAILED.
+N *
+N *                This approach is neccessary in order to make safe and
+N *                clean buffer clear, without any data being corrupted or
+N *                lost.
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ClearBuffer(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_DiagLoopEnable
+N *
+N * Purpose:       Switch the diagnostic loop
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                eEnable  Enable/diasable request
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on wrong mode
+N *
+N * Limitations:   The Diagnostic-Loop can be set only when the ESEI is
+N *                in active mode and configured as Master. If these
+N *                conditions are not met, the function will immediatelly
+N *                return with C_FAILED.
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_DiagLoopEnable(esei_ch_e eCh, esei_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_SetMode
+N *
+N * Purpose:       Switch between master/slave mode
+N *
+N * Inputs:        eCh    ESEI Channel
+N *                eMode  Master/Slave selection parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function switches temporary to Configuration mode.
+N *                Please note that any running transfers will be immediately
+N *                stopped (even within current frame).
+N *
+N ***************************************************************************/
+Nvoid vESEI_SetMode(esei_ch_e eCh, esei_mstr_e eMode);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsTxBuffEmpty
+N *
+N * Purpose:       Check if the transmit buffer is empty
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE on empty
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsTxBuffEmpty(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsRxBuffFull
+N *
+N * Purpose:       Check whether the receive buffer is full
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_FALSE on empty
+N *                C_TRUE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsRxBuffFull(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsLoopElapsed
+N *
+N * Purpose:       Check whether the loop is completed
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if elapsed
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsLoopElapsed(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsIRQActTx
+N *
+N * Purpose:       Check if the transmit buffer fill level interrupt is active
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if active
+N *                C_FALSE otherwise
+N *
+N * Limitations:  none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsIRQActTx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsIRQActRx
+N *
+N * Purpose:       Check if the receive buffer fill level interrupt is active
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if active
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsIRQActRx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsTxFormatErr
+N *
+N * Purpose:       Check if a transfer format error is detected
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if detected
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsTxFormatErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsIdle
+N *
+N * Purpose:       Retrieve the current ESEI state
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if idle
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsIdle(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsUnderflowErr
+N *
+N * Purpose:       Check an underflow error is detected
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if detected
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsUnderflowErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsOverflowErr
+N *
+N * Purpose:       Cheks if the overflow error occured
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if detected
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsOverflowErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsParityErr
+N *
+N * Purpose:       Check if the the parity error occured in a frame
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if occured
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsParityErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ClearParityErr
+N *
+N * Purpose:       Clear the parity error flag
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ClearParityErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ClearOverFlowErr
+N *
+N * Purpose:       Clear the overflow error flag
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ClearOverFlowErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ClearUnderFlowErr
+N *
+N * Purpose:       Clear the underflow error flag
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ClearUnderFlowErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ClearTxFormatErr
+N *
+N * Purpose:       Clear transmission format error flag
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ClearTxFormatErr(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsCounterRunning
+N *
+N * Purpose:       Check the state of the IFS counter
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if currently running
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsIFCntrRunning(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsReadyBuffTx
+N *
+N * Purpose:       Check if the transmition buffer is ready to receive new
+N *                data
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if ready
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsReadyBuffTx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_IsReadyBuffRx
+N *
+N * Purpose:       Check if there is valid data stored in Receive buffer
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE if available
+N *                C_FALSE otherwise
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_IsReadyBuffRx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_ClearStatusAll
+N *
+N * Purpose:       Clear all status bits
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_ClearStatusAll(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_LoopEnable
+N *
+N * Purpose:       Enable the Loop over transmit buffer
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                eEnable  Enable Loop parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vESEI_LoopEnable(esei_ch_e eCh, esei_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vESEI_BlockLoop
+N *
+N * Purpose:       Block/release the transfer loop
+N *
+N * Inputs:        eCh     ESEI Channel
+N *                eBlock  Block/release request
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   When Loop mode is disabled, this function has no effect
+N *
+N ***************************************************************************/
+Nvoid vESEI_BlockLoop(esei_ch_e eCh, esei_slb_e eBlock);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_SetIrqLevelTx
+N *
+N * Purpose:       Set the interrupt fill level of the TX buffer
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                u8Level  Fill level (0x00 - 0x13)
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid depth 
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_SetIrqLevelTx(esei_ch_e eCh, uint8_t u8Level);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_SetIrqLevelRx
+N *
+N * Purpose:       Set the interrupt fill level of the RX buffer
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                u8Level  Fill level (0x00 - 0x13)
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid depth
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_SetIrqLevelRx(esei_ch_e eCh, uint8_t u8Level);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u8ESEI_GetLevelTx
+N *
+N * Purpose:       Retrieve the fill level of the TX buffer
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       the fill level
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint8_t u8ESEI_GetLevelTx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u8ESEI_GetLevelRx
+N *
+N * Purpose:       Retrieve the fill level of the RX buffer
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       the fill level
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint8_t u8ESEI_GetLevelRx(esei_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_WriteFrameSingle
+N *
+N * Purpose:       Write data to the TX FIFO, addressed by the default device
+N *                SSO[0]
+N *
+N * Inputs:        eCh      ESEI Channel
+N *                u16Data  Data to be sent
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on device busy
+N *
+N * Limitations:   This function can be used only in a single-slave system
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_WriteFrameSingle(esei_ch_e eCh, uint16_t u16Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_ReadFrameSingle
+N *
+N * Purpose:       Read data from the default device addresed by SSO[0]
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       Data received from slave device on SSO[0]
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on device busy
+N *
+N * Limitations:   This function can be used only in a single-slave system
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ReadFrameSingle(esei_ch_e eCh, uint16_t* pu16Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32ESEI_ReadFrameUni
+N *
+N * Purpose:       Unilateral read from default device addresed by SSO[0] and 
+N *                simulatenous sending of a dummy value to the slave
+N *
+N * Inputs:        eCh  ESEI Channel
+N *
+N * Outputs:       Data received from slave device on SSO[0]
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function can be used only in a Single-slave system
+N *                for reading, but only on the master side
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ReadFrameUni(esei_ch_e eCh, uint16_t* pu16Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:       i32ESEI_WriteFrame
+N *
+N * Purpose:        Write one entry to the TX FIFO and specify to which
+N *                 slave the entry should be sent 
+N *
+N * Inputs:         eCh         ESEI Channel
+N *                 eCs         Selection of the slave to send the data
+N *                 eToggleEn   Toggle between frames enable
+N *                 eFrameSize  Frame size
+N *                 u16Data     Data to be sent pointer
+N *
+N * Outputs:        none
+N *
+N * Return Values:  C_SUCCESS on success
+N *                 C_FAILED on failure
+N *
+N * Limitations:    Multi-slave environment only
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_WriteFrame(esei_ch_e eCh, esei_scid_e eCs, esei_en_e eToggleEn,
+N                           esei_ssz_e eFrameSize, uint16_t u16Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:       i32ESEI_ReadFrame
+N *
+N * Purpose:        Read one entry from the RX FIFO 
+N *
+N * Inputs:         eCh           ESEI Channel
+N *                 peSlaveId     Slave ID that sent data
+N *                 peParityRep   Parity report
+N *                 pu8FrameSize  Frame size pointer
+N *                 pu16Data      Received data
+N *
+N * Outputs:        none
+N *
+N * Return Values:  C_SUCCESS on success
+N *                 C_FAILED on failure
+N *
+N * Limitations:    Multi-slave environment only
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ReadFrame(esei_ch_e eCh, esei_scid_e* peSlaveId,
+N                          esei_pr_e* peParityRep, uint8_t* pu8FrameSize,
+N                          uint16_t* pu16Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:       i32ESEI_ReadWriteFrame
+N *
+N * Purpose:        Write the given entry to the TX buffer and retrieve an
+N *                 entry from the RX buffer
+N *                 [Master mode only, full-duplex, multi-slave environment]
+N *
+N * Inputs:         eCh        ESEI Channel
+N *                 stSend     Data frame to send with all transmission
+N *                            parameters
+N *                 pstRecv    Received data frame with all parameters
+N *                 eToggleEn  Toggle between frames enable
+N *
+N * Outputs:        none
+N *
+N * Return Values:  C_SUCCESS on success
+N *                 C_FAILED on failure
+N *
+N * Limitations:    Please note that this function polls with time-out for
+N *                 RX buffer readiness as no IRQ mechanism is available at 
+N *                 this level.
+N *                 For this reason this function can be safely used only in
+N *                 Master mode, because in this case the Cap-F software has
+N *                 full control, and it will make sure that the transfer is
+N *                 made before RX FIFO time-out is reached. However, in 
+N *                 slave mode this can not be guaranteed.
+N *                 When this function returns C_FAILED, the reason is either
+N *                 the fact that the TX FIFO is full or the RX FIFO ready 
+N *                 time-out was reached
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ReadWriteFrame(esei_ch_e eCh, esei_dSEntry_st stSend,
+N                               esei_dREntry_st* pstRecv, esei_en_e eToggleEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:       i32ESEI_ReadWriteData
+N *
+N * Purpose:        Write data to the TX buffer and retrieve data from the 
+N *                 RX buffer
+N *                 [Master mode only, full-duplex, multi-slave environment]
+N *
+N * Inputs:         eCh          ESEI Channel
+N *                 pstSendData  Pointer to data entry array to be sent
+N *                 pstRecvData  Pointer to array to store received data
+N *                 u32Cnt       Number of Frames to store in TX-FIFO
+N *
+N * Outputs:        none
+N *
+N * Return Values:  The number of actualy transfered (read & write) frames
+N *
+N * Limitations:    Please note that this function polls with time-out for
+N *                 RX buffer readiness as no IRQ mechanism is available at
+N *                 this level.
+N *                 For this reason this function can be safely used only in
+N *                 Master mode, because in this case the Cap-F software has
+N *                 full control, and it will make sure that the transfer is
+N *                 made before RX FIFO time-out is reached. In slave mode
+N *                 this cannot be guaranteed.
+N *                 Please always check the return value in order to determine
+N *                 the actual number of transferred data-frames.
+N *
+N ***************************************************************************/
+Nint32_t i32ESEI_ReadWriteData(esei_ch_e eCh, const esei_dSEntry_st* pstSendData,
+N                              esei_dREntry_st* pstRecvData, uint32_t u32Cnt,
+N                              esei_en_e eToggleEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:       i32ESEI_IrqConfig
+N *
+N * Purpose:        Configures the module interrupt generation 
+N *
+N * Inputs:         eCh    ESEI Channel
+N *                 stCfg  IRQ configuration request
+N *
+N * Outputs:        none
+N *
+N * Return Values:  none
+N *
+N * Limitations:    none
+N *
+N *
+N ***************************************************************************/
+Nvoid vESEI_IrqConfig(esei_ch_e eCh, esei_irqcfg_st stCfg);
+N
+N/****************************************************************************/
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1861  Rule 20.1 [R] : 
+N** |         No definition, redefinition, or undefinition of reserved words and
+N** |         standard library names performed on signed integer types  
+N** |       
+N** | CONS.  : allow
+N** | REASON : to use naming defined by HW registers, no conflict recognized 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N
+N#endif /* ESEI_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\esei.c" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1847  /* Rule 10.3 [R] : cast of complex integer expression with underlying type "type" to non-integer type "type" not allowed */
+S  #pragma ghs nowarning 1858  /* Rule 17.4 [R] : subscript operator may only be applied to objects declared as an array type */
+S  #pragma ghs nowarning 1866  /* Rule 10.1 [R] : implicit conversion from underlying type, "type", to underlying type, "type", changes signedness */
+S  #pragma ghs nowarning 1867  /* Rule 10.1 [R] : disable type conversion not allowed for usage of enums for io header files */
+S  #pragma ghs nowarning 1879  /* Rule 10.3 [R] : Restrict explicit casts for integer type expressions */
+S  #pragma ghs nowarning 1880  /* Rule 10.3 [R] :  Restrict explicit casts for integer type expressions */
+S
+S  #pragma ghs nowarning 1723  /* Rule 5.6  [A] : No identifiers with the same name in different name spaces except for struct and union members.. */  
+S  #pragma ghs nowarning 1834  /* Rule 11.3 [A] : disable casting error (used for result of i/o header amcros) */
+N#endif
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_ESEI_C_REVISION     "$Revision: 1.8 $"
+N#define LLDD_ESEI_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_ESEI_C_REVISION[]    = LLDD_ESEI_C_REVISION;
+Xstatic uint8_t au8LLDD_ESEI_C_REVISION[]    = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_ESEI_C_TAG[]         = LLDD_ESEI_C_TAG;
+Xstatic uint8_t au8LLDD_ESEI_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_ESEI_H_REVISION[]    = LLDD_ESEI_H_REVISION;
+Xstatic uint8_t au8LLDD_ESEI_H_REVISION[]    = "$Revision: 1.9 $";
+Nstatic uint8_t au8LLDD_ESEI_H_TAG[]         = LLDD_ESEI_H_TAG;
+Xstatic uint8_t au8LLDD_ESEI_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_ESEI_IO_H_REVISION[] = LLDD_ESEI_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_ESEI_IO_H_REVISION[] = "$Revision: 1.11 $";
+Nstatic uint8_t au8LLDD_ESEI_IO_H_TAG[]      = LLDD_ESEI_IO_H_TAG;
+Xstatic uint8_t au8LLDD_ESEI_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+Nvoid vESEI_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_ESEI_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_ESEI_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_ESEI_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_ESEI_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_ESEI_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_ESEI_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_Config(esei_ch_e eCh, esei_ctrlcfg_st stCfg)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) biGetSEMCR_OPMODE((uint16_t)eCh);
+X    eOpMode = (esei_opmode_e) (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE);
+N
+N    /* Switch to configuration mode (if neccessary) */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N    }
+N
+N    /* Master/Slave mode */
+N    vSetSECR0_MSTR(eCh, (uint16_t)stCfg.eMode);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR=((uint16_t)stCfg . eMode));
+N
+N    /* LSB/MSB Bit Order */
+N    vSetSECR0_SBOS(eCh, (uint16_t)stCfg.eBitOrder);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SBOS=((uint16_t)stCfg . eBitOrder));
+N
+N    /* SSI valid in Master Mode */
+N    vSetSECR0_SSIVAL(eCh, (uint16_t)stCfg.eSsiValid);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SSIVAL=((uint16_t)stCfg . eSsiValid));
+N
+N    /* SEI Phase selection */
+N    vSetSECR0_SPHA(eCh, (uint16_t)stCfg.ePhase);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SPHA=((uint16_t)stCfg . ePhase));
+N
+N    /* SEI Polarity (TX format) */
+N    vSetSECR0_SPOL(eCh, (uint16_t)stCfg.ePolarity);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SPOL=((uint16_t)stCfg . ePolarity));
+N
+N    /* Restore OPMODE (if changed) */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_IrqConfig(esei_ch_e eCh, esei_irqcfg_st stCfg)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    /* Save current OPMODE */
+N    eOpMode = (esei_opmode_e)(biGetSEMCR_OPMODE(eCh));
+X    eOpMode = (esei_opmode_e)((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE));
+N
+N    /* Switch to configuration mode (if neccessary) */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N    }
+N
+N    /* IDLE IRQ enable/disable */
+N    vSetSECR0_SILIE(eCh, (uint16_t)stCfg.eIdleIrqEn);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SILIE=((uint16_t)stCfg . eIdleIrqEn));
+N    /* Overflow IRQ enable/disable */
+N    vSetSECR0_SOEIE(eCh, (uint16_t)stCfg.eOvflowIrqEn);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SOEIE=((uint16_t)stCfg . eOvflowIrqEn));
+N    /* Underflow IRQ enable/disable */
+N    vSetSECR0_SUEIE(eCh, (uint16_t)stCfg.eUndflowIrqEn);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SUEIE=((uint16_t)stCfg . eUndflowIrqEn));
+N    /* TX format error IRQ enable/disable */
+N    vSetSECR0_STFIE(eCh, (uint16_t)stCfg.eTransFmtIrqEn);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> STFIE=((uint16_t)stCfg . eTransFmtIrqEn));
+N    /* Parity IRQ enable/disbale */
+N    vSetSEPR_SPIE(eCh, (uint8_t)stCfg.eParityIrqEn);
+X    (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPIE=((uint8_t)stCfg . eParityIrqEn));
+N
+N    /* Restore OPMODE (if changed) */
+N    if(ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_SetOpMode(esei_ch_e eCh, esei_opmode_e eMode)
+N{
+N    vSetSEMCR_OPMODE(eCh, (uint8_t)eMode);
+X    (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)eMode));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_SetTransferSize(esei_ch_e eCh, esei_ssz_e eTxSize)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) (biGetSEMCR_OPMODE((uint16_t)eCh));
+X    eOpMode = (esei_opmode_e) ((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE));
+N
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        /* Switch to configuration mode */
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N
+N        /* Set Transfer Size */
+N        vSetSECR1_SSZ(eCh, (uint16_t)eTxSize);
+X        (((volatile SECR1_bit_view_st *)(0xC0322008U + ((uint8_t)(eCh) * 0x1000U) )) -> SSZ=((uint16_t)eTxSize));
+N
+N        /* Restore Original OPMODE */
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N    else
+N    {
+N        /* Set Transfer Size */
+N        vSetSECR1_SSZ(eCh, (uint16_t)eTxSize);
+X        (((volatile SECR1_bit_view_st *)(0xC0322008U + ((uint8_t)(eCh) * 0x1000U) )) -> SSZ=((uint16_t)eTxSize));
+N    }
+N
+N}
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_SetBitRate(esei_ch_e eCh, uint32_t u32BitRate)
+N{
+N    uint8_t       u8Ser;
+N    esei_opmode_e eOpMode;
+N    int32_t       i32Res = C_SUCCESS;
+X    int32_t       i32Res = (0);
+N
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) (biGetSEMCR_OPMODE((uint16_t)eCh));
+X    eOpMode = (esei_opmode_e) ((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE));
+N
+N    if( (u32BitRate > (uint32_t) ESEI_MIN_BITRATE) && (u32BitRate <  (uint32_t) ESEI_MAX_BITRATE) )
+X    if( (u32BitRate > (uint32_t) (((140 * 1000000) / (2*(0xFF + 1))) / 1000)) && (u32BitRate <  (uint32_t) (((140 * 1000000) / 2) / 1000)) )
+N    {
+N        /* Calculate SER parameter SER = (Fsys / 2Fsclk) - 1 */
+N        u8Ser = (uint8_t)(((((140U * 1000000U) / u32BitRate)/ 2U) - 1U) / 1000U);
+N
+N        if( ESEI_OPM_ACT == eOpMode )
+N        {
+N            /* Switch to configuration mode */
+N            vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X            (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N
+N            /* Set SER */
+N            vSetSECR1_SER(eCh, u8Ser);
+X            (((volatile SECR1_bit_view_st *)(0xC0322008U + ((uint8_t)(eCh) * 0x1000U) )) -> SER=(u8Ser));
+N
+N            /* Restore Original OPMODE */
+N            vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X            (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N        }
+N        else
+N        {
+N            /* Set SER */
+N            vSetSECR1_SER(eCh, u8Ser);
+X            (((volatile SECR1_bit_view_st *)(0xC0322008U + ((uint8_t)(eCh) * 0x1000U) )) -> SER=(u8Ser));
+N        }
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ParityConfig(esei_ch_e eCh, esei_spp01_e eBitType,
+N                       esei_speo_e eMode, esei_en_e eStopEn)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    eOpMode = (esei_opmode_e)(biGetSEMCR_OPMODE(eCh));
+X    eOpMode = (esei_opmode_e)((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE));
+N
+N    /* Switch to configuration mode (if neccessary) */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N    }
+N
+N    /* Parity bit type */
+N    vSetSEPR_SPP01(eCh, (uint8_t)eBitType);
+X    (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPP01=((uint8_t)eBitType));
+N
+N    /* Even/Odd type */
+N    vSetSEPR_SPEO(eCh, (uint8_t)eOpMode);
+X    (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPEO=((uint8_t)eOpMode));
+N
+N    /* Parity Stop enable */
+N    vSetSEPR_SPISE(eCh, (uint8_t)eStopEn);
+X    (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPISE=((uint8_t)eStopEn));
+N
+N    /* Restore OPMODE */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ParityEnable(esei_ch_e eCh, esei_en_e eEnable)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    eOpMode = (esei_opmode_e)(biGetSEMCR_OPMODE(eCh));
+X    eOpMode = (esei_opmode_e)((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE));
+N
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        /* Switch to configuration mode */
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N
+N        /* Parity enable */
+N        vSetSEPR_SPEN(eCh, (uint8_t)eEnable);
+X        (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPEN=((uint8_t)eEnable));
+N
+N        /* Restore Original OPMODE */
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N    else
+N    {
+N        /* Parity enable */
+N        vSetSEPR_SPEN(eCh, (uint8_t)eEnable);
+X        (((volatile SEPR_bit_view_st *)(0xC0322028U + ((uint8_t)(eCh) * 0x1000U) )) -> SPEN=((uint8_t)eEnable));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_SetTiming(esei_ch_e eCh, esei_en_e ePrescal, uint16_t u16IfCount, 
+N                     uint8_t u8SSCount)
+N{
+N    esei_mstr_e eMsMode;
+N    esei_spha_e eCphase;
+N
+N    /* Get Master/slave mode: */
+N    eMsMode = (esei_mstr_e) biGetSECR0_MSTR(eCh);
+X    eMsMode = (esei_mstr_e) (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR);
+N
+N    /* Get clock phase: */
+N    eCphase = (esei_spha_e) biGetSECR0_SPHA(eCh);
+X    eCphase = (esei_spha_e) (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> SPHA);
+N
+N    /* Prescaler */
+N    vSetSECR0_IFSPSE(eCh, (uint16_t)ePrescal);
+X    (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> IFSPSE=((uint16_t)ePrescal));
+N
+N    /* Inter-Frame Counter set */
+N    vSetSEFSR_IFS(eCh, u16IfCount);
+X    (((volatile SEFSR_bit_view_st *)(0xC032200CU + ((uint8_t)(eCh) * 0x1000U) )) -> IFS=(u16IfCount));
+N
+N    /* If ESEI in slave mode and SPHA == LO, then SSS must be 4 */
+N    if( (ESEI_MODE_SLAVE == eMsMode) && (ESEI_ACT_LO == eCphase) )
+N    {
+N        /* Slave Select Space */
+N        vSetSSSR_SSS(eCh, 4U);
+X        (((volatile SSSR_bit_view_st *)(0xC0322010U + ((uint8_t)(eCh) * 0x1000U) )) -> SSS=(4U));
+N    }
+N    else
+N    {
+N        vSetSSSR_SSS(eCh, u8SSCount);
+X        (((volatile SSSR_bit_view_st *)(0xC0322010U + ((uint8_t)(eCh) * 0x1000U) )) -> SSS=(u8SSCount));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_SetRunCtrl(esei_ch_e eCh, esei_sestp_e eStart)
+N{
+N    esei_mstr_e   eMsMode;
+N    esei_opmode_e eOpMode;
+N    int32_t       i32Res = C_SUCCESS;
+X    int32_t       i32Res = (0);
+N
+N    /* Get Master/slave mode: */
+N    eMsMode = (esei_mstr_e) biGetSECR0_MSTR(eCh);
+X    eMsMode = (esei_mstr_e) (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR);
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) (biGetSEMCR_OPMODE((uint16_t)eCh));
+X    eOpMode = (esei_opmode_e) ((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE));
+N
+N    if( (ESEI_MODE_MASTER == eMsMode) && (ESEI_OPM_ACT == eOpMode) )
+N    {
+N        vSetSEMCR_SESTP(eCh, (uint8_t) eStart);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> SESTP=((uint8_t) eStart));
+N    }
+N    else
+N    {
+N        /* Not possible to change the setting */
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nesei_sestp_e eESEI_GetRunCtrl(esei_ch_e eCh)
+N{
+N    return (esei_sestp_e) biGetSEMCR_SESTP(eCh);
+X    return (esei_sestp_e) (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> SESTP);
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ClearBuffer(esei_ch_e eCh)
+N{
+N    esei_mstr_e  eMsMode;
+N    esei_sestp_e eSeiStop;
+N    esei_sidle_e eIdle;
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    /* Get Master/slave mode: */
+N    eMsMode = (esei_mstr_e) biGetSECR0_MSTR(eCh);    
+X    eMsMode = (esei_mstr_e) (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR);    
+N
+N    /* Get SEI stop: */
+N    eSeiStop = (esei_sestp_e) biGetSEMCR_SESTP(eCh);    
+X    eSeiStop = (esei_sestp_e) (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> SESTP);    
+N
+N    /* Get Idle indicator: */
+N    eIdle = (esei_sidle_e) biGetSESR_SIDLE(eCh);    
+X    eIdle = (esei_sidle_e) (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SIDLE);    
+N
+N    /* Check if ESEI master mode, stopped and in IDLE */
+N    if( (ESEI_MODE_MASTER == eMsMode) && (ESEI_STOP == eSeiStop) && (ESEI_IDLE == eIdle) )
+N    {
+N        /* Buffer clear */
+N        vSetSEMCR_BCLR(eCh, 1U);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> BCLR=(1U));
+N    }
+N    else
+N    {
+N        /* Safe buffer clear impossible */
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_DiagLoopEnable(esei_ch_e eCh, esei_en_e eEnable)
+N{
+N    esei_opmode_e eOpMode;
+N    esei_mstr_e eMsMode;
+N    int32_t     i32Res = C_SUCCESS;
+X    int32_t     i32Res = (0);
+N
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) (biGetSEMCR_OPMODE((uint16_t)eCh));
+X    eOpMode = (esei_opmode_e) ((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE));
+N    /* Get Master/slave mode: */
+N    eMsMode = (esei_mstr_e) biGetSECR0_MSTR(eCh);
+X    eMsMode = (esei_mstr_e) (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR);
+N
+N    /* Check if ESEI master mode and active */
+N    if( (ESEI_MODE_MASTER == eMsMode) && (ESEI_OPM_ACT == eOpMode) )
+N    {
+N        /* Diagnostic loop */
+N        vSetSEMCR_DLOOP(eCh, (uint8_t) eEnable);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> DLOOP=((uint8_t) eEnable));
+N    }
+N    else
+N    {
+N        /* Setting not possible */
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_SetMode(esei_ch_e eCh, esei_mstr_e eMode)
+N{
+N    esei_opmode_e eOpMode;
+N
+N    /* Get current OPMODE */
+N    eOpMode = (esei_opmode_e) (biGetSEMCR_OPMODE((uint16_t)eCh));
+X    eOpMode = (esei_opmode_e) ((((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)((uint16_t)eCh) * 0x1000U) )) -> OPMODE));
+N
+N    /* Swhich to configuration mode (if neccessary) */
+N    if( ESEI_OPM_ACT == eOpMode )
+N    {
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_CFG);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_CFG));
+N
+N        /* Master/slave mode */
+N        vSetSECR0_MSTR(eCh, (uint16_t)eMode);
+X        (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR=((uint16_t)eMode));
+N
+N        vSetSEMCR_OPMODE(eCh, (uint8_t)ESEI_OPM_ACT);
+X        (((volatile SEMCR_bit_view_st *)(0xC0322000U + ((uint8_t)(eCh) * 0x1000U) )) -> OPMODE=((uint8_t)ESEI_OPM_ACT));
+N    }
+N    else
+N    {
+N        /* Master/slave mode */
+N        vSetSECR0_MSTR(eCh, (uint16_t)eMode);
+X        (((volatile SECR0_bit_view_st *)(0xC0322004U + ((uint8_t)(eCh) * 0x1000U) )) -> MSTR=((uint16_t)eMode));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsTxBuffEmpty(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( 0U == biGetSESR_TBF(eCh) )
+X    if( 0U == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> TBF) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsRxBuffFull(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( 0U == biGetSESR_RBF(eCh) )
+X    if( 0U == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> RBF) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsParityErr(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t) ESEI_NOERR == biGetSESR_PAR(eCh) )
+X    if( (uint32_t) ESEI_NOERR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> PAR) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ClearParityErr(esei_ch_e eCh)
+N{
+N    if( (uint32_t)ESEI_ERROR == biGetSESR_PAR(eCh) )
+X    if( (uint32_t)ESEI_ERROR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> PAR) )
+N    {
+N        vClrSESR_PAR(eCh);
+X        (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> PAR = (1));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ClearStatusAll(esei_ch_e eCh)
+N{
+N    vSetSESR(eCh, 0xFFFFFFFFU);
+X    (*((volatile u32SESR_word_view *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) = (0xFFFFFFFFU));
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsLoopElapsed(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_LOOP_NOELPSD == biGetSESR_SEILC(eCh) )
+X    if( (uint32_t)ESEI_LOOP_NOELPSD == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEILC) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsIRQActTx(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_IRQ_NONE == biGetSESR_TBSI(eCh) )
+X    if( (uint32_t)ESEI_IRQ_NONE == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> TBSI) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsIRQActRx(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_IRQ_NONE == biGetSESR_RBSI(eCh) )
+X    if( (uint32_t)ESEI_IRQ_NONE == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> RBSI) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsTxFormatErr(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_NOERR == biGetSESR_SETF(eCh) )
+X    if( (uint32_t)ESEI_NOERR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SETF) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ClearTxFormatErr(esei_ch_e eCh)
+N{
+N    if( (uint32_t)ESEI_ERROR == biGetSESR_SETF(eCh) )
+X    if( (uint32_t)ESEI_ERROR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SETF) )
+N    {
+N        vClrSESR_SETF(eCh);
+X        (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SETF = (1));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsIdle(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_ACTIVE == biGetSESR_SIDLE(eCh) )
+X    if( (uint32_t)ESEI_ACTIVE == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SIDLE) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsUnderflowErr(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_NOERR == biGetSESR_SEUE(eCh) )
+X    if( (uint32_t)ESEI_NOERR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEUE) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ClearUnderFlowErr(esei_ch_e eCh)
+N{
+N    if( (uint32_t)ESEI_ERROR == biGetSESR_SEUE(eCh) )
+X    if( (uint32_t)ESEI_ERROR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEUE) )
+N    {
+N        vClrSESR_SEUE(eCh);
+X        (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEUE = (1));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsOverflowErr(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_NOERR == biGetSESR_SEOE(eCh) )
+X    if( (uint32_t)ESEI_NOERR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEOE) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_ClearOverFlowErr(esei_ch_e eCh)
+N{
+N    if( (uint32_t)ESEI_ERROR == biGetSESR_SEOE(eCh) )
+X    if( (uint32_t)ESEI_ERROR == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEOE) )
+N    {
+N        vClrSESR_SEOE(eCh);
+X        (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SEOE = (1));
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsIFCntrRunning(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_CNT_STOPPED == biGetSESR_IFSD(eCh) )
+X    if( (uint32_t)ESEI_CNT_STOPPED == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> IFSD) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsReadyBuffTx(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_NOT_READY == biGetSESR_STRDY(eCh) )
+X    if( (uint32_t)ESEI_NOT_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> STRDY) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_IsReadyBuffRx(esei_ch_e eCh)
+N{
+N    int32_t i32Res = C_TRUE;
+X    int32_t i32Res = (1);
+N
+N    if( (uint32_t)ESEI_NOT_READY == biGetSESR_SRRDY(eCh) )
+X    if( (uint32_t)ESEI_NOT_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SRRDY) )
+N    {
+N        i32Res = C_FALSE;
+X        i32Res = (0);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_LoopEnable(esei_ch_e eCh, esei_en_e eEnable)
+N{
+N    vSetSELCR_SLTB(eCh, (uint8_t)eEnable);
+X    (((volatile SELCR_bit_view_st *)(0xC032202CU + ((uint8_t)(eCh) * 0x1000U) )) -> SLTB=((uint8_t)eEnable));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vESEI_BlockLoop(esei_ch_e eCh, esei_slb_e eBlock)
+N{
+N    vSetSELCR_SLB(eCh, (uint8_t)eBlock);
+X    (((volatile SELCR_bit_view_st *)(0xC032202CU + ((uint8_t)(eCh) * 0x1000U) )) -> SLB=((uint8_t)eBlock));
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_SetIrqLevelTx(esei_ch_e eCh, uint8_t u8Level)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if( u8Level < (uint8_t)ESEI_TXFIFO_DEPTH)
+X    if( u8Level < (uint8_t)20)
+N    {
+N        vSetSEILR_TXIFL(eCh, u8Level);
+X        (((volatile SEILR_bit_view_st *)(0xC0322024U + ((uint8_t)(eCh) * 0x1000U) )) -> TXIFL=(u8Level));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_SetIrqLevelRx(esei_ch_e eCh, uint8_t u8Level)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if( u8Level < (uint8_t)ESEI_RXFIFO_DEPTH )
+X    if( u8Level < (uint8_t)20 )
+N    {
+N        vSetSEILR_RXIFL(eCh, u8Level);
+X        (((volatile SEILR_bit_view_st *)(0xC0322024U + ((uint8_t)(eCh) * 0x1000U) )) -> RXIFL=(u8Level));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nuint8_t u8ESEI_GetLevelTx(esei_ch_e eCh)
+N{
+N    return (uint8_t)biGetSEFLR_STBFL(eCh);
+X    return (uint8_t)(((volatile SEFLR_bit_view_st *)(0xC0322020U + ((uint8_t)(eCh) * 0x1000U) )) -> STBFL);
+N}
+N
+N
+N/****************************************************************************/
+Nuint8_t u8ESEI_GetLevelRx(esei_ch_e eCh)
+N{
+N    return (uint8_t)biGetSEFLR_SRBFL(eCh);
+X    return (uint8_t)(((volatile SEFLR_bit_view_st *)(0xC0322020U + ((uint8_t)(eCh) * 0x1000U) )) -> SRBFL);
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_WriteFrameSingle(esei_ch_e eCh, uint16_t u16Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if( (uint32_t) ESEI_READY == biGetSESR_STRDY(eCh) )
+X    if( (uint32_t) ESEI_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> STRDY) )
+N    {
+N        vSetSEDR_DR(eCh, u16Data);
+X        (((volatile SEDR_bit_view_st *)(0xC0322018U + ((uint8_t)(eCh) * 0x1000U) )) -> DR=(u16Data));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ReadFrameSingle(esei_ch_e eCh, uint16_t* pu16Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if( (uint32_t) ESEI_READY == biGetSESR_SRRDY(eCh) )
+X    if( (uint32_t) ESEI_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SRRDY) )
+N    {
+N        *pu16Data = biGetSEDR_DR(eCh);
+X        *pu16Data = (((volatile SEDR_bit_view_st *)(0xC0322018U + ((uint8_t)(eCh) * 0x1000U) )) -> DR);
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ReadFrameUni(esei_ch_e eCh, uint16_t* pu16Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if( (uint32_t) ESEI_READY == biGetSESR_SRRDY(eCh) )
+X    if( (uint32_t) ESEI_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SRRDY) )
+N    {
+N        *pu16Data = biGetSERSR_RS(eCh);
+X        *pu16Data = (((volatile SERSR_bit_view_st *)(0xC032201CU + ((uint8_t)(eCh) * 0x1000U) )) -> RS);
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_WriteFrame(esei_ch_e eCh, esei_scid_e eCs, esei_en_e eToggleEn,
+N                           esei_ssz_e eFrameSize, uint16_t u16Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N    uint32_t u32Buff;
+N
+N    if( ((uint32_t) ESEI_READY == biGetSESR_STRDY(eCh)) )
+X    if( ((uint32_t) ESEI_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> STRDY)) )
+N    {
+N        /* Word-access only allowed */
+N        u32Buff = ((0x1U & (uint32_t)eToggleEn)) << 24;
+N        u32Buff |= ((0x7U & (uint32_t)eCs)) << 21;
+N        u32Buff |= ((0x1fU & (uint32_t)eFrameSize)) << 16;
+N        u32Buff |= ((0xffffU & u16Data));
+N
+N        /* Write to Data Extended Register */
+N        vSetSEDER_W(eCh, u32Buff);
+X        (*((volatile u32SEDER_W_word_view *)(0xC0322030U + ((uint8_t)(eCh) * 0x1000U) )) = (u32Buff));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ReadFrame(esei_ch_e eCh, esei_scid_e* peSlaveId,
+N                          esei_pr_e* peParityRep, uint8_t* pu8FrameSize,
+N                          uint16_t* pu16Data)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N    uint32_t u32Buff;
+N
+N    if( (uint32_t) ESEI_READY == biGetSESR_SRRDY(eCh) )
+X    if( (uint32_t) ESEI_READY == (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SRRDY) )
+N    {
+N        /* Read Data Extended Register in one word access */
+N        u32Buff = u32GetSEDER_R(eCh);
+X        u32Buff = (*((volatile u32SEDER_R_word_view *)(0xC0322030U + ((uint8_t)(eCh) * 0x1000U) )) );
+N        *pu16Data = (uint16_t)(u32Buff & 0xFFFFU);
+N        *pu8FrameSize = (uint8_t)((u32Buff >> 16) & 0x1FU);
+N        *peSlaveId = (esei_scid_e)((u32Buff >> 21U) & 0x7U);
+N        *peParityRep = (esei_pr_e)((u32Buff >> 31) & 0x1U);
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ReadWriteFrame(esei_ch_e eCh, esei_dSEntry_st stSend,
+N                               esei_dREntry_st* pstRecv, esei_en_e eToggleEn)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N    uint32_t u32Buff;
+N    uint32_t u32TimCnt =0;
+N    esei_rdy_e eReady;
+N    esei_ssz_e eTsize;
+N
+N    eReady = (esei_rdy_e) biGetSESR_STRDY(eCh);
+X    eReady = (esei_rdy_e) (((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> STRDY);
+N    eTsize = (esei_ssz_e) biGetSECR1_SSZ(eCh);
+X    eTsize = (esei_ssz_e) (((volatile SECR1_bit_view_st *)(0xC0322008U + ((uint8_t)(eCh) * 0x1000U) )) -> SSZ);
+N    
+N    /* Check whether TX FIFO is ready */
+N    if( (ESEI_READY == eReady) && (ESEI_TXSIZE_SFL == eTsize) )
+N    {
+N        /* Write to Data Extended Register */
+N        u32Buff =  ((uint32_t)(0x1U & (uint32_t)(eToggleEn))) << 24;
+N        u32Buff |= ((uint32_t)(0x7U & (uint32_t)(stSend.eSlaveId))) << 21;
+N        u32Buff |=  ((uint32_t)(0x1FU & (uint32_t)(stSend.eFrameSize))) << 16;
+N        u32Buff |=  ((uint32_t)(0xFFFFU & (uint32_t)stSend.u16Data));
+N        vSetSEDER_W(eCh, u32Buff);
+X        (*((volatile u32SEDER_W_word_view *)(0xC0322030U + ((uint8_t)(eCh) * 0x1000U) )) = (u32Buff));
+N
+N        /* Wait for RX buffer ready */
+N        while( (biGetSESR_SRRDY(eCh) != (uint32_t)ESEI_READY) && (u32TimCnt < (uint32_t)ESEI_RX_RDY_TIMEOUT) )
+X        while( ((((volatile SESR_bit_view_st *)(0xC0322014U + ((uint8_t)(eCh) * 0x1000U) )) -> SRRDY) != (uint32_t)ESEI_READY) && (u32TimCnt < (uint32_t)20000000) )
+N        {
+N            u32TimCnt++;
+N        }
+N
+N        /* Check for timeout */
+N        if( u32TimCnt < (uint32_t)ESEI_RX_RDY_TIMEOUT )
+X        if( u32TimCnt < (uint32_t)20000000 )
+N        {
+N            /* Read from Data Extended Register */
+N            u32Buff = u32GetSEDER_R(eCh);
+X            u32Buff = (*((volatile u32SEDER_R_word_view *)(0xC0322030U + ((uint8_t)(eCh) * 0x1000U) )) );
+N            pstRecv->u16Data = (uint16_t)(u32Buff & 0xFFFFU);
+N            pstRecv->eFrameSize = (esei_ssz_e)((u32Buff >> 16) & 0x1FU);
+N            pstRecv->eSlaveId = (esei_scid_e)((u32Buff >> 21) & 0x7U);
+N            pstRecv->eParityErr = (esei_pr_e)((u32Buff >> 31) & 0x1U);
+N        }
+N        else
+N        {
+N            i32Res = C_FAILED;
+X            i32Res = (-1);
+N        }
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32ESEI_ReadWriteData(esei_ch_e eCh, const esei_dSEntry_st* pstSendData,
+N                              esei_dREntry_st* pstRecvData, uint32_t u32Cnt,
+N                              esei_en_e eToggleEn)
+N{
+N    int32_t i32FrmCnt = 0;
+N    uint32_t u32TimOutCnt = 0;
+N    int32_t i32Res;
+N
+N
+N    while((((uint32_t)i32FrmCnt) < u32Cnt) && (u32TimOutCnt < (uint32_t)ESEI_TX_RDY_TIMEOUT))
+X    while((((uint32_t)i32FrmCnt) < u32Cnt) && (u32TimOutCnt < (uint32_t)2000000))
+N    {
+N        /* Transfer (read/write) one frame */
+N        i32Res =  i32ESEI_ReadWriteFrame(eCh, pstSendData[i32FrmCnt],
+N                                         (esei_dREntry_st*)&pstRecvData[i32FrmCnt], eToggleEn);
+N        if( C_SUCCESS == i32Res )
+X        if( (0) == i32Res )
+N        {
+N            /* Increment frame counter */
+N            i32FrmCnt++;         
+N            /* Reset timeout counter */
+N            u32TimOutCnt = 0;    
+N        }
+N        else
+N        {
+N            /* Check whether TX buffer is full */
+N            if( C_FALSE == i32ESEI_IsReadyBuffTx(eCh) )
+X            if( (0) == i32ESEI_IsReadyBuffTx(eCh) )
+N            {
+N                /* No error - increment timeout counter */
+N                u32TimOutCnt++;
+N            }
+N            else
+N            {
+N                /* Error occured */
+N                break;
+N            }
+N        }
+N    }
+N
+N    return i32FrmCnt;
+N}
+N
+N/****************************************************************************/
+N/****************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1847 / 10.3 - cast of complex integer expression with underlying type
+N** |                        "type" to non-integer type "type" not allowed 
+N** | CONS.  : disable
+N** | REASON : to use macros from i/o header files, unavoidable when addressing 
+N** |          memory mapped registers 
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1858 /17.4  - subscript operator may only be applied to objects 
+N** |                        declared as an array type
+N** | CONS.  : allow
+N** | REASON : to handle array of data by usage of pointer 
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1866 /10.1  -  implicit conversion from underlying type, "type",
+N** |                         to underlying type, "type", changes signedness
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1867 /10.1  -  implicit conversion from underlying type, "type",
+N** |                         to underlying type, "type", changes signedness
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1879 /10.3  -    cast of complex integer expression with underlying
+N** |                           type "type" to same width type "type" not allowed
+N** | CONS.  : allow
+N** | REASON : to assign parameters which may be defined as macros in io header file
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1880 /10.3  -    cast of complex integer expression with underlying
+N** |                           type "type" to same width type "type" not allowed
+N** | CONS.  : allow
+N** | REASON : to assign parameters which may be defined as macros in io header file
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

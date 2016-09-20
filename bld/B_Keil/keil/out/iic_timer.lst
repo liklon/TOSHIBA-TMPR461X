@@ -1,0 +1,683 @@
+L 1 "..\..\..\..\lldd\src\iic_timer.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Serial Bus Interface (I2C) Timer Functionality Extension
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/*
+N *  This is a primitive implementation of timers needed by the I2C driver
+N *  Those should be ported appropriately to the target platform/system !!! 
+N */
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "iic_timer.h"                    /* SBI (I2C) timer functionality extension */
+L 1 "..\..\..\..\lldd\inc\iic_timer.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Serial Bus Interface (I2C) Timer Functionality Extension
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef IIC_TIMER_H
+N#define IIC_TIMER_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\inc\iic_timer.h" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                  Exports                    *
+N**********************************************/
+N/* Software timer counters */
+Nextern uint32_t u32TimeBusy;
+Nextern uint32_t u32TimeAck;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_IIC_TIMER_H_REVISION     "$Revision: 1.6 $"
+N#define LLDD_IIC_TIMER_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/* Acknowledge time-out value in [ms] */
+N#define IIC_TIMER_IRQ_ACK                   16000 
+N/* Busy time-out value in [ms] */
+N#define IIC_TIMER_BUSY                      15000
+N
+N/* Guard time for restart procedure [ms] */
+N#define IIC_TIMER_RESTART_GUARD             1000
+N 
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/* IIC Timer types */
+Ntypedef enum tag_iic_TimerSelect_e
+N{  
+N  IIC_TIMER_IRQ_ACK_SEL = 1,                /* Acknowledge time-out timer */
+N  IIC_TIMER_BUSY_SEL = 2                    /* Busy time-out timer */
+N} iic_TimerSelect_e;
+N
+N/* IIC Timer status / error codes */
+Ntypedef enum tag_iic_TimerStatus_e
+N{
+N  IIC_TIMER_STOPPED = 0,                    /* Timer is stopped / not running */
+N  IIC_TIMER_RUNNING,                        /* Timer is running */
+N  IIC_TIMER_EXPIRED                         /* Timer expired */
+N} iic_TimerStatus_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vIIC_TimerGetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerGetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                          uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      IIC_TimerStart
+N *
+N * Purpose:       Start the selected time-out detection & recovery software
+N *                timer
+N *
+N * Inputs:        eTimer  Time-out to be measured
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerStart(iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIC_TimerStop
+N *
+N * Purpose:       Stops and clears the selected time-out detection software
+N *                timer
+N *
+N * Inputs:        eTimer  Software timer to be stopped
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerStop(iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIC_TimerQuery
+N *
+N * Purpose:       Retrieve the current status of a software timer
+N *
+N * Inputs:        eTimer  Software timer to be checked
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Niic_TimerStatus_e eIIC_TimerQuery (iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      iic_Timer_Delay_us
+N *
+N * Purpose:       Inserts very short and platform specific delays
+N *
+N * Inputs:        u32Time  Selected time to wait [in core cycles]
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid iic_Timer_Delay_us (uint32_t u32Time);
+N
+N/****************************************************************************/	
+N
+N
+N#endif /* IIC_TIMER_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 28 "..\..\..\..\lldd\src\iic_timer.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_IIC_TIMER_C_REVISION     "$Revision: 1.7 $"
+N#define LLDD_IIC_TIMER_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_IIC_TIMER_C_REVISION[] = LLDD_IIC_TIMER_C_REVISION;
+Xstatic uint8_t au8LLDD_IIC_TIMER_C_REVISION[] = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_IIC_TIMER_C_TAG[]      = LLDD_IIC_TIMER_C_TAG;
+Xstatic uint8_t au8LLDD_IIC_TIMER_C_TAG[]      = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_IIC_TIMER_H_REVISION[] = LLDD_IIC_TIMER_H_REVISION;
+Xstatic uint8_t au8LLDD_IIC_TIMER_H_REVISION[] = "$Revision: 1.6 $";
+Nstatic uint8_t au8LLDD_IIC_TIMER_H_TAG[]      = LLDD_IIC_TIMER_H_TAG;
+Xstatic uint8_t au8LLDD_IIC_TIMER_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Global variables              *
+N**********************************************/
+N/* Software timer counters */
+Nuint32_t u32TimeBusy = 0U;
+Nuint32_t u32TimeAck = 0U;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+N/****************************************************************************/
+Nvoid vIIC_TimerGetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                          uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_IIC_TIMER_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_IIC_TIMER_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_IIC_TIMER_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_IIC_TIMER_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_TimerStart (iic_TimerSelect_e eTimer)
+N{
+N    /*  
+N     *  Preset the counter
+N     */
+N    switch( eTimer )
+N    {
+N        case IIC_TIMER_IRQ_ACK_SEL:                
+N            u32TimeAck = IIC_TIMER_IRQ_ACK;
+X            u32TimeAck = 16000;
+N            break;
+N
+N        case IIC_TIMER_BUSY_SEL:                
+N            u32TimeBusy = IIC_TIMER_BUSY;
+X            u32TimeBusy = 15000;
+N            break;
+N
+N        default:
+N            break;
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_TimerStop (iic_TimerSelect_e eTimer)
+N{
+N  /* 
+N   *  Timer can be stopped even if it is not running,
+N   *  because it could expire in the meantime. Stop 
+N   *  the appropriate timer by cleareing it
+N   */
+N    switch (eTimer)
+N    {
+N        case IIC_TIMER_IRQ_ACK_SEL:    
+N            u32TimeAck = 0;    
+N            break;
+N
+N        case IIC_TIMER_BUSY_SEL:         
+N            u32TimeBusy = 0;    
+N            break;
+N
+N        default:
+N            break;    
+N    }
+N}
+N
+N
+N/****************************************************************************/
+Niic_TimerStatus_e eIIC_TimerQuery (iic_TimerSelect_e eTimer)
+N{
+N    iic_TimerStatus_e eTimerStatus = IIC_TIMER_STOPPED;
+N
+N    /* 
+N     *  Check timer counter or RTOS event flag.
+N     *  If the timer is still running change the 
+N     *  value of the return status
+N     */
+N    switch (eTimer)
+N    {
+N        case IIC_TIMER_IRQ_ACK_SEL:                   
+N            if (u32TimeAck > 0)
+N            {
+N                /* Timer running */
+N                u32TimeAck--;
+N                eTimerStatus = IIC_TIMER_RUNNING;
+N            }
+N            else
+N            {
+N                /* Timer expiried */
+N                u32TimeAck = 0;
+N                eTimerStatus = IIC_TIMER_EXPIRED;
+N            }    
+N            break;
+N
+N        case IIC_TIMER_BUSY_SEL:    
+N            if (u32TimeBusy > 0)
+N            {
+N                /* Timer running */
+N                u32TimeBusy--;
+N                eTimerStatus = IIC_TIMER_RUNNING;
+N            }
+N            else
+N            {
+N                /* Timer expiried */
+N                u32TimeBusy = 0;
+N                eTimerStatus = IIC_TIMER_EXPIRED;
+N            }    
+N            break;
+N
+N        default:  
+N            break;  
+N    }
+N    /* Status report */
+N    return eTimerStatus;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid iic_Timer_Delay_us (uint32_t u32Time)
+N{
+N    /* Wait loop */
+N    while( u32Time > 0 )
+N    {
+N        u32Time--;
+N    }
+N}
+N
+N/****************************************************************************/
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: iic_timer.c
+N**  $Revision: 1.7 $
+N**  $Date: 2015/05/04 09:07:15 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :  5 (0286) String literal contains character which is not a
+N** |                    member of the basic source character set.
+N** |           5 (0288) Source file '<TEXT>' has comments containing characters
+N** |                    which are not members of the basic source character set.
+N** |          22 (3218) File scope static, '<TEXT>', only accessed in one
+N** |                    function.
+N** |          45 (0303) Cast between a pointer to volatile object and an
+N** |                    integral type.
+N** |          52 (1503) The function '%1s' is defined but is not used within
+N** |                    this project.
+N** |
+N** | REASON : This is neccessary because of driver version control.
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N/****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

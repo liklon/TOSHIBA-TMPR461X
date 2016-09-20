@@ -1,0 +1,15 @@
+..\out\can.o: ..\..\usecases\src\can.c
+..\out\can.o: ..\..\..\..\lldd\inc\ccr.h
+..\out\can.o: ..\..\..\..\common\inc\captypes.h
+..\out\can.o: ..\..\..\..\lldd\inc\intc.h
+..\out\can.o: ..\..\..\..\lldd\inc\txcan.h
+..\out\can.o: ..\..\usecases\inc\can.h
+..\out\can.o: ..\..\usecases\inc\statevariables.h
+..\out\can.o: ..\..\inc\config.h
+..\out\can.o: ..\..\..\..\mw\inc\mw_definitions.h
+..\out\can.o: ..\..\..\..\hldd\inc\qspi.h
+..\out\can.o: ..\..\..\..\lldd\inc\qspic.h
+..\out\can.o: ..\..\inc\pinconfig.h
+..\out\can.o: ..\..\src\mydef.h
+..\out\can.o: ..\..\..\..\mw\inc\gf.h
+..\out\can.o: ..\..\..\..\lldd\inc\gpio.h

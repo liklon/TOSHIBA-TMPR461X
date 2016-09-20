@@ -1,0 +1,2533 @@
+L 1 "..\..\..\..\lldd\src\iic.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Serial Bus Interface (I2C) Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/08 08:58:24 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "iic_io.h"                       /* SBI (I2C) registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\iic_io.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Reference SBI (I2C) Low Level Device Driver IO
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef IIC_IO_H
+N#define IIC_IO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\lldd\hdr\iic_io.h" 2
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_IIC_IO_H_REVISION     "$Revision: 1.8 $"
+N#define LLDD_IIC_IO_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N
+N/****************************************************************************/
+N
+Ntypedef uint8_t u8SBI0CR1_byte_view;        /* BYTE access */
+N                                            
+Ntypedef struct                              /* BIT access */
+N{ 
+N    uint8_t SCK :3;                         /* bit(s) r/w */
+N    uint8_t     :1;                         /* bit(s) ro */
+N    uint8_t ACK :1;                         /* bit(s) r/w */
+N    uint8_t BC  :3;                         /* bit(s) wo */
+N} SBI0CR1_bit_view_st;
+N
+N/* pointer to byte access */
+N#define pu8SBI0CR1                          ((volatile u8SBI0CR1_byte_view *) (0xC0324000U))
+N /* pointer to bit-access */                
+N#define pst_bitSBI0CR1                      ((volatile SBI0CR1_bit_view_st *) (0xC0324000U))
+N
+N/*
+N   Shadow technique is manually generated code. IIC module requires shadowing 
+N   of the SBI0CR1 register which is partially write only. Several specific 
+N   definitons is required to implement shadowing successfully.
+N*/
+N
+N/* Register-shadow function read/write operation */
+Ntypedef enum tag_iic_io_RegSetGet_e
+N{
+N    IIC_IO_SET = 0x0,                       /* Set register access */
+N    IIC_IO_GET = 0x1                        /* Get register access */
+N} iic_io_RegSetGet_e;
+N
+N/* Default register value for shadow technique */
+N#define IIC_IO_SBI0CR1_DEFAULT              (0x09)
+N
+N/* Mask covering all bits in the register */
+N#define IIC_IO_SBI0CR1_ALL_BITS             (0xFF)
+N
+N/*
+N   Definitions per shadowed bit or group of bits, e.g. BC are 3 bits 
+N   (0x07 = b'111 mask) shifted by 5 (bits 7, 6 & 5 in SBI0CR1)
+N*/
+N#define IIC_IO_SBI0CR1_BC_SHIFT             (5)
+N#define IIC_IO_SBI0CR1_BC_BITS              (0x07)
+N#define IIC_IO_SBI0CR1_ACK_SHIFT            (4)
+N#define IIC_IO_SBI0CR1_ACK_BITS             (0x01)
+N#define IIC_IO_SBI0CR1_SCK_SHIFT            (0)
+N#define IIC_IO_SBI0CR1_SCK_BITS             (0x07)
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N *
+N * Function:      IIC_IO_ShadowSBI0CR1
+N *
+N * Purpose:       Shadow service for SBI0CR1 register
+N *
+N * Inputs:        eRegSetGet  operation to be performed on the register:
+N *
+N * Outputs:       none
+N *
+N * Return Values: If IIC_IO_SET was a parameter then it retuns current value
+N *                of the register
+N *                If IIC_IO_GET was a parameter then it retuns current value
+N *                of bits to be get
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nstatic uint8_t IIC_IO_ShadowSBI0CR1(iic_io_RegSetGet_e eRegSetGet, uint8_t u8AllSubBits,
+N                                    uint8_t u8NewSubBits, uint8_t u8BitsShift)
+N{
+N    static u8SBI0CR1_byte_view u8ShadowCrOne = IIC_IO_SBI0CR1_DEFAULT;
+X    static u8SBI0CR1_byte_view u8ShadowCrOne = (0x09);
+N    u8SBI0CR1_byte_view u8RetVal = 0;
+N    
+N    /* Prepare clear mask */
+N    u8AllSubBits = u8AllSubBits << u8BitsShift;
+N    /* Prepare set maks */
+N    u8NewSubBits = u8NewSubBits << u8BitsShift;
+N    
+N    if( IIC_IO_SET == eRegSetGet )
+N    {
+N        /*
+N           Clear all bits belonging to the group
+N           Set bits to be changed
+N           Perform real register update
+N           Update the return value
+N         */
+N        u8ShadowCrOne = (u8ShadowCrOne & ~u8AllSubBits);
+N        u8ShadowCrOne = u8ShadowCrOne | (u8NewSubBits);
+N        *pu8SBI0CR1 = u8ShadowCrOne;
+X        *((volatile u8SBI0CR1_byte_view *) (0xC0324000U)) = u8ShadowCrOne;
+N        u8RetVal = u8ShadowCrOne;
+N    }
+N    else
+N    {
+N        /* In this case return only interesting bits */
+N        u8RetVal = (u8ShadowCrOne & u8AllSubBits) >> u8BitsShift;
+N    }
+N    return u8RetVal;
+N}
+N
+N/* Default value write macro */
+N#define vSetSBI0CR1_DEFAULT()               (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ALL_BITS,\
+N                                             IIC_IO_SBI0CR1_DEFAULT, 0))
+X#define vSetSBI0CR1_DEFAULT()               (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ALL_BITS,                                             IIC_IO_SBI0CR1_DEFAULT, 0))
+N
+N/* Shadowed register set BC bits macro */
+N#define vSetSBI0CR1_BC(ParValue)            (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_BC_BITS,\
+N                                            (ParValue), IIC_IO_SBI0CR1_BC_SHIFT))
+X#define vSetSBI0CR1_BC(ParValue)            (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_BC_BITS,                                            (ParValue), IIC_IO_SBI0CR1_BC_SHIFT))
+N
+N/* Shadowed register get BC bits macro */
+N#define biGetSBI0CR1_BC()                   (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_BC_BITS,\
+N                                             0, IIC_IO_SBI0CR1_BC_SHIFT))
+X#define biGetSBI0CR1_BC()                   (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_BC_BITS,                                             0, IIC_IO_SBI0CR1_BC_SHIFT))
+N
+N/* Shadowed register set ACK bits macro */
+N#define vSetSBI0CR1_ACK(ParValue)           (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ACK_BITS,\
+N                                            (ParValue), IIC_IO_SBI0CR1_ACK_SHIFT))
+X#define vSetSBI0CR1_ACK(ParValue)           (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ACK_BITS,                                            (ParValue), IIC_IO_SBI0CR1_ACK_SHIFT))
+N
+N/* Shadowed register get ACK bits macro */
+N#define biGetSBI0CR1_ACK()                  (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_ACK_BITS,\
+N                                             0, IIC_IO_SBI0CR1_ACK_SHIFT))
+X#define biGetSBI0CR1_ACK()                  (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_ACK_BITS,                                             0, IIC_IO_SBI0CR1_ACK_SHIFT))
+N
+N/* Shadowed register set SCK bits macro */
+N#define vSetSBI0CR1_SCK(ParValue)           (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_SCK_BITS,\
+N                                            (ParValue), IIC_IO_SBI0CR1_SCK_SHIFT))
+X#define vSetSBI0CR1_SCK(ParValue)           (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_SCK_BITS,                                            (ParValue), IIC_IO_SBI0CR1_SCK_SHIFT))
+N
+N/* Shadowed register get SCK bits macro */
+N#define biGetSBI0CR1_SCK()                  (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_SCK_BITS,\
+N                                             0, IIC_IO_SBI0CR1_SCK_SHIFT))
+X#define biGetSBI0CR1_SCK()                  (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_SCK_BITS,                                             0, IIC_IO_SBI0CR1_SCK_SHIFT))
+N/* Byte write */
+N#define vSetSBI0CR1(ParValue)               (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ALL_BITS,\
+N                                            (ParValue), 0))
+X#define vSetSBI0CR1(ParValue)               (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, IIC_IO_SBI0CR1_ALL_BITS,                                            (ParValue), 0))
+N
+N/* Byte read */
+N#define u8GetSBI0CR1()                      (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_ALL_BITS,\
+N                                             0, 0))
+X#define u8GetSBI0CR1()                      (IIC_IO_ShadowSBI0CR1(IIC_IO_GET, IIC_IO_SBI0CR1_ALL_BITS,                                             0, 0))
+N
+N/****************************************************************************/
+N
+N
+Ntypedef uint8_t u8SBI0DBR_byte_view;        /* BYTE access */
+N
+Ntypedef struct                              /* BIT access */
+N{ 
+N    uint8_t DB :8;                          /* bit(s) r/w */
+N} SBI0DBR_bit_view_st;
+N
+N/* pointer to byte access */
+N#define pu8SBI0DBR                          ((volatile u8SBI0DBR_byte_view *) (0xC0324004U))
+N
+N/* pointer to bit-access */
+N#define pst_bitSBI0DBR                      ((volatile SBI0DBR_bit_view_st *) (0xC0324004U))
+N
+N/* bit access */
+N#define vSetSBI0DBR_DB(ParValue)            (pst_bitSBI0DBR->DB=(ParValue))
+N#define biGetSBI0DBR_DB()                   (pst_bitSBI0DBR->DB)
+N
+N/* byte access */                           
+N#define vSetSBI0DBR(ParValue)               (*pu8SBI0DBR = (ParValue))
+N#define u8GetSBI0DBR()                      (*pu8SBI0DBR)
+N
+N/****************************************************************************/
+N
+N
+Ntypedef uint8_t u8SBI0AR_byte_view;         /* BYTE access */
+N
+Ntypedef struct                              /* BIT access */
+N{ 
+N    uint8_t ALS :1;                         /* bit(s) wo */
+N    uint8_t SA  :7;                         /* bit(s) wo */
+N} SBI0AR_bit_view_st;
+N
+N/* pointer to byte access - reg wo, all bits */
+N#define pu8SBI0AR                           ((volatile u8SBI0AR_byte_view *) (0xC0324008U))
+N/* pointer to bit-access - reg wo, all bits */
+N#define pst_bitSBI0AR                       ((volatile SBI0AR_bit_view_st *) (0xC0324008U))
+N
+N/* 
+N   Shadow technique is manually generated code. IIC module requires
+N   shadowing of the SBI0AR register which is write only
+N*/
+N
+N/* Default register value for shadow technique */
+N#define IIC_IO_SBI0AR_DEFAULT               (0x00)
+N
+N/* Mask covering all bits in the register */
+N#define IIC_IO_SBI0AR_ALL_BITS              (0xFF)
+N
+N/* Definitions of shadowed bit or groups of bits */
+N#define IIC_IO_SBI0AR_ALS_SHIFT             (0)
+N#define IIC_IO_SBI0AR_ALS_BITS              (0x01)
+N#define IIC_IO_SBI0AR_SA_SHIFT              (1)
+N#define IIC_IO_SBI0AR_SA_BITS               ((0xFE ) >> 1 )
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N *
+N * Function:      IIC_IO_ShadowSBI0AR
+N *
+N * Purpose:       Shadow service for SBI0AR register
+N *
+N * Inputs:        eRegSetGet   Operation to be performed on the register
+N *
+N * Outputs:       none
+N *
+N * Return Values: If IIC_IO_SET was a parameter then it retuns current value
+N *                of the register
+N *                If IIC_IO_GET was a parameter then it retuns current value
+N *                of bits to be get
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nstatic uint8_t IIC_IO_ShadowSBI0AR(iic_io_RegSetGet_e eRegSetGet, uint8_t u8AllSubBits,
+N                                   uint8_t u8NewSubBits, uint8_t u8BitsShift)
+N{
+N    static u8SBI0AR_byte_view u8ShadowAr = IIC_IO_SBI0AR_DEFAULT;
+X    static u8SBI0AR_byte_view u8ShadowAr = (0x00);
+N    u8SBI0AR_byte_view u8RetVal = 0;
+N    
+N    /* Prepare clear mask */
+N    u8AllSubBits = u8AllSubBits << u8BitsShift;
+N    /* Prepare Set mask */
+N    u8NewSubBits = u8NewSubBits << u8BitsShift;
+N    
+N    if( IIC_IO_SET == eRegSetGet )
+N    {
+N        /*
+N            Clear all bits belonging to the group
+N            Set bits to be changed
+N            Perform real register update
+N            Update the return value
+N         */
+N        u8ShadowAr = (u8ShadowAr & ~u8AllSubBits);
+N        u8ShadowAr = u8ShadowAr | (u8NewSubBits);
+N        *pu8SBI0AR = u8ShadowAr;
+X        *((volatile u8SBI0AR_byte_view *) (0xC0324008U)) = u8ShadowAr;
+N        u8RetVal = u8ShadowAr;
+N    }
+N    else
+N    {
+N        /* In this case return only the bits of interest */
+N        u8RetVal = (u8ShadowAr & u8AllSubBits) >> u8BitsShift;
+N    }
+N    return u8RetVal;
+N}
+N
+N/* Default value write macro */
+N#define vSetSBI0AR_DEFAULT()                (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_ALL_BITS,\
+N                                             IIC_IO_SBI0AR_DEFAULT, 0))
+X#define vSetSBI0AR_DEFAULT()                (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_ALL_BITS,                                             IIC_IO_SBI0AR_DEFAULT, 0))
+N
+N/* Shadowed register set ALS bit macro */
+N#define vSetSBI0AR_ALS(ParValue)            (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_ALS_BITS,\
+N                                            (ParValue), IIC_IO_SBI0AR_ALS_SHIFT))
+X#define vSetSBI0AR_ALS(ParValue)            (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_ALS_BITS,                                            (ParValue), IIC_IO_SBI0AR_ALS_SHIFT))
+N
+N/* Shadowed register get ALS bit macro */
+N#define biGetSBI0AR_ALS()                   (IIC_IO_ShadowSBI0AR(IIC_IO_GET, IIC_IO_SBI0AR_ALS_BITS,\
+N                                             0, IIC_IO_SBI0AR_ALS_SHIFT))
+X#define biGetSBI0AR_ALS()                   (IIC_IO_ShadowSBI0AR(IIC_IO_GET, IIC_IO_SBI0AR_ALS_BITS,                                             0, IIC_IO_SBI0AR_ALS_SHIFT))
+N
+N/* Shadowed register set SA bits macro */
+N#define vSetSBI0AR_SA(ParValue)             (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_SA_BITS,\
+N                                            (ParValue), IIC_IO_SBI0AR_SA_SHIFT))
+X#define vSetSBI0AR_SA(ParValue)             (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_SA_BITS,                                            (ParValue), IIC_IO_SBI0AR_SA_SHIFT))
+N
+N/* Shadowed register get SA bits macro */
+N#define biGetSBI0AR_SA()                    (IIC_IO_ShadowSBI0AR(IIC_IO_GET, IIC_IO_SBI0AR_SA_BITS,\
+N                                             0, IIC_IO_SBI0AR_SA_SHIFT))
+X#define biGetSBI0AR_SA()                    (IIC_IO_ShadowSBI0AR(IIC_IO_GET, IIC_IO_SBI0AR_SA_BITS,                                             0, IIC_IO_SBI0AR_SA_SHIFT))
+N
+N/* Macro for byte write */
+N#define vSetSBI0AR(ParValue)                (IIC_IO_ShadowSBI0AR(IIC_IO_SET, IIC_IO_SBI0AR_ALL_BITS, (ParValue), 0))
+N
+N/* Macro for byte read */
+N#define u8GetSBI0AR()                       (IIC_IO_ShadowSBI0AR(IIC_IO_GET, IIC_IO_SBI0AR_ALL_BITS, 0, 0))
+N
+N/****************************************************************************/
+N
+N
+Ntypedef uint8_t u8SBI0CR2_byte_view;        /* BYTE access */
+N
+Ntypedef struct                              /* BIT access */
+N{ 
+N    uint8_t SWRST :2;                       /* bit(s) wo */
+N    uint8_t SBIM  :2;                       /* bit(s) wo */
+N    uint8_t PIN   :1;                       /* bit(s) wo */
+N    uint8_t BB    :1;                       /* bit(s) wo */
+N    uint8_t TRX   :1;                       /* bit(s) wo */
+N    uint8_t MST   :1;                       /* bit(s) wo */
+N} SBI0CR2_bit_view_st;
+N
+N/* pointer to byte access - reg wo, all bits */
+N#define pu8SBI0CR2                          ((volatile u8SBI0CR2_byte_view *) (0xC032400CU))
+N/* pointer to bit-access - reg wo, all bits */
+N#define pst_bitSBI0CR2                      ((volatile SBI0CR2_bit_view_st *) (0xC032400CU))
+N
+N/* bit access */
+N#define vSetSBI0CR2_SWRST(ParValue)         (pst_bitSBI0CR2->SWRST=(ParValue))
+N#define vSetSBI0CR2_SBIM(ParValue)          (pst_bitSBI0CR2->SBIM=(ParValue))
+N#define vSetSBI0CR2_PIN(ParValue)           (pst_bitSBI0CR2->PIN=(ParValue))
+N#define vSetSBI0CR2_BB(ParValue)            (pst_bitSBI0CR2->BB=(ParValue))
+N#define vSetSBI0CR2_TRX(ParValue)           (pst_bitSBI0CR2->TRX=(ParValue))
+N#define vSetSBI0CR2_MST(ParValue)           (pst_bitSBI0CR2->MST=(ParValue))
+N                                            
+N/* byte access */                           
+N#define vSetSBI0CR2(ParValue)               (*pu8SBI0CR2 = (ParValue))
+N
+N/****************************************************************************/
+N
+N
+Ntypedef uint8_t u8SBI0SR_byte_view;         /* BYTE access */
+N                                            
+Ntypedef struct                              /* BIT access */
+N{ 
+N    uint8_t LRB :1;                         /* bit(s) ro */
+N    uint8_t AD0 :1;                         /* bit(s) ro */
+N    uint8_t AAS :1;                         /* bit(s) ro */
+N    uint8_t AL  :1;                         /* bit(s) ro */
+N    uint8_t PIN :1;                         /* bit(s) ro */
+N    uint8_t BB  :1;                         /* bit(s) ro */
+N    uint8_t TRX :1;                         /* bit(s) ro */
+N    uint8_t MST :1;                         /* bit(s) ro */
+N} SBI0SR_bit_view_st;
+N
+N/* pointer to byte access - reg ro, all bits */
+N#define pu8SBI0SR                           ((volatile u8SBI0SR_byte_view *) (0xC032400CU))
+N/* pointer to bit-access - reg ro, all bits */
+N#define pst_bitSBI0SR                       ((volatile SBI0SR_bit_view_st *) (0xC032400CU))
+N
+N/* bit access */
+N#define biGetSBI0SR_LRB()                   (pst_bitSBI0SR->LRB)
+N#define biGetSBI0SR_AD0()                   (pst_bitSBI0SR->AD0)
+N#define biGetSBI0SR_AAS()                   (pst_bitSBI0SR->AAS)
+N#define biGetSBI0SR_AL()                    (pst_bitSBI0SR->AL)
+N#define biGetSBI0SR_PIN()                   (pst_bitSBI0SR->PIN)
+N#define biGetSBI0SR_BB()                    (pst_bitSBI0SR->BB)
+N#define biGetSBI0SR_TRX()                   (pst_bitSBI0SR->TRX)
+N#define biGetSBI0SR_MST()                   (pst_bitSBI0SR->MST)
+N                                            
+N/* byte access */                           
+N#define u8GetSBI0SR()                       (*pu8SBI0SR)
+N
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/    
+N
+N
+N#endif /* IIC_IO_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\iic.c" 2
+N#include "iic.h"                          /* SBI (I2C) LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\iic.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Serial Bus Interface (I2C) Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef IIC_H
+N#define IIC_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_IIC_H_REVISION     "$Revision: 1.10 $"
+N#define LLDD_IIC_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/* Reset bit-masks */
+N#define IIC_1ST_RESET_VAL         0x2
+N#define IIC_2ND_RESET_VAL         0x1
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/**
+N* @brief IIC initialization error codes
+N*/
+Ntypedef enum tag_iic_InitErrorCodes_e
+N{
+N    IIC_INIT_OK       = 0,               /*!< Correct initialization */
+N    IIC_INIT_BC_ERR   = 1,               /*!< Unsupported number of bits */
+N    IIC_INIT_ACK_ERR  = 2,               /*!< Invalid acknowledge cycle  */
+N    IIC_INIT_SCK_ERR  = 3,               /*!< Unsuppported clock setting */
+N    IIC_INIT_SA_ERR   = 4,               /*!< Invalid slave address [slave mode] */
+N    IIC_INIT_ALS_ERR  = 5                /*!< Incorrect address recognition mode [slave mode] */
+N} iic_InitErrors_e;
+N
+N/**
+N* @brief IIC transfer status/error codes
+N*/
+Ntypedef enum tag_iic_ErrorCodes_e
+N{
+N    IIC_READY            = 0,            /*!< TX/RX complete */
+N    IIC_BUSY_TIMEOUT     = 1,            /*!< Bus busy time-out */
+N    IIC_IRQ_ACK_TIMEOUT  = 2,            /*!< Acknowledge time-out */
+N    IIC_CLK_LINE_TIMEOUT = 3,            /*!< Clock line LOW state time-out */
+N    IIC_NOT_READY        = 4             /*!< Bus not ready */
+N} iic_ErrorCodes_e;
+N
+N/**
+N* @brief IIC R/W direction bit values on the IIC bus
+N*/
+Ntypedef enum tag_iic_SendDirBit_e
+N{
+N    IIC_WR_TO_SLAVE   = 0x0,
+N    IIC_RD_FROM_SLAVE = 0x1
+N} iic_SendDirBit_e;
+N
+N/**
+N* @brief IIC  output clock frequency
+N*/
+Ntypedef enum tag_iic_OutClkFreq_e
+N{
+N    IIC_OUTCLK_340_KHZ = 0x0,            /*!< n = 4, 340.9 kHz */
+N    IIC_OUTCLK_197_KHZ = 0x1,            /*!< n = 5, 197.3 kHz */
+N    IIC_OUTCLK_103_KHZ = 0x2,            /*!< n = 6, 107.1 kHz */
+N    IIC_OUTCLK_56_KHZ  = 0x3,            /*!< n = 7, 55.9 kHz */
+N    IIC_OUTCLK_28_KHZ  = 0x4,            /*!< n = 8, 28.6 kHz */
+N    IIC_OUTCLK_14_KHZ  = 0x5,            /*!< n = 9, 14.5 kHz */
+N    IIC_OUTCLK_7_KHZ   = 0x6             /*!< n = 10 7.2 kHz */  
+N} iic_OutClkFreq_e;
+N
+N/**
+N* @brief IIC number of data bits
+N*/
+Ntypedef enum tag_iic_NoOfBits_e
+N{
+N    IIC_DATA_BITS_8 = 0x0,               /*!< 8 bits */
+N    IIC_DATA_BITS_1 = 0x1,               /*!< 1 bits */
+N    IIC_DATA_BITS_2 = 0x2,               /*!< 2 bits */
+N    IIC_DATA_BITS_3 = 0x3,               /*!< 3 bits */
+N    IIC_DATA_BITS_4 = 0x4,               /*!< 4 bits */
+N    IIC_DATA_BITS_5 = 0x5,               /*!< 5 bits */
+N    IIC_DATA_BITS_6 = 0x6,               /*!< 6 bits */
+N    IIC_DATA_BITS_7 = 0x7                /*!< 7 bits */  
+N} iic_NoOfBits_e;
+N
+N/**
+N* @brief IIC acknowledge generation
+N*/
+Ntypedef enum tag_iic_AckCycle_e
+N{
+N    IIC_ACK_DISABLE = 0,                 /*!< Do not generate acknowledge cycle */
+N    IIC_ACK_ENABLE  = 1                  /*!< Generate acknowledge cycle */  
+N} iic_AckCycle_e;
+N
+N/**
+N* @brief SBI operation mode
+N*/
+Ntypedef enum tag_iic_OperMode_e
+N{
+N    IIC_BUS_START_CONDITION   = 0xF8,    /*!< START */
+N    IIC_BUS_STOP_CONDITION    = 0xD8,    /*!< STOP */
+N    IIC_BUS_RELEASE_CONDITION = 0x18     /*!< Slave, RX, IRQ Cancel, SBI = IIC */
+N} iic_OperMode_e;
+N
+N/**
+N* @brief IIC transfer direction
+N*/
+Ntypedef enum tag_iic_TransfDir_e
+N{
+N    IIC_RX_DIR = 0,                      /*!< Transmit */
+N    IIC_TX_DIR = 1                       /*!< Receive */
+N} iic_TransfDir_e;
+N
+N/**
+N* @brief Master/slave controller mode/status
+N*/
+Ntypedef enum tag_iic_CtrlMode_e
+N{
+N    IIC_SLAVE_MODE  = 0,                 /*!< Slave mode */
+N    IIC_MASTER_MODE = 1                  /*!< Master mode */
+N} iic_CtrlMode_e;
+N
+N/**
+N* @brief IIC bus status
+N*/
+Ntypedef enum tag_iic_BusyStat_e
+N{
+N    IIC_BUS_FREE = 0,                    /*!< Bus free */
+N    IIC_BUS_BUSY = 1                     /*!< Bus busy */
+N} iic_BusyStat_e;
+N
+N/**
+N* @brief IIC controller interrupt status
+N*/
+Ntypedef enum tag_iic_IrqStat_e
+N{
+N    IIC_IRQ_PENDING = 0,                 /*!< Interrupt generated */
+N    IIC_IRQ_CANCEL  = 1                  /*!< Interrupt canceled */
+N} iic_IrqStat_e;
+N
+N/**
+N* @brief IIC controller bus arbitration status
+N*/
+Ntypedef enum tag_iic_ArbitrStat_e
+N{
+N    IIC_ARBITR_NO_LOST = 0,              /*!< No arbitration lost */
+N    IIC_ARBITR_IS_LOST = 1               /*!< Arbitration lost detected */
+N} iic_ArbitrStat_e;
+N
+N/**
+N* @brief IIC controller slave address match status
+N*/
+Ntypedef enum tag_iic_AdrMatchStat_e
+N{
+N    IIC_ADR_NO_MATCH = 0,                /*!< No "match" */
+N    IIC_ADR_IS_MATCH = 1                 /*!< Address "match" or general call detected */
+N} iic_AdrMatchStat_e;
+N
+N/**
+N* @brief IIC controller General Call detection status
+N*/
+Ntypedef enum tag_iic_GenCallStat_e
+N{
+N    IIC_GEN_CALL_NO_DET = 0,             /*!< General Call is not deteced */
+N    IIC_GEN_CALL_IS_DET = 1              /*!< General Call is detected */
+N} iic_GenCallStat_e;
+N
+N/**
+N* @brief IIC controller last received bit status
+N*/
+Ntypedef enum tag_iic_LastRxBitStat_e
+N{
+N    IIC_LST_BIT_ACK   = 0,               /*!< Last recieved bit is "0" */
+N    IIC_LST_BIT_NOACK = 1                /*!< Last recieved bit is "1" */
+N} iic_LastRxBitStat_e;
+N
+N/**
+N* @brief IIC slave address recognition mode
+N*/
+Ntypedef enum tag_iic_AdrRecMode_e
+N{
+N    IIC_ADR_REC_ENABLE  = 0x0,           /*!< Address recognition enabled */
+N    IIC_ADR_REC_DISABLE = 0x1            /*!< Address recognition disabled */    
+N} iic_AdrRecMode_e;
+N
+N/**
+N* @brief IIC slave mode and transfer direction
+N*/
+Ntypedef enum tag_iic_SlaveDirMode_e
+N{
+N    IIC_SLAVE_RX_MODE = 0x18,            /*!< Slave RX mode */
+N    IIC_SLAVE_TX_MODE = 0x58,            /*!< Slave TX mode */
+N} iic_SlaveDirMode_e;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/**
+N* @brief Implementation of function vIIC_GetVersion
+N*
+N* Retrieve pointers to module and header revision and tag string
+N*
+N* @note none
+N*
+N* @param[in,out] pau8ModuleRevision - pointer to module revision string
+N* @param[in,out] pau8ModuleTag      - pointer to module tag string
+N* @param[in,out] pau8HeaderRevision - pointer to header revision string
+N* @param[in,out] pau8HeaderTag      - pointer to header tag string
+N* @param[in,out] pau8IORevision     - pointer to IO header revision string
+N* @param[in,out] pau8IOTag          - pointer to IO header tag string
+N*
+N* @return void
+N*/
+Nvoid vIIC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/**
+N* @brief Implementation of function eIIC_Init
+N*
+N* Reset, initilize and switch the SBI to IIC mode
+N*
+N* @note The slave address recognition mode must be explicitly set
+N*       via extra call of the IIC_SetAdrRecMode driver function
+N*
+N* @param[in] eNoOfBits   - Number of bits to transfer
+N* @param[in] eAckCycle   - Acknowledge cycle enable/disable
+N* @param[in] eOutClkFreq - Output clock frequency
+N* @param[in] u8SlaveAdr  - Slave address
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_Init(iic_NoOfBits_e eNoOfBits, iic_AckCycle_e eAckCycle,
+N                           iic_OutClkFreq_e eOutClkFreq, uint8_t u8SlaveAdr);
+N
+N
+N/**
+N*
+N* @brief Implementation of function vIIC_Reset
+N*
+N* Software reset of the IIC controller
+N*
+N* @note none
+N*
+N* @return void
+N*/
+Nvoid vIIC_Reset(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SetNoOfBits
+N*
+N* Configure the number of bits to be transferred over the IIC bus
+N*
+N* @note none
+N*
+N* @param[in] eNoOfBits - Number of bits in a word
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_SetNoOfBits(iic_NoOfBits_e eNoOfBits);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetNoOfBits
+N*
+N* Retrieve the currently set number of bits configuration
+N*
+N* @note This function relies on the shadow register content (SBI0CR1)
+N*
+N* @return IIC_DATA_BITS_8 if 8 bits
+N* @return IIC_DATA_BITS_1 if 1 bit
+N* @return IIC_DATA_BITS_2 if 2 bits
+N* @return IIC_DATA_BITS_3 if 3 bits
+N* @return IIC_DATA_BITS_4 if 4 bits
+N* @return IIC_DATA_BITS_5 if 5 bits
+N* @return IIC_DATA_BITS_6 if 6 bits
+N* @return IIC_DATA_BITS_7 if 7 bits
+N*/
+Niic_NoOfBits_e eIIC_GetNoOfBits(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SetOutClkFreq
+N*                
+N* The function configures an IIC controller output clock frequency
+N* (IICCLK) by specifying the appropriate predefined value used as an
+N* input for the formula, which calculates the output frequency.
+N*
+N* @note none
+N*                
+N* @param[in] eOutClkFreq - Output clock frequency
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_SetOutClkFreq(iic_OutClkFreq_e eOutClkFreq);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SetAckCycMode
+N*                
+N* Configures the controller to send or avoid sending of an 
+N* additional cycle for the acknowledge pulse on the IIC bus
+N*
+N* @note none
+N*                
+N* @param[in] eAckCycle - Acknowledge cycle enable/disable request
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_SetAckCycMode(iic_AckCycle_e eAckCycle);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetAckCycMode
+N*                
+N* Retrieve the currently set acknowledge cycle mode of the 
+N* IIC bus
+N*
+N* @note This function relies on the shadow register content (SBI0CR1)
+N*
+N* @return IIC_ACK_DISABLE if no acknowledge cycle is generated
+N* @return IIC_ACK_ENABLE if acknowledge cycle is generated
+N*/
+Niic_AckCycle_e eIIC_GetAckCycMode(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SetSlaveAdr
+N*                
+N* Set the slave address for the IIC controller operating in 
+N* slave mode
+N*
+N* @note The address recognition mode has to be set by the explicit
+N*       call of the IIC_SetAdrRecMode driver function
+N*                
+N* @param[in] u8SlaveAdr - Slave address
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_SetSlaveAdr(uint8_t u8SlaveAdr);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SetAdrRecMode
+N*                
+N* Set the recognition mode of the slave address. 
+N*
+N* @note The slave address must be set separately 
+N*
+N* @param[in] eAdrRecMode - Slave address recognition
+N*
+N* @return IIC_INIT_OK if Correct initialization
+N* @return IIC_INIT_BC_ERR if Unsupported number of bits
+N* @return IIC_INIT_ACK_ERR if Invalid acknowledge cycle
+N* @return IIC_INIT_SCK_ERR if Unsuppported clock setting
+N* @return IIC_INIT_SA_ERR if Invalid slave address [slave mode]
+N* @return IIC_INIT_ALS_ERR if Incorrect address recognition mode [slave mode]
+N*/
+Niic_InitErrors_e eIIC_SetAdrRecMode(iic_AdrRecMode_e eAdrRecMode);
+N
+N
+N/**
+N*
+N* @brief Implementation of function vIIC_SendStart
+N*                
+N* Introduce start condition on the IIC bus
+N*
+N* @note IIC controller must operate in Master mode
+N*
+N* @return void
+N*/
+Nvoid vIIC_SendStart(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function vIIC_SendStop
+N*                
+N* Causestop condition on the IIC bus
+N*
+N* @note IIC controller must operate in Master mode
+N*
+N* @return void
+N*/
+Nvoid vIIC_SendStop(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_PrepareRestart
+N*                
+N* Verify that the preconditions for direction change are met
+N*
+N* @note none
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_PrepareRestart(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_WaitBusyTimeout
+N*                
+N* Wait until either the bus is ready or predefine time-out
+N* elapsed
+N*
+N* @note none
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_WaitBusyTimeout(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_WaitAckTimeout
+N*                
+N* Wait for ACK until the predefine time-out elapses
+N*
+N* @note none
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_WaitAckTimeout(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_WaitIrqTimeout
+N*                
+N* Wait until interrupt condition is asserted in the IIC 
+N* controller
+N*
+N* @note none
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_WaitIrqTimeout(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_WaitHighClkTimeout
+N*                
+N* Ensure the IIC clock line is "high" i.e. no other devices
+N* are pulling it "low" 
+N*
+N* @note Used in the restart condition generation
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_WaitHighClkTimeout(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SendSlaveAdr
+N*                 
+N* Send slave addres and direction bit over the IIC bus
+N*
+N* @note none
+N*                 
+N* @param[in] u8SlaveAddress - The value of the slave address
+N* @param[in] eSendDirBit    - The direction of the data following the address
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_SendSlaveAdr(uint8_t u8SlaveAddress, 
+N                                   iic_SendDirBit_e eSendDirBit);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_SendSubAdr
+N*                
+N* Sends subaddress to the slave device
+N*
+N* @note The subaddress might be up to 4 bytes long
+N*
+N* @param[in] u8SubAdrLen - Subaddress length
+N* @param[in] u32SubAdr   - Subaddress value
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if clock line LOW state time-out
+N* @return IIC_NOT_READY if bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_SendSubAdr(uint8_t u8SubAdrLen, uint32_t u32SubAdr);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetTransfDir
+N*                
+N* Retrieve the current transfer direction of the controller
+N*
+N* @note The direction may change automatically, i.e. detection of
+N*       an arbitration lost
+N*
+N* @return IIC_RX_DIR if Transmit
+N* @return IIC_TX_DIR if Receive
+N*/
+Niic_TransfDir_e eIIC_GetTransfDir(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetCtrlMode
+N*                
+N* Retrieve the current control mode of the IIC controller
+N*
+N* @note It may change automatically, i.e. detection of an 
+N*       arbitration lost
+N*
+N* @return IIC_SLAVE_MODE if slave mode
+N* @return IIC_MASTER_MODE if master mode
+N*/
+Niic_CtrlMode_e eIIC_GetCtrlMode(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetBusyStatus
+N*                
+N* Retrieves the present IIC bus status
+N*
+N* @note none
+N*
+N* @return IIC_BUS_FREE if bus is free
+N* @return IIC_BUS_BUSY if bus is busy
+N*/
+Niic_BusyStat_e eIIC_GetBusyStatus(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetIrqStatus
+N*                
+N* Retrieves the current IIC controller interrupt status
+N*
+N* @note none
+N*
+N* @return IIC_IRQ_PENDING if interrupt is generated
+N* @return IIC_IRQ_CANCEL if interrupt is canceled
+N*/
+Niic_IrqStat_e eIIC_GetIrqStatus(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_IsArbitrLost
+N*                
+N* Check wether arbitration lost was detected
+N*
+N* @note none
+N*
+N* @return IIC_ARBITR_NO_LOST if no arbitration is lost
+N* @return IIC_ARBITR_IS_LOST if arbitration lost is detected
+N*/
+Niic_ArbitrStat_e eIIC_IsArbitrLost(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_IsAdrMatch
+N*                
+N* Retrieve slave address match status 
+N*
+N* @note Valid for slave mode only
+N*
+N* @return IIC_ADR_NO_MATCH if no "match"
+N* @return IIC_ADR_IS_MATCH if address "match" or general call detected
+N*/
+Niic_AdrMatchStat_e eIIC_IsAdrMatch(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_IsGenCall
+N*                
+N* Detect general call over the IIC bus
+N*
+N* @note none
+N*
+N* @return IIC_GEN_CALL_NO_DET if general call is not deteced
+N* @return IIC_GEN_CALL_IS_DET if general call is detected
+N*/
+Niic_GenCallStat_e eIIC_IsGenCall(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_GetLastRxBit
+N*                
+N* Retrieve the level of the last bit that was received
+N*
+N* @note none
+N*
+N* @return IIC_LST_BIT_ACK if last recieved bit is "0"
+N* @return IIC_LST_BIT_NOACK if last recieved bit is "1"
+N*/
+Niic_LastRxBitStat_e eIIC_GetLastRxBit(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function vIIC_WriteByte
+N*                
+N* Send single word over the IIC bus
+N*
+N* @note Ensure the previous data transfer was acknowledged
+N*                
+N* @param[in] u8Data - Data word to be send over IIC bus
+N*
+N* @return void
+N*/
+Nvoid vIIC_WriteByte(uint8_t u8Data);
+N
+N
+N/**
+N*
+N* @brief Implementation of function u8IIC_ReadByte
+N*                
+N* Retrieve single word recieved over the IIC bus
+N*
+N* @note The first data read after restart procedure should be
+N*       ignored. The previous data transfer must be acknowledged
+N*       as a precondition for this function call
+N*
+N* @return Data-byte retrieved from the RX buffer
+N*/
+Nuint8_t u8IIC_ReadByte(void);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_WriteData
+N*                
+N* Write data to a slave device
+N*
+N* @note This function assumes that all transmitted sub-address and
+N*       data will be 8-bit long (unused bits should be ignored by
+N*       the Slave device). The function is showing an example of
+N*       data write procedure using basic driver functions. It should
+N*       be noted that for the target application parts of that
+N*       function should be implemented as an IIC interrupt handler
+N*
+N* @param[in] u8SlaveAddress - The address of the slave device. The LSB of
+N*                             the address will be replaced by direction bits.
+N* @param[in] u8SubAdrLen    - Number of subaddress bytes
+N* @param[in] u32SubAdr      - Subaddress
+N* @param[in] u8DataLen      - Number of valid data bytes to be sent
+N* @param[in] pau8Data[]     - Data buffer
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if Bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if Acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if Clock line LOW state time-out
+N* @return IIC_NOT_READY if Bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_WriteData(uint8_t u8SlaveAddress, uint8_t u8SubAdrLen, 
+N                                uint32_t u32SubAdr, uint8_t u8DataLen, 
+N                                const uint8_t pau8Data[]);
+N
+N
+N/**
+N*
+N* @brief Implementation of function eIIC_ReadData
+N*
+N* Read data from a slave device
+N*
+N* @note This function assumes that all transmitted sub-address and
+N*       received data will be 8-bit long (unused bits should be
+N*       ignored). The function is showing an example of data write
+N*       procedure using basic driver functions. It should
+N*       be noted that for the target application parts of that
+N*       function should be implemented as an IIC interrupt handler
+N*
+N* @param[in] u8SlaveAddress - The address of the slave device. The LSB of
+N*                             the address will be replaced by direction bits.
+N* @param[in] u8SubAdrLen    - Number of subaddress bytes
+N* @param[in] u32SubAdr      - Subaddress
+N* @param[in] u8DataLen      - Number of valid data bytes to be recieved
+N*
+N* @param[in,out] pau8Data[]  Data read
+N*
+N* @return IIC_READY if TX/RX complete
+N* @return IIC_BUSY_TIMEOUT if Bus busy time-out
+N* @return IIC_IRQ_ACK_TIMEOUT if Acknowledge time-out
+N* @return IIC_CLK_LINE_TIMEOUT if Clock line LOW state time-out
+N* @return IIC_NOT_READY if Bus not ready
+N*/
+Niic_ErrorCodes_e eIIC_ReadData(uint8_t u8SlaveAddress, uint8_t u8SubAdrLen, 
+N                               uint32_t u32SubAdr, uint8_t u8DataLen, 
+N                               uint8_t  pau8Data[]);
+N
+N
+N/****************************************************************************/
+N
+N
+N#endif /* IIC_H*/
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\iic.c" 2
+N#include "iic_timer.h"                    /* SBI (I2C) timer functionality extension */
+L 1 "..\..\..\..\lldd\inc\iic_timer.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Serial Bus Interface (I2C) Timer Functionality Extension
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Serial Bus Interface (SBI) / I2C
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef IIC_TIMER_H
+N#define IIC_TIMER_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                  Exports                    *
+N**********************************************/
+N/* Software timer counters */
+Nextern uint32_t u32TimeBusy;
+Nextern uint32_t u32TimeAck;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_IIC_TIMER_H_REVISION     "$Revision: 1.6 $"
+N#define LLDD_IIC_TIMER_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/* Acknowledge time-out value in [ms] */
+N#define IIC_TIMER_IRQ_ACK                   16000 
+N/* Busy time-out value in [ms] */
+N#define IIC_TIMER_BUSY                      15000
+N
+N/* Guard time for restart procedure [ms] */
+N#define IIC_TIMER_RESTART_GUARD             1000
+N 
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/* IIC Timer types */
+Ntypedef enum tag_iic_TimerSelect_e
+N{  
+N  IIC_TIMER_IRQ_ACK_SEL = 1,                /* Acknowledge time-out timer */
+N  IIC_TIMER_BUSY_SEL = 2                    /* Busy time-out timer */
+N} iic_TimerSelect_e;
+N
+N/* IIC Timer status / error codes */
+Ntypedef enum tag_iic_TimerStatus_e
+N{
+N  IIC_TIMER_STOPPED = 0,                    /* Timer is stopped / not running */
+N  IIC_TIMER_RUNNING,                        /* Timer is running */
+N  IIC_TIMER_EXPIRED                         /* Timer expired */
+N} iic_TimerStatus_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vIIC_TimerGetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerGetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                          uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      IIC_TimerStart
+N *
+N * Purpose:       Start the selected time-out detection & recovery software
+N *                timer
+N *
+N * Inputs:        eTimer  Time-out to be measured
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerStart(iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIC_TimerStop
+N *
+N * Purpose:       Stops and clears the selected time-out detection software
+N *                timer
+N *
+N * Inputs:        eTimer  Software timer to be stopped
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid vIIC_TimerStop(iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIC_TimerQuery
+N *
+N * Purpose:       Retrieve the current status of a software timer
+N *
+N * Inputs:        eTimer  Software timer to be checked
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Niic_TimerStatus_e eIIC_TimerQuery (iic_TimerSelect_e eTimer);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      iic_Timer_Delay_us
+N *
+N * Purpose:       Inserts very short and platform specific delays
+N *
+N * Inputs:        u32Time  Selected time to wait [in core cycles]
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   This function is provided as a sample solution, to overcome 
+N *                the lack of hardware support for time-out detection in the 
+N *                SBI. It may be rewritten or ported to use any available in
+N *                the system resources, like complex/system timers, operating
+N *                system mechanisms, etc. 
+N *
+N ***************************************************************************/
+Nvoid iic_Timer_Delay_us (uint32_t u32Time);
+N
+N/****************************************************************************/	
+N
+N
+N#endif /* IIC_TIMER_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\src\iic.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_IIC_C_REVISION     "$Revision: 1.10 $"
+N#define LLDD_IIC_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_IIC_C_REVISION[]    = LLDD_IIC_C_REVISION;
+Xstatic uint8_t au8LLDD_IIC_C_REVISION[]    = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_IIC_C_TAG[]         = LLDD_IIC_C_TAG;
+Xstatic uint8_t au8LLDD_IIC_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_IIC_H_REVISION[]    = LLDD_IIC_H_REVISION;
+Xstatic uint8_t au8LLDD_IIC_H_REVISION[]    = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_IIC_H_TAG[]         = LLDD_IIC_H_TAG;
+Xstatic uint8_t au8LLDD_IIC_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_IIC_IO_H_REVISION[] = LLDD_IIC_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_IIC_IO_H_REVISION[] = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_IIC_IO_H_TAG[]      = LLDD_IIC_IO_H_TAG;
+Xstatic uint8_t au8LLDD_IIC_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+N/****************************************************************************/
+Nvoid vIIC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_IIC_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_IIC_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_IIC_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_IIC_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_IIC_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_IIC_IO_H_TAG[0];
+N}
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_Init(iic_NoOfBits_e eNoOfBits, iic_AckCycle_e eAckCycle,
+N                           iic_OutClkFreq_e eOutClkFreq, uint8_t u8SlaveAdr)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    
+N    /* Reset the SBI module */
+N    vIIC_Reset();
+N
+N    /* Perform initialization according to input parameters */
+N    eInitErrorCode = eIIC_SetNoOfBits(eNoOfBits);
+N    if (eInitErrorCode == IIC_INIT_OK)
+N    {
+N        eInitErrorCode = eIIC_SetAckCycMode(eAckCycle);
+N        if (eInitErrorCode == IIC_INIT_OK)
+N        {
+N            eInitErrorCode = eIIC_SetOutClkFreq(eOutClkFreq);
+N            if(IIC_INIT_OK == eInitErrorCode)
+N            {
+N                eInitErrorCode = eIIC_SetSlaveAdr(u8SlaveAdr);
+N            }
+N        }
+N    }
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_Reset(void)
+N{
+N    /* Trigger reset */
+N    vSetSBI0CR2(IIC_1ST_RESET_VAL);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (0x2));
+N    vSetSBI0CR2(IIC_2ND_RESET_VAL);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (0x1));
+N    
+N    /* Set the appropriate mode */
+N    vSetSBI0CR2(IIC_BUS_RELEASE_CONDITION);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (IIC_BUS_RELEASE_CONDITION));
+N    
+N    /* Update the shadow variables with the default values */
+N    vSetSBI0AR_DEFAULT();
+X    (IIC_IO_ShadowSBI0AR(IIC_IO_SET, (0xFF), (0x00), 0));
+N    vSetSBI0CR1_DEFAULT();
+X    (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, (0xFF), (0x09), 0));
+N}
+N
+N
+N/****************************************************************************/
+Niic_NoOfBits_e eIIC_GetNoOfBits(void)
+N{
+N    iic_NoOfBits_e eReturn = IIC_DATA_BITS_8;
+N    
+N    /* Get bits count */
+N    eReturn = (iic_NoOfBits_e)biGetSBI0CR1_BC();
+X    eReturn = (iic_NoOfBits_e)(IIC_IO_ShadowSBI0CR1(IIC_IO_GET, (0x07), 0, (5)));
+N    return eReturn;
+N}
+N
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_SetNoOfBits(iic_NoOfBits_e eNoOfBits)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    uint8_t u8DataBits_7;
+N    uint8_t u8DataBits_8;
+N
+N    u8DataBits_7 = IIC_DATA_BITS_7;
+N    u8DataBits_8 = IIC_DATA_BITS_8;
+N
+N    /* The check may look strange, but it is based on the enumeration values */
+N    if( (eNoOfBits < u8DataBits_8) || (eNoOfBits > u8DataBits_7) )
+N    {
+N        /* Invalid request */
+N        eInitErrorCode = IIC_INIT_BC_ERR;
+N    }
+N    else
+N    {
+N        vSetSBI0CR1_BC((uint8_t)eNoOfBits);
+X        (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, (0x07), ((uint8_t)eNoOfBits), (5)));
+N    }
+N    
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_SetOutClkFreq(iic_OutClkFreq_e eOutClkFreq)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    uint8_t u8Clock_low;
+N    uint8_t u8Clock_high;
+N
+N    u8Clock_low = IIC_OUTCLK_7_KHZ;
+N    u8Clock_high = IIC_OUTCLK_340_KHZ;
+N
+N    if( (eOutClkFreq < u8Clock_high) || (eOutClkFreq > u8Clock_low) )
+N    {
+N        /* Invalid clock request */
+N        eInitErrorCode = IIC_INIT_SCK_ERR; 
+N    }
+N    else
+N    {
+N        vSetSBI0CR1_SCK((uint8_t)eOutClkFreq);        
+X        (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, (0x07), ((uint8_t)eOutClkFreq), (0)));        
+N    }
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_SetAckCycMode(iic_AckCycle_e eAckCycle)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    
+N    if( (IIC_ACK_DISABLE == eAckCycle) || (IIC_ACK_ENABLE == eAckCycle) )
+N    {
+N        vSetSBI0CR1_ACK((uint8_t)eAckCycle);
+X        (IIC_IO_ShadowSBI0CR1(IIC_IO_SET, (0x01), ((uint8_t)eAckCycle), (4)));
+N    }
+N    else
+N    {
+N        /* Wrong acknowledge bit selection */
+N        eInitErrorCode = IIC_INIT_ACK_ERR; 
+N    }
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_AckCycle_e eIIC_GetAckCycMode(void)
+N{
+N    iic_AckCycle_e eReturn = IIC_ACK_DISABLE;
+N    
+N    eReturn = (iic_AckCycle_e)biGetSBI0CR1_ACK ();
+X    eReturn = (iic_AckCycle_e)(IIC_IO_ShadowSBI0CR1(IIC_IO_GET, (0x01), 0, (4)));
+N    return eReturn;
+N}
+N
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_SetSlaveAdr(uint8_t u8SlaveAdr)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    
+N    if ((u8SlaveAdr > 0x00) && (u8SlaveAdr <= 0x7F))
+N    {      
+N        vSetSBI0AR_SA(u8SlaveAdr);
+X        (IIC_IO_ShadowSBI0AR(IIC_IO_SET, ((0xFE ) >> 1 ), (u8SlaveAdr), (1)));
+N    }
+N    else
+N    {
+N        /* Wrong slave address */
+N        eInitErrorCode = IIC_INIT_SA_ERR; 
+N    }
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_InitErrors_e eIIC_SetAdrRecMode(iic_AdrRecMode_e eAdrRecMode)
+N{
+N    iic_InitErrors_e eInitErrorCode = IIC_INIT_OK;
+N    
+N    if( (IIC_ADR_REC_ENABLE == eAdrRecMode) || (IIC_ADR_REC_DISABLE == eAdrRecMode) )
+N    {      
+N        vSetSBI0AR_ALS((uint8_t)(eAdrRecMode));
+X        (IIC_IO_ShadowSBI0AR(IIC_IO_SET, (0x01), ((uint8_t)(eAdrRecMode)), (0)));
+N    }
+N    else
+N    {
+N        /* Wrong address recognition bit selection */
+N        eInitErrorCode = IIC_INIT_ALS_ERR; 
+N    }
+N    
+N    return eInitErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_SendStart(void)
+N{
+N    vSetSBI0CR2(IIC_BUS_START_CONDITION);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (IIC_BUS_START_CONDITION));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_SendStop(void)
+N{
+N    vSetSBI0CR2(IIC_BUS_STOP_CONDITION);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (IIC_BUS_STOP_CONDITION));
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_PrepareRestart(void)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    
+N    /* Release the bus witout sending STOP condition - bus is still in BUSY state */
+N    vSetSBI0CR2(IIC_BUS_RELEASE_CONDITION);
+X    (*((volatile u8SBI0CR2_byte_view *) (0xC032400CU)) = (IIC_BUS_RELEASE_CONDITION));
+N    /* Check if bus is free */
+N    eErrorCode = eIIC_WaitBusyTimeout();
+N    if( IIC_READY == eErrorCode )
+N    {
+N        /* Check if the clock line is not pulled LOW by some device */
+N        eErrorCode = eIIC_WaitHighClkTimeout();
+N        if( IIC_READY == eErrorCode )
+N        {
+N            /* Wait additonal 4.7 us */
+N            iic_Timer_Delay_us(IIC_TIMER_RESTART_GUARD);
+X            iic_Timer_Delay_us(1000);
+N        }
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_WaitBusyTimeout(void)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    iic_BusyStat_e eBusyStat = IIC_BUS_BUSY;
+N    iic_TimerStatus_e eTimerStatus = IIC_TIMER_STOPPED;
+N    
+N    vIIC_TimerStart(IIC_TIMER_BUSY_SEL);
+N    do
+N    {
+N        eBusyStat = eIIC_GetBusyStatus();        
+N        eTimerStatus = eIIC_TimerQuery(IIC_TIMER_BUSY_SEL);
+N    
+N    }
+N    while( (IIC_BUS_BUSY == eBusyStat) && (IIC_TIMER_RUNNING == eTimerStatus) );
+N    
+N    if( (IIC_TIMER_EXPIRED == eTimerStatus) || (IIC_BUS_BUSY == eBusyStat) )
+N    {
+N        eErrorCode = IIC_BUSY_TIMEOUT;
+N    }
+N    else
+N    {
+N        vIIC_TimerStop(IIC_TIMER_BUSY_SEL);
+N        eErrorCode = IIC_READY;
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_WaitAckTimeout(void)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    iic_LastRxBitStat_e eLastRxBitStat = IIC_LST_BIT_NOACK;
+N    iic_IrqStat_e eIrqStat = IIC_IRQ_CANCEL;
+N    iic_TimerStatus_e eTimerStatus = IIC_TIMER_STOPPED;
+N    
+N    vIIC_TimerStart(IIC_TIMER_IRQ_ACK_SEL);
+N    do
+N    {
+N        eIrqStat = eIIC_GetIrqStatus();    
+N        eTimerStatus = eIIC_TimerQuery(IIC_TIMER_IRQ_ACK_SEL);
+N    }
+N    while( (IIC_IRQ_CANCEL == eIrqStat) && (IIC_TIMER_RUNNING == eTimerStatus) );
+N    
+N    /* Reconfirm if ACK bit from Slave device was "0" */
+N    eLastRxBitStat = eIIC_GetLastRxBit ();
+N    
+N    if( (IIC_TIMER_EXPIRED == eTimerStatus) || (IIC_LST_BIT_NOACK == eLastRxBitStat) )
+N    {
+N        eErrorCode = IIC_IRQ_ACK_TIMEOUT;
+N    }
+N    else 
+N    {
+N        /* IRQ and ACK OK */
+N        vIIC_TimerStop(IIC_TIMER_IRQ_ACK_SEL);
+N        eErrorCode = IIC_READY;
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_WaitIrqTimeout(void)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    iic_IrqStat_e eIrqStat = IIC_IRQ_CANCEL;
+N    iic_TimerStatus_e eTimerStatus = IIC_TIMER_STOPPED;
+N    
+N    vIIC_TimerStart(IIC_TIMER_IRQ_ACK_SEL);
+N    do
+N    {
+N        eIrqStat = eIIC_GetIrqStatus();    
+N        eTimerStatus = eIIC_TimerQuery(IIC_TIMER_IRQ_ACK_SEL);
+N    }
+N    while( (IIC_IRQ_CANCEL == eIrqStat) && (IIC_TIMER_RUNNING == eTimerStatus) );
+N    
+N    if( (IIC_TIMER_EXPIRED == eTimerStatus) || (IIC_IRQ_CANCEL == eIrqStat) )
+N    {
+N        eErrorCode = IIC_IRQ_ACK_TIMEOUT;
+N    }
+N    else 
+N    {
+N        /* IRQ OK */
+N        vIIC_TimerStop(IIC_TIMER_IRQ_ACK_SEL);
+N        eErrorCode = IIC_READY;
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_WaitHighClkTimeout(void)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    iic_LastRxBitStat_e eLastRxBitStat = IIC_LST_BIT_NOACK;
+N    iic_TimerStatus_e eTimerStatus = IIC_TIMER_STOPPED;
+N    
+N    vIIC_TimerStart(IIC_TIMER_IRQ_ACK_SEL);
+N    do
+N    {
+N        eLastRxBitStat = eIIC_GetLastRxBit();    
+N        eTimerStatus = eIIC_TimerQuery(IIC_TIMER_IRQ_ACK_SEL);
+N    }
+N    while( (IIC_LST_BIT_ACK == eLastRxBitStat) && (IIC_TIMER_RUNNING == eTimerStatus) );
+N    
+N    /* Reconfirm the reason for loop break */
+N    if( (IIC_TIMER_EXPIRED == eTimerStatus) || (IIC_LST_BIT_ACK == eLastRxBitStat) )
+N    {
+N        eErrorCode = IIC_CLK_LINE_TIMEOUT;
+N    }
+N    else 
+N    {
+N        /* ACK */
+N        vIIC_TimerStop(IIC_TIMER_IRQ_ACK_SEL);
+N        eErrorCode = IIC_READY;
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_SendSlaveAdr(uint8_t u8SlaveAddress, iic_SendDirBit_e eSendDirBit)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    uint8_t u8ByteToSend = 0;
+N    
+N    /* If bus is free send the device alave address and direction bit */
+N    eErrorCode = eIIC_WaitBusyTimeout();
+N    
+N    if( IIC_READY == eErrorCode )
+N    {
+N        /* Send slave address and the direction bit WRITE */
+N        u8ByteToSend = (uint8_t)((u8SlaveAddress << 1) | eSendDirBit);
+N        vIIC_WriteByte(u8ByteToSend);        
+N        /* Send Start condition to begin transfer */
+N        vIIC_SendStart();        
+N        /* Wait until complete word is send or Ack-Timeout expires */
+N        eErrorCode = eIIC_WaitAckTimeout();
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_SendSubAdr(uint8_t u8SubAdrLen, uint32_t u32SubAdr)
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_READY;
+N    uint8_t u8SubAdrIdx = 0;
+N    uint8_t u8SubAdrByte = 0;
+N    
+N    /* Sub-address write loop with acknowledge check */
+N    u8SubAdrIdx = 0;
+N    while( (IIC_READY == eErrorCode) && (u8SubAdrIdx < (u8SubAdrLen * 8)) )
+N    {
+N        u8SubAdrByte = (uint8_t)((u32SubAdr >> u8SubAdrIdx));
+N        
+N        vIIC_WriteByte(u8SubAdrByte);
+N        eErrorCode = eIIC_WaitAckTimeout();
+N        
+N        u8SubAdrIdx = (u8SubAdrIdx + 8);
+N    }
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_TransfDir_e eIIC_GetTransfDir(void)
+N{
+N    iic_TransfDir_e eTransfDir = (iic_TransfDir_e)biGetSBI0SR_TRX();    
+X    iic_TransfDir_e eTransfDir = (iic_TransfDir_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->TRX);    
+N    return eTransfDir;
+N}
+N
+N
+N/****************************************************************************/
+Niic_CtrlMode_e eIIC_GetCtrlMode(void)
+N{
+N    iic_CtrlMode_e eCtrlMode = (iic_CtrlMode_e)biGetSBI0SR_MST();
+X    iic_CtrlMode_e eCtrlMode = (iic_CtrlMode_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->MST);
+N    return eCtrlMode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_BusyStat_e eIIC_GetBusyStatus(void)
+N{
+N    iic_BusyStat_e eBusyStat = (iic_BusyStat_e)biGetSBI0SR_BB();
+X    iic_BusyStat_e eBusyStat = (iic_BusyStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->BB);
+N    return eBusyStat;
+N}
+N
+N
+N/****************************************************************************/
+Niic_IrqStat_e eIIC_GetIrqStatus(void)
+N{
+N    iic_IrqStat_e eIrqStat = (iic_IrqStat_e)biGetSBI0SR_PIN();
+X    iic_IrqStat_e eIrqStat = (iic_IrqStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->PIN);
+N    return eIrqStat;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ArbitrStat_e eIIC_IsArbitrLost(void)
+N{
+N    iic_ArbitrStat_e eArbitrStat = (iic_ArbitrStat_e)biGetSBI0SR_AL();
+X    iic_ArbitrStat_e eArbitrStat = (iic_ArbitrStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->AL);
+N    return eArbitrStat;
+N}
+N
+N
+N/****************************************************************************/
+Niic_AdrMatchStat_e eIIC_IsAdrMatch(void)
+N{
+N    iic_AdrMatchStat_e eAdrMatchStat = (iic_AdrMatchStat_e)biGetSBI0SR_AAS();
+X    iic_AdrMatchStat_e eAdrMatchStat = (iic_AdrMatchStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->AAS);
+N    return eAdrMatchStat;
+N}
+N
+N
+N/****************************************************************************/
+Niic_GenCallStat_e eIIC_IsGenCall(void)
+N{
+N    iic_GenCallStat_e eGenCallStat = (iic_GenCallStat_e)biGetSBI0SR_AD0();
+X    iic_GenCallStat_e eGenCallStat = (iic_GenCallStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->AD0);
+N    return eGenCallStat;
+N}
+N
+N
+N/****************************************************************************/
+Niic_LastRxBitStat_e eIIC_GetLastRxBit(void)
+N{
+N    iic_LastRxBitStat_e eLastRxBitStat = (iic_LastRxBitStat_e)biGetSBI0SR_LRB();
+X    iic_LastRxBitStat_e eLastRxBitStat = (iic_LastRxBitStat_e)(((volatile SBI0SR_bit_view_st *) (0xC032400CU))->LRB);
+N    return eLastRxBitStat;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIC_WriteByte(uint8_t u8Data)
+N{
+N    vSetSBI0DBR(u8Data);
+X    (*((volatile u8SBI0DBR_byte_view *) (0xC0324004U)) = (u8Data));
+N}
+N
+N
+N/****************************************************************************/
+Nuint8_t u8IIC_ReadByte(void)
+N{
+N    uint8_t u8Data = u8GetSBI0DBR();
+X    uint8_t u8Data = (*((volatile u8SBI0DBR_byte_view *) (0xC0324004U)));
+N    return u8Data;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_WriteData(uint8_t u8SlaveAddress, uint8_t u8SubAdrLen, 
+N                                uint32_t u32SubAdr, uint8_t u8DataLen, 
+N                                const uint8_t pau8Data[])
+N{
+N    /* error code */
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    /* Send-data counter */
+N    uint8_t u8DataIdx = 0; 
+N    
+N    /* Start condition and slave address */
+N    eErrorCode = eIIC_SendSlaveAdr(u8SlaveAddress, IIC_WR_TO_SLAVE);
+N    if( IIC_READY == eErrorCode )
+N    {
+N        /* Sub-address */
+N        eErrorCode = eIIC_SendSubAdr(u8SubAdrLen, u32SubAdr);
+N        if( IIC_READY == eErrorCode )
+N        {                    
+N            /* Data write loop with acknowledge check */          
+N            while( (IIC_READY == eErrorCode) && (u8DataIdx < u8DataLen) )
+N            {
+N                vIIC_WriteByte(pau8Data[u8DataIdx]);
+N                eErrorCode = eIIC_WaitAckTimeout();
+N                u8DataIdx++;
+N            }
+N        }
+N    }
+N    /* STOP condition */
+N    vIIC_SendStop ();
+N    
+N    return eErrorCode;
+N}
+N
+N
+N/****************************************************************************/
+Niic_ErrorCodes_e eIIC_ReadData(uint8_t u8SlaveAddress, uint8_t u8SubAdrLen, 
+N                               uint32_t u32SubAdr, uint8_t u8DataLen, 
+N                               uint8_t pau8Data[])
+N{
+N    iic_ErrorCodes_e eErrorCode = IIC_NOT_READY;
+N    iic_NoOfBits_e eOldNoOfBits = IIC_DATA_BITS_8;
+N    iic_AckCycle_e eOldAckCycle = IIC_ACK_DISABLE;
+N    /* send-data counter */
+N    uint8_t u8DataIdx = 0; 
+N    
+N    /* Remember no of bits and acknowledge mode */     
+N    eOldAckCycle = eIIC_GetAckCycMode();    
+N    eOldNoOfBits = eIIC_GetNoOfBits();
+N    /* Start condition, slave address */
+N    eErrorCode = eIIC_SendSlaveAdr(u8SlaveAddress, IIC_WR_TO_SLAVE);
+N    if( IIC_READY == eErrorCode )
+N    {
+N        /* Sub-address */
+N        eErrorCode = eIIC_SendSubAdr(u8SubAdrLen, u32SubAdr);
+N        if( IIC_READY == eErrorCode )
+N        {
+N            /* 
+N             *  Change the direction without stopping the 
+N             *  current transfer: Restart condition
+N             */
+N            eErrorCode = eIIC_PrepareRestart();
+N            if( IIC_READY == eErrorCode )
+N            {
+N                /* Slave address with READ direction */
+N                eErrorCode = eIIC_SendSlaveAdr(u8SlaveAddress, IIC_RD_FROM_SLAVE);
+N                if( IIC_READY == eErrorCode )
+N                {            
+N                    /* Perform dummy read */
+N                    u8IIC_ReadByte();
+N                    /* Wait for Rx IRQ */
+N                    eErrorCode = eIIC_WaitIrqTimeout();
+N                    if( IIC_READY == eErrorCode )
+N                    {
+N                        uint8_t u8DataLenTmp = (u8DataLen - 1);
+N                        
+N                        /* READ all data, besides the last byte */
+N                        u8DataIdx = 0;
+N                        while( (IIC_READY == eErrorCode) && (u8DataIdx < u8DataLenTmp) )
+N                        {
+N                            pau8Data[u8DataIdx] = u8IIC_ReadByte();
+N                            eErrorCode = eIIC_WaitIrqTimeout();
+N                            u8DataIdx++;
+N                        }
+N                    }
+N                    /* Check the last error code to decide what to do  */
+N                    if( IIC_READY == eErrorCode )
+N                    {
+N                        /* Disable generation of ack clock cycle */                                                  
+N                        eIIC_SetAckCycMode(IIC_ACK_DISABLE);
+N                        /* Receive the last data and wait until completion */
+N                        pau8Data[u8DataIdx] = u8IIC_ReadByte();
+N                        /* Wait for Rx IRQ */
+N                        eErrorCode = eIIC_WaitIrqTimeout();
+N                        if( IIC_READY == eErrorCode )
+N                        {
+N                            /* 
+N                             *  All read, the master must finish the transfer, so
+N                             *  change the number of bits in controller to one, 
+N                             *  read out dummy data - this will generate 1 clock 
+N                             *  pulse
+N                             */
+N                            eIIC_SetNoOfBits(IIC_DATA_BITS_1);
+N                            u8IIC_ReadByte();
+N                            /* Wait for completion */
+N                            eErrorCode = eIIC_WaitIrqTimeout();
+N                        }
+N                    }
+N                }
+N            }
+N        }
+N    }
+N
+N    /* STOP condition */
+N    vIIC_SendStop();
+N
+N    /* Restore the previous no of bits and ack mode */
+N    eIIC_SetNoOfBits(eOldNoOfBits);
+N    eIIC_SetAckCycMode(eOldAckCycle);
+N    
+N    return eErrorCode;
+N}
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: iic.c
+N**  $Revision: 1.10 $
+N**  $Date: 2015/05/08 08:58:24 $
+N**
+N** **************************************************************************
+N**
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : Msg(3:3197) - The initialiser for 'variable' is always modified
+N** |          before being used.
+N** |
+N** | CONS.  : The initialisation performed when this object is defined appears
+N** |          to be redundant because the value of the object is not used
+N** |          before being modified by assignment.
+N** |
+N** | REASON : Variables get the initalization values at declaration, which are
+N** |          typically overwritten by the content of the function.
+N** |          This is not any error and seems to be better solution than
+N** |          leaving the variables non-initialized.
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 16.10 - Functions xxx return a value which is not being used.
+N** |
+N** |
+N** | CONS.  : If a function returns error information, then that error
+N** |          information shall be tested.
+N** |
+N** | REASON : Some functions have double functionality. e.g. "Shadow-functions"
+N** |          These functions might be used as "Set-type" or "Get-type".
+N** |          In the 1st. case the return value can be ignored.
+N** |          In the 2nd. case the return value is a usefull information.
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : Msg(6:0303) - Cast between a pointer to volatile object and an
+N** |          integral type.
+N** |
+N** | CONS.  : The size of integer required to hold the result of a pointer
+N** |          cast is implementation-defined. This message will identify such
+N** |          operations where the pointer addresses a volatile memory address.
+N** |
+N** | REASON : This type of operation is not uncommon in embedded software
+N** |          applications where memory mapped I/O ports must be addressed.
+N** |
+N**  ------------------------------------------------------------------------
+N*****************************************************************************
+N****************************************************************************/
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

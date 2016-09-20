@@ -1,0 +1,4410 @@
+L 1 "..\..\..\..\lldd\src\fg.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : FG Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Frame Grabber (FG)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.12 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "fg.h"                            /* FG LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\fg.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : FG Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : FG
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef FG_H
+N#define FG_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\inc\fg.h" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_FG_H_REVISION     "$Revision: 1.11 $"
+N#define LLDD_FG_H_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/**
+N* @brief Frame Grabber Colors
+N*/
+Ntypedef enum tag_fg_color_e
+N{
+N    FG_RED   = 0,    /*!< color red   */
+N    FG_GREEN = 1,    /*!< color green */    
+N    FG_BLUE  = 2     /*!< color blue  */    
+N} fg_color_e;
+N
+N
+N/**
+N* @brief Enable/disable Frame Grabber. Cropping, Color Correction
+N*/
+Ntypedef enum tag_fg_en_e
+N{
+N    FG_DISABLE = 0x0U,    /*!< disable */
+N    FG_ENABLE  = 0x1U     /*!< enable */
+N} fg_en_e;
+N
+N
+N/**
+N* @brief Interrupt detected
+N*/
+Ntypedef enum tag_fg_ir_detected_e
+N{
+N    FG_IR_NOT_DETECTED = 0x0U,    /*!< no interrupt detected */
+N    FG_IR_DETECTED     = 0x1U     /*!< interrupt detected    */
+N} fg_ir_detected_e;
+N
+N
+N/**
+N* @brief Interrupt clear
+N*/
+Ntypedef enum tag_fg_ir_clear_e
+N{
+N    FG_IR_NO_CLEAR = 0x0U,    /*!< interrupt no change */
+N    FG_IR_CLEAR    = 0x1U     /*!< interrupt clear     */
+N} fg_ir_clear_e;
+N
+N
+N/**
+N* @brief RGB parallel input mode
+N*/
+Ntypedef enum tag_fg_rgbpa_e
+N{
+N    FG_TWO8BIT_INPUT = 0x0U,    /*!< two 8-bit input channels are used (normal RGB or YCbCr mode) */
+N    FG_RGB_PARALLEL  = 0x1U     /*!< select RGB parallel input mode */
+N} fg_rgbpa_e;
+N
+N
+N/**
+N* @brief RGB parallel input select
+N*/
+Ntypedef enum tag_fg_rgb24_e
+N{
+N    FG_RGB565 = 0x0U,    /*!< 16-bit parallel input is decoded 5:6:5 */
+N    FG_RGB888 = 0x1U     /*!< 24-bit parallel input is decoded 8:8:8 */
+N} fg_rgb24_e;
+N
+N
+N/**
+N* @brief Non-video data input mode
+N*/
+Ntypedef enum tag_fg_nvmd_e
+N{
+N    FG_VIDEO_DATA     = 0x0U,    /*!< video data input */
+N    FG_NON_VIDEO_DATA = 0x1U     /*!< non-video data is selected as input; data is not interpreted as
+N                                      video data. (UDSP and USYNC need to be set to 1) */
+N} fg_nvmd_e;
+N
+N
+N/**
+N* @brief De-interlace output image: Only valid if INT = 1
+N*/
+Ntypedef enum tag_fg_deinterlace_e
+N{
+N    FG_DINT_NO_DEINTERLACED = 0x0U,    /*!< no de-interlacing , therefore interlaced output in each Capture Buffer */
+N    FG_DINT_INTERLACED      = 0x1U     /*!< output is de-interlaced (interpreted only if INT = 1)*/
+N} fg_deinterlace_e;
+N
+N
+N/**
+N* @brief Input image interlaced
+N*/
+Ntypedef enum tag_fg_interlace_e
+N{
+N    FG_INT_NORMAL_OPERATION = 0x0U,    /*!< normal operation */
+N    FG_INT_INTERLACED       = 0x1U     /*!< input data is interlaced */
+N} fg_interlace_e;
+N
+N
+N/**
+N* @brief YCbCr output selector
+N*/
+Ntypedef enum tag_fg_ycbro_e
+N{
+N    FG_YCBRO_RGB      = 0x0U,    /*!< RGBA or reduced RGB output */
+N    FG_YCBRO_YCBCR422 = 0x1U     /*!< YCbCr 4:2:2 output, Only used, if COMD = 1. */
+N} fg_ycbro_e;
+N
+N
+N/**
+N* @brief Reduced RGB mode - Not used, if COMD=1 and YCBRO=1
+N*/
+Ntypedef enum tag_fg_rrgb_e
+N{
+N    FG_RRGB_RGBA32 = 0x0U,    /*!< 32-bit RGBA output (data format RGBA32) */
+N    FG_RRGB_RGB16  = 0x1U     /*!< 16-bit reduced RGB output (data format RGB16) */
+N} fg_rrgb_e;
+N
+N
+N/**
+N* @brief Use input as alpha value - Only used in monochrome mode
+N*/
+Ntypedef enum tag_fg_bwex_e
+N{
+N    FG_BWEX_INTERPRET_CAMERAINPUT = 0x0U,    /*!< output is generated by normal interpretation of the camera input */
+N    FG_BWEX_INTERPRET_COLOR_CIR   = 0x1U     /*!< output is generated using the colour specified in the CIR register and the input signal as alpha value.*/
+N} fg_bwex_e;
+N
+N
+N/**
+N* @brief Monochrome output mode
+N*/
+Ntypedef enum tag_fg_mono_e
+N{
+N    FG_MONO_COLOUR     = 0x0U,     /*!< color mode */
+N    FG_MONO_MONOCHROME = 0x1U      /*!< monochrome mode */
+N} fg_mono_e;
+N
+N
+N/**
+N* @brief YCbCr input to RGB conversion method
+N*/
+Ntypedef enum tag_fg_cvmd_e
+N{
+N    FG_YCBCR2RGB_ITU601 = 0x0U,    /*!< converted using ITU R 601 */
+N    FG_YCBCR2RGB_ITU709 = 0x1U     /*!< converted using ITU R 709 */
+N} fg_cvmd_e;
+N
+N
+N/**
+N* @brief Color mode
+N*/
+Ntypedef enum tag_fg_comd_e
+N{
+N    FG_INP_COLORMODE_RGB   = 0x0U,    /*!< RGB input mode */
+N    FG_INP_COLORMODE_YCBCR = 0x1U     /*!< YCbCr input mode */
+N}   fg_comd_e;
+N
+N
+N/**
+N* @brief Swap appearance of chrominance (Cb/Cr) values
+N*/
+Ntypedef enum tag_fg_scbcr_e
+N{
+N    FG_SCBCR_CB_CR = 0x0U,    /*!< first pixel is Cb, then Cr */
+N    FG_SCBCR_CR_CB = 0x1U     /*!< first pixel is Cr, then Cb */
+N} fg_scbcr_e;
+N
+N
+N/**
+N* @brief Swap appearance of Y and Cb/Cr
+N*/
+Ntypedef enum tag_fg_sycbcr_e
+N{
+N    FG_SYCBCR_Y2Y_CBCR2CBCR_CHANNEL = 0x0U,    /*!< Y is transmitted over Y channel, Cb/Cr over CBCR channel */
+N    FG_SYCBCR_Y2CBCR_CBCR2Y_CHANNEL = 0x1U     /*!< Y is transmitted over CBCR channel, Cb/Cr over Y channel */
+N} fg_sycbcr_e;
+N
+N
+N/**
+N* @brief VSYNC and HSYNC signal usage
+N*/
+Ntypedef enum tag_fg_usync_e
+N{
+N    FG_USYNC_HVSYNC_IGNORED = 0x0U,    /*!< HSYNC and VSYNC input is ignored, the field and line
+N                                            blanking interval is stored in the data stream (ITU-R 656) */
+N    FG_USYNC_HVSYNC_USED    = 0x1U     /*!< VSYNC and HSYNC input is used to select the field and line
+N                                            blanking interval */
+N} fg_usync_e;
+N
+N
+N/**
+N* @brief HDISP input usage
+N*/
+Ntypedef enum tag_fg_udsp_e
+N{
+N    FG_UDSP_HDISP_IGNORED = 0x0U,    /*!< HDISP input signal is ignored; FGIDR and FGITR have to be set! */
+N    FG_UDSP_HDISP_USED    = 0x1U     /*!< HDISP input signal is used for data capturing */
+N} fg_udsp_e;
+N
+N
+N/**
+N* @brief Defines the active level of the camera’s HDISP signal
+N*/
+Ntypedef enum tag_fg_active_level_e
+N{
+N    FG_LOW_ACTIVE  = 0x0U,    /*!< low active */
+N    FG_HIGH_ACTIVE = 0x1U     /*!< high active */
+N} fg_active_level_e;
+N
+N
+N/**
+N* @brief Defines the active level of the camera’s HSYNC signal
+N*/
+Ntypedef enum tag_fg_hsact_e
+N{
+N    FG_HSACT_HSYNC_LOW_ACTIVE  = 0x0U,    /*!< HSYNC low active  */
+N    FG_HSACT_HSYNC_HIGH_ACTIVE = 0x1U     /*!< HSYNC high active */
+N} fg_hsact_e;
+N
+N
+N/**
+N* @brief One input channel
+N*/
+Ntypedef enum tag_fg_onec_e
+N{
+N    FG_ONEC_DATA_OVER_BOTH_INPCHANNELS = 0x0U,    /*!< both input channels contain data (normal operation) */
+N    FG_ONEC_DATA_OVER_Y_INPCHANNEL     = 0x1U     /*!< only luminance (Y) input contains the data => 8-bit data 
+N                                                       (also valid for non-video data) */
+N} fg_onec_e;
+N
+N
+N/**
+N* @brief Pixel clock active edge
+N*/
+Ntypedef enum tag_fg_negpc_e
+N{
+N    FG_NEGPC_POS_EDGE = 0x0U,    /*!< pixel valid on positive edge of Pixel clock */
+N    FG_NEGPC_NEG_EDGE = 0x1U     /*!< pixel valid on negative edge of pixel clock */
+N} fg_negpc_e;
+N
+N
+N/**
+N* @brief Negate Odd field signal
+N*/
+Ntypedef enum tag_fg_nfodd_e
+N{
+N    FG_NFODD_LOWSIGNAL_FIRST  = 0x0U,    /*!< low level signals first line */
+N    FG_NFODD_HIGHSIGNAL_FIRST = 0x1U     /*!< high level signals first line */
+N} fg_nfodd_e;
+N
+N
+N/**
+N* @brief Indicates the current capture buffer
+N*/
+Ntypedef enum tag_fg_cbcur_e
+N{
+N    FG_CBCUR_BUFFER_1_CURR_USED = 0x1U,    /*!< buffer 1 is currently used */
+N    FG_CBCUR_BUFFER_2_CURR_USED = 0x2U,    /*!< buffer 2 is currently used */
+N    FG_CBCUR_BUFFER_3_CURR_USED = 0x3U     /*!< buffer 3 is currently used */
+N} fg_cbcur_e;
+N
+N
+N/**
+N* @brief Selects the number of active capture buffers
+N*/
+Ntypedef enum tag_fg_cbact_e                
+N{                                          
+N    FG_CBACT_INVALID           = 0x0U,    /*!< invalid setting   */
+N    FG_CBACT_USE_ONE_BUFFER    = 0x1U,    /*!< use one buffer    */
+N    FG_CBACT_USE_TWO_BUFFERS   = 0x2U,    /*!< use two buffers   */
+N    FG_CBACT_USE_THREE_BUFFERS = 0x3U     /*!< use three buffers */
+N} fg_cbact_e;
+N
+N
+N/**
+N* @brief Can be used for Non-Video mode interrupt, Measurement ready interrupt, Vertical SYNC interrupt,
+N         Video-Bus Timeout interrupt, Corrupted data interrupt
+N*/
+Ntypedef enum tag_fg_fgimr_enable_e
+N{
+N    FG_IMR_SOURCE_NONE    = 0x0U,    /*!< not source for interrupt */
+N    FG_IMR_SOURCE_ENABLED = 0x1U     /*!< interrupt source enabled    */
+N} fg_fgimr_enable_e;
+N
+N
+N/**
+N* @brief Can be used for Non-video mode status, Measurement ready status, Vertical SYNC status,
+N         Video-Bus Timeout status, Corrupted data status
+N*/
+Ntypedef enum tag_fg_fgisr_detection_e
+N{
+N    FG_INTR_NOT_DETECTED = 0x0U,    /*!< no interrupt detected */
+N    FG_INTR_DETECTED     = 0x1U     /*!< interrupt detected    */
+N} fg_fgisr_detection_e;
+N
+N
+N/**
+N* @brief No. of used buffers for frame grabber
+N*/
+Ntypedef enum tag_fg_used_buffer_e
+N{
+N    FG_INVALID_SETTING  = 0x0U,    /*!< one buffer used */
+N    FG_SINGEL_BUFFERING = 0x1U,    /*!< one buffer used */
+N    FG_DOUBLE_BUFFERING = 0x2U,    /*!< double buffering used */
+N    FG_TRIPEL_BUFFERING = 0x3U     /*!< tripple buffering used */
+N} fg_used_buffer_e;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/**
+N* @brief Signal configuration
+N*/
+Ntypedef struct tag_fg_signals_st
+N{
+N  fg_nfodd_e        eNfOdd;    /*!< negate odd field signal */
+N  fg_negpc_e        eNegPc;    /*!< pixel clock active edge */
+N  fg_onec_e         eOnec;     /*!< one input channel */
+N  fg_active_level_e eHsact;    /*!< defines the active level of the camera’s HSYNC signal */
+N  fg_active_level_e eVsact;    /*!< defines the active level of the camera’s VSYNC signal */
+N  fg_active_level_e eHdact;    /*!< defines the active level of the camera’s HDISP signal */
+N  fg_udsp_e         eUdsp;     /*!< HDISP input usage */
+N  fg_usync_e        eUsync;    /*!< VSYNC and HSYNC signal usage */
+N} fg_signals_st;
+N
+N
+N/**
+N* @brief Color swap configuration
+N*/
+Ntypedef struct tag_fg_swap_ycbcr_st
+N{
+N  fg_scbcr_e  eScbCr;     /*!< swap appearance of chrominance (Cb/Cr) values */
+N  fg_sycbcr_e eSycbcr;    /*!< swap appearance of Y and Cb/Cr */
+N} fg_swap_ycbcr_st;
+N
+N
+N/**
+N* @brief Input format structure
+N*/
+Ntypedef struct tag_fg_input_format_st
+N{
+N  uint8_t           u8Alpha;        /*!< common alpha value used for all incoming dots */
+N  fg_rgbpa_e        eRgbPa;         /*!< RGB parallel input mode   */
+N  fg_rgb24_e        eRgb16_24;      /*!< RGB parallel input mode   */
+N  fg_nvmd_e         eNvmd;          /*!< non-video data input mode */
+N  fg_interlace_e    eInterlMode;    /*!< input image interlaced    */
+N  fg_bwex_e         eBwex;          /*!< use input as alpha value  */
+N  fg_comd_e         eComd;          /*!< color mode */
+N  fg_swap_ycbcr_st  stSwapYcbCr;    /*!< swap appearance of Y, Cb, Cr values */  
+N} fg_input_format_st;
+N
+N
+N/**
+N* @brief Output format structure
+N*/
+Ntypedef struct tag_fg_output_format_st
+N{
+N  fg_deinterlace_e  eDeInterl;          /*!< interlace type */
+N  fg_ycbro_e        eOutputSelector;    /*!< YCbCr output selector */
+N  fg_rrgb_e         eRgbFormat;         /*!< RGB color output */
+N  fg_mono_e         eMonochrome;        /*!< monochrome output mode */
+N  fg_cvmd_e         eYcbcr2RgbConv;     /*!< YCbCr input to RGB conversion method */
+N} fg_output_format_st;
+N
+N
+N/**
+N* @brief Input size structure
+N*/
+Ntypedef struct tag_fg_input_cropp_st
+N{
+N  uint16_t u16ItrHorizWait;      /*!< horizontal wait */
+N  uint16_t u16ItrVertWait;       /*!< vertical wait */
+N  
+N  uint16_t u16HcrCroppLeftX;     /*!< horizontal cropp window start position */
+N  uint16_t u16HcrCroppWidth;     /*!< cropp window width */
+N
+N  uint16_t u16VcrCroppTopY;      /*!< vertical cropp window start position */
+N  uint16_t u16VcrCroppHeight;    /*!< cropp window height */
+N} fg_input_cropp_st;
+N
+N
+N/**
+N* @brief Frame buffer configuration structure
+N*/
+Ntypedef struct tag_fg_capture_buffer_st
+N{
+N  fg_used_buffer_e  eCbactUsedBuffer;     /*!< no. of used buffers for frame grabber */
+N  uint16_t          u16LorLineOffset;     /*!< LOR line offset */
+N  uint32_t          u32CbaBufferAddr1;    /*!< buffer address 1 */
+N  uint32_t          u32CbaBufferAddr2;    /*!< buffer address 2 */
+N  uint32_t          u32CbaBufferAddr3;    /*!< buffer address 3 */
+N} fg_capture_buffer_st;
+N
+N
+N/**
+N* @brief Color informaton
+N*/
+Ntypedef struct tag_fg_color_exchange_st
+N{
+N  uint8_t u8Red;      /*!< red color value */
+N  uint8_t u8Green;    /*!< green color value */
+N  uint8_t u8Blue;     /*!< blue color value */
+N} fg_color_exchange_st;
+N
+N
+N/**
+N* @brief Measurement properties of the external synchronization signals
+N*/
+Ntypedef struct tag_fg_measure_extsync_result_st
+N{
+N  uint16_t  u16Mhcr;     /*!< measured value of the HCR value of the camera input */
+N  uint16_t  u16Mhspwr;   /*!< measured value of the HSPWR value of the camera input */
+N  uint16_t  u16Mvcr;     /*!< measured value of the VCR value of the camera input */
+N  uint16_t  u16Mvspwr;   /*!< measured value of the VSPWR value of the camera input */
+N  uint16_t  u16Mhdisp;   /*!< measured value of the HDISP value of the camera input */
+N} fg_measurement_extsync_result_st;
+N
+N
+N/**
+N* @brief Measurement control of the external synchronization signals
+N*/
+Ntypedef struct tag_fg_measurement_extync_control_st
+N{
+N  fg_en_e  eVcr;      /*!< enable or disable VCR measurement */
+N  fg_en_e  eHcr;      /*!< enable or disable HSPWR measurement */
+N  fg_en_e  eVspwr;    /*!< enable or disable VSPWR measurement */
+N  fg_en_e  eHspwr;    /*!< enable or disable HSPWR measurement */
+N  fg_en_e  eHdisp;    /*!< enable or disable HDISP measurement */
+N} fg_measure_extsync_control_st;
+N
+N
+N/**
+N* @brief Selects the interrupt mask for the generation of the Frame Grabber interrupt
+N*/
+Ntypedef struct tag_fg_irqcgf_st
+N{
+N  fg_en_e  eCdi;      /*!< enable or disable CFI */
+N  fg_en_e  eVbtoi;    /*!< enable or disable VBTOI */
+N  fg_en_e  eVsi;      /*!< enable or disable VSI */
+N  fg_en_e  eMrdyi;    /*!< enable or disable MRDYI */
+N  fg_en_e  eNvi;      /*!< enable or disable NVI */
+N} fg_irqcgf_st;
+N
+N
+N/**
+N* @brief Clear interrupts
+N*/
+Ntypedef struct tag_fg_irqclear_st
+N{
+N  fg_ir_clear_e  eCds;      /*!< clear CDS */
+N  fg_ir_clear_e  eVbtos;    /*!< clear VBTOS */
+N  fg_ir_clear_e  eVss;      /*!< clear VSS */
+N  fg_ir_clear_e  eMrdys;    /*!< clear MRDYS */
+N  fg_ir_clear_e  eNvs;      /*!< clear NVS */
+N} fg_irqclear_st;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/**
+N* @brief Implementation of function vFG_GetVersion
+N*
+N* Retrieve pointers to module and header revision and tag string
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pau8ModuleRevision - pointer to module revision string
+N* @param[in,out] pau8ModuleTag      - pointer to module tag string
+N* @param[in,out] pau8HeaderRevision - pointer to header revision string
+N* @param[in,out] pau8HeaderTag      - pointer to header tag string
+N* @param[in,out] pau8IORevision     - pointer to IO header revision string
+N* @param[in,out] pau8IOTag          - pointer to IO header tag string
+N*
+N* @return void
+N*/
+Nvoid vFG_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                    uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                    uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N
+N/**
+N* @brief Implementation of function vFG_FrameGrabberEnable
+N*
+N* Enable/Disable Frame grabber
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable the FG
+N*
+N* @return void
+N*/
+Nvoid vFG_FrameGrabberEnable(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_CroppingEnable
+N*
+N* Enable/Disable Cropping function
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable cropping
+N*
+N* @return void
+N*/
+Nvoid vFG_CroppingEnable(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_ColorCorrectEnable
+N*
+N* Enable/Disable color correction
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable color correction
+N*
+N* @return void
+N*/
+Nvoid vFG_ColorCorrectEnable(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_ConfigureFgSignal
+N*
+N* Configure FG-Signal properties
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstSignal - pointer to FG-signal settings
+N*
+N* @return void
+N*/
+Nvoid vFG_ConfigureFgSignal(fg_signals_st * pstSignal);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetInputMode
+N*
+N* Set properties of FG-input source
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstMode - pointer to structure of input settings
+N*
+N* @return void
+N*/
+Nvoid vFG_SetInputMode(fg_input_format_st * pstMode);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetOutputMode
+N*
+N* Set properties of FG-output
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstMode - pointer to structure of output settings
+N*
+N* @return void
+N*/
+Nvoid vFG_SetOutputMode(fg_output_format_st * pstMode);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetInputImageSize
+N*
+N* set width and height of FG-input image
+N*
+N* @note No Limitations
+N*
+N* @param[in] u16Width  - width of input image
+N* @param[in] u16Height - height of input image 
+N*
+N* @return void
+N*/
+Nvoid vFG_SetInputImageSize(uint16_t u16Width,  uint16_t u16Height);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetInputCropp
+N*
+N* Set properties of cropping
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstCroppConfig - pointer to cropping properties
+N*
+N* @return void
+N*/
+Nvoid vFG_SetInputCropp(fg_input_cropp_st * pstCroppConfig);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetCaptureBuffers
+N*
+N* Set no. and properties of GH-Capture buffers
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstCaptureBuffer - pointer to capture settings
+N*
+N* @return void
+N*/
+Nvoid vFG_SetCaptureBuffers(fg_capture_buffer_st * pstCaptureBuffer);
+N
+N
+N/**
+N* @brief Implementation of function eFG_GetCurrentCaptureBuffer
+N*
+N* Get number of current capture buffer
+N*
+N* @note No Limitations
+N*
+N* @return FG_CBCUR_BUFFER_1_CURR_USED - buffer 1 is currently used
+N* @return FG_CBCUR_BUFFER_2_CURR_USED - buffer 2 is currently used
+N* @return FG_CBCUR_BUFFER_3_CURR_USED - buffer 3 is currently used
+N*/
+Nfg_cbcur_e eFG_GetCurrentCaptureBuffer(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_ConfigureMemoryWriteProtection
+N*
+N* Set lower and upper addresses for memory write protection
+N*
+N* @note No Limitations
+N*
+N* @param[in] u32StartAddress - start memory address
+N* @param[in] u32EndAddress   - end memory address
+N*
+N* @return void
+N*/
+Nvoid vFG_ConfigureMemoryWriteProtection(uint32_t u32StartAddress, uint32_t u32EndAddress);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetScalingFactors
+N*
+N* Set properties of scaling
+N*
+N* @note No Limitations
+N*
+N* @param[in] u16ScaleX - Hoiz. scaling factor
+N* @param[in] u16ScaleY - Vert. scaling factor 
+N*
+N* @return void
+N*/
+Nvoid vFG_SetScalingFactors(uint16_t u16ScaleX, uint16_t u16ScaleY);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurements
+N*
+N* Enable several ext. sync measurements together
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstMeasurement - pointer to propoerties of measurements
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurements(fg_measure_extsync_control_st * pstMeasurement);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurementVCR
+N*
+N* Enable ext. sync measurement VCR
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable ext. sync measurement
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurementVCR(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurementHCR
+N*
+N* Enable ext. sync measurement HCR
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable ext. sync measurement
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurementHCR(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurementHDISP
+N*
+N* Enable ext. sync measurement HDISP
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable ext. sync measurement
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurementHDISP(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurementHSPWR
+N*
+N* Enable ext. sync measurement HSPWR
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable ext. sync measurement
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurementHSPWR(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableMeasurementVSPWR
+N*
+N* Enable ext. sync measurement VSPWR
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable ext. sync measurement
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableMeasurementVSPWR(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurements
+N*
+N* Get results of several ext. sync measurements
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstMeasurement - pointer to structure for measurements
+N*
+N* @return void
+N*/
+Nvoid vFG_GetMeasurements(fg_measurement_extsync_result_st * pstMeasurement);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurementMVCR
+N*
+N* Get result ext. sync measurement MVCR
+N*
+N* @note No Limitations
+N*
+N* @return Result of measurement
+N*/
+Nuint16_t vFG_GetMeasurementMVCR(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurementMHCR
+N*
+N* Get result ext. sync measurement MHCR
+N*
+N* @note No Limitations
+N*
+N* @return Result of measurement
+N*/
+Nuint16_t vFG_GetMeasurementMHCR(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurementMHSPWR
+N*
+N* Get result ext. sync measurement MHSPWR
+N*
+N* @note No Limitations
+N*
+N* @return Result of measurement
+N*/
+Nuint16_t vFG_GetMeasurementMHSPWR(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurementMVSPWR
+N*
+N* Get result ext. sync measurement MVSPWR
+N*
+N* @note No Limitations
+N*
+N* @return Result of measurement
+N*/
+Nuint16_t vFG_GetMeasurementMVSPWR(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetMeasurementMHDISP
+N*
+N* Get result ext. sync measurement MHDISP
+N*
+N* @note No Limitations
+N*
+N* @return Result of measurement
+N*/
+Nuint16_t vFG_GetMeasurementMHDISP(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrq
+N*
+N* Mask generation of several FG-interrupts
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstCfg - pointer to IRQ-settings
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrq(fg_irqcgf_st * pstCfg);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrqCDI
+N*
+N* Mask generation of Fg interrupt CDI
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disableirq CDI
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrqCDI(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrqVBTOI
+N*
+N* Mask generation of Fg interrupt VBTOI
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable irq VBTOI
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrqVBTOI(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrqVSI
+N*
+N* Mask generation of Fg interrupt VSI
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable irq VSI
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrqVSI(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrqMRDYI
+N*
+N* Mask generation of Fg interrupt MRDYI
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable irq MRDYI
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrqMRDYI(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_EnableIrqNVI
+N*
+N* Mask generation of Fg interrupt NVI
+N*
+N* @note No Limitations
+N*
+N* @param[in] eEn - enable or disable irq NVI
+N*
+N* @return void
+N*/
+Nvoid vFG_EnableIrqNVI(fg_en_e eEn);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetIrqCDS
+N*
+N* Allows the MPU to check the source of  interrupt CDS
+N*
+N* @note No Limitations
+N*
+N* @return FG_IR_NOT_DETECTED if no interrupt is detected
+N* @return FG_IR_DETECTED if an interrupt is detected
+N*/
+Nfg_ir_detected_e vFG_GetIrqCDS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetIrqVBTOS
+N*
+N* Allows the MPU to check the source of  interrupt VBTOS
+N*
+N* @note No Limitations
+N*
+N* @return FG_IR_NOT_DETECTED if no interrupt is detected
+N* @return FG_IR_DETECTED if an interrupt is detected
+N*/
+Nfg_ir_detected_e vFG_GetIrqVBTOS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetIrqVSS
+N*
+N* Allows the MPU to check the source of  interrupt VSS
+N*
+N* @note No Limitations
+N* @return FG_IR_NOT_DETECTED if no interrupt is detected
+N* @return FG_IR_DETECTED if an interrupt is detected
+N*/
+Nfg_ir_detected_e vFG_GetIrqVSS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetIrqMRDYS
+N*
+N* Allows the MPU to check the source of  interrupt MRDYS
+N*
+N* @note No Limitations
+N*
+N* @return FG_IR_NOT_DETECTED if no interrupt is detected
+N* @return FG_IR_DETECTED if an interrupt is detected
+N*/
+Nfg_ir_detected_e vFG_GetIrqMRDYS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_GetIrqNVS
+N*
+N* Allows the MPU to check the source of  interrupt NVS
+N*
+N* @note No Limitations
+N*
+N* @return FG_IR_NOT_DETECTED if no interrupt is detected
+N* @return FG_IR_DETECTED if an interrupt is detected
+N*/
+Nfg_ir_detected_e vFG_GetIrqNVS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClear
+N*
+N* Clears several interrupts
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstIrClear - pointer to to be cleared interrupts
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClear(fg_irqclear_st * pstIrClear);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClearCDS
+N*
+N* Clear interrupt CDS 
+N*
+N* @note No Limitations
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClearCDS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClearVBTOS
+N*
+N* Clear interrupt VBTOS 
+N*
+N* @note No Limitations
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClearVBTOS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClearVSS
+N*
+N* Clear interrupt VSS 
+N*
+N* @note No Limitations
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClearVSS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClearMRDYS
+N*
+N* Clear interrupt MRDYS 
+N*
+N* @note No Limitations
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClearMRDYS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_IrqClearNVS
+N*
+N* Clear interrupt NVS 
+N*
+N* @note No Limitations
+N*
+N* @return void
+N*/
+Nvoid vFG_IrqClearNVS(void);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetExchColor
+N*
+N* Definition of the exchange colour and common alpha value
+N*
+N* @note No Limitations
+N*
+N* @param[in,out] pstColor - pointer to colors for red, green, blue
+N*
+N* @return void
+N*/
+Nvoid vFG_SetExchColor(fg_color_exchange_st * pstColor);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetGlobalInputAlpha
+N*
+N* Set global alpha value
+N*
+N* @note No Limitations
+N*
+N* @param[in] u8Alpha - alpha value
+N*
+N* @return void
+N*/
+Nvoid vFG_SetGlobalInputAlpha(uint8_t u8Alpha);
+N
+N
+N/**
+N* @brief Implementation of function vFG_SetClutEntry
+N*
+N* Write access to the colour correction look-up tables for each colour component.
+N*
+N* @note No Limitations
+N*
+N* @param[in] eColor   - color-channel
+N* @param[in] u16Entry - clut index
+N* @param[in] u8Color  - color value to be set
+N*
+N* @return 0 in case of success
+N* @return 1 in case of error
+N*/
+Nuint16_t vFG_SetClutEntry(fg_color_e eColor, uint16_t u16Entry, uint8_t u8Color);
+N
+N
+N/****************************************************************************/
+N
+N
+N#endif /* FG_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+L 23 "..\..\..\..\lldd\src\fg.c" 2
+N#include "fg_io.h"                         /* FG registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\fg_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : FG 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  17:51:46.292+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.11 $ 
+N/  Excel Sheet ver.             : vv1.4
+N/  Excel Sheet date             : 2013-Jun-19
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : FG low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : FG
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.11 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef FGIO_H
+N#define FGIO_H
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : 	nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_FG_IO_H_REVISION     "$Revision: 1.11 $"
+N#define LLDD_FG_IO_H_TAG          "$Name: LLDD_1_7_GFX $"     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGDCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08000                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGDCR_REG__       0xC0C08000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   FODDS	:1; 	 /* 0..0  bit(s) R */
+N  uint32_t   NFODD	:1; 	 /* 1..1  bit(s) R/W */
+N  uint32_t   	:2; 	 /* 2..3  bit(s) R */
+N  uint32_t   NEGPC	:1; 	 /* 4..4  bit(s) R/W */
+N  uint32_t   	:2; 	 /* 5..6  bit(s) R */
+N  uint32_t   ONEC	:1; 	 /* 7..7  bit(s) R/W */
+N  uint32_t   HSACT	:1; 	 /* 8..8  bit(s) R/W */
+N  uint32_t   VSACT	:1; 	 /* 9..9  bit(s) R/W */
+N  uint32_t   HDACT	:1; 	 /* 10..10  bit(s) R/W */
+N  uint32_t   UDSP	:1; 	 /* 11..11  bit(s) R/W */
+N  uint32_t   USYNC	:1; 	 /* 12..12  bit(s) R/W */
+N  uint32_t   	:1; 	 /* 13..13  bit(s) R */
+N  uint32_t   SYCBCR	:1; 	 /* 14..14  bit(s) R/W */
+N  uint32_t   SCBCR	:1; 	 /* 15..15  bit(s) R/W */
+N  uint32_t   COMD	:1; 	 /* 16..16  bit(s) R/W */
+N  uint32_t   CVMD	:1; 	 /* 17..17  bit(s) R/W */
+N  uint32_t   MONO	:1; 	 /* 18..18  bit(s) R/W */
+N  uint32_t   BWEX	:1; 	 /* 19..19  bit(s) R/W */
+N  uint32_t   RRGB	:1; 	 /* 20..20  bit(s) R/W */
+N  uint32_t   YCBRO	:1; 	 /* 21..21  bit(s) R/W */
+N  uint32_t   INT	:1; 	 /* 22..22  bit(s) R/W */
+N  uint32_t   DINT	:1; 	 /* 23..23  bit(s) R/W */
+N  uint32_t   NVMD	:1; 	 /* 24..24  bit(s) R/W */
+N  uint32_t   RGB24	:1; 	 /* 25..25  bit(s) R/W */
+N  uint32_t   RGBPA	:1; 	 /* 26..26  bit(s) R/W */
+N  uint32_t   CCEN	:1; 	 /* 27..27  bit(s) R/W */
+N  uint32_t   	:1; 	 /* 28..28  bit(s) R */
+N  uint32_t   CREN	:1; 	 /* 29..29  bit(s) R/W */
+N  uint32_t   	:1; 	 /* 30..30  bit(s) R */ 
+N  uint32_t   FGACT	:1; 	 /* 31..31  bit(s) R/W */                    
+N} FGDCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGDCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGDCR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGDCR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGDCR()     ((volatile FGDCR_bit_view_st *)\
+N(FGDCR_REG__ ))
+X#define pst_bitFGDCR()     ((volatile FGDCR_bit_view_st *)(FGDCR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGDCR()     ((volatile FGDCR_byte_view_st *)\
+N(FGDCR_REG__ ))
+X#define pst_u8FGDCR()     ((volatile FGDCR_byte_view_st *)(FGDCR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGDCR()     ((volatile FGDCR_halfword_view_st *)\
+N(FGDCR_REG__ ))
+X#define pst_u16FGDCR()     ((volatile FGDCR_halfword_view_st *)(FGDCR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGDCR()     ((volatile u32FGDCR_word_view *)\
+N(FGDCR_REG__ ))
+X#define pu32FGDCR()     ((volatile u32FGDCR_word_view *)(FGDCR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetFGDCR_FODDS() (pst_bitFGDCR() -> FODDS)
+N#define biGetFGDCR_NFODD() (pst_bitFGDCR() -> NFODD)
+N#define vSetFGDCR_NFODD(ParValue)  (pst_bitFGDCR() -> NFODD=(ParValue))
+N#define biGetFGDCR_NEGPC() (pst_bitFGDCR() -> NEGPC)
+N#define vSetFGDCR_NEGPC(ParValue)  (pst_bitFGDCR() -> NEGPC=(ParValue))
+N#define biGetFGDCR_ONEC() (pst_bitFGDCR() -> ONEC)
+N#define vSetFGDCR_ONEC(ParValue)  (pst_bitFGDCR() -> ONEC=(ParValue))
+N#define biGetFGDCR_HSACT() (pst_bitFGDCR() -> HSACT)
+N#define vSetFGDCR_HSACT(ParValue)  (pst_bitFGDCR() -> HSACT=(ParValue))
+N#define biGetFGDCR_VSACT() (pst_bitFGDCR() -> VSACT)
+N#define vSetFGDCR_VSACT(ParValue)  (pst_bitFGDCR() -> VSACT=(ParValue))
+N#define biGetFGDCR_HDACT() (pst_bitFGDCR() -> HDACT)
+N#define vSetFGDCR_HDACT(ParValue)  (pst_bitFGDCR() -> HDACT=(ParValue))
+N#define biGetFGDCR_UDSP() (pst_bitFGDCR() -> UDSP)
+N#define vSetFGDCR_UDSP(ParValue)  (pst_bitFGDCR() -> UDSP=(ParValue))
+N#define biGetFGDCR_USYNC() (pst_bitFGDCR() -> USYNC)
+N#define vSetFGDCR_USYNC(ParValue)  (pst_bitFGDCR() -> USYNC=(ParValue))
+N#define biGetFGDCR_SYCBCR() (pst_bitFGDCR() -> SYCBCR)
+N#define vSetFGDCR_SYCBCR(ParValue)  (pst_bitFGDCR() -> SYCBCR=(ParValue))
+N#define biGetFGDCR_SCBCR() (pst_bitFGDCR() -> SCBCR)
+N#define vSetFGDCR_SCBCR(ParValue)  (pst_bitFGDCR() -> SCBCR=(ParValue))
+N#define biGetFGDCR_COMD() (pst_bitFGDCR() -> COMD)
+N#define vSetFGDCR_COMD(ParValue)  (pst_bitFGDCR() -> COMD=(ParValue))
+N#define biGetFGDCR_CVMD() (pst_bitFGDCR() -> CVMD)
+N#define vSetFGDCR_CVMD(ParValue)  (pst_bitFGDCR() -> CVMD=(ParValue))
+N#define biGetFGDCR_MONO() (pst_bitFGDCR() -> MONO)
+N#define vSetFGDCR_MONO(ParValue)  (pst_bitFGDCR() -> MONO=(ParValue))
+N#define biGetFGDCR_BWEX() (pst_bitFGDCR() -> BWEX)
+N#define vSetFGDCR_BWEX(ParValue)  (pst_bitFGDCR() -> BWEX=(ParValue))
+N#define biGetFGDCR_RRGB() (pst_bitFGDCR() -> RRGB)
+N#define vSetFGDCR_RRGB(ParValue)  (pst_bitFGDCR() -> RRGB=(ParValue))
+N#define biGetFGDCR_YCBRO() (pst_bitFGDCR() -> YCBRO)
+N#define vSetFGDCR_YCBRO(ParValue)  (pst_bitFGDCR() -> YCBRO=(ParValue))
+N#define biGetFGDCR_INT() (pst_bitFGDCR() -> INT)
+N#define vSetFGDCR_INT(ParValue)  (pst_bitFGDCR() -> INT=(ParValue))
+N#define biGetFGDCR_DINT() (pst_bitFGDCR() -> DINT)
+N#define vSetFGDCR_DINT(ParValue)  (pst_bitFGDCR() -> DINT=(ParValue))
+N#define biGetFGDCR_NVMD() (pst_bitFGDCR() -> NVMD)
+N#define vSetFGDCR_NVMD(ParValue)  (pst_bitFGDCR() -> NVMD=(ParValue))
+N#define biGetFGDCR_RGB24() (pst_bitFGDCR() -> RGB24)
+N#define vSetFGDCR_RGB24(ParValue)  (pst_bitFGDCR() -> RGB24=(ParValue))
+N#define biGetFGDCR_RGBPA() (pst_bitFGDCR() -> RGBPA)
+N#define vSetFGDCR_RGBPA(ParValue)  (pst_bitFGDCR() -> RGBPA=(ParValue))
+N#define biGetFGDCR_CCEN() (pst_bitFGDCR() -> CCEN)
+N#define vSetFGDCR_CCEN(ParValue)  (pst_bitFGDCR() -> CCEN=(ParValue))
+N#define biGetFGDCR_CREN() (pst_bitFGDCR() -> CREN)
+N#define vSetFGDCR_CREN(ParValue)  (pst_bitFGDCR() -> CREN=(ParValue))
+N#define biGetFGDCR_FGACT() (pst_bitFGDCR() -> FGACT)
+N#define vSetFGDCR_FGACT(ParValue)  (pst_bitFGDCR() -> FGACT=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGDCRLL(ParValue) (pst_u8FGDCR() -> u8LL = (ParValue))
+N#define u8GetFGDCRLL() (pst_u8FGDCR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGDCRLH(ParValue) (pst_u8FGDCR() -> u8LH = (ParValue))
+N#define u8GetFGDCRLH() (pst_u8FGDCR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGDCRHL(ParValue) (pst_u8FGDCR() -> u8HL = (ParValue))
+N#define u8GetFGDCRHL() (pst_u8FGDCR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGDCRHH(ParValue) (pst_u8FGDCR() -> u8HH = (ParValue))
+N#define u8GetFGDCRHH() (pst_u8FGDCR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGDCRL(ParValue) (pst_u16FGDCR() -> u16L = (ParValue))
+N#define u16GetFGDCRL() (pst_u16FGDCR() -> u16L)
+N#define vSetFGDCRH(ParValue) (pst_u16FGDCR() -> u16H = (ParValue))
+N#define u16GetFGDCRH() (pst_u16FGDCR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGDCR(ParValue)  (*pu32FGDCR() = (ParValue))
+N#define u32GetFGDCR()  (*pu32FGDCR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGIDR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08004                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGIDR_REG__       0xC0C08004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   HEIGHT	:10; 	 /* 0..9  bit(s) R/W */
+N  uint32_t   	:6; 	 /* 10..15  bit(s) R */
+N  uint32_t   WIDTH	:11; 	 /* 16..26  bit(s) R/W */ 
+N  uint32_t   	:5; 	 /* 27..31  bit(s) R */                    
+N} FGIDR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGIDR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGIDR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGIDR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGIDR()     ((volatile FGIDR_bit_view_st *)\
+N(FGIDR_REG__ ))
+X#define pst_bitFGIDR()     ((volatile FGIDR_bit_view_st *)(FGIDR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGIDR()     ((volatile FGIDR_byte_view_st *)\
+N(FGIDR_REG__ ))
+X#define pst_u8FGIDR()     ((volatile FGIDR_byte_view_st *)(FGIDR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGIDR()     ((volatile FGIDR_halfword_view_st *)\
+N(FGIDR_REG__ ))
+X#define pst_u16FGIDR()     ((volatile FGIDR_halfword_view_st *)(FGIDR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGIDR()     ((volatile u32FGIDR_word_view *)\
+N(FGIDR_REG__ ))
+X#define pu32FGIDR()     ((volatile u32FGIDR_word_view *)(FGIDR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGIDR_HEIGHT() (pst_bitFGIDR() -> HEIGHT)
+N#define vSetFGIDR_HEIGHT(ParValue)  (pst_bitFGIDR() -> HEIGHT=(ParValue))
+N#define biGetFGIDR_WIDTH() (pst_bitFGIDR() -> WIDTH)
+N#define vSetFGIDR_WIDTH(ParValue)  (pst_bitFGIDR() -> WIDTH=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGIDRLL(ParValue) (pst_u8FGIDR() -> u8LL = (ParValue))
+N#define u8GetFGIDRLL() (pst_u8FGIDR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGIDRLH(ParValue) (pst_u8FGIDR() -> u8LH = (ParValue))
+N#define u8GetFGIDRLH() (pst_u8FGIDR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGIDRHL(ParValue) (pst_u8FGIDR() -> u8HL = (ParValue))
+N#define u8GetFGIDRHL() (pst_u8FGIDR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGIDRHH(ParValue) (pst_u8FGIDR() -> u8HH = (ParValue))
+N#define u8GetFGIDRHH() (pst_u8FGIDR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGIDRL(ParValue) (pst_u16FGIDR() -> u16L = (ParValue))
+N#define u16GetFGIDRL() (pst_u16FGIDR() -> u16L)
+N#define vSetFGIDRH(ParValue) (pst_u16FGIDR() -> u16H = (ParValue))
+N#define u16GetFGIDRH() (pst_u16FGIDR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGIDR(ParValue)  (*pu32FGIDR() = (ParValue))
+N#define u32GetFGIDR()  (*pu32FGIDR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGITR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08008                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGITR_REG__       0xC0C08008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   VWAIT	:10; 	 /* 0..9  bit(s) R/W */
+N  uint32_t   	:6; 	 /* 10..15  bit(s) R */
+N  uint32_t   HWAIT	:10; 	 /* 16..25  bit(s) R/W */ 
+N  uint32_t   	:6; 	 /* 26..31  bit(s) R */                    
+N} FGITR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGITR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGITR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGITR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGITR()     ((volatile FGITR_bit_view_st *)\
+N(FGITR_REG__ ))
+X#define pst_bitFGITR()     ((volatile FGITR_bit_view_st *)(FGITR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGITR()     ((volatile FGITR_byte_view_st *)\
+N(FGITR_REG__ ))
+X#define pst_u8FGITR()     ((volatile FGITR_byte_view_st *)(FGITR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGITR()     ((volatile FGITR_halfword_view_st *)\
+N(FGITR_REG__ ))
+X#define pst_u16FGITR()     ((volatile FGITR_halfword_view_st *)(FGITR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGITR()     ((volatile u32FGITR_word_view *)\
+N(FGITR_REG__ ))
+X#define pu32FGITR()     ((volatile u32FGITR_word_view *)(FGITR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGITR_VWAIT() (pst_bitFGITR() -> VWAIT)
+N#define vSetFGITR_VWAIT(ParValue)  (pst_bitFGITR() -> VWAIT=(ParValue))
+N#define biGetFGITR_HWAIT() (pst_bitFGITR() -> HWAIT)
+N#define vSetFGITR_HWAIT(ParValue)  (pst_bitFGITR() -> HWAIT=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGITRLL(ParValue) (pst_u8FGITR() -> u8LL = (ParValue))
+N#define u8GetFGITRLL() (pst_u8FGITR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGITRLH(ParValue) (pst_u8FGITR() -> u8LH = (ParValue))
+N#define u8GetFGITRLH() (pst_u8FGITR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGITRHL(ParValue) (pst_u8FGITR() -> u8HL = (ParValue))
+N#define u8GetFGITRHL() (pst_u8FGITR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGITRHH(ParValue) (pst_u8FGITR() -> u8HH = (ParValue))
+N#define u8GetFGITRHH() (pst_u8FGITR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGITRL(ParValue) (pst_u16FGITR() -> u16L = (ParValue))
+N#define u16GetFGITRL() (pst_u16FGITR() -> u16L)
+N#define vSetFGITRH(ParValue) (pst_u16FGITR() -> u16H = (ParValue))
+N#define u16GetFGITRH() (pst_u16FGITR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGITR(ParValue)  (*pu32FGITR() = (ParValue))
+N#define u32GetFGITR()  (*pu32FGITR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGHCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C0800C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGHCR_REG__       0xC0C0800CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   HCW	:11; 	 /* 0..10  bit(s) R/W */
+N  uint32_t   	:5; 	 /* 11..15  bit(s) R */
+N  uint32_t   HCS	:11; 	 /* 16..26  bit(s) R/W */ 
+N  uint32_t   	:5; 	 /* 27..31  bit(s) R */                    
+N} FGHCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGHCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGHCR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGHCR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGHCR()     ((volatile FGHCR_bit_view_st *)\
+N(FGHCR_REG__ ))
+X#define pst_bitFGHCR()     ((volatile FGHCR_bit_view_st *)(FGHCR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGHCR()     ((volatile FGHCR_byte_view_st *)\
+N(FGHCR_REG__ ))
+X#define pst_u8FGHCR()     ((volatile FGHCR_byte_view_st *)(FGHCR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGHCR()     ((volatile FGHCR_halfword_view_st *)\
+N(FGHCR_REG__ ))
+X#define pst_u16FGHCR()     ((volatile FGHCR_halfword_view_st *)(FGHCR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGHCR()     ((volatile u32FGHCR_word_view *)\
+N(FGHCR_REG__ ))
+X#define pu32FGHCR()     ((volatile u32FGHCR_word_view *)(FGHCR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGHCR_HCW() (pst_bitFGHCR() -> HCW)
+N#define vSetFGHCR_HCW(ParValue)  (pst_bitFGHCR() -> HCW=(ParValue))
+N#define biGetFGHCR_HCS() (pst_bitFGHCR() -> HCS)
+N#define vSetFGHCR_HCS(ParValue)  (pst_bitFGHCR() -> HCS=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGHCRLL(ParValue) (pst_u8FGHCR() -> u8LL = (ParValue))
+N#define u8GetFGHCRLL() (pst_u8FGHCR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGHCRLH(ParValue) (pst_u8FGHCR() -> u8LH = (ParValue))
+N#define u8GetFGHCRLH() (pst_u8FGHCR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGHCRHL(ParValue) (pst_u8FGHCR() -> u8HL = (ParValue))
+N#define u8GetFGHCRHL() (pst_u8FGHCR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGHCRHH(ParValue) (pst_u8FGHCR() -> u8HH = (ParValue))
+N#define u8GetFGHCRHH() (pst_u8FGHCR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGHCRL(ParValue) (pst_u16FGHCR() -> u16L = (ParValue))
+N#define u16GetFGHCRL() (pst_u16FGHCR() -> u16L)
+N#define vSetFGHCRH(ParValue) (pst_u16FGHCR() -> u16H = (ParValue))
+N#define u16GetFGHCRH() (pst_u16FGHCR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGHCR(ParValue)  (*pu32FGHCR() = (ParValue))
+N#define u32GetFGHCR()  (*pu32FGHCR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGVCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08010                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGVCR_REG__       0xC0C08010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   VCH	:11; 	 /* 0..10  bit(s) R/W */
+N  uint32_t   	:5; 	 /* 11..15  bit(s) R */
+N  uint32_t   VCS	:11; 	 /* 16..26  bit(s) R/W */ 
+N  uint32_t   	:5; 	 /* 27..31  bit(s) R */                    
+N} FGVCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGVCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGVCR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGVCR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGVCR()     ((volatile FGVCR_bit_view_st *)\
+N(FGVCR_REG__ ))
+X#define pst_bitFGVCR()     ((volatile FGVCR_bit_view_st *)(FGVCR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGVCR()     ((volatile FGVCR_byte_view_st *)\
+N(FGVCR_REG__ ))
+X#define pst_u8FGVCR()     ((volatile FGVCR_byte_view_st *)(FGVCR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGVCR()     ((volatile FGVCR_halfword_view_st *)\
+N(FGVCR_REG__ ))
+X#define pst_u16FGVCR()     ((volatile FGVCR_halfword_view_st *)(FGVCR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGVCR()     ((volatile u32FGVCR_word_view *)\
+N(FGVCR_REG__ ))
+X#define pu32FGVCR()     ((volatile u32FGVCR_word_view *)(FGVCR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGVCR_VCH() (pst_bitFGVCR() -> VCH)
+N#define vSetFGVCR_VCH(ParValue)  (pst_bitFGVCR() -> VCH=(ParValue))
+N#define biGetFGVCR_VCS() (pst_bitFGVCR() -> VCS)
+N#define vSetFGVCR_VCS(ParValue)  (pst_bitFGVCR() -> VCS=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGVCRLL(ParValue) (pst_u8FGVCR() -> u8LL = (ParValue))
+N#define u8GetFGVCRLL() (pst_u8FGVCR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGVCRLH(ParValue) (pst_u8FGVCR() -> u8LH = (ParValue))
+N#define u8GetFGVCRLH() (pst_u8FGVCR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGVCRHL(ParValue) (pst_u8FGVCR() -> u8HL = (ParValue))
+N#define u8GetFGVCRHL() (pst_u8FGVCR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGVCRHH(ParValue) (pst_u8FGVCR() -> u8HH = (ParValue))
+N#define u8GetFGVCRHH() (pst_u8FGVCR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGVCRL(ParValue) (pst_u16FGVCR() -> u16L = (ParValue))
+N#define u16GetFGVCRL() (pst_u16FGVCR() -> u16L)
+N#define vSetFGVCRH(ParValue) (pst_u16FGVCR() -> u16H = (ParValue))
+N#define u16GetFGVCRH() (pst_u16FGVCR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGVCR(ParValue)  (*pu32FGVCR() = (ParValue))
+N#define u32GetFGVCR()  (*pu32FGVCR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCAR1                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08014                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCAR1_REG__       0xC0C08014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   	:3; 	 /* 0..2  bit(s) R */ 
+N  uint32_t   CBA1	:29; 	 /* 3..31  bit(s) R/W */                    
+N} FGCAR1_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGCAR1_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGCAR1_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGCAR1_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCAR1()     ((volatile FGCAR1_bit_view_st *)\
+N(FGCAR1_REG__ ))
+X#define pst_bitFGCAR1()     ((volatile FGCAR1_bit_view_st *)(FGCAR1_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGCAR1()     ((volatile FGCAR1_byte_view_st *)\
+N(FGCAR1_REG__ ))
+X#define pst_u8FGCAR1()     ((volatile FGCAR1_byte_view_st *)(FGCAR1_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGCAR1()     ((volatile FGCAR1_halfword_view_st *)\
+N(FGCAR1_REG__ ))
+X#define pst_u16FGCAR1()     ((volatile FGCAR1_halfword_view_st *)(FGCAR1_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGCAR1()     ((volatile u32FGCAR1_word_view *)\
+N(FGCAR1_REG__ ))
+X#define pu32FGCAR1()     ((volatile u32FGCAR1_word_view *)(FGCAR1_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCAR1_CBA1() (pst_bitFGCAR1() -> CBA1)
+N#define vSetFGCAR1_CBA1(ParValue)  (pst_bitFGCAR1() -> CBA1=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGCAR1LL(ParValue) (pst_u8FGCAR1() -> u8LL = (ParValue))
+N#define u8GetFGCAR1LL() (pst_u8FGCAR1() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGCAR1LH(ParValue) (pst_u8FGCAR1() -> u8LH = (ParValue))
+N#define u8GetFGCAR1LH() (pst_u8FGCAR1() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGCAR1HL(ParValue) (pst_u8FGCAR1() -> u8HL = (ParValue))
+N#define u8GetFGCAR1HL() (pst_u8FGCAR1() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGCAR1HH(ParValue) (pst_u8FGCAR1() -> u8HH = (ParValue))
+N#define u8GetFGCAR1HH() (pst_u8FGCAR1() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGCAR1L(ParValue) (pst_u16FGCAR1() -> u16L = (ParValue))
+N#define u16GetFGCAR1L() (pst_u16FGCAR1() -> u16L)
+N#define vSetFGCAR1H(ParValue) (pst_u16FGCAR1() -> u16H = (ParValue))
+N#define u16GetFGCAR1H() (pst_u16FGCAR1() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGCAR1(ParValue)  (*pu32FGCAR1() = (ParValue))
+N#define u32GetFGCAR1()  (*pu32FGCAR1() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCAR2                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08018                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCAR2_REG__       0xC0C08018U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   	:3; 	 /* 0..2  bit(s) R */ 
+N  uint32_t   CBA2	:29; 	 /* 3..31  bit(s) R/W */                    
+N} FGCAR2_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGCAR2_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGCAR2_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGCAR2_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCAR2()     ((volatile FGCAR2_bit_view_st *)\
+N(FGCAR2_REG__ ))
+X#define pst_bitFGCAR2()     ((volatile FGCAR2_bit_view_st *)(FGCAR2_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGCAR2()     ((volatile FGCAR2_byte_view_st *)\
+N(FGCAR2_REG__ ))
+X#define pst_u8FGCAR2()     ((volatile FGCAR2_byte_view_st *)(FGCAR2_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGCAR2()     ((volatile FGCAR2_halfword_view_st *)\
+N(FGCAR2_REG__ ))
+X#define pst_u16FGCAR2()     ((volatile FGCAR2_halfword_view_st *)(FGCAR2_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGCAR2()     ((volatile u32FGCAR2_word_view *)\
+N(FGCAR2_REG__ ))
+X#define pu32FGCAR2()     ((volatile u32FGCAR2_word_view *)(FGCAR2_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCAR2_CBA2() (pst_bitFGCAR2() -> CBA2)
+N#define vSetFGCAR2_CBA2(ParValue)  (pst_bitFGCAR2() -> CBA2=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGCAR2LL(ParValue) (pst_u8FGCAR2() -> u8LL = (ParValue))
+N#define u8GetFGCAR2LL() (pst_u8FGCAR2() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGCAR2LH(ParValue) (pst_u8FGCAR2() -> u8LH = (ParValue))
+N#define u8GetFGCAR2LH() (pst_u8FGCAR2() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGCAR2HL(ParValue) (pst_u8FGCAR2() -> u8HL = (ParValue))
+N#define u8GetFGCAR2HL() (pst_u8FGCAR2() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGCAR2HH(ParValue) (pst_u8FGCAR2() -> u8HH = (ParValue))
+N#define u8GetFGCAR2HH() (pst_u8FGCAR2() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGCAR2L(ParValue) (pst_u16FGCAR2() -> u16L = (ParValue))
+N#define u16GetFGCAR2L() (pst_u16FGCAR2() -> u16L)
+N#define vSetFGCAR2H(ParValue) (pst_u16FGCAR2() -> u16H = (ParValue))
+N#define u16GetFGCAR2H() (pst_u16FGCAR2() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGCAR2(ParValue)  (*pu32FGCAR2() = (ParValue))
+N#define u32GetFGCAR2()  (*pu32FGCAR2() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCAR3                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C0801C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCAR3_REG__       0xC0C0801CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   	:3; 	 /* 0..2  bit(s) R */ 
+N  uint32_t   CBA3	:29; 	 /* 3..31  bit(s) R/W */                    
+N} FGCAR3_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGCAR3_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGCAR3_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGCAR3_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCAR3()     ((volatile FGCAR3_bit_view_st *)\
+N(FGCAR3_REG__ ))
+X#define pst_bitFGCAR3()     ((volatile FGCAR3_bit_view_st *)(FGCAR3_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGCAR3()     ((volatile FGCAR3_byte_view_st *)\
+N(FGCAR3_REG__ ))
+X#define pst_u8FGCAR3()     ((volatile FGCAR3_byte_view_st *)(FGCAR3_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGCAR3()     ((volatile FGCAR3_halfword_view_st *)\
+N(FGCAR3_REG__ ))
+X#define pst_u16FGCAR3()     ((volatile FGCAR3_halfword_view_st *)(FGCAR3_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGCAR3()     ((volatile u32FGCAR3_word_view *)\
+N(FGCAR3_REG__ ))
+X#define pu32FGCAR3()     ((volatile u32FGCAR3_word_view *)(FGCAR3_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCAR3_CBA3() (pst_bitFGCAR3() -> CBA3)
+N#define vSetFGCAR3_CBA3(ParValue)  (pst_bitFGCAR3() -> CBA3=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGCAR3LL(ParValue) (pst_u8FGCAR3() -> u8LL = (ParValue))
+N#define u8GetFGCAR3LL() (pst_u8FGCAR3() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGCAR3LH(ParValue) (pst_u8FGCAR3() -> u8LH = (ParValue))
+N#define u8GetFGCAR3LH() (pst_u8FGCAR3() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGCAR3HL(ParValue) (pst_u8FGCAR3() -> u8HL = (ParValue))
+N#define u8GetFGCAR3HL() (pst_u8FGCAR3() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGCAR3HH(ParValue) (pst_u8FGCAR3() -> u8HH = (ParValue))
+N#define u8GetFGCAR3HH() (pst_u8FGCAR3() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGCAR3L(ParValue) (pst_u16FGCAR3() -> u16L = (ParValue))
+N#define u16GetFGCAR3L() (pst_u16FGCAR3() -> u16L)
+N#define vSetFGCAR3H(ParValue) (pst_u16FGCAR3() -> u16H = (ParValue))
+N#define u16GetFGCAR3H() (pst_u16FGCAR3() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGCAR3(ParValue)  (*pu32FGCAR3() = (ParValue))
+N#define u32GetFGCAR3()  (*pu32FGCAR3() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08020                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCCR_REG__       0xC0C08020U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   CBSA	:4; 	 /* 0..3  bit(s) R/W */
+N  uint32_t   	:4; 	 /* 4..7  bit(s) R */
+N  uint32_t   CBACT	:2; 	 /* 8..9  bit(s) R/W */
+N  uint32_t   	:6; 	 /* 10..15  bit(s) R */
+N  uint32_t   CBCUR	:2; 	 /* 16..17  bit(s) R */ 
+N  uint32_t   	:14; 	 /* 18..31  bit(s) R */                    
+N} FGCCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGCCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGCCR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGCCR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCCR()     ((volatile FGCCR_bit_view_st *)\
+N(FGCCR_REG__ ))
+X#define pst_bitFGCCR()     ((volatile FGCCR_bit_view_st *)(FGCCR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGCCR()     ((volatile FGCCR_byte_view_st *)\
+N(FGCCR_REG__ ))
+X#define pst_u8FGCCR()     ((volatile FGCCR_byte_view_st *)(FGCCR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGCCR()     ((volatile FGCCR_halfword_view_st *)\
+N(FGCCR_REG__ ))
+X#define pst_u16FGCCR()     ((volatile FGCCR_halfword_view_st *)(FGCCR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGCCR()     ((volatile u32FGCCR_word_view *)\
+N(FGCCR_REG__ ))
+X#define pu32FGCCR()     ((volatile u32FGCCR_word_view *)(FGCCR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCCR_CBSA() (pst_bitFGCCR() -> CBSA)
+N#define vSetFGCCR_CBSA(ParValue)  (pst_bitFGCCR() -> CBSA=(ParValue))
+N#define biGetFGCCR_CBACT() (pst_bitFGCCR() -> CBACT)
+N#define vSetFGCCR_CBACT(ParValue)  (pst_bitFGCCR() -> CBACT=(ParValue))            
+N#define biGetFGCCR_CBCUR() (pst_bitFGCCR() -> CBCUR)
+N            
+N/* LL-struct byte access */
+N#define vSetFGCCRLL(ParValue) (pst_u8FGCCR() -> u8LL = (ParValue))
+N#define u8GetFGCCRLL() (pst_u8FGCCR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGCCRLH(ParValue) (pst_u8FGCCR() -> u8LH = (ParValue))
+N#define u8GetFGCCRLH() (pst_u8FGCCR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGCCRHL(ParValue) (pst_u8FGCCR() -> u8HL = (ParValue))
+N#define u8GetFGCCRHL() (pst_u8FGCCR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGCCRHH(ParValue) (pst_u8FGCCR() -> u8HH = (ParValue))
+N#define u8GetFGCCRHH() (pst_u8FGCCR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGCCRL(ParValue) (pst_u16FGCCR() -> u16L = (ParValue))
+N#define u16GetFGCCRL() (pst_u16FGCCR() -> u16L)
+N#define vSetFGCCRH(ParValue) (pst_u16FGCCR() -> u16H = (ParValue))
+N#define u16GetFGCCRH() (pst_u16FGCCR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGCCR(ParValue)  (*pu32FGCCR() = (ParValue))
+N#define u32GetFGCCR()  (*pu32FGCCR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCIR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08024                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCIR_REG__       0xC0C08024U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   ALPHA	:8; 	 /* 0..7  bit(s) R/W */
+N  uint32_t   BLUE	:8; 	 /* 8..15  bit(s) R/W */
+N  uint32_t   GREEN	:8; 	 /* 16..23  bit(s) R/W */ 
+N  uint32_t   RED	:8; 	 /* 24..31  bit(s) R/W */                    
+N} FGCIR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGCIR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGCIR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGCIR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCIR()     ((volatile FGCIR_bit_view_st *)\
+N(FGCIR_REG__ ))
+X#define pst_bitFGCIR()     ((volatile FGCIR_bit_view_st *)(FGCIR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGCIR()     ((volatile FGCIR_byte_view_st *)\
+N(FGCIR_REG__ ))
+X#define pst_u8FGCIR()     ((volatile FGCIR_byte_view_st *)(FGCIR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGCIR()     ((volatile FGCIR_halfword_view_st *)\
+N(FGCIR_REG__ ))
+X#define pst_u16FGCIR()     ((volatile FGCIR_halfword_view_st *)(FGCIR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGCIR()     ((volatile u32FGCIR_word_view *)\
+N(FGCIR_REG__ ))
+X#define pu32FGCIR()     ((volatile u32FGCIR_word_view *)(FGCIR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCIR_ALPHA() (pst_bitFGCIR() -> ALPHA)
+N#define vSetFGCIR_ALPHA(ParValue)  (pst_bitFGCIR() -> ALPHA=(ParValue))
+N#define biGetFGCIR_BLUE() (pst_bitFGCIR() -> BLUE)
+N#define vSetFGCIR_BLUE(ParValue)  (pst_bitFGCIR() -> BLUE=(ParValue))
+N#define biGetFGCIR_GREEN() (pst_bitFGCIR() -> GREEN)
+N#define vSetFGCIR_GREEN(ParValue)  (pst_bitFGCIR() -> GREEN=(ParValue))
+N#define biGetFGCIR_RED() (pst_bitFGCIR() -> RED)
+N#define vSetFGCIR_RED(ParValue)  (pst_bitFGCIR() -> RED=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGCIRLL(ParValue) (pst_u8FGCIR() -> u8LL = (ParValue))
+N#define u8GetFGCIRLL() (pst_u8FGCIR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGCIRLH(ParValue) (pst_u8FGCIR() -> u8LH = (ParValue))
+N#define u8GetFGCIRLH() (pst_u8FGCIR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGCIRHL(ParValue) (pst_u8FGCIR() -> u8HL = (ParValue))
+N#define u8GetFGCIRHL() (pst_u8FGCIR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGCIRHH(ParValue) (pst_u8FGCIR() -> u8HH = (ParValue))
+N#define u8GetFGCIRHH() (pst_u8FGCIR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGCIRL(ParValue) (pst_u16FGCIR() -> u16L = (ParValue))
+N#define u16GetFGCIRL() (pst_u16FGCIR() -> u16L)
+N#define vSetFGCIRH(ParValue) (pst_u16FGCIR() -> u16H = (ParValue))
+N#define u16GetFGCIRH() (pst_u16FGCIR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGCIR(ParValue)  (*pu32FGCIR() = (ParValue))
+N#define u32GetFGCIR()  (*pu32FGCIR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGSR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08028                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGSR_REG__       0xC0C08028U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   YSCALE	:16; 	 /* 0..15  bit(s) R/W */ 
+N  uint32_t   XSCALE	:16; 	 /* 16..31  bit(s) R/W */                    
+N} FGSR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGSR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGSR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGSR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGSR()     ((volatile FGSR_bit_view_st *)\
+N(FGSR_REG__ ))
+X#define pst_bitFGSR()     ((volatile FGSR_bit_view_st *)(FGSR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGSR()     ((volatile FGSR_byte_view_st *)\
+N(FGSR_REG__ ))
+X#define pst_u8FGSR()     ((volatile FGSR_byte_view_st *)(FGSR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGSR()     ((volatile FGSR_halfword_view_st *)\
+N(FGSR_REG__ ))
+X#define pst_u16FGSR()     ((volatile FGSR_halfword_view_st *)(FGSR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGSR()     ((volatile u32FGSR_word_view *)\
+N(FGSR_REG__ ))
+X#define pu32FGSR()     ((volatile u32FGSR_word_view *)(FGSR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGSR_YSCALE() (pst_bitFGSR() -> YSCALE)
+N#define vSetFGSR_YSCALE(ParValue)  (pst_bitFGSR() -> YSCALE=(ParValue))
+N#define biGetFGSR_XSCALE() (pst_bitFGSR() -> XSCALE)
+N#define vSetFGSR_XSCALE(ParValue)  (pst_bitFGSR() -> XSCALE=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGSRLL(ParValue) (pst_u8FGSR() -> u8LL = (ParValue))
+N#define u8GetFGSRLL() (pst_u8FGSR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGSRLH(ParValue) (pst_u8FGSR() -> u8LH = (ParValue))
+N#define u8GetFGSRLH() (pst_u8FGSR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGSRHL(ParValue) (pst_u8FGSR() -> u8HL = (ParValue))
+N#define u8GetFGSRHL() (pst_u8FGSR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGSRHH(ParValue) (pst_u8FGSR() -> u8HH = (ParValue))
+N#define u8GetFGSRHH() (pst_u8FGSR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGSRL(ParValue) (pst_u16FGSR() -> u16L = (ParValue))
+N#define u16GetFGSRL() (pst_u16FGSR() -> u16L)
+N#define vSetFGSRH(ParValue) (pst_u16FGSR() -> u16H = (ParValue))
+N#define u16GetFGSRH() (pst_u16FGSR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGSR(ParValue)  (*pu32FGSR() = (ParValue))
+N#define u32GetFGSR()  (*pu32FGSR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGLOR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C0802C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGLOR_REG__       0xC0C0802CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   LOFF	:16; 	 /* 0..15  bit(s) R/W */                    
+N} FGLOR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} FGLOR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16FGLOR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGLOR()     ((volatile FGLOR_bit_view_st *)\
+N(FGLOR_REG__ ))
+X#define pst_bitFGLOR()     ((volatile FGLOR_bit_view_st *)(FGLOR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGLOR()     ((volatile FGLOR_byte_view_st *)\
+N(FGLOR_REG__ ))
+X#define pst_u8FGLOR()     ((volatile FGLOR_byte_view_st *)(FGLOR_REG__ ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16FGLOR()     ((volatile u16FGLOR_halfword_view *)\
+N(FGLOR_REG__ ))
+X#define pu16FGLOR()     ((volatile u16FGLOR_halfword_view *)(FGLOR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGLOR_LOFF() (pst_bitFGLOR() -> LOFF)
+N#define vSetFGLOR_LOFF(ParValue)  (pst_bitFGLOR() -> LOFF=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetFGLORL(ParValue) (pst_u8FGLOR() -> u8L = (ParValue))
+N#define u8GetFGLORL() (pst_u8FGLOR() -> u8L)
+N/* H-struct byte access */
+N#define vSetFGLORH(ParValue) (pst_u8FGLOR() -> u8H = (ParValue))
+N#define u8GetFGLORH() (pst_u8FGLOR() -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetFGLOR(ParValue) (*pu16FGLOR()  = (ParValue))
+N#define u16GetFGLOR() (*pu16FGLOR() )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGHMR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08030                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGHMR_REG__       0xC0C08030U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   MHSPWR	:12; 	 /* 0..11  bit(s) R */
+N  uint32_t   	:4; 	 /* 12..15  bit(s) R */
+N  uint32_t   MHCR	:12; 	 /* 16..27  bit(s) R */ 
+N  uint32_t   	:4; 	 /* 28..31  bit(s) R */                    
+N} FGHMR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGHMR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGHMR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGHMR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGHMR()     ((volatile FGHMR_bit_view_st *)\
+N(FGHMR_REG__ ))
+X#define pst_bitFGHMR()     ((volatile FGHMR_bit_view_st *)(FGHMR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGHMR()     ((volatile FGHMR_byte_view_st *)\
+N(FGHMR_REG__ ))
+X#define pst_u8FGHMR()     ((volatile FGHMR_byte_view_st *)(FGHMR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGHMR()     ((volatile FGHMR_halfword_view_st *)\
+N(FGHMR_REG__ ))
+X#define pst_u16FGHMR()     ((volatile FGHMR_halfword_view_st *)(FGHMR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGHMR()     ((volatile u32FGHMR_word_view *)\
+N(FGHMR_REG__ ))
+X#define pu32FGHMR()     ((volatile u32FGHMR_word_view *)(FGHMR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetFGHMR_MHSPWR() (pst_bitFGHMR() -> MHSPWR)            
+N#define biGetFGHMR_MHCR() (pst_bitFGHMR() -> MHCR)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetFGHMRLL() (pst_u8FGHMR() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetFGHMRLH() (pst_u8FGHMR() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetFGHMRHL() (pst_u8FGHMR() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetFGHMRHH() (pst_u8FGHMR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetFGHMRL() (pst_u16FGHMR() -> u16L)
+N
+N#define u16GetFGHMRH() (pst_u16FGHMR() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetFGHMR()  (*pu32FGHMR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGVMR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08034                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGVMR_REG__       0xC0C08034U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   MVSPWR	:12; 	 /* 0..11  bit(s) R */
+N  uint32_t   	:4; 	 /* 12..15  bit(s) R */
+N  uint32_t   MVCR	:12; 	 /* 16..27  bit(s) R */ 
+N  uint32_t   	:4; 	 /* 28..31  bit(s) R */                    
+N} FGVMR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGVMR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGVMR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGVMR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGVMR()     ((volatile FGVMR_bit_view_st *)\
+N(FGVMR_REG__ ))
+X#define pst_bitFGVMR()     ((volatile FGVMR_bit_view_st *)(FGVMR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGVMR()     ((volatile FGVMR_byte_view_st *)\
+N(FGVMR_REG__ ))
+X#define pst_u8FGVMR()     ((volatile FGVMR_byte_view_st *)(FGVMR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGVMR()     ((volatile FGVMR_halfword_view_st *)\
+N(FGVMR_REG__ ))
+X#define pst_u16FGVMR()     ((volatile FGVMR_halfword_view_st *)(FGVMR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGVMR()     ((volatile u32FGVMR_word_view *)\
+N(FGVMR_REG__ ))
+X#define pu32FGVMR()     ((volatile u32FGVMR_word_view *)(FGVMR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetFGVMR_MVSPWR() (pst_bitFGVMR() -> MVSPWR)            
+N#define biGetFGVMR_MVCR() (pst_bitFGVMR() -> MVCR)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetFGVMRLL() (pst_u8FGVMR() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetFGVMRLH() (pst_u8FGVMR() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetFGVMRHL() (pst_u8FGVMR() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetFGVMRHH() (pst_u8FGVMR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetFGVMRL() (pst_u16FGVMR() -> u16L)
+N
+N#define u16GetFGVMRH() (pst_u16FGVMR() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetFGVMR()  (*pu32FGVMR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGMCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08038                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGMCR_REG__       0xC0C08038U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   HDISP	:1; 	 /* 0..0  bit(s) R/W */
+N  uint32_t   HCR	:1; 	 /* 1..1  bit(s) R/W */
+N  uint32_t   HSPWR	:1; 	 /* 2..2  bit(s) R/W */
+N  uint32_t   VCR	:1; 	 /* 3..3  bit(s) R/W */
+N  uint32_t   VSPWR	:1; 	 /* 4..4  bit(s) R/W */
+N  uint32_t   	:11; 	 /* 5..15  bit(s) R */
+N  uint32_t   MHDISP	:12; 	 /* 16..27  bit(s) R */ 
+N  uint32_t   	:4; 	 /* 28..31  bit(s) R */                    
+N} FGMCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGMCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGMCR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGMCR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGMCR()     ((volatile FGMCR_bit_view_st *)\
+N(FGMCR_REG__ ))
+X#define pst_bitFGMCR()     ((volatile FGMCR_bit_view_st *)(FGMCR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGMCR()     ((volatile FGMCR_byte_view_st *)\
+N(FGMCR_REG__ ))
+X#define pst_u8FGMCR()     ((volatile FGMCR_byte_view_st *)(FGMCR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGMCR()     ((volatile FGMCR_halfword_view_st *)\
+N(FGMCR_REG__ ))
+X#define pst_u16FGMCR()     ((volatile FGMCR_halfword_view_st *)(FGMCR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGMCR()     ((volatile u32FGMCR_word_view *)\
+N(FGMCR_REG__ ))
+X#define pu32FGMCR()     ((volatile u32FGMCR_word_view *)(FGMCR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGMCR_HDISP() (pst_bitFGMCR() -> HDISP)
+N#define vSetFGMCR_HDISP(ParValue)  (pst_bitFGMCR() -> HDISP=(ParValue))
+N#define biGetFGMCR_HCR() (pst_bitFGMCR() -> HCR)
+N#define vSetFGMCR_HCR(ParValue)  (pst_bitFGMCR() -> HCR=(ParValue))
+N#define biGetFGMCR_HSPWR() (pst_bitFGMCR() -> HSPWR)
+N#define vSetFGMCR_HSPWR(ParValue)  (pst_bitFGMCR() -> HSPWR=(ParValue))
+N#define biGetFGMCR_VCR() (pst_bitFGMCR() -> VCR)
+N#define vSetFGMCR_VCR(ParValue)  (pst_bitFGMCR() -> VCR=(ParValue))
+N#define biGetFGMCR_VSPWR() (pst_bitFGMCR() -> VSPWR)
+N#define vSetFGMCR_VSPWR(ParValue)  (pst_bitFGMCR() -> VSPWR=(ParValue))            
+N#define biGetFGMCR_MHDISP() (pst_bitFGMCR() -> MHDISP)
+N            
+N/* LL-struct byte access */
+N#define vSetFGMCRLL(ParValue) (pst_u8FGMCR() -> u8LL = (ParValue))
+N#define u8GetFGMCRLL() (pst_u8FGMCR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGMCRLH(ParValue) (pst_u8FGMCR() -> u8LH = (ParValue))
+N#define u8GetFGMCRLH() (pst_u8FGMCR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGMCRHL(ParValue) (pst_u8FGMCR() -> u8HL = (ParValue))
+N#define u8GetFGMCRHL() (pst_u8FGMCR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGMCRHH(ParValue) (pst_u8FGMCR() -> u8HH = (ParValue))
+N#define u8GetFGMCRHH() (pst_u8FGMCR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGMCRL(ParValue) (pst_u16FGMCR() -> u16L = (ParValue))
+N#define u16GetFGMCRL() (pst_u16FGMCR() -> u16L)
+N#define vSetFGMCRH(ParValue) (pst_u16FGMCR() -> u16H = (ParValue))
+N#define u16GetFGMCRH() (pst_u16FGMCR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGMCR(ParValue)  (*pu32FGMCR() = (ParValue))
+N#define u32GetFGMCR()  (*pu32FGMCR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGIMR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C0803C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGIMR_REG__       0xC0C0803CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   CDI	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   VBTOI	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   VSI	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   MRDYI	:1; 	 /* 3..3  bit(s) R/W */
+N  uint8_t   NVI	:1; 	 /* 4..4  bit(s) R/W */ 
+N  uint8_t   RPEI	:1; 	 /* 5..5  bit(s) R/W */
+N  uint8_t   MPEI	:1; 	 /* 6..6  bit(s) R/W */ 
+N  uint8_t   	:1; 	 /* 7..31  bit(s) R */                    
+N} FGIMR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8FGIMR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGIMR()     ((volatile FGIMR_bit_view_st *)\
+N(FGIMR_REG__ ))
+X#define pst_bitFGIMR()     ((volatile FGIMR_bit_view_st *)(FGIMR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8FGIMR()     ((volatile u8FGIMR_byte_view *)\
+N(FGIMR_REG__ ))
+X#define pu8FGIMR()     ((volatile u8FGIMR_byte_view *)(FGIMR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGIMR_CDI() (pst_bitFGIMR() -> CDI)
+N#define vSetFGIMR_CDI(ParValue)  (pst_bitFGIMR() -> CDI=(ParValue))
+N#define biGetFGIMR_VBTOI() (pst_bitFGIMR() -> VBTOI)
+N#define vSetFGIMR_VBTOI(ParValue)  (pst_bitFGIMR() -> VBTOI=(ParValue))
+N#define biGetFGIMR_VSI() (pst_bitFGIMR() -> VSI)
+N#define vSetFGIMR_VSI(ParValue)  (pst_bitFGIMR() -> VSI=(ParValue))
+N#define biGetFGIMR_MRDYI() (pst_bitFGIMR() -> MRDYI)
+N#define vSetFGIMR_MRDYI(ParValue)  (pst_bitFGIMR() -> MRDYI=(ParValue))
+N#define biGetFGIMR_NVI() (pst_bitFGIMR() -> NVI)
+N#define vSetFGIMR_NVI(ParValue)  (pst_bitFGIMR() -> NVI=(ParValue))
+N#define biGetFGIMR_RPEI() (pst_bitFGIMR() -> RPEI)
+N#define vSetFGIMR_RPEI(ParValue)  (pst_bitFGIMR() -> RPEI=(ParValue))
+N#define biGetFGIMR_MPEI() (pst_bitFGIMR() -> MPEI)
+N#define vSetFGIMR_MPEI(ParValue)  (pst_bitFGIMR() -> MPEI=(ParValue))
+N            
+N/* byte access */
+N#define vSetFGIMR(ParValue) (*pu8FGIMR() = (ParValue))
+N#define u8GetFGIMR() (*pu8FGIMR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGISR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08040                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGISR_REG__       0xC0C08040U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   CDS	:1; 	 /* 0..0  bit(s) R/W1C */
+N  uint8_t   VBTOS	:1; 	 /* 1..1  bit(s) R/W1C */
+N  uint8_t   VSS	:1; 	 /* 2..2  bit(s) R/W1C */
+N  uint8_t   MRDYS	:1; 	 /* 3..3  bit(s) R/W1C */
+N  uint8_t   NVS	:1; 	 /* 4..4  bit(s) R/W1C */ 
+N  uint8_t   RPES	:1; 	 /* 5..5  bit(s) R/W1C */
+N  uint8_t   MPES	:1; 	 /* 6..6  bit(s) R/W1C */ 
+N  uint8_t   	:1; 	 /* 7..31  bit(s) R */                    
+N} FGISR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8FGISR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGISR()     ((volatile FGISR_bit_view_st *)\
+N(FGISR_REG__ ))
+X#define pst_bitFGISR()     ((volatile FGISR_bit_view_st *)(FGISR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8FGISR()     ((volatile u8FGISR_byte_view *)\
+N(FGISR_REG__ ))
+X#define pu8FGISR()     ((volatile u8FGISR_byte_view *)(FGISR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGISR_CDS() (pst_bitFGISR() -> CDS)
+N#define vClrFGISR_CDS() (pst_bitFGISR() -> CDS = (1))
+N#define biGetFGISR_VBTOS() (pst_bitFGISR() -> VBTOS)
+N#define vClrFGISR_VBTOS() (pst_bitFGISR() -> VBTOS = (1))
+N#define biGetFGISR_VSS() (pst_bitFGISR() -> VSS)
+N#define vClrFGISR_VSS() (pst_bitFGISR() -> VSS = (1))
+N#define biGetFGISR_MRDYS() (pst_bitFGISR() -> MRDYS)
+N#define vClrFGISR_MRDYS() (pst_bitFGISR() -> MRDYS = (1))
+N#define biGetFGISR_NVS() (pst_bitFGISR() -> NVS)
+N#define vClrFGISR_NVS() (pst_bitFGISR() -> NVS = (1))
+N#define biGetFGISR_RPES() (pst_bitFGISR() -> RPES)
+N#define vClrFGISR_RPES() (pst_bitFGISR() -> RPES = (1))
+N#define biGetFGISR_MPES() (pst_bitFGISR() -> MPES)
+N#define vClrFGISR_MPES() (pst_bitFGISR() -> MPES = (1))
+N            
+N/* byte access */
+N#define vSetFGISR(ParValue) (*pu8FGISR() = (ParValue))
+N#define u8GetFGISR() (*pu8FGISR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGMASR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08044                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGMASR_REG__       0xC0C08044U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   	:2; 	 /* 0..1  bit(s) R */ 
+N  uint32_t   MAS	:30; 	 /* 2..31  bit(s) R/W */                    
+N} FGMASR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGMASR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGMASR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGMASR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGMASR()     ((volatile FGMASR_bit_view_st *)\
+N(FGMASR_REG__ ))
+X#define pst_bitFGMASR()     ((volatile FGMASR_bit_view_st *)(FGMASR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGMASR()     ((volatile FGMASR_byte_view_st *)\
+N(FGMASR_REG__ ))
+X#define pst_u8FGMASR()     ((volatile FGMASR_byte_view_st *)(FGMASR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGMASR()     ((volatile FGMASR_halfword_view_st *)\
+N(FGMASR_REG__ ))
+X#define pst_u16FGMASR()     ((volatile FGMASR_halfword_view_st *)(FGMASR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGMASR()     ((volatile u32FGMASR_word_view *)\
+N(FGMASR_REG__ ))
+X#define pu32FGMASR()     ((volatile u32FGMASR_word_view *)(FGMASR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGMASR_MAS() (pst_bitFGMASR() -> MAS)
+N#define vSetFGMASR_MAS(ParValue)  (pst_bitFGMASR() -> MAS=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGMASRLL(ParValue) (pst_u8FGMASR() -> u8LL = (ParValue))
+N#define u8GetFGMASRLL() (pst_u8FGMASR() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGMASRLH(ParValue) (pst_u8FGMASR() -> u8LH = (ParValue))
+N#define u8GetFGMASRLH() (pst_u8FGMASR() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGMASRHL(ParValue) (pst_u8FGMASR() -> u8HL = (ParValue))
+N#define u8GetFGMASRHL() (pst_u8FGMASR() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGMASRHH(ParValue) (pst_u8FGMASR() -> u8HH = (ParValue))
+N#define u8GetFGMASRHH() (pst_u8FGMASR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGMASRL(ParValue) (pst_u16FGMASR() -> u16L = (ParValue))
+N#define u16GetFGMASRL() (pst_u16FGMASR() -> u16L)
+N#define vSetFGMASRH(ParValue) (pst_u16FGMASR() -> u16H = (ParValue))
+N#define u16GetFGMASRH() (pst_u16FGMASR() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGMASR(ParValue)  (*pu32FGMASR() = (ParValue))
+N#define u32GetFGMASR()  (*pu32FGMASR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGMAER                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08048                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGMAER_REG__       0xC0C08048U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   	:2; 	 /* 0..1  bit(s) R */ 
+N  uint32_t   MAE	:30; 	 /* 2..31  bit(s) R/W */                    
+N} FGMAER_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGMAER_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGMAER_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGMAER_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGMAER()     ((volatile FGMAER_bit_view_st *)\
+N(FGMAER_REG__ ))
+X#define pst_bitFGMAER()     ((volatile FGMAER_bit_view_st *)(FGMAER_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGMAER()     ((volatile FGMAER_byte_view_st *)\
+N(FGMAER_REG__ ))
+X#define pst_u8FGMAER()     ((volatile FGMAER_byte_view_st *)(FGMAER_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGMAER()     ((volatile FGMAER_halfword_view_st *)\
+N(FGMAER_REG__ ))
+X#define pst_u16FGMAER()     ((volatile FGMAER_halfword_view_st *)(FGMAER_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGMAER()     ((volatile u32FGMAER_word_view *)\
+N(FGMAER_REG__ ))
+X#define pu32FGMAER()     ((volatile u32FGMAER_word_view *)(FGMAER_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGMAER_MAE() (pst_bitFGMAER() -> MAE)
+N#define vSetFGMAER_MAE(ParValue)  (pst_bitFGMAER() -> MAE=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetFGMAERLL(ParValue) (pst_u8FGMAER() -> u8LL = (ParValue))
+N#define u8GetFGMAERLL() (pst_u8FGMAER() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetFGMAERLH(ParValue) (pst_u8FGMAER() -> u8LH = (ParValue))
+N#define u8GetFGMAERLH() (pst_u8FGMAER() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetFGMAERHL(ParValue) (pst_u8FGMAER() -> u8HL = (ParValue))
+N#define u8GetFGMAERHL() (pst_u8FGMAER() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetFGMAERHH(ParValue) (pst_u8FGMAER() -> u8HH = (ParValue))
+N#define u8GetFGMAERHH() (pst_u8FGMAER() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetFGMAERL(ParValue) (pst_u16FGMAER() -> u16L = (ParValue))
+N#define u16GetFGMAERL() (pst_u16FGMAER() -> u16L)
+N#define vSetFGMAERH(ParValue) (pst_u16FGMAER() -> u16H = (ParValue))
+N#define u16GetFGMAERH() (pst_u16FGMAER() -> u16H)
+N            
+N/* Word access */
+N#define vSetFGMAER(ParValue)  (*pu32FGMAER() = (ParValue))
+N#define u32GetFGMAER()  (*pu32FGMAER() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGVBEAR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C0804C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGVBEAR_REG__       0xC0C0804CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   VBADDR	:32; 	 /* 0..31  bit(s) R */                    
+N} FGVBEAR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGVBEAR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGVBEAR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGVBEAR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGVBEAR()     ((volatile FGVBEAR_bit_view_st *)\
+N(FGVBEAR_REG__ ))
+X#define pst_bitFGVBEAR()     ((volatile FGVBEAR_bit_view_st *)(FGVBEAR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGVBEAR()     ((volatile FGVBEAR_byte_view_st *)\
+N(FGVBEAR_REG__ ))
+X#define pst_u8FGVBEAR()     ((volatile FGVBEAR_byte_view_st *)(FGVBEAR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGVBEAR()     ((volatile FGVBEAR_halfword_view_st *)\
+N(FGVBEAR_REG__ ))
+X#define pst_u16FGVBEAR()     ((volatile FGVBEAR_halfword_view_st *)(FGVBEAR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGVBEAR()     ((volatile u32FGVBEAR_word_view *)\
+N(FGVBEAR_REG__ ))
+X#define pu32FGVBEAR()     ((volatile u32FGVBEAR_word_view *)(FGVBEAR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetFGVBEAR_VBADDR() (pst_bitFGVBEAR() -> VBADDR)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetFGVBEARLL() (pst_u8FGVBEAR() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetFGVBEARLH() (pst_u8FGVBEAR() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetFGVBEARHL() (pst_u8FGVBEAR() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetFGVBEARHH() (pst_u8FGVBEAR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetFGVBEARL() (pst_u16FGVBEAR() -> u16L)
+N
+N#define u16GetFGVBEARH() (pst_u16FGVBEAR() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetFGVBEAR()  (*pu32FGVBEAR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGVBECR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0C08050                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGVBECR_REG__       0xC0C08050U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   WR	:1; 	 /* 0..0  bit(s) R */
+N  uint32_t   BTYPE	:1; 	 /* 1..1  bit(s) R */
+N  uint32_t   BSIZE	:3; 	 /* 2..4  bit(s) R */
+N  uint32_t   RTYPE	:2; 	 /* 5..6  bit(s) R */
+N  uint32_t   	:1; 	 /* 7..7  bit(s) R */
+N  uint32_t   BEN	:8; 	 /* 8..15  bit(s) R */
+N  uint32_t   ID	:4; 	 /* 16..19  bit(s) R */
+N  uint32_t   LEN	:4; 	 /* 20..23  bit(s) R */ 
+N  uint32_t   	:8; 	 /* 24..31  bit(s) R */                    
+N} FGVBECR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} FGVBECR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} FGVBECR_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32FGVBECR_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGVBECR()     ((volatile FGVBECR_bit_view_st *)\
+N(FGVBECR_REG__ ))
+X#define pst_bitFGVBECR()     ((volatile FGVBECR_bit_view_st *)(FGVBECR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8FGVBECR()     ((volatile FGVBECR_byte_view_st *)\
+N(FGVBECR_REG__ ))
+X#define pst_u8FGVBECR()     ((volatile FGVBECR_byte_view_st *)(FGVBECR_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16FGVBECR()     ((volatile FGVBECR_halfword_view_st *)\
+N(FGVBECR_REG__ ))
+X#define pst_u16FGVBECR()     ((volatile FGVBECR_halfword_view_st *)(FGVBECR_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32FGVBECR()     ((volatile u32FGVBECR_word_view *)\
+N(FGVBECR_REG__ ))
+X#define pu32FGVBECR()     ((volatile u32FGVBECR_word_view *)(FGVBECR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetFGVBECR_WR() (pst_bitFGVBECR() -> WR)            
+N#define biGetFGVBECR_BTYPE() (pst_bitFGVBECR() -> BTYPE)            
+N#define biGetFGVBECR_BSIZE() (pst_bitFGVBECR() -> BSIZE)            
+N#define biGetFGVBECR_RTYPE() (pst_bitFGVBECR() -> RTYPE)            
+N#define biGetFGVBECR_BEN() (pst_bitFGVBECR() -> BEN)            
+N#define biGetFGVBECR_ID() (pst_bitFGVBECR() -> ID)            
+N#define biGetFGVBECR_LEN() (pst_bitFGVBECR() -> LEN)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetFGVBECRLL() (pst_u8FGVBECR() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetFGVBECRLH() (pst_u8FGVBECR() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetFGVBECRHL() (pst_u8FGVBECR() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetFGVBECRHH() (pst_u8FGVBECR() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetFGVBECRL() (pst_u16FGVBECR() -> u16L)
+N
+N#define u16GetFGVBECRH() (pst_u16FGVBECR() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetFGVBECR()  (*pu32FGVBECR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCCLR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0C08400                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCCLR_REG__       0xC0C08400U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   CCV	:8; 	 /* 0..7  bit(s) R/W */                    
+N} FGCCLR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8FGCCLR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCCLR(ch)     ((volatile FGCCLR_bit_view_st *)\
+N(FGCCLR_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_bitFGCCLR(ch)     ((volatile FGCCLR_bit_view_st *)(FGCCLR_REG__  + ((uint16_t)(ch) * 0x4U)))
+N        
+N/* Pointer to BYTE  */
+N#define pu8FGCCLR(ch)     ((volatile u8FGCCLR_byte_view *)\
+N(FGCCLR_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pu8FGCCLR(ch)     ((volatile u8FGCCLR_byte_view *)(FGCCLR_REG__  + ((uint16_t)(ch) * 0x4U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCCLR_CCV(ch) (pst_bitFGCCLR(ch) -> CCV)
+N#define vSetFGCCLR_CCV(ch,ParValue)  (pst_bitFGCCLR(ch) -> CCV=(ParValue))
+N            
+N/* byte access */
+N#define vSetFGCCLR(ch,ParValue) (*pu8FGCCLR(ch) = (ParValue))
+N#define u8GetFGCCLR(ch) (*pu8FGCCLR(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCCLG                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0C08800                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCCLG_REG__       0xC0C08800U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   CCV	:8; 	 /* 0..7  bit(s) R/W */                    
+N} FGCCLG_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8FGCCLG_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCCLG(ch)     ((volatile FGCCLG_bit_view_st *)\
+N(FGCCLG_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_bitFGCCLG(ch)     ((volatile FGCCLG_bit_view_st *)(FGCCLG_REG__  + ((uint16_t)(ch) * 0x4U)))
+N        
+N/* Pointer to BYTE  */
+N#define pu8FGCCLG(ch)     ((volatile u8FGCCLG_byte_view *)\
+N(FGCCLG_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pu8FGCCLG(ch)     ((volatile u8FGCCLG_byte_view *)(FGCCLG_REG__  + ((uint16_t)(ch) * 0x4U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCCLG_CCV(ch) (pst_bitFGCCLG(ch) -> CCV)
+N#define vSetFGCCLG_CCV(ch,ParValue)  (pst_bitFGCCLG(ch) -> CCV=(ParValue))
+N            
+N/* byte access */
+N#define vSetFGCCLG(ch,ParValue) (*pu8FGCCLG(ch) = (ParValue))
+N#define u8GetFGCCLG(ch) (*pu8FGCCLG(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: FGCCLB                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0C08C00                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define FGCCLB_REG__       0xC0C08C00U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   CCV	:8; 	 /* 0..7  bit(s) R/W */                    
+N} FGCCLB_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8FGCCLB_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitFGCCLB(ch)     ((volatile FGCCLB_bit_view_st *)\
+N(FGCCLB_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_bitFGCCLB(ch)     ((volatile FGCCLB_bit_view_st *)(FGCCLB_REG__  + ((uint16_t)(ch) * 0x4U)))
+N        
+N/* Pointer to BYTE  */
+N#define pu8FGCCLB(ch)     ((volatile u8FGCCLB_byte_view *)\
+N(FGCCLB_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pu8FGCCLB(ch)     ((volatile u8FGCCLB_byte_view *)(FGCCLB_REG__  + ((uint16_t)(ch) * 0x4U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetFGCCLB_CCV(ch) (pst_bitFGCCLB(ch) -> CCV)
+N#define vSetFGCCLB_CCV(ch,ParValue)  (pst_bitFGCCLB(ch) -> CCV=(ParValue))
+N            
+N/* byte access */
+N#define vSetFGCCLB(ch,ParValue) (*pu8FGCCLB(ch) = (ParValue))
+N#define u8GetFGCCLB(ch) (*pu8FGCCLB(ch) )
+N            
+N
+N
+N/****************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N/****************************************************************************/
+N    
+N
+N#endif /* FGIO_H */ 
+N
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: ga_io.c
+N**  $Revision: 1.11 $
+N**  $Date: 2015/05/04 09:07:16 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 24 "..\..\..\..\lldd\src\fg.c" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S
+S  #pragma ghs nowarning 1847  /* Rule 10.3 [R] : cast of complex integer expression with underlying type "type" to non-integer type "type" not allowed */
+S  #pragma ghs nowarning 1864  /* Rule 10.1 [R] : implicit conversion from underlying type, "type", to narrower underlying type, "type", not allowed */
+S  #pragma ghs nowarning 1865  /* Rule 10.1 [R] : conversion from underlying type, "int", to same width underlying type, "uint32_t", not allowed */
+S  #pragma ghs nowarning 1866  /* Rule 10.1 [R] : implicit conversion from underlying type, "type", to underlying type, "type", changes signedness */
+S  #pragma ghs nowarning 1867  /* Rule 10.1 [R] : disable type conversion not allowed for usage of enums for io header files */
+S
+S  #pragma ghs nowarning 1834  /* Rule 11.3 [A] : disable casting error */
+S  #pragma ghs nowarning 1840  /* Rule 5.7  [A] : No reuse of identifiers */
+S  #pragma ghs nowarning 1723  /* Rule 5.6  [A] : No identifiers with the same name in different name spaces except for struct and union members.. */
+S
+N#endif
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_FG_C_REVISION     "$Revision: 1.12 $"
+N#define LLDD_FG_C_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_FG_C_REVISION[]    = LLDD_FG_C_REVISION;
+Xstatic uint8_t au8LLDD_FG_C_REVISION[]    = "$Revision: 1.12 $";
+Nstatic uint8_t au8LLDD_FG_C_TAG[]         = LLDD_FG_C_TAG;
+Xstatic uint8_t au8LLDD_FG_C_TAG[]         = "$Name: LLDD_1_7_GFX $";
+Nstatic uint8_t au8LLDD_FG_H_REVISION[]    = LLDD_FG_H_REVISION;
+Xstatic uint8_t au8LLDD_FG_H_REVISION[]    = "$Revision: 1.11 $";
+Nstatic uint8_t au8LLDD_FG_H_TAG[]         = LLDD_FG_H_TAG;
+Xstatic uint8_t au8LLDD_FG_H_TAG[]         = "$Name: LLDD_1_7_GFX $";
+Nstatic uint8_t au8LLDD_FG_IO_H_REVISION[] = LLDD_FG_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_FG_IO_H_REVISION[] = "$Revision: 1.11 $";
+Nstatic uint8_t au8LLDD_FG_IO_H_TAG[]      = LLDD_FG_IO_H_TAG;
+Xstatic uint8_t au8LLDD_FG_IO_H_TAG[]      = "$Name: LLDD_1_7_GFX $";
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+N/****************************************************************************
+N *  read version   
+N ****************************************************************************/
+Nvoid vFG_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                    uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                    uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_FG_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_FG_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_FG_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_FG_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_FG_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_FG_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************
+N *  nable/Disable Frame Grabber
+N ****************************************************************************/
+Nvoid vFG_FrameGrabberEnable(fg_en_e eEn)
+N{
+N    vSetFGDCR_FGACT(eEn);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> FGACT=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable/Disable Cropping
+N ****************************************************************************/
+Nvoid vFG_CroppingEnable(fg_en_e eEn)
+N{
+N    vSetFGDCR_CREN(eEn);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> CREN=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable/Disable Color Correction
+N ****************************************************************************/
+Nvoid vFG_ColorCorrectEnable(fg_en_e eEn)
+N{
+N    vSetFGDCR_CCEN(eEn);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> CCEN=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  enable/Disable Frame Grabber
+N ****************************************************************************/
+Nvoid vFG_ConfigureFgSignal(fg_signals_st * pstSignal)
+N{
+N    vSetFGDCR_NFODD(pstSignal->eNfOdd);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> NFODD=(pstSignal->eNfOdd));
+N    vSetFGDCR_NEGPC(pstSignal->eNegPc); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> NEGPC=(pstSignal->eNegPc)); 
+N    vSetFGDCR_ONEC(pstSignal->eOnec); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> ONEC=(pstSignal->eOnec)); 
+N    vSetFGDCR_HSACT(pstSignal->eHsact); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> HSACT=(pstSignal->eHsact)); 
+N    vSetFGDCR_VSACT(pstSignal->eVsact); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> VSACT=(pstSignal->eVsact)); 
+N    vSetFGDCR_HDACT(pstSignal->eHdact); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> HDACT=(pstSignal->eHdact)); 
+N    vSetFGDCR_UDSP(pstSignal->eUdsp); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> UDSP=(pstSignal->eUdsp)); 
+N    vSetFGDCR_USYNC(pstSignal->eUsync); 
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> USYNC=(pstSignal->eUsync)); 
+N}
+N
+N
+N/****************************************************************************
+N *  Configure Input Mode
+N ****************************************************************************/
+Nvoid vFG_SetInputMode(fg_input_format_st * pstMode)
+N{
+N    vSetFGCIR_ALPHA(pstMode->u8Alpha);              /* Set global alpha to 0xFF for RGB16->RGBA32 conversion */
+X    (((volatile FGCIR_bit_view_st *)(0xC0C08024U )) -> ALPHA=(pstMode ->u8Alpha));               
+N    vSetFGDCR_RGBPA(pstMode->eRgbPa);               /* RGB parallel input mode */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> RGBPA=(pstMode ->eRgbPa));                
+N    vSetFGDCR_RGB24(pstMode->eRgb16_24);            /* RGB parallel input mode */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> RGB24=(pstMode ->eRgb16_24));             
+N    vSetFGDCR_NVMD(pstMode->eNvmd);                 /* Non-video data input mode */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> NVMD=(pstMode ->eNvmd));                  
+N    vSetFGDCR_COMD(pstMode->eComd);                 /* Colour mode */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> COMD=(pstMode ->eComd));                  
+N    vSetFGDCR_INT(pstMode->eInterlMode);            /* Input image interlaced */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> INT=(pstMode ->eInterlMode));             
+N    vSetFGDCR_BWEX(pstMode->eBwex);                 /* Use input as alpha value */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> BWEX=(pstMode ->eBwex));                  
+N    vSetFGDCR_SCBCR(pstMode->stSwapYcbCr.eScbCr);   /* Swap appearance of Y, Cb, Cr values  */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> SCBCR=(pstMode ->stSwapYcbCr . eScbCr));    
+N    vSetFGDCR_SYCBCR(pstMode->stSwapYcbCr.eSycbcr); /* Swap appearance of Y, Cb, Cr values */
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> SYCBCR=(pstMode ->stSwapYcbCr . eSycbcr));  
+N}
+N
+N
+N/****************************************************************************
+N *  Configure Output Mode
+N ****************************************************************************/
+Nvoid vFG_SetOutputMode(fg_output_format_st * pstMode)
+N{
+N    vSetFGDCR_DINT(pstMode->eDeInterl);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> DINT=(pstMode ->eDeInterl));
+N    vSetFGDCR_YCBRO(pstMode->eOutputSelector);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> YCBRO=(pstMode ->eOutputSelector));
+N    vSetFGDCR_RRGB(pstMode->eRgbFormat);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> RRGB=(pstMode ->eRgbFormat));
+N    vSetFGDCR_MONO(pstMode->eMonochrome);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> MONO=(pstMode ->eMonochrome));
+N    vSetFGDCR_CVMD(pstMode->eYcbcr2RgbConv);
+X    (((volatile FGDCR_bit_view_st *)(0xC0C08000U )) -> CVMD=(pstMode ->eYcbcr2RgbConv));
+N}
+N
+N
+N/****************************************************************************
+N *  Configure input image size
+N ****************************************************************************/
+Nvoid vFG_SetInputImageSize(uint16_t u16Width, uint16_t u16Height)
+N{
+N    vSetFGIDR_WIDTH (u16Width);
+X    (((volatile FGIDR_bit_view_st *)(0xC0C08004U )) -> WIDTH=(u16Width));
+N    vSetFGIDR_HEIGHT(u16Height);
+X    (((volatile FGIDR_bit_view_st *)(0xC0C08004U )) -> HEIGHT=(u16Height));
+N}
+N
+N
+N/****************************************************************************
+N *  Configure input image size
+N ****************************************************************************/
+Nvoid vFG_SetInputCropp(fg_input_cropp_st * pstCroppConfig)
+N{
+N    vSetFGITR_HWAIT(pstCroppConfig->u16ItrHorizWait);
+X    (((volatile FGITR_bit_view_st *)(0xC0C08008U )) -> HWAIT=(pstCroppConfig->u16ItrHorizWait));
+N    vSetFGITR_VWAIT(pstCroppConfig->u16ItrVertWait);
+X    (((volatile FGITR_bit_view_st *)(0xC0C08008U )) -> VWAIT=(pstCroppConfig->u16ItrVertWait));
+N    
+N    vSetFGHCR_HCW(pstCroppConfig->u16HcrCroppWidth);
+X    (((volatile FGHCR_bit_view_st *)(0xC0C0800CU )) -> HCW=(pstCroppConfig->u16HcrCroppWidth));
+N    vSetFGHCR_HCS(pstCroppConfig->u16HcrCroppLeftX);
+X    (((volatile FGHCR_bit_view_st *)(0xC0C0800CU )) -> HCS=(pstCroppConfig->u16HcrCroppLeftX));
+N    
+N    vSetFGVCR_VCH(pstCroppConfig->u16VcrCroppHeight);
+X    (((volatile FGVCR_bit_view_st *)(0xC0C08010U )) -> VCH=(pstCroppConfig->u16VcrCroppHeight));
+N    vSetFGVCR_VCS(pstCroppConfig->u16VcrCroppTopY);
+X    (((volatile FGVCR_bit_view_st *)(0xC0C08010U )) -> VCS=(pstCroppConfig->u16VcrCroppTopY));
+N}
+N
+N
+N/****************************************************************************
+N *  Set properties of Capture Buffer
+N ****************************************************************************/
+Nvoid vFG_SetCaptureBuffers(fg_capture_buffer_st * pstCaptureBuffer)
+N{
+N    vSetFGCAR1(pstCaptureBuffer->u32CbaBufferAddr1); 
+X    (*((volatile u32FGCAR1_word_view *)(0xC0C08014U )) = (pstCaptureBuffer->u32CbaBufferAddr1)); 
+N    vSetFGCAR2(pstCaptureBuffer->u32CbaBufferAddr2); 
+X    (*((volatile u32FGCAR2_word_view *)(0xC0C08018U )) = (pstCaptureBuffer->u32CbaBufferAddr2)); 
+N    vSetFGCAR3(pstCaptureBuffer->u32CbaBufferAddr3);   
+X    (*((volatile u32FGCAR3_word_view *)(0xC0C0801CU )) = (pstCaptureBuffer->u32CbaBufferAddr3));   
+N    vSetFGLOR (pstCaptureBuffer->u16LorLineOffset);   
+X    (*((volatile u16FGLOR_halfword_view *)(0xC0C0802CU )) = (pstCaptureBuffer->u16LorLineOffset));   
+N    vSetFGCCR_CBACT(pstCaptureBuffer->eCbactUsedBuffer);   
+X    (((volatile FGCCR_bit_view_st *)(0xC0C08020U )) -> CBACT=(pstCaptureBuffer->eCbactUsedBuffer));   
+N}
+N
+N
+N/****************************************************************************
+N *  Get current Capture Buffer
+N ****************************************************************************/
+Nfg_cbcur_e eFG_GetCurrentCaptureBuffer(void)
+N{
+N    return (fg_cbcur_e)biGetFGCCR_CBCUR();
+X    return (fg_cbcur_e)(((volatile FGCCR_bit_view_st *)(0xC0C08020U )) -> CBCUR);
+N}
+N
+N
+N/****************************************************************************
+N *  Set memory write protection addresses
+N ****************************************************************************/
+Nvoid vFG_ConfigureMemoryWriteProtection(uint32_t u32StartAddress, uint32_t u32EndAddress)
+N{
+N    vSetFGMASR_MAS(u32StartAddress);
+X    (((volatile FGMASR_bit_view_st *)(0xC0C08044U )) -> MAS=(u32StartAddress));
+N    vSetFGMAER_MAE(u32EndAddress);
+X    (((volatile FGMAER_bit_view_st *)(0xC0C08048U )) -> MAE=(u32EndAddress));
+N}
+N
+N
+N/****************************************************************************
+N *  Set properties of scaling
+N ****************************************************************************/
+Nvoid vFG_SetScalingFactors(uint16_t u16ScaleX, uint16_t u16ScaleY)
+N{
+N    vSetFGSR_XSCALE(u16ScaleX);
+X    (((volatile FGSR_bit_view_st *)(0xC0C08028U )) -> XSCALE=(u16ScaleX));
+N    vSetFGSR_YSCALE(u16ScaleY);
+X    (((volatile FGSR_bit_view_st *)(0xC0C08028U )) -> YSCALE=(u16ScaleY));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable several ext. sync measurement 
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurements(fg_measure_extsync_control_st * pstMeasurement)
+N{
+N    vSetFGMCR_VCR  (pstMeasurement->eVcr);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> VCR=(pstMeasurement->eVcr));
+N    vSetFGMCR_HCR  (pstMeasurement->eHcr);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HCR=(pstMeasurement->eHcr));
+N    vSetFGMCR_VSPWR(pstMeasurement->eVspwr);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> VSPWR=(pstMeasurement->eVspwr));
+N    vSetFGMCR_HSPWR(pstMeasurement->eHspwr);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HSPWR=(pstMeasurement->eHspwr));
+N    vSetFGMCR_HDISP(pstMeasurement->eHdisp);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HDISP=(pstMeasurement->eHdisp));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable ext. sync measurement VCR
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurementVCR(fg_en_e eEn)
+N{
+N    vSetFGMCR_VCR(eEn);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> VCR=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable ext. sync measurement HCR
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurementHCR(fg_en_e eEn)
+N{
+N    vSetFGMCR_HCR(eEn);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HCR=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable ext. sync measurement HDISP
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurementHDISP(fg_en_e eEn)
+N{
+N    vSetFGMCR_HDISP(eEn);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HDISP=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable ext. sync measurement HSPWR
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurementHSPWR(fg_en_e eEn)
+N{
+N    vSetFGMCR_HSPWR(eEn);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> HSPWR=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Enable ext. sync measurement VSPWR
+N ****************************************************************************/
+Nvoid vFG_EnableMeasurementVSPWR(fg_en_e eEn)
+N{
+N    vSetFGMCR_VSPWR(eEn);
+X    (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> VSPWR=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Get results of several ext. sync measurements
+N ****************************************************************************/
+Nvoid vFG_GetMeasurements(fg_measurement_extsync_result_st * pstMeasurement)
+N{
+N    pstMeasurement->u16Mvcr   = biGetFGVMR_MVCR();
+X    pstMeasurement->u16Mvcr   = (((volatile FGVMR_bit_view_st *)(0xC0C08034U )) -> MVCR);
+N    pstMeasurement->u16Mhcr   = biGetFGHMR_MHCR();  
+X    pstMeasurement->u16Mhcr   = (((volatile FGHMR_bit_view_st *)(0xC0C08030U )) -> MHCR);  
+N    pstMeasurement->u16Mhspwr = biGetFGHMR_MHSPWR();
+X    pstMeasurement->u16Mhspwr = (((volatile FGHMR_bit_view_st *)(0xC0C08030U )) -> MHSPWR);
+N    pstMeasurement->u16Mvspwr = biGetFGVMR_MVSPWR();
+X    pstMeasurement->u16Mvspwr = (((volatile FGVMR_bit_view_st *)(0xC0C08034U )) -> MVSPWR);
+N    pstMeasurement->u16Mhdisp = biGetFGMCR_MHDISP();
+X    pstMeasurement->u16Mhdisp = (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> MHDISP);
+N}
+N
+N
+N/****************************************************************************
+N *  Get result of ext sync measurement MVCR
+N ****************************************************************************/
+Nuint16_t vFG_GetMeasurementMVCR(void)
+N{
+N    return(uint16_t) biGetFGVMR_MVCR();
+X    return(uint16_t) (((volatile FGVMR_bit_view_st *)(0xC0C08034U )) -> MVCR);
+N}
+N
+N
+N/****************************************************************************
+N *  Get result of ext sync measurement MHCR
+N ****************************************************************************/
+Nuint16_t vFG_GetMeasurementMHCR(void)
+N{
+N    return(uint16_t) biGetFGHMR_MHCR();
+X    return(uint16_t) (((volatile FGHMR_bit_view_st *)(0xC0C08030U )) -> MHCR);
+N}
+N
+N
+N/****************************************************************************
+N *  Get result of ext sync measurement MHSPWR
+N ****************************************************************************/
+Nuint16_t vFG_GetMeasurementMHSPWR(void)
+N{
+N    return(uint16_t) biGetFGHMR_MHSPWR();
+X    return(uint16_t) (((volatile FGHMR_bit_view_st *)(0xC0C08030U )) -> MHSPWR);
+N}
+N
+N
+N/****************************************************************************
+N *  Get result of ext sync measurement MVSPWR
+N ****************************************************************************/
+Nuint16_t vFG_GetMeasurementMVSPWR(void)
+N{
+N    return(uint16_t) biGetFGVMR_MVSPWR();
+X    return(uint16_t) (((volatile FGVMR_bit_view_st *)(0xC0C08034U )) -> MVSPWR);
+N}
+N
+N
+N/****************************************************************************
+N *  Get result of ext sync measurement MHDISP
+N ****************************************************************************/
+Nuint16_t vFG_GetMeasurementMHDISP(void)
+N{
+N    return(uint16_t) biGetFGMCR_MHDISP();
+X    return(uint16_t) (((volatile FGMCR_bit_view_st *)(0xC0C08038U )) -> MHDISP);
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of several Fg-interrupts
+N ****************************************************************************/
+Nvoid vFG_EnableIrq(fg_irqcgf_st * pstCfg)
+N{
+N    vSetFGIMR_CDI(pstCfg->eCdi);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> CDI=(pstCfg->eCdi));
+N    vSetFGIMR_VBTOI(pstCfg->eVbtoi);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> VBTOI=(pstCfg->eVbtoi));
+N    vSetFGIMR_VSI(pstCfg->eVsi);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> VSI=(pstCfg->eVsi));
+N    vSetFGIMR_MRDYI(pstCfg->eMrdyi);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> MRDYI=(pstCfg->eMrdyi));
+N    vSetFGIMR_NVI(pstCfg->eNvi);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> NVI=(pstCfg->eNvi));
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of Fg interrupt CDI
+N ****************************************************************************/
+Nvoid vFG_EnableIrqCDI(fg_en_e eEn)
+N{
+N    vSetFGIMR_CDI(eEn);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> CDI=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of Fg interrupt VBTOI
+N ****************************************************************************/
+Nvoid vFG_EnableIrqVBTOI(fg_en_e eEn)
+N{
+N    vSetFGIMR_VBTOI(eEn);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> VBTOI=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of Fg interrupt VSI
+N ****************************************************************************/
+Nvoid vFG_EnableIrqVSI(fg_en_e eEn)
+N{
+N    vSetFGIMR_VSI(eEn);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> VSI=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of Fg interrupt MRDYI
+N ****************************************************************************/
+Nvoid vFG_EnableIrqMRDYI(fg_en_e eEn)
+N{
+N    vSetFGIMR_MRDYI(eEn);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> MRDYI=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  Mask generation of Fg interrupt NVI
+N ****************************************************************************/
+Nvoid vFG_EnableIrqNVI(fg_en_e eEn)
+N{
+N    vSetFGIMR_NVI(eEn);
+X    (((volatile FGIMR_bit_view_st *)(0xC0C0803CU )) -> NVI=(eEn));
+N}
+N
+N
+N/****************************************************************************
+N *  allows the MPU to check the source of interrupt CDS
+N ****************************************************************************/
+Nfg_ir_detected_e vFG_GetIrqCDS(void)
+N{
+N    return(fg_ir_detected_e) biGetFGISR_CDS();
+X    return(fg_ir_detected_e) (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> CDS);
+N}
+N
+N
+N/****************************************************************************
+N *  allows the MPU to check the source of interrupt VBTOS
+N ****************************************************************************/
+Nfg_ir_detected_e vFG_GetIrqVBTOS(void)
+N{
+N    return(fg_ir_detected_e) biGetFGISR_VBTOS();
+X    return(fg_ir_detected_e) (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VBTOS);
+N}
+N
+N
+N/****************************************************************************
+N *  allows the MPU to check the source of interrupt VSS 
+N ****************************************************************************/
+Nfg_ir_detected_e vFG_GetIrqVSS(void)
+N{
+N    return(fg_ir_detected_e) biGetFGISR_VSS();
+X    return(fg_ir_detected_e) (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VSS);
+N}
+N
+N
+N/****************************************************************************
+N *  allows the MPU to check the source of interrupt MRDYS
+N ****************************************************************************/
+Nfg_ir_detected_e vFG_GetIrqMRDYS(void)
+N{
+N    return(fg_ir_detected_e) biGetFGISR_MRDYS();
+X    return(fg_ir_detected_e) (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> MRDYS);
+N}
+N
+N
+N/****************************************************************************
+N *  allows the MPU to check the source of interrupt NVS
+N ****************************************************************************/
+Nfg_ir_detected_e vFG_GetIrqNVS(void)
+N{
+N    return(fg_ir_detected_e) biGetFGISR_NVS();
+X    return(fg_ir_detected_e) (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> NVS);
+N}
+N
+N
+N/****************************************************************************
+N *  clears several interrupts
+N ****************************************************************************/
+Nvoid vFG_IrqClear(fg_irqclear_st * pstIrClear)
+N{
+N    if(pstIrClear->eCds == FG_IR_CLEAR)
+N    {
+N        vClrFGISR_CDS();
+X        (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> CDS = (1));
+N    }
+N    if(pstIrClear->eVbtos == FG_IR_CLEAR)
+N    {
+N        vClrFGISR_VBTOS();
+X        (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VBTOS = (1));
+N    }
+N    if(pstIrClear->eVss == FG_IR_CLEAR)
+N    {
+N        vClrFGISR_VSS();
+X        (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VSS = (1));
+N    }
+N    if(pstIrClear->eMrdys == FG_IR_CLEAR)
+N    {
+N        vClrFGISR_MRDYS();
+X        (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> MRDYS = (1));
+N    }
+N    if(pstIrClear->eNvs == FG_IR_CLEAR)
+N    {
+N        vClrFGISR_NVS();
+X        (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> NVS = (1));
+N    }
+N}
+N
+N
+N/****************************************************************************
+N *  clear interrupt CDS 
+N ****************************************************************************/
+Nvoid vFG_IrqClearCDS(void)
+N{
+N    vClrFGISR_CDS();
+X    (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> CDS = (1));
+N}
+N
+N
+N/****************************************************************************
+N  *  clear interrupt VBTOS 
+N ****************************************************************************/
+Nvoid vFG_IrqClearVBTOS(void)
+N{
+N    vClrFGISR_VBTOS();
+X    (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VBTOS = (1));
+N}
+N
+N
+N/****************************************************************************
+N *  clear interrupt VSS 
+N ****************************************************************************/
+Nvoid vFG_IrqClearVSS(void)
+N{
+N    vClrFGISR_VSS();
+X    (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> VSS = (1));
+N}
+N
+N
+N/****************************************************************************
+N *  clear interrupt MRDYS 
+N ****************************************************************************/
+Nvoid vFG_IrqClearMRDYS(void)
+N{
+N    vClrFGISR_MRDYS();
+X    (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> MRDYS = (1));
+N}
+N
+N
+N/****************************************************************************
+N *  clear interrupt NVS 
+N ****************************************************************************/
+Nvoid vFG_IrqClearNVS(void)
+N{
+N    vClrFGISR_NVS();
+X    (((volatile FGISR_bit_view_st *)(0xC0C08040U )) -> NVS = (1));
+N}
+N
+N
+N/****************************************************************************
+N *  Definition of the exchange colour and common alpha value
+N ****************************************************************************/
+Nvoid vFG_SetExchColor(fg_color_exchange_st * pstColor)
+N{
+N    vSetFGCIR_RED(pstColor->u8Red);
+X    (((volatile FGCIR_bit_view_st *)(0xC0C08024U )) -> RED=(pstColor->u8Red));
+N    vSetFGCIR_GREEN(pstColor->u8Green);
+X    (((volatile FGCIR_bit_view_st *)(0xC0C08024U )) -> GREEN=(pstColor->u8Green));
+N    vSetFGCIR_BLUE(pstColor->u8Blue);
+X    (((volatile FGCIR_bit_view_st *)(0xC0C08024U )) -> BLUE=(pstColor->u8Blue));
+N 
+N}
+N
+N
+N/****************************************************************************
+N *  Definition of the exchange colour and common alpha value
+N ****************************************************************************/
+Nvoid vFG_SetGlobalInputAlpha(uint8_t u8Alpha)
+N{
+N    vSetFGCIR_ALPHA(u8Alpha);
+X    (((volatile FGCIR_bit_view_st *)(0xC0C08024U )) -> ALPHA=(u8Alpha));
+N}
+N
+N
+N/****************************************************************************
+N *  write access to the colour correction look-up tables for each colour component.
+N ****************************************************************************/
+Nuint16_t vFG_SetClutEntry(fg_color_e eColor, uint16_t u16Entry, uint8_t u8Color)
+N{
+N    uint16_t u16Ret;
+N
+N    if( u16Entry > 255 ) 
+N    { 
+N         u16Ret = 1;
+N    }
+N    else 
+N    {
+N        u16Ret = 0;
+N        switch( eColor ) 
+N        {
+N            case FG_RED:
+N                vSetFGCCLR(u16Entry, u8Color);  
+X                (*((volatile u8FGCCLR_byte_view *)(0xC0C08400U + ((uint16_t)(u16Entry) * 0x4U))) = (u8Color));  
+N                break;     
+N
+N            case FG_GREEN:
+N                vSetFGCCLG(u16Entry, u8Color);  
+X                (*((volatile u8FGCCLG_byte_view *)(0xC0C08800U + ((uint16_t)(u16Entry) * 0x4U))) = (u8Color));  
+N                break;     
+N
+N            case FG_BLUE:
+N                vSetFGCCLB(u16Entry, u8Color);  
+X                (*((volatile u8FGCCLB_byte_view *)(0xC0C08C00U + ((uint16_t)(u16Entry) * 0x4U))) = (u8Color));  
+N                break;
+N
+N            default:
+N                break;
+N        }   
+N    } 
+N    return u16Ret;  
+N}
+N
+N/****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications(computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury(“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses(including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/

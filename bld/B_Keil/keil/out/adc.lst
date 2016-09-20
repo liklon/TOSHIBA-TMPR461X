@@ -1,0 +1,1745 @@
+L 1 "..\..\..\..\lldd\src\adc.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : ADC low level driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : ADC
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "adc_io.h"                   /* ADC registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\adc_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : ADCC 
+N/  Date of creation (y-m-d:time): 2015-02-19+01:00  :  13:32:47.742+01:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.11 $ 
+N/  Excel Sheet ver.             : vv1.4
+N/  Excel Sheet date             : 2015-Feb-19
+N/  Excel Sheet author           : BEL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : ADC low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : ADC
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.11 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef ADCCIO_H
+N#define ADCCIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"                      /* Core specific primitive type definitions */ 
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 38 "..\..\..\..\lldd\hdr\adc_io.h" 2
+N
+N/*********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* MISRA 2004 Rule 6.4 */
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_ADC_IO_H_REVISION     "$Revision: 1.11 $"
+N#define LLDD_ADC_IO_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCMOD                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0410000                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCMOD_REG__       0xC0410000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   SCAN	:1; 	 /* 0..0  bit(s) R/W */
+N  uint32_t   ADCH	:4; 	 /* 1..4  bit(s) R/W */
+N  uint32_t   REP	:1; 	 /* 5..5  bit(s) R/W */
+N  uint32_t   DME	:1; 	 /* 6..6  bit(s) R/W */
+N  uint32_t   ITM	:1; 	 /* 7..7  bit(s) R/W */
+N  uint32_t   TRGE	:1; 	 /* 8..8  bit(s) R/W */
+N  uint32_t   TSEL	:2; 	 /* 9..10  bit(s) R/W */
+N  uint32_t   	:5; 	 /* 11..15  bit(s) R */
+N  uint32_t   ADC_RT	:1; 	 /* 16..16  bit(s) R/W */ 
+N  uint32_t   	:15; 	 /* 17..31  bit(s) R */                    
+N} ADCMOD_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} ADCMOD_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} ADCMOD_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32ADCMOD_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCMOD()     ((volatile ADCMOD_bit_view_st *)\
+N(ADCMOD_REG__ ))
+X#define pst_bitADCMOD()     ((volatile ADCMOD_bit_view_st *)(ADCMOD_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8ADCMOD()     ((volatile ADCMOD_byte_view_st *)\
+N(ADCMOD_REG__ ))
+X#define pst_u8ADCMOD()     ((volatile ADCMOD_byte_view_st *)(ADCMOD_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16ADCMOD()     ((volatile ADCMOD_halfword_view_st *)\
+N(ADCMOD_REG__ ))
+X#define pst_u16ADCMOD()     ((volatile ADCMOD_halfword_view_st *)(ADCMOD_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32ADCMOD()     ((volatile u32ADCMOD_word_view *)\
+N(ADCMOD_REG__ ))
+X#define pu32ADCMOD()     ((volatile u32ADCMOD_word_view *)(ADCMOD_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetADCMOD_SCAN() (pst_bitADCMOD() -> SCAN)
+N#define vSetADCMOD_SCAN(ParValue)  (pst_bitADCMOD() -> SCAN=(ParValue))
+N#define biGetADCMOD_ADCH() (pst_bitADCMOD() -> ADCH)
+N#define vSetADCMOD_ADCH(ParValue)  (pst_bitADCMOD() -> ADCH=(ParValue))
+N#define biGetADCMOD_REP() (pst_bitADCMOD() -> REP)
+N#define vSetADCMOD_REP(ParValue)  (pst_bitADCMOD() -> REP=(ParValue))
+N#define biGetADCMOD_DME() (pst_bitADCMOD() -> DME)
+N#define vSetADCMOD_DME(ParValue)  (pst_bitADCMOD() -> DME=(ParValue))
+N#define biGetADCMOD_ITM() (pst_bitADCMOD() -> ITM)
+N#define vSetADCMOD_ITM(ParValue)  (pst_bitADCMOD() -> ITM=(ParValue))
+N#define biGetADCMOD_TRGE() (pst_bitADCMOD() -> TRGE)
+N#define vSetADCMOD_TRGE(ParValue)  (pst_bitADCMOD() -> TRGE=(ParValue))
+N#define biGetADCMOD_TSEL() (pst_bitADCMOD() -> TSEL)
+N#define vSetADCMOD_TSEL(ParValue)  (pst_bitADCMOD() -> TSEL=(ParValue))
+N#define biGetADCMOD_ADC_RT() (pst_bitADCMOD() -> ADC_RT)
+N#define vSetADCMOD_ADC_RT(ParValue)  (pst_bitADCMOD() -> ADC_RT=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetADCMODLL(ParValue) (pst_u8ADCMOD() -> u8LL = (ParValue))
+N#define u8GetADCMODLL() (pst_u8ADCMOD() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetADCMODLH(ParValue) (pst_u8ADCMOD() -> u8LH = (ParValue))
+N#define u8GetADCMODLH() (pst_u8ADCMOD() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetADCMODHL(ParValue) (pst_u8ADCMOD() -> u8HL = (ParValue))
+N#define u8GetADCMODHL() (pst_u8ADCMOD() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetADCMODHH(ParValue) (pst_u8ADCMOD() -> u8HH = (ParValue))
+N#define u8GetADCMODHH() (pst_u8ADCMOD() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetADCMODL(ParValue) (pst_u16ADCMOD() -> u16L = (ParValue))
+N#define u16GetADCMODL() (pst_u16ADCMOD() -> u16L)
+N#define vSetADCMODH(ParValue) (pst_u16ADCMOD() -> u16H = (ParValue))
+N#define u16GetADCMODH() (pst_u16ADCMOD() -> u16H)
+N            
+N/* Word access */
+N#define vSetADCMOD(ParValue)  (*pu32ADCMOD() = (ParValue))
+N#define u32GetADCMOD()  (*pu32ADCMOD() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCSTA                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0410004                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCSTA_REG__       0xC0410004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   ADSFT	:1; 	 /* 0..0  bit(s) W */
+N  uint8_t   	:3; 	 /* 1..3  bit(s) R */
+N  uint8_t   EOS	:1; 	 /* 4..4  bit(s) R/W0C */
+N  uint8_t   BUSY	:1; 	 /* 5..5  bit(s) R */ 
+N  uint8_t   	:2; 	 /* 6..31  bit(s) R */                    
+N} ADCSTA_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8ADCSTA_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCSTA()     ((volatile ADCSTA_bit_view_st *)\
+N(ADCSTA_REG__ ))
+X#define pst_bitADCSTA()     ((volatile ADCSTA_bit_view_st *)(ADCSTA_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8ADCSTA()     ((volatile u8ADCSTA_byte_view *)\
+N(ADCSTA_REG__ ))
+X#define pu8ADCSTA()     ((volatile u8ADCSTA_byte_view *)(ADCSTA_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetADCSTA_ADSFT(ParValue) (pst_bitADCSTA() -> ADSFT=(ParValue))
+N#define biGetADCSTA_EOS() (pst_bitADCSTA() -> EOS)
+N#define vClrADCSTA_EOS() (pst_bitADCSTA() -> EOS=(0))            
+N#define biGetADCSTA_BUSY() (pst_bitADCSTA() -> BUSY)
+N            
+N/* byte access */
+N#define vSetADCSTA(ParValue) (*pu8ADCSTA() = (ParValue))
+N#define u8GetADCSTA() (*pu8ADCSTA() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCHP                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0410008                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCHP_REG__       0xC0410008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   HPCH	:4; 	 /* 0..3  bit(s) R/W */
+N  uint16_t   HPRQ	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   HP	:1; 	 /* 5..5  bit(s) R */
+N  uint16_t   	:8; 	 /* 6..13  bit(s) R */
+N  uint16_t   HPE	:2; 	 /* 14..15  bit(s) R/C */                    
+N} ADCHP_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} ADCHP_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16ADCHP_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCHP()     ((volatile ADCHP_bit_view_st *)\
+N(ADCHP_REG__ ))
+X#define pst_bitADCHP()     ((volatile ADCHP_bit_view_st *)(ADCHP_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8ADCHP()     ((volatile ADCHP_byte_view_st *)\
+N(ADCHP_REG__ ))
+X#define pst_u8ADCHP()     ((volatile ADCHP_byte_view_st *)(ADCHP_REG__ ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16ADCHP()     ((volatile u16ADCHP_halfword_view *)\
+N(ADCHP_REG__ ))
+X#define pu16ADCHP()     ((volatile u16ADCHP_halfword_view *)(ADCHP_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetADCHP_HPCH() (pst_bitADCHP() -> HPCH)
+N#define vSetADCHP_HPCH(ParValue)  (pst_bitADCHP() -> HPCH=(ParValue))
+N#define biGetADCHP_HPRQ() (pst_bitADCHP() -> HPRQ)
+N#define vSetADCHP_HPRQ(ParValue)  (pst_bitADCHP() -> HPRQ=(ParValue))            
+N#define biGetADCHP_HP() (pst_bitADCHP() -> HP)
+N#define biGetADCHP_HPE() (pst_bitADCHP() -> HPE)
+N            
+N/* L-struct byte access */
+N#define vSetADCHPL(ParValue) (pst_u8ADCHP() -> u8L = (ParValue))
+N#define u8GetADCHPL() (pst_u8ADCHP() -> u8L)
+N/* H-struct byte access */
+N#define vSetADCHPH(ParValue) (pst_u8ADCHP() -> u8H = (ParValue))
+N#define u8GetADCHPH() (pst_u8ADCHP() -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetADCHP(ParValue) (*pu16ADCHP()  = (ParValue))
+N#define u16GetADCHP() (*pu16ADCHP() )                      
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCCMP                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC041000C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCCMP_REG__       0xC041000CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   CVAL	:10; 	 /* 0..9  bit(s) R/W */
+N  uint32_t   CINT	:1; 	 /* 10..10  bit(s) R/W */
+N  uint32_t   CCON	:1; 	 /* 11..11  bit(s) R/W */
+N  uint32_t   CCH	:4; 	 /* 12..15  bit(s) R/W */
+N  uint32_t   CMON	:1; 	 /* 16..16  bit(s) R/W1C */ 
+N  uint32_t   	:15; 	 /* 17..31  bit(s) R */                    
+N} ADCCMP_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} ADCCMP_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} ADCCMP_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32ADCCMP_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCCMP(ch)     ((volatile ADCCMP_bit_view_st *)\
+N(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_bitADCCMP(ch)     ((volatile ADCCMP_bit_view_st *)(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8ADCCMP(ch)     ((volatile ADCCMP_byte_view_st *)\
+N(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_u8ADCCMP(ch)     ((volatile ADCCMP_byte_view_st *)(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16ADCCMP(ch)     ((volatile ADCCMP_halfword_view_st *)\
+N(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_u16ADCCMP(ch)     ((volatile ADCCMP_halfword_view_st *)(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32ADCCMP(ch)     ((volatile u32ADCCMP_word_view *)\
+N(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pu32ADCCMP(ch)     ((volatile u32ADCCMP_word_view *)(ADCCMP_REG__  + ((uint16_t)(ch) * 0x4U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetADCCMP_CVAL(ch) (pst_bitADCCMP(ch) -> CVAL)
+N#define vSetADCCMP_CVAL(ch,ParValue)  (pst_bitADCCMP(ch) -> CVAL=(ParValue))
+N#define biGetADCCMP_CINT(ch) (pst_bitADCCMP(ch) -> CINT)
+N#define vSetADCCMP_CINT(ch,ParValue)  (pst_bitADCCMP(ch) -> CINT=(ParValue))
+N#define biGetADCCMP_CCON(ch) (pst_bitADCCMP(ch) -> CCON)
+N#define vSetADCCMP_CCON(ch,ParValue)  (pst_bitADCCMP(ch) -> CCON=(ParValue))
+N#define biGetADCCMP_CCH(ch) (pst_bitADCCMP(ch) -> CCH)
+N#define vSetADCCMP_CCH(ch,ParValue)  (pst_bitADCCMP(ch) -> CCH=(ParValue))
+N#define biGetADCCMP_CMON(ch) (pst_bitADCCMP(ch) -> CMON)
+N#define vClrADCCMP_CMON(ch) (pst_bitADCCMP(ch) -> CMON = (1))
+N            
+N/* LL-struct byte access */
+N#define vSetADCCMPLL(ch,ParValue) (pst_u8ADCCMP(ch) -> u8LL = (ParValue))
+N#define u8GetADCCMPLL(ch) (pst_u8ADCCMP(ch) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetADCCMPLH(ch,ParValue) (pst_u8ADCCMP(ch) -> u8LH = (ParValue))
+N#define u8GetADCCMPLH(ch) (pst_u8ADCCMP(ch) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetADCCMPHL(ch,ParValue) (pst_u8ADCCMP(ch) -> u8HL = (ParValue))
+N#define u8GetADCCMPHL(ch) (pst_u8ADCCMP(ch) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetADCCMPHH(ch,ParValue) (pst_u8ADCCMP(ch) -> u8HH = (ParValue))
+N#define u8GetADCCMPHH(ch) (pst_u8ADCCMP(ch) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetADCCMPL(ch,ParValue) (pst_u16ADCCMP(ch) -> u16L = (ParValue))
+N#define u16GetADCCMPL(ch) (pst_u16ADCCMP(ch) -> u16L)
+N#define vSetADCCMPH(ch,ParValue) (pst_u16ADCCMP(ch) -> u16H = (ParValue))
+N#define u16GetADCCMPH(ch) (pst_u16ADCCMP(ch) -> u16H)
+N            
+N/* Word access */
+N#define vSetADCCMP(ch,ParValue)  (*pu32ADCCMP(ch) = (ParValue))
+N#define u32GetADCCMP(ch)  (*pu32ADCCMP(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCRES                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0410014                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCRES_REG__       0xC0410014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   DAT	:10; 	 /* 0..9  bit(s) R */
+N  uint16_t   	:4; 	 /* 10..13  bit(s) R */
+N  uint16_t   OVR	:1; 	 /* 14..14  bit(s) R */
+N  uint16_t   VAL	:1; 	 /* 15..15  bit(s) R */                    
+N} ADCRES_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} ADCRES_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16ADCRES_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCRES(ch)     ((volatile ADCRES_bit_view_st *)\
+N(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_bitADCRES(ch)     ((volatile ADCRES_bit_view_st *)(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8ADCRES(ch)     ((volatile ADCRES_byte_view_st *)\
+N(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pst_u8ADCRES(ch)     ((volatile ADCRES_byte_view_st *)(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16ADCRES(ch)     ((volatile u16ADCRES_halfword_view *)\
+N(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+X#define pu16ADCRES(ch)     ((volatile u16ADCRES_halfword_view *)(ADCRES_REG__  + ((uint16_t)(ch) * 0x4U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetADCRES_DAT(ch) (pst_bitADCRES(ch) -> DAT)            
+N#define biGetADCRES_OVR(ch) (pst_bitADCRES(ch) -> OVR)            
+N#define biGetADCRES_VAL(ch) (pst_bitADCRES(ch) -> VAL)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetADCRESL(ch) (pst_u8ADCRES(ch) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetADCRESH(ch) (pst_u8ADCRES(ch) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetADCRES(ch) (*pu16ADCRES(ch) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: ADCHPR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0410054                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define ADCHPR_REG__       0xC0410054U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   DAT	:10; 	 /* 0..9  bit(s) R */
+N  uint16_t   	:4; 	 /* 10..13  bit(s) R */
+N  uint16_t   OVR	:1; 	 /* 14..14  bit(s) R */
+N  uint16_t   VAL	:1; 	 /* 15..15  bit(s) R */                    
+N} ADCHPR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} ADCHPR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16ADCHPR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitADCHPR()     ((volatile ADCHPR_bit_view_st *)\
+N(ADCHPR_REG__ ))
+X#define pst_bitADCHPR()     ((volatile ADCHPR_bit_view_st *)(ADCHPR_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8ADCHPR()     ((volatile ADCHPR_byte_view_st *)\
+N(ADCHPR_REG__ ))
+X#define pst_u8ADCHPR()     ((volatile ADCHPR_byte_view_st *)(ADCHPR_REG__ ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16ADCHPR()     ((volatile u16ADCHPR_halfword_view *)\
+N(ADCHPR_REG__ ))
+X#define pu16ADCHPR()     ((volatile u16ADCHPR_halfword_view *)(ADCHPR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetADCHPR_DAT() (pst_bitADCHPR() -> DAT)            
+N#define biGetADCHPR_OVR() (pst_bitADCHPR() -> OVR)            
+N#define biGetADCHPR_VAL() (pst_bitADCHPR() -> VAL)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetADCHPRL() (pst_u8ADCHPR() -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetADCHPRH() (pst_u8ADCHPR() -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetADCHPR() (*pu16ADCHPR() )
+N
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N#endif /* ADCCIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\adc.c" 2
+N#include "adc.h"                      /* Own definitions */
+L 1 "..\..\..\..\lldd\inc\adc.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : ADC low level driver header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : ADC
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.9 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef ADC_H
+N#define ADC_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_ADC_H_REVISION     "$Revision: 1.9 $"
+N#define LLDD_ADC_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/*!< Operation mode */
+Ntypedef enum tag_adc_operation_mode_e
+N{
+N    ADC_CONVERSION_MODE    = 0U,    /*!< normal conversion mode */
+N    ADC_HP_CONVERSION_MODE = 1U,    /*!< high priority conversion mode */
+N    ADC_COMPARE_MODE       = 2U     /*!< compare mode */
+N} adc_operation_mode_e;
+N
+N/*!< smc device no. */
+Ntypedef enum tag_adc_device_e
+N{
+N   ADC0  =  0U,               /*!< ADC device  0 */
+N   ADC1  =  1U,               /*!< ADC device  1 */
+N   ADC2  =  2U,               /*!< ADC device  2 */
+N   ADC3  =  3U,               /*!< ADC device  3 */
+N   ADC4  =  4U,               /*!< ADC device  4 */
+N   ADC5  =  5U,               /*!< ADC device  5 */
+N   ADC6  =  6U,               /*!< ADC device  6 */
+N   ADC7  =  7U,               /*!< ADC device  7 */
+N   ADC8  =  8U,               /*!< ADC device  8 */
+N   ADC9  =  9U,               /*!< ADC device  9 */
+N   ADC10 = 10U,               /*!< ADC device 10 */
+N   ADC11 = 11U,               /*!< ADC device 11 */
+N   ADC12 = 12U,               /*!< ADC device 12 */
+N   ADC13 = 13U,               /*!< ADC device 13 */
+N   ADC14 = 14U,               /*!< ADC device 14 */
+N   ADC15 = 15U                /*!< ADC device 15 */
+N} adc_device_e;
+N
+N/*!< Scan mode */
+Ntypedef enum tag_adc_channel_scan_mode_e
+N{
+N    ADC_ONE_CHANNEL_MODE  = 0U,    /*!< One channel mode */
+N    ADC_CHANNEL_SCAN_MODE = 1U     /*!< Channel scan mode */
+N} adc_channel_scan_mode_e;
+N
+N/*!< Repeat mode */
+Ntypedef enum tag_adc_repeat_mode_e
+N{
+N    ADC_SINGLE_CONVERSION   = 0U,    /*!< Single conversion */
+N    ADC_REPEATED_CONVERSION = 1U     /*!< Repeated conversion */
+N} adc_repeat_mode_e;
+N
+N/*!< Delayed mode enable */
+Ntypedef enum tag_adc_delayed_mode_e
+N{
+N    ADC_START_IMMEDIATELLY = 0U,    /*!< Start next conversion immediatelly */
+N    ADC_START_AFTER_READ   = 1U     /*!< Start next conversion after result register read */
+N} adc_delayed_mode_e;
+N
+N/*!< Interrupt generation */
+Ntypedef enum tag_adc_interrupt_generation_mode_e
+N{
+N    ADC_INTERRUPT_AFTER_EACH_CONVERSION   = 0U,    /*!< Interrupt is generated after each conversion */
+N    ADC_INTERRUPT_EVERY_FOURTH_CONVERSION = 1U     /*!< Interrupt is generated every fourth conversion */
+N} adc_interrupt_generation_mode_e;
+N
+N/*!< Trigger */
+Ntypedef enum tag_adc_trigger_type_e
+N{
+N    ADC_SOFTWARE_TRIGGER = 0U,    /*!< Software trigger */
+N    ADC_HARDWARE_TRIGGER = 1U     /*!< Hardware trigger */
+N} adc_trigger_type_e;
+N
+N/*!< trigger selection */
+Ntypedef enum tag_adc_trigger_selection_e
+N{
+N    ADC_TRIGGER_COMPLEX_TIMER_4 = 0U,    /*!< Comples timer 4 */
+N    ADC_TRIGGER_COMPLEX_TIMER_5 = 1U,    /*!< Comples timer 5 */
+N    ADC_TRIGGER_EXTERNAL        = 2U     /*!< Rising edge on external trigger */
+N} adc_trigger_selection_e;
+N
+N/*!< Reset */
+Ntypedef enum tag_adc_reset_e
+N{
+N    ADC_NORMAL_OPERATION = 0U,    /*!< Normal operation */
+N    ADC_RESET            = 1U     /*!< Reset */
+N} adc_reset_e;
+N
+N/*!< Conversion busy status */
+Ntypedef enum tag_adc_conversion_busy_status_e
+N{
+N    ADC_CONVERTER_INACTIVE    = 0U,    /*!< converter inactive */
+N    ADC_CONVERTER_IN_PROGRESS = 1U     /*!< conversion in progress */
+N} adc_conversion_busy_status_e;
+N
+N/*!< Conversion events */
+Ntypedef enum tag_adc_events_e
+N{
+N    ADC_NO_EVENTS_OCCURED  = 0x0U,    /*!< No  hp event occured */
+N    ADC_ONE_EVENTS_OCCURED = 0x01U,   /*!< One hp event occured */
+N    ADC_TWO_EVENTS_OCCURED = 0x03U    /*!< One hp event occured */
+N} adc_events_e;
+N
+N/*!< High priority conversion request */
+Ntypedef enum tag_adc_hp_priority_conversion_request_e
+N{
+N    ADC_NO_INTERRUPTION = 0U,    /*!< no interruption of normal operation */
+N    ADC_INTERRUPTION    = 1U     /*!< interruption of normal operation */
+N} adc_hp_priority_conversion_request_e;
+N
+N/*!<  */
+Ntypedef enum tag_adc_compare_channel_e
+N{
+N    ADC_COMPARE_CHANNEL_0 = 0U,    /*!< channel 0 */
+N    ADC_COMPARE_CHANNEL_1 = 1U     /*!< channel 1 */
+N} adc_compare_channel_e;
+N
+N/*!< Interrupt enable for compare interrupt */
+Ntypedef enum tag_adc_compare_interrupt_e
+N{
+N    ADC_COMPARE_INTERRUPT_DISABLED = 0U,    /*!< compare interrupt disabled */
+N    ADC_COMPARE_INTERRUPT_SECOND   = 1U     /*!< compare interrupt after second conversion */
+N} adc_compare_interrupt_e;
+N
+N/*!< Compare condition */
+Ntypedef enum tag_adc_compare_condition_e
+N{
+N    ADC_INPUT_SMALLER_VALUE = 0U,    /*!< input channel value is < compare value 1 */
+N    ADC_INPUT_LARGER_VALUE  = 1U     /*!< input channel value is >= compare value 1 */
+N} adc_compare_condition_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*!< adc conversion config */
+Ntypedef struct tag_adc_conversion_config
+N{
+N    adc_device_e                    eDevice;                  /*!< Device */
+N    adc_channel_scan_mode_e         eChannelScanMode;         /*!< Channel scan mode */
+N    adc_repeat_mode_e               eRepeatMode;              /*!< Repeat mode */
+N    adc_delayed_mode_e              eDelayedMode;             /*!< Delay mode */
+N    adc_interrupt_generation_mode_e eInterruptGenerationMode; /*!< Interrupt generation mode */
+N    adc_trigger_type_e              eTriggerType;             /*!< Trigger type */
+N    adc_trigger_selection_e         eTriggerSelection;        /*!< Trigger selection */
+N} adc_conversion_config;
+N
+N/*!< High priority conversion configuration */
+Ntypedef struct tag_adc_hp_conversion_config
+N{
+N    adc_device_e                         eDevice;                    /*!< Device */
+N    adc_hp_priority_conversion_request_e ePriorityConversionRequest; /*!< Priority conversion request */
+N} adc_hp_conversion_config;
+N
+N/*!<  */
+Ntypedef struct tag_adc_compare_config
+N{
+N    adc_device_e            eDevice;              /*!< Device */
+N    uint16_t                u16CompareValue;      /*!< Compare value */
+N    adc_compare_interrupt_e eCompareInterrupt;    /*!< Compare interrupt */
+N    adc_compare_condition_e eCompareCondition;    /*!< Compare condition */
+N} adc_compare_config;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*            Forward declarations             *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/**
+N* @brief Implementation of function vADC_GetVersion
+N*
+N* Retrieve pointers to module and header revision and tag string
+N*
+N* @note No Limitations
+N*
+N* @param[in] None
+N*
+N* @param[in,out] pau8ModuleRevision - pointer to module revision string
+N* @param[in,out] pau8ModuleTag      - pointer to module tag string
+N* @param[in,out] pau8HeaderRevision - pointer to header revision string
+N* @param[in,out] pau8HeaderTag      - pointer to header tag string
+N* @param[in,out] pau8IORevision     - pointer to IO header revision string
+N* @param[in,out] pau8IOTag          - pointer to IO header tag string
+N*
+N* @return void
+N*/
+Nvoid vADC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/**
+N* @brief Implementation of function i32ADC_InputChannelSelection
+N*
+N* Enable or disable module clock
+N*
+N* @note No Limitations
+N*
+N* @param[in] eMode     ADC mode
+N* @param[in] eDevice   Input device
+N*
+N* @param[in,out] None
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED on ivalid parameter range
+N*/
+Nint32_t i32ADC_InputChannelSelection(adc_operation_mode_e eMode, adc_device_e eDevice);
+N
+N/**
+N* @brief Implementation of function vADC_CompareInputChannelSelection
+N*
+N* Read result
+N*
+N* @note No Limitations
+N*
+N* @param[in] eChannel   Comparator channel
+N* @param[in] eDevice    ADC device
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_CompareInputChannelSelection(adc_compare_channel_e eChannel, adc_device_e eDevice);
+N
+N/**
+N* @brief Implementation of function vADC_AdcConversionConfig
+N*
+N* Configure ADC for normal conversion
+N*
+N* @note No Limitations
+N*
+N* @param[in] eConfig   ADC conversion configuration
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_AdcConversionConfig(adc_conversion_config eConfig);
+N
+N/**
+N* @brief Implementation of function vADC_ApplyReset
+N*
+N* Apply reset to ADC module
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_ApplyReset(void);
+N
+N/**
+N* @brief Implementation of function vADC_StartConversion
+N*
+N* Start ADC-conversion
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_StartConversion(void);
+N
+N/**
+N* @brief Implementation of function vADC_WaitForAdcCompletion
+N*
+N* Busy wait for completion of ADC-conversion
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_WaitForAdcCompletion(void);
+N
+N
+N/**
+N* @brief Implementation of function vADC_WaitForCompletion
+N*
+N* Configure ADC for HP conversion
+N*
+N* @note No Limitations
+N*
+N* @param[in] eConfig   ADC HP-conversion configuration
+N*
+N* @param[in,out] None
+N*
+N* @return void
+N*/
+Nvoid vADC_AdcHpConversionConfig(adc_hp_conversion_config eConfig);
+N
+N
+N/**
+N* @brief Implementation of function i32ADC_CompareConfig
+N*
+N* Configure ADC for compare operation
+N*
+N* @note No Limitations
+N*
+N* @param[in] eChannel    Compare channel
+N* @param[in] eConfig     Configuration of compare operation
+N*
+N* @param[in,out] None
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED  on ivalid parameter range
+N*/
+Nint32_t i32ADC_CompareConfig(adc_compare_channel_e eChannel, adc_compare_config eConfig);
+N
+N
+N/**
+N* @brief Implementation of function i32ADC_SetCompareValue
+N*
+N* Set compare value
+N*
+N* @note No Limitations
+N*
+N* @param[in] eChannel           Compare channel
+N* @param[in] u16CompareValue    Compare value
+N*
+N* @param[in,out] None
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED  on ivalid parameter range
+N*/
+Nint32_t i32ADC_SetCompareValue(adc_compare_channel_e eChannel, uint16_t u16CompareValue);
+N
+N
+N/**
+N* @brief Implementation of function i32ADC_WaitForCompareCompletion
+N*
+N* Wait for completion of compare operation
+N*
+N* @note No Limitations
+N*
+N* @param[in] eChannel    Compare channel
+N*
+N* @param[in,out] None
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED  on invalid parameter range
+N*/
+Nint32_t i32ADC_WaitForCompareCompletion(adc_compare_channel_e eChannel);
+N
+N
+N/**
+N* @brief Implementation of function i8ADC_ReadResult
+N*
+N* Read result
+N* Only if result is valid and no result was lost a value is send back.
+N*
+N* @note No Limitations
+N*
+N* @param[in] eDevice    ADC device
+N*
+N* @param[in,out] u16Result  pointer to result value
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED  if result is not valid or a result was lost
+N*/
+Nint8_t i8ADC_ReadResult(adc_device_e eDevice, uint16_t * u16Result);
+N
+N
+N/**
+N* @brief Implementation of function i8ADC_ReadHighPriorityResult
+N*
+N* Read high priority result
+N* Only if result is valid and no result was lost a value is send back.
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] u16Result  pointer to result value
+N*
+N* @return C_SUCCESS on success
+N*         C_FAILED  if result is not valid or a result was lost
+N*/
+Nint8_t i8ADC_ReadHighPriorityResult(uint16_t * u16Result);
+N
+N/**
+N* @brief Implementation of function eADC_GetProcessStatus
+N*
+N* Read high priority status
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] None
+N*
+N* @return ADC status
+N*/
+Nadc_conversion_busy_status_e eADC_GetProcessStatus(void);
+N
+N/**
+N* @brief Implementation of function eADC_GetEventsCount
+N*
+N* Read nomber of events for high priority, since last ADC read (bits will be cleared after read)
+N*
+N* @note No Limitations
+N*
+N* @param[in] void
+N*
+N* @param[in,out] None
+N*
+N* @return ADC events no.
+N*/
+Nadc_events_e eADC_GetEventsCount(void);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* ADC_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\adc.c" 2
+N
+N/*********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1723  /* Rule 5.6  [A] : No identifiers with the same name in different name spaces except for struct and union members.. */
+S  #pragma ghs nowarning 1834  /* Rule 11.3 [A] : disable casting error (used for result of i/o header amcros) */
+S  
+S  #pragma ghs nowarning 1847  /* Rule 10.3 [R] : cast of complex integer expression with underlying type "type" to non-integer type "type" not allowed */
+S  #pragma ghs nowarning 1865  /* Rule 10.1 [R] : conversion from underlying type, "int", to same width underlying type, "uint32_t", not allowed */
+S  #pragma ghs nowarning 1866  /* Rule 10.1 [R] : implicit conversion from underlying type, "type", to underlying type, "type", changes signedness */
+S  #pragma ghs nowarning 1867  /* Rule 10.1 [R] : implicit conversion of complex expression from underlying type, "type", to underlying type, "type", not allowed */
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_ADC_C_REVISION     "$Revision: 1.10 $"
+N#define LLDD_ADC_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/ 
+N
+Nstatic uint8_t au8LLDD_ADC_C_REVISION[]    = LLDD_ADC_C_REVISION;
+Xstatic uint8_t au8LLDD_ADC_C_REVISION[]    = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_ADC_C_TAG[]         = LLDD_ADC_C_TAG;
+Xstatic uint8_t au8LLDD_ADC_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_ADC_H_REVISION[]    = LLDD_ADC_H_REVISION;
+Xstatic uint8_t au8LLDD_ADC_H_REVISION[]    = "$Revision: 1.9 $";
+Nstatic uint8_t au8LLDD_ADC_H_TAG[]         = LLDD_ADC_H_TAG;
+Xstatic uint8_t au8LLDD_ADC_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_ADC_IO_H_REVISION[] = LLDD_ADC_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_ADC_IO_H_REVISION[] = "$Revision: 1.11 $";
+Nstatic uint8_t au8LLDD_ADC_IO_H_TAG[]      = LLDD_ADC_IO_H_TAG;
+Xstatic uint8_t au8LLDD_ADC_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Function definition             *
+N**********************************************/
+N
+Nvoid vADC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_ADC_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_ADC_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_ADC_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_ADC_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_ADC_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_ADC_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint32_t i32ADC_InputChannelSelection(adc_operation_mode_e eMode, adc_device_e eDevice)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    switch (eMode)
+N    {
+N        case ADC_CONVERSION_MODE:
+N            {
+N                vSetADCMOD_ADCH((uint32_t)eDevice);
+X                (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> ADCH=((uint32_t)eDevice));
+N            }
+N            break;
+N        case ADC_HP_CONVERSION_MODE:
+N            {
+N                vSetADCHP_HPCH((uint16_t)eDevice);
+X                (((volatile ADCHP_bit_view_st *)(0xC0410008U )) -> HPCH=((uint16_t)eDevice));
+N            }
+N            break;
+N        default:
+N            {
+N                i32Res = C_FAILED;
+X                i32Res = (-1);
+N            }
+N            break;
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_CompareInputChannelSelection(adc_compare_channel_e eChannel, adc_device_e eDevice)
+N{
+N    vSetADCCMP_CCH(eChannel, eDevice);
+X    (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CCH=(eDevice));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_AdcConversionConfig(adc_conversion_config eConfig)
+N{
+N    vSetADCMOD_ADCH((uint32_t)eConfig.eDevice);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> ADCH=((uint32_t)eConfig . eDevice));
+N    vSetADCMOD_SCAN((uint32_t)eConfig.eChannelScanMode);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> SCAN=((uint32_t)eConfig . eChannelScanMode));
+N    vSetADCMOD_REP((uint32_t)eConfig.eRepeatMode);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> REP=((uint32_t)eConfig . eRepeatMode));
+N    vSetADCMOD_DME((uint32_t)eConfig.eDelayedMode);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> DME=((uint32_t)eConfig . eDelayedMode));
+N    vSetADCMOD_ITM((uint32_t)eConfig.eInterruptGenerationMode);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> ITM=((uint32_t)eConfig . eInterruptGenerationMode));
+N    vSetADCMOD_TRGE((uint32_t)eConfig.eTriggerType);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> TRGE=((uint32_t)eConfig . eTriggerType));
+N    vSetADCMOD_TSEL((uint32_t)eConfig.eTriggerSelection);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> TSEL=((uint32_t)eConfig . eTriggerSelection));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_ApplyReset(void)
+N{
+N    vSetADCMOD_ADC_RT((uint32_t)ADC_RESET);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> ADC_RT=((uint32_t)ADC_RESET));
+N    vSetADCMOD_ADC_RT((uint32_t)ADC_NORMAL_OPERATION);
+X    (((volatile ADCMOD_bit_view_st *)(0xC0410000U )) -> ADC_RT=((uint32_t)ADC_NORMAL_OPERATION));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_StartConversion(void)
+N{
+N    vSetADCSTA_ADSFT((uint8_t)1U);
+X    (((volatile ADCSTA_bit_view_st *)(0xC0410004U )) -> ADSFT=((uint8_t)1U));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_WaitForAdcCompletion(void)
+N{
+N    while(biGetADCSTA_BUSY() == 1U){}
+X    while((((volatile ADCSTA_bit_view_st *)(0xC0410004U )) -> BUSY) == 1U){}
+N    while (biGetADCSTA_EOS() == 0U){}
+X    while ((((volatile ADCSTA_bit_view_st *)(0xC0410004U )) -> EOS) == 0U){}
+N    vClrADCSTA_EOS();
+X    (((volatile ADCSTA_bit_view_st *)(0xC0410004U )) -> EOS=(0));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nvoid vADC_AdcHpConversionConfig(adc_hp_conversion_config eConfig)
+N{
+N    vSetADCHP_HPCH((uint8_t)eConfig.eDevice);
+X    (((volatile ADCHP_bit_view_st *)(0xC0410008U )) -> HPCH=((uint8_t)eConfig . eDevice));
+N    vSetADCHP_HPRQ((uint8_t)eConfig.ePriorityConversionRequest);
+X    (((volatile ADCHP_bit_view_st *)(0xC0410008U )) -> HPRQ=((uint8_t)eConfig . ePriorityConversionRequest));
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint32_t i32ADC_CompareConfig(adc_compare_channel_e eChannel, adc_compare_config eConfig)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eChannel <= ADC_COMPARE_CHANNEL_1)
+N    {
+N        vSetADCCMP_CVAL(eChannel, (uint32_t)eConfig.u16CompareValue);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CVAL=((uint32_t)eConfig . u16CompareValue));
+N        vSetADCCMP_CINT(eChannel, (uint32_t)eConfig.eCompareInterrupt);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CINT=((uint32_t)eConfig . eCompareInterrupt));
+N        vSetADCCMP_CCON(eChannel, (uint32_t)eConfig.eCompareCondition);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CCON=((uint32_t)eConfig . eCompareCondition));
+N        vSetADCCMP_CCH(eChannel,  (uint32_t)eConfig.eDevice);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CCH=((uint32_t)eConfig . eDevice));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint32_t i32ADC_SetCompareValue(adc_compare_channel_e eChannel, uint16_t u16CompareValue)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eChannel <= ADC_COMPARE_CHANNEL_1)
+N    {
+N        vSetADCCMP_CVAL(eChannel, u16CompareValue);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CVAL=(u16CompareValue));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint32_t i32ADC_WaitForCompareCompletion(adc_compare_channel_e eChannel)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eChannel <= ADC_COMPARE_CHANNEL_1)
+N    {
+N        while(biGetADCCMP_CMON(eChannel) == 1U){}
+X        while((((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)(eChannel) * 0x4U))) -> CMON) == 1U){}
+N        vClrADCCMP_CMON((uint32_t)eChannel);
+X        (((volatile ADCCMP_bit_view_st *)(0xC041000CU + ((uint16_t)((uint32_t)eChannel) * 0x4U))) -> CMON = (1));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint8_t i8ADC_ReadResult(adc_device_e eDevice, uint16_t * u16Result)
+N{
+N    int8_t   i8Res;
+N    uint16_t u16ResVal;
+N
+N    u16ResVal = u16GetADCRES(eDevice);
+X    u16ResVal = (*((volatile u16ADCRES_halfword_view *)(0xC0410014U + ((uint16_t)(eDevice) * 0x4U))) );
+N
+N    if ((0x4000U == (u16ResVal & 0x4000U)) || (0x0000U == (u16ResVal & 0x8000U)))
+N    {
+N        *u16Result = 0U;
+N        i8Res      = C_FAILED;
+X        i8Res      = (-1);
+N    }
+N    else
+N    {
+N        *u16Result = (uint16_t)biGetADCRES_DAT(eDevice);
+X        *u16Result = (uint16_t)(((volatile ADCRES_bit_view_st *)(0xC0410014U + ((uint16_t)(eDevice) * 0x4U))) -> DAT);
+N        i8Res      = C_SUCCESS;
+X        i8Res      = (0);
+N    }
+N
+N    return i8Res;
+N}
+N
+N
+N/****************************************************************************/
+N
+Nint8_t i8ADC_ReadHighPriorityResult(uint16_t * u16Result)
+N{
+N    int8_t  i8Res;
+N    uint8_t u8Ovr, u8Val;
+N
+N    u8Ovr = (uint8_t)biGetADCHPR_OVR();
+X    u8Ovr = (uint8_t)(((volatile ADCHPR_bit_view_st *)(0xC0410054U )) -> OVR);
+N    u8Val =	(uint8_t)biGetADCHPR_VAL();
+X    u8Val =	(uint8_t)(((volatile ADCHPR_bit_view_st *)(0xC0410054U )) -> VAL);
+N    if ((1U == u8Ovr) || (0U == u8Val))
+N    {
+N        *u16Result = 0U;
+N        i8Res      = C_FAILED;
+X        i8Res      = (-1);
+N    }
+N    else
+N    {
+N        *u16Result = (uint16_t)biGetADCHPR_DAT();
+X        *u16Result = (uint16_t)(((volatile ADCHPR_bit_view_st *)(0xC0410054U )) -> DAT);
+N        i8Res      = C_SUCCESS;
+X        i8Res      = (0);
+N    }
+N
+N    return i8Res;
+N}
+N/****************************************************************************/
+Nadc_conversion_busy_status_e eADC_GetProcessStatus(void)
+N{
+N    adc_conversion_busy_status_e eStatus;
+N
+N    eStatus = (biGetADCHP_HP() == 0x0U) ? ADC_CONVERTER_INACTIVE : ADC_CONVERTER_IN_PROGRESS;
+X    eStatus = ((((volatile ADCHP_bit_view_st *)(0xC0410008U )) -> HP) == 0x0U) ? ADC_CONVERTER_INACTIVE : ADC_CONVERTER_IN_PROGRESS;
+N
+N    return eStatus;
+N}
+N
+N/****************************************************************************/
+Nadc_events_e eADC_GetEventsCount(void)
+N{
+N    adc_events_e eEventsNo;
+N
+N    eEventsNo = (adc_events_e)biGetADCHP_HPE();
+X    eEventsNo = (adc_events_e)(((volatile ADCHP_bit_view_st *)(0xC0410008U )) -> HPE);
+N
+N    return eEventsNo;
+N}
+N/****************************************************************************/
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1847 / 10.3 - cast of complex integer expression with underlying type
+N** |                        "type" to non-integer type "type" not allowed 
+N** | CONS.  : disable
+N** | REASON : to use macros from i/o header files, unavoidable when addressing 
+N** |          memory mapped registers 
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1865 /10.1  -  implicit conversion from underlying type, "type", 
+N** |                         to same width underlying type, "type", not allowed
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1866 /10.1  -  implicit conversion from underlying type, "type",  
+N** |                         to underlying type, "type", changes signedness
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1867 /10.1  -  implicit conversion from underlying type, "type", 
+N** |                         to underlying type, "type", changes signedness
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N/****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

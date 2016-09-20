@@ -1,0 +1,2066 @@
+L 1 "..\..\..\..\lldd\src\stpu.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Stpu
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : 
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "stpu_io.h"                   /* stepper_motor registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\stpu_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : STPU_8TMR 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  17:50:44.884+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.9 $ 
+N/  Excel Sheet ver.             : vv1.0
+N/  Excel Sheet date             : 2013-Jun-21
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : STPU low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : STPU
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.9 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef STPU_8TMRIO_H
+N#define STPU_8TMRIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */ 
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 40 "..\..\..\..\lldd\hdr\stpu_io.h" 2
+N     
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_STPU_IO_H_REVISION     "$Revision: 1.9 $"
+N#define LLDD_STPU_IO_H_TAG          "$Name: LLDD_1_6 $"
+N     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRVER                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100000                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRVER_REG__       0xC0100000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   VER	:32; 	 /* 0..31  bit(s) R */                    
+N} STPU_TMRVER_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRVER_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRVER_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRVER_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRVER()     ((volatile STPU_TMRVER_bit_view_st *)\
+N(STPU_TMRVER_REG__ ))
+X#define pst_bitSTPU_TMRVER()     ((volatile STPU_TMRVER_bit_view_st *)(STPU_TMRVER_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRVER()     ((volatile STPU_TMRVER_byte_view_st *)\
+N(STPU_TMRVER_REG__ ))
+X#define pst_u8STPU_TMRVER()     ((volatile STPU_TMRVER_byte_view_st *)(STPU_TMRVER_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRVER()     ((volatile STPU_TMRVER_halfword_view_st *)\
+N(STPU_TMRVER_REG__ ))
+X#define pst_u16STPU_TMRVER()     ((volatile STPU_TMRVER_halfword_view_st *)(STPU_TMRVER_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRVER()     ((volatile u32STPU_TMRVER_word_view *)\
+N(STPU_TMRVER_REG__ ))
+X#define pu32STPU_TMRVER()     ((volatile u32STPU_TMRVER_word_view *)(STPU_TMRVER_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSTPU_TMRVER_VER() (pst_bitSTPU_TMRVER() -> VER)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetSTPU_TMRVERLL() (pst_u8STPU_TMRVER() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetSTPU_TMRVERLH() (pst_u8STPU_TMRVER() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetSTPU_TMRVERHL() (pst_u8STPU_TMRVER() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetSTPU_TMRVERHH() (pst_u8STPU_TMRVER() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetSTPU_TMRVERL() (pst_u16STPU_TMRVER() -> u16L)
+N
+N#define u16GetSTPU_TMRVERH() (pst_u16STPU_TMRVER() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetSTPU_TMRVER()  (*pu32STPU_TMRVER() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_CFG                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100004                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_CFG_REG__       0xC0100004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   CMPRSCLR	:6; 	 /* 0..5  bit(s) R/W */
+N  uint32_t   RSRV1	:2; 	 /* 6..7  bit(s) R */
+N  uint32_t   CMPRSCLREN	:1; 	 /* 8..8  bit(s) R/W */
+N  uint32_t   RSRV2	:7; 	 /* 9..15  bit(s) R */
+N  uint32_t   INTREN	:1; 	 /* 16..16  bit(s) R/W */
+N  uint32_t   RSRV3	:7; 	 /* 17..23  bit(s) R */
+N  uint32_t   DIGNMDEN	:1; 	 /* 24..24  bit(s) R/W */ 
+N  uint32_t   RSRV4	:7; 	 /* 25..31  bit(s) R */                    
+N} STPU_CFG_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_CFG_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_CFG_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_CFG_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_CFG()     ((volatile STPU_CFG_bit_view_st *)\
+N(STPU_CFG_REG__ ))
+X#define pst_bitSTPU_CFG()     ((volatile STPU_CFG_bit_view_st *)(STPU_CFG_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_CFG()     ((volatile STPU_CFG_byte_view_st *)\
+N(STPU_CFG_REG__ ))
+X#define pst_u8STPU_CFG()     ((volatile STPU_CFG_byte_view_st *)(STPU_CFG_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_CFG()     ((volatile STPU_CFG_halfword_view_st *)\
+N(STPU_CFG_REG__ ))
+X#define pst_u16STPU_CFG()     ((volatile STPU_CFG_halfword_view_st *)(STPU_CFG_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_CFG()     ((volatile u32STPU_CFG_word_view *)\
+N(STPU_CFG_REG__ ))
+X#define pu32STPU_CFG()     ((volatile u32STPU_CFG_word_view *)(STPU_CFG_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_CFG_CMPRSCLR() (pst_bitSTPU_CFG() -> CMPRSCLR)
+N#define vSetSTPU_CFG_CMPRSCLR(ParValue)  (pst_bitSTPU_CFG() -> CMPRSCLR=(ParValue))            
+N#define biGetSTPU_CFG_RSRV1() (pst_bitSTPU_CFG() -> RSRV1)
+N#define biGetSTPU_CFG_CMPRSCLREN() (pst_bitSTPU_CFG() -> CMPRSCLREN)
+N#define vSetSTPU_CFG_CMPRSCLREN(ParValue)  (pst_bitSTPU_CFG() -> CMPRSCLREN=(ParValue))            
+N#define biGetSTPU_CFG_RSRV2() (pst_bitSTPU_CFG() -> RSRV2)
+N#define biGetSTPU_CFG_INTREN() (pst_bitSTPU_CFG() -> INTREN)
+N#define vSetSTPU_CFG_INTREN(ParValue)  (pst_bitSTPU_CFG() -> INTREN=(ParValue))            
+N#define biGetSTPU_CFG_RSRV3() (pst_bitSTPU_CFG() -> RSRV3)
+N#define biGetSTPU_CFG_DIGNMDEN() (pst_bitSTPU_CFG() -> DIGNMDEN)
+N#define vSetSTPU_CFG_DIGNMDEN(ParValue)  (pst_bitSTPU_CFG() -> DIGNMDEN=(ParValue))            
+N#define biGetSTPU_CFG_RSRV4() (pst_bitSTPU_CFG() -> RSRV4)
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_CFGLL(ParValue) (pst_u8STPU_CFG() -> u8LL = (ParValue))
+N#define u8GetSTPU_CFGLL() (pst_u8STPU_CFG() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_CFGLH(ParValue) (pst_u8STPU_CFG() -> u8LH = (ParValue))
+N#define u8GetSTPU_CFGLH() (pst_u8STPU_CFG() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_CFGHL(ParValue) (pst_u8STPU_CFG() -> u8HL = (ParValue))
+N#define u8GetSTPU_CFGHL() (pst_u8STPU_CFG() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_CFGHH(ParValue) (pst_u8STPU_CFG() -> u8HH = (ParValue))
+N#define u8GetSTPU_CFGHH() (pst_u8STPU_CFG() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_CFGL(ParValue) (pst_u16STPU_CFG() -> u16L = (ParValue))
+N#define u16GetSTPU_CFGL() (pst_u16STPU_CFG() -> u16L)
+N#define vSetSTPU_CFGH(ParValue) (pst_u16STPU_CFG() -> u16H = (ParValue))
+N#define u16GetSTPU_CFGH() (pst_u16STPU_CFG() -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_CFG(ParValue)  (*pu32STPU_CFG() = (ParValue))
+N#define u32GetSTPU_CFG()  (*pu32STPU_CFG() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRST                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100008                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRST_REG__       0xC0100008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   IST	:32; 	 /* 0..31  bit(s) R */                    
+N} STPU_TMRST_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRST_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRST_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRST_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRST()     ((volatile STPU_TMRST_bit_view_st *)\
+N(STPU_TMRST_REG__ ))
+X#define pst_bitSTPU_TMRST()     ((volatile STPU_TMRST_bit_view_st *)(STPU_TMRST_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRST()     ((volatile STPU_TMRST_byte_view_st *)\
+N(STPU_TMRST_REG__ ))
+X#define pst_u8STPU_TMRST()     ((volatile STPU_TMRST_byte_view_st *)(STPU_TMRST_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRST()     ((volatile STPU_TMRST_halfword_view_st *)\
+N(STPU_TMRST_REG__ ))
+X#define pst_u16STPU_TMRST()     ((volatile STPU_TMRST_halfword_view_st *)(STPU_TMRST_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRST()     ((volatile u32STPU_TMRST_word_view *)\
+N(STPU_TMRST_REG__ ))
+X#define pu32STPU_TMRST()     ((volatile u32STPU_TMRST_word_view *)(STPU_TMRST_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSTPU_TMRST_IST() (pst_bitSTPU_TMRST() -> IST)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetSTPU_TMRSTLL() (pst_u8STPU_TMRST() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetSTPU_TMRSTLH() (pst_u8STPU_TMRST() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetSTPU_TMRSTHL() (pst_u8STPU_TMRST() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetSTPU_TMRSTHH() (pst_u8STPU_TMRST() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetSTPU_TMRSTL() (pst_u16STPU_TMRST() -> u16L)
+N
+N#define u16GetSTPU_TMRSTH() (pst_u16STPU_TMRST() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetSTPU_TMRST()  (*pu32STPU_TMRST() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRINTDS                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC010000C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRINTDS_REG__       0xC010000CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   INTD	:32; 	 /* 0..31  bit(s) R/W */                    
+N} STPU_TMRINTDS_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRINTDS_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRINTDS_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRINTDS_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRINTDS()     ((volatile STPU_TMRINTDS_bit_view_st *)\
+N(STPU_TMRINTDS_REG__ ))
+X#define pst_bitSTPU_TMRINTDS()     ((volatile STPU_TMRINTDS_bit_view_st *)(STPU_TMRINTDS_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRINTDS()     ((volatile STPU_TMRINTDS_byte_view_st *)\
+N(STPU_TMRINTDS_REG__ ))
+X#define pst_u8STPU_TMRINTDS()     ((volatile STPU_TMRINTDS_byte_view_st *)(STPU_TMRINTDS_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRINTDS()     ((volatile STPU_TMRINTDS_halfword_view_st *)\
+N(STPU_TMRINTDS_REG__ ))
+X#define pst_u16STPU_TMRINTDS()     ((volatile STPU_TMRINTDS_halfword_view_st *)(STPU_TMRINTDS_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRINTDS()     ((volatile u32STPU_TMRINTDS_word_view *)\
+N(STPU_TMRINTDS_REG__ ))
+X#define pu32STPU_TMRINTDS()     ((volatile u32STPU_TMRINTDS_word_view *)(STPU_TMRINTDS_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_TMRINTDS_INTD() (pst_bitSTPU_TMRINTDS() -> INTD)
+N#define vSetSTPU_TMRINTDS_INTD(ParValue)  (pst_bitSTPU_TMRINTDS() -> INTD=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRINTDSLL(ParValue) (pst_u8STPU_TMRINTDS() -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRINTDSLL() (pst_u8STPU_TMRINTDS() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRINTDSLH(ParValue) (pst_u8STPU_TMRINTDS() -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRINTDSLH() (pst_u8STPU_TMRINTDS() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRINTDSHL(ParValue) (pst_u8STPU_TMRINTDS() -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRINTDSHL() (pst_u8STPU_TMRINTDS() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRINTDSHH(ParValue) (pst_u8STPU_TMRINTDS() -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRINTDSHH() (pst_u8STPU_TMRINTDS() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRINTDSL(ParValue) (pst_u16STPU_TMRINTDS() -> u16L = (ParValue))
+N#define u16GetSTPU_TMRINTDSL() (pst_u16STPU_TMRINTDS() -> u16L)
+N#define vSetSTPU_TMRINTDSH(ParValue) (pst_u16STPU_TMRINTDS() -> u16H = (ParValue))
+N#define u16GetSTPU_TMRINTDSH() (pst_u16STPU_TMRINTDS() -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRINTDS(ParValue)  (*pu32STPU_TMRINTDS() = (ParValue))
+N#define u32GetSTPU_TMRINTDS()  (*pu32STPU_TMRINTDS() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRINTRST                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100010                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRINTRST_REG__       0xC0100010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   INTST	:32; 	 /* 0..31  bit(s) R */                    
+N} STPU_TMRINTRST_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRINTRST_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRINTRST_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRINTRST_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRINTRST()     ((volatile STPU_TMRINTRST_bit_view_st *)\
+N(STPU_TMRINTRST_REG__ ))
+X#define pst_bitSTPU_TMRINTRST()     ((volatile STPU_TMRINTRST_bit_view_st *)(STPU_TMRINTRST_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRINTRST()     ((volatile STPU_TMRINTRST_byte_view_st *)\
+N(STPU_TMRINTRST_REG__ ))
+X#define pst_u8STPU_TMRINTRST()     ((volatile STPU_TMRINTRST_byte_view_st *)(STPU_TMRINTRST_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRINTRST()     ((volatile STPU_TMRINTRST_halfword_view_st *)\
+N(STPU_TMRINTRST_REG__ ))
+X#define pst_u16STPU_TMRINTRST()     ((volatile STPU_TMRINTRST_halfword_view_st *)(STPU_TMRINTRST_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRINTRST()     ((volatile u32STPU_TMRINTRST_word_view *)\
+N(STPU_TMRINTRST_REG__ ))
+X#define pu32STPU_TMRINTRST()     ((volatile u32STPU_TMRINTRST_word_view *)(STPU_TMRINTRST_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSTPU_TMRINTRST_INTST() (pst_bitSTPU_TMRINTRST() -> INTST)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetSTPU_TMRINTRSTLL() (pst_u8STPU_TMRINTRST() -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetSTPU_TMRINTRSTLH() (pst_u8STPU_TMRINTRST() -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetSTPU_TMRINTRSTHL() (pst_u8STPU_TMRINTRST() -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetSTPU_TMRINTRSTHH() (pst_u8STPU_TMRINTRST() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetSTPU_TMRINTRSTL() (pst_u16STPU_TMRINTRST() -> u16L)
+N
+N#define u16GetSTPU_TMRINTRSTH() (pst_u16STPU_TMRINTRST() -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetSTPU_TMRINTRST()  (*pu32STPU_TMRINTRST() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRINTREN                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100014                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRINTREN_REG__       0xC0100014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   IEN	:32; 	 /* 0..31  bit(s) R/W */                    
+N} STPU_TMRINTREN_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRINTREN_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRINTREN_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRINTREN_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRINTREN()     ((volatile STPU_TMRINTREN_bit_view_st *)\
+N(STPU_TMRINTREN_REG__ ))
+X#define pst_bitSTPU_TMRINTREN()     ((volatile STPU_TMRINTREN_bit_view_st *)(STPU_TMRINTREN_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRINTREN()     ((volatile STPU_TMRINTREN_byte_view_st *)\
+N(STPU_TMRINTREN_REG__ ))
+X#define pst_u8STPU_TMRINTREN()     ((volatile STPU_TMRINTREN_byte_view_st *)(STPU_TMRINTREN_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRINTREN()     ((volatile STPU_TMRINTREN_halfword_view_st *)\
+N(STPU_TMRINTREN_REG__ ))
+X#define pst_u16STPU_TMRINTREN()     ((volatile STPU_TMRINTREN_halfword_view_st *)(STPU_TMRINTREN_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRINTREN()     ((volatile u32STPU_TMRINTREN_word_view *)\
+N(STPU_TMRINTREN_REG__ ))
+X#define pu32STPU_TMRINTREN()     ((volatile u32STPU_TMRINTREN_word_view *)(STPU_TMRINTREN_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_TMRINTREN_IEN() (pst_bitSTPU_TMRINTREN() -> IEN)
+N#define vSetSTPU_TMRINTREN_IEN(ParValue)  (pst_bitSTPU_TMRINTREN() -> IEN=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRINTRENLL(ParValue) (pst_u8STPU_TMRINTREN() -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRINTRENLL() (pst_u8STPU_TMRINTREN() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRINTRENLH(ParValue) (pst_u8STPU_TMRINTREN() -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRINTRENLH() (pst_u8STPU_TMRINTREN() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRINTRENHL(ParValue) (pst_u8STPU_TMRINTREN() -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRINTRENHL() (pst_u8STPU_TMRINTREN() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRINTRENHH(ParValue) (pst_u8STPU_TMRINTREN() -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRINTRENHH() (pst_u8STPU_TMRINTREN() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRINTRENL(ParValue) (pst_u16STPU_TMRINTREN() -> u16L = (ParValue))
+N#define u16GetSTPU_TMRINTRENL() (pst_u16STPU_TMRINTREN() -> u16L)
+N#define vSetSTPU_TMRINTRENH(ParValue) (pst_u16STPU_TMRINTREN() -> u16H = (ParValue))
+N#define u16GetSTPU_TMRINTRENH() (pst_u16STPU_TMRINTREN() -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRINTREN(ParValue)  (*pu32STPU_TMRINTREN() = (ParValue))
+N#define u32GetSTPU_TMRINTREN()  (*pu32STPU_TMRINTREN() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRINTRCL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100018                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRINTRCL_REG__       0xC0100018U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   ICL	:32; 	 /* 0..31  bit(s) R/W */                    
+N} STPU_TMRINTRCL_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRINTRCL_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRINTRCL_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRINTRCL_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_bit_view_st *)\
+N(STPU_TMRINTRCL_REG__ ))
+X#define pst_bitSTPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_bit_view_st *)(STPU_TMRINTRCL_REG__ ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_byte_view_st *)\
+N(STPU_TMRINTRCL_REG__ ))
+X#define pst_u8STPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_byte_view_st *)(STPU_TMRINTRCL_REG__ ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_halfword_view_st *)\
+N(STPU_TMRINTRCL_REG__ ))
+X#define pst_u16STPU_TMRINTRCL()     ((volatile STPU_TMRINTRCL_halfword_view_st *)(STPU_TMRINTRCL_REG__ ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRINTRCL()     ((volatile u32STPU_TMRINTRCL_word_view *)\
+N(STPU_TMRINTRCL_REG__ ))
+X#define pu32STPU_TMRINTRCL()     ((volatile u32STPU_TMRINTRCL_word_view *)(STPU_TMRINTRCL_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_TMRINTRCL_ICL() (pst_bitSTPU_TMRINTRCL() -> ICL)
+N#define vSetSTPU_TMRINTRCL_ICL(ParValue)  (pst_bitSTPU_TMRINTRCL() -> ICL=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRINTRCLLL(ParValue) (pst_u8STPU_TMRINTRCL() -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRINTRCLLL() (pst_u8STPU_TMRINTRCL() -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRINTRCLLH(ParValue) (pst_u8STPU_TMRINTRCL() -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRINTRCLLH() (pst_u8STPU_TMRINTRCL() -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRINTRCLHL(ParValue) (pst_u8STPU_TMRINTRCL() -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRINTRCLHL() (pst_u8STPU_TMRINTRCL() -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRINTRCLHH(ParValue) (pst_u8STPU_TMRINTRCL() -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRINTRCLHH() (pst_u8STPU_TMRINTRCL() -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRINTRCLL(ParValue) (pst_u16STPU_TMRINTRCL() -> u16L = (ParValue))
+N#define u16GetSTPU_TMRINTRCLL() (pst_u16STPU_TMRINTRCL() -> u16L)
+N#define vSetSTPU_TMRINTRCLH(ParValue) (pst_u16STPU_TMRINTRCL() -> u16H = (ParValue))
+N#define u16GetSTPU_TMRINTRCLH() (pst_u16STPU_TMRINTRCL() -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRINTRCL(ParValue)  (*pu32STPU_TMRINTRCL() = (ParValue))
+N#define u32GetSTPU_TMRINTRCL()  (*pu32STPU_TMRINTRCL() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRCTRL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC010001C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRCTRL_REG__       0xC010001CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   RSRV5	:29; 	 /* 0..28  bit(s) R */
+N  uint32_t   CON	:1; 	 /* 29..29  bit(s) R/W */
+N  uint32_t   STP	:1; 	 /* 30..30  bit(s) R/W */ 
+N  uint32_t   STR	:1; 	 /* 31..31  bit(s) R/W */                    
+N} STPU_TMRCTRL_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRCTRL_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRCTRL_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRCTRL_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_bit_view_st *)\
+N(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_bitSTPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_bit_view_st *)(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_byte_view_st *)\
+N(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u8STPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_byte_view_st *)(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_halfword_view_st *)\
+N(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u16STPU_TMRCTRL(ch)     ((volatile STPU_TMRCTRL_halfword_view_st *)(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRCTRL(ch)     ((volatile u32STPU_TMRCTRL_word_view *)\
+N(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pu32STPU_TMRCTRL(ch)     ((volatile u32STPU_TMRCTRL_word_view *)(STPU_TMRCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSTPU_TMRCTRL_RSRV5(ch) (pst_bitSTPU_TMRCTRL(ch) -> RSRV5)
+N#define biGetSTPU_TMRCTRL_CON(ch) (pst_bitSTPU_TMRCTRL(ch) -> CON)
+N#define vSetSTPU_TMRCTRL_CON(ch,ParValue)  (pst_bitSTPU_TMRCTRL(ch) -> CON=(ParValue))
+N#define biGetSTPU_TMRCTRL_STP(ch) (pst_bitSTPU_TMRCTRL(ch) -> STP)
+N#define vSetSTPU_TMRCTRL_STP(ch,ParValue)  (pst_bitSTPU_TMRCTRL(ch) -> STP=(ParValue))
+N#define biGetSTPU_TMRCTRL_STR(ch) (pst_bitSTPU_TMRCTRL(ch) -> STR)
+N#define vSetSTPU_TMRCTRL_STR(ch,ParValue)  (pst_bitSTPU_TMRCTRL(ch) -> STR=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRCTRLLL(ch,ParValue) (pst_u8STPU_TMRCTRL(ch) -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRCTRLLL(ch) (pst_u8STPU_TMRCTRL(ch) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRCTRLLH(ch,ParValue) (pst_u8STPU_TMRCTRL(ch) -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRCTRLLH(ch) (pst_u8STPU_TMRCTRL(ch) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRCTRLHL(ch,ParValue) (pst_u8STPU_TMRCTRL(ch) -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRCTRLHL(ch) (pst_u8STPU_TMRCTRL(ch) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRCTRLHH(ch,ParValue) (pst_u8STPU_TMRCTRL(ch) -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRCTRLHH(ch) (pst_u8STPU_TMRCTRL(ch) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRCTRLL(ch,ParValue) (pst_u16STPU_TMRCTRL(ch) -> u16L = (ParValue))
+N#define u16GetSTPU_TMRCTRLL(ch) (pst_u16STPU_TMRCTRL(ch) -> u16L)
+N#define vSetSTPU_TMRCTRLH(ch,ParValue) (pst_u16STPU_TMRCTRL(ch) -> u16H = (ParValue))
+N#define u16GetSTPU_TMRCTRLH(ch) (pst_u16STPU_TMRCTRL(ch) -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRCTRL(ch,ParValue)  (*pu32STPU_TMRCTRL(ch) = (ParValue))
+N#define u32GetSTPU_TMRCTRL(ch)  (*pu32STPU_TMRCTRL(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRMDCTRL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100020                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRMDCTRL_REG__       0xC0100020U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   TMRMD	:2; 	 /* 0..1  bit(s) R/W */
+N  uint32_t   TMRPRLD	:1; 	 /* 2..2  bit(s) R/W */ 
+N  uint32_t   RSRV6	:29; 	 /* 3..31  bit(s) R */                    
+N} STPU_TMRMDCTRL_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRMDCTRL_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRMDCTRL_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRMDCTRL_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_bit_view_st *)\
+N(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_bitSTPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_bit_view_st *)(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_byte_view_st *)\
+N(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u8STPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_byte_view_st *)(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_halfword_view_st *)\
+N(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u16STPU_TMRMDCTRL(ch)     ((volatile STPU_TMRMDCTRL_halfword_view_st *)(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRMDCTRL(ch)     ((volatile u32STPU_TMRMDCTRL_word_view *)\
+N(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pu32STPU_TMRMDCTRL(ch)     ((volatile u32STPU_TMRMDCTRL_word_view *)(STPU_TMRMDCTRL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_TMRMDCTRL_TMRMD(ch) (pst_bitSTPU_TMRMDCTRL(ch) -> TMRMD)
+N#define vSetSTPU_TMRMDCTRL_TMRMD(ch,ParValue)  (pst_bitSTPU_TMRMDCTRL(ch) -> TMRMD=(ParValue))
+N#define biGetSTPU_TMRMDCTRL_TMRPRLD(ch) (pst_bitSTPU_TMRMDCTRL(ch) -> TMRPRLD)
+N#define vSetSTPU_TMRMDCTRL_TMRPRLD(ch,ParValue)  (pst_bitSTPU_TMRMDCTRL(ch) -> TMRPRLD=(ParValue))            
+N#define biGetSTPU_TMRMDCTRL_RSRV6(ch) (pst_bitSTPU_TMRMDCTRL(ch) -> RSRV6)
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRMDCTRLLL(ch,ParValue) (pst_u8STPU_TMRMDCTRL(ch) -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRMDCTRLLL(ch) (pst_u8STPU_TMRMDCTRL(ch) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRMDCTRLLH(ch,ParValue) (pst_u8STPU_TMRMDCTRL(ch) -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRMDCTRLLH(ch) (pst_u8STPU_TMRMDCTRL(ch) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRMDCTRLHL(ch,ParValue) (pst_u8STPU_TMRMDCTRL(ch) -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRMDCTRLHL(ch) (pst_u8STPU_TMRMDCTRL(ch) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRMDCTRLHH(ch,ParValue) (pst_u8STPU_TMRMDCTRL(ch) -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRMDCTRLHH(ch) (pst_u8STPU_TMRMDCTRL(ch) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRMDCTRLL(ch,ParValue) (pst_u16STPU_TMRMDCTRL(ch) -> u16L = (ParValue))
+N#define u16GetSTPU_TMRMDCTRLL(ch) (pst_u16STPU_TMRMDCTRL(ch) -> u16L)
+N#define vSetSTPU_TMRMDCTRLH(ch,ParValue) (pst_u16STPU_TMRMDCTRL(ch) -> u16H = (ParValue))
+N#define u16GetSTPU_TMRMDCTRLH(ch) (pst_u16STPU_TMRMDCTRL(ch) -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRMDCTRL(ch,ParValue)  (*pu32STPU_TMRMDCTRL(ch) = (ParValue))
+N#define u32GetSTPU_TMRMDCTRL(ch)  (*pu32STPU_TMRMDCTRL(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRBTPL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100024                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRBTPL_REG__       0xC0100024U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   BTPL	:32; 	 /* 0..31  bit(s) R/W */                    
+N} STPU_TMRBTPL_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRBTPL_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRBTPL_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRBTPL_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_bit_view_st *)\
+N(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_bitSTPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_bit_view_st *)(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_byte_view_st *)\
+N(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u8STPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_byte_view_st *)(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_halfword_view_st *)\
+N(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u16STPU_TMRBTPL(ch)     ((volatile STPU_TMRBTPL_halfword_view_st *)(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRBTPL(ch)     ((volatile u32STPU_TMRBTPL_word_view *)\
+N(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pu32STPU_TMRBTPL(ch)     ((volatile u32STPU_TMRBTPL_word_view *)(STPU_TMRBTPL_REG__  + ((uint16_t)(ch) * 0x10U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetSTPU_TMRBTPL_BTPL(ch) (pst_bitSTPU_TMRBTPL(ch) -> BTPL)
+N#define vSetSTPU_TMRBTPL_BTPL(ch,ParValue)  (pst_bitSTPU_TMRBTPL(ch) -> BTPL=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetSTPU_TMRBTPLLL(ch,ParValue) (pst_u8STPU_TMRBTPL(ch) -> u8LL = (ParValue))
+N#define u8GetSTPU_TMRBTPLLL(ch) (pst_u8STPU_TMRBTPL(ch) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetSTPU_TMRBTPLLH(ch,ParValue) (pst_u8STPU_TMRBTPL(ch) -> u8LH = (ParValue))
+N#define u8GetSTPU_TMRBTPLLH(ch) (pst_u8STPU_TMRBTPL(ch) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetSTPU_TMRBTPLHL(ch,ParValue) (pst_u8STPU_TMRBTPL(ch) -> u8HL = (ParValue))
+N#define u8GetSTPU_TMRBTPLHL(ch) (pst_u8STPU_TMRBTPL(ch) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetSTPU_TMRBTPLHH(ch,ParValue) (pst_u8STPU_TMRBTPL(ch) -> u8HH = (ParValue))
+N#define u8GetSTPU_TMRBTPLHH(ch) (pst_u8STPU_TMRBTPL(ch) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetSTPU_TMRBTPLL(ch,ParValue) (pst_u16STPU_TMRBTPL(ch) -> u16L = (ParValue))
+N#define u16GetSTPU_TMRBTPLL(ch) (pst_u16STPU_TMRBTPL(ch) -> u16L)
+N#define vSetSTPU_TMRBTPLH(ch,ParValue) (pst_u16STPU_TMRBTPL(ch) -> u16H = (ParValue))
+N#define u16GetSTPU_TMRBTPLH(ch) (pst_u16STPU_TMRBTPL(ch) -> u16H)
+N            
+N/* Word access */
+N#define vSetSTPU_TMRBTPL(ch,ParValue)  (*pu32STPU_TMRBTPL(ch) = (ParValue))
+N#define u32GetSTPU_TMRBTPL(ch)  (*pu32STPU_TMRBTPL(ch) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: STPU_TMRCCV                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0100028                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define STPU_TMRCCV_REG__       0xC0100028U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   TMRCCV	:32; 	 /* 0..31  bit(s) R */                    
+N} STPU_TMRCCV_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} STPU_TMRCCV_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} STPU_TMRCCV_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32STPU_TMRCCV_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitSTPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_bit_view_st *)\
+N(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_bitSTPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_bit_view_st *)(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8STPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_byte_view_st *)\
+N(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u8STPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_byte_view_st *)(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16STPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_halfword_view_st *)\
+N(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pst_u16STPU_TMRCCV(ch)     ((volatile STPU_TMRCCV_halfword_view_st *)(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32STPU_TMRCCV(ch)     ((volatile u32STPU_TMRCCV_word_view *)\
+N(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+X#define pu32STPU_TMRCCV(ch)     ((volatile u32STPU_TMRCCV_word_view *)(STPU_TMRCCV_REG__  + ((uint16_t)(ch) * 0x10U)))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetSTPU_TMRCCV_TMRCCV(ch) (pst_bitSTPU_TMRCCV(ch) -> TMRCCV)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetSTPU_TMRCCVLL(ch) (pst_u8STPU_TMRCCV(ch) -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetSTPU_TMRCCVLH(ch) (pst_u8STPU_TMRCCV(ch) -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetSTPU_TMRCCVHL(ch) (pst_u8STPU_TMRCCV(ch) -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetSTPU_TMRCCVHH(ch) (pst_u8STPU_TMRCCV(ch) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetSTPU_TMRCCVL(ch) (pst_u16STPU_TMRCCV(ch) -> u16L)
+N
+N#define u16GetSTPU_TMRCCVH(ch) (pst_u16STPU_TMRCCV(ch) -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetSTPU_TMRCCV(ch)  (*pu32STPU_TMRCCV(ch) )
+N            
+N
+N
+N
+N
+N    
+N
+N#endif /* STPU_8TMRIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\stpu.c" 2
+N#include "stpu.h"                      /* Own definitions */
+L 1 "..\..\..\..\lldd\inc\stpu.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Stpu
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : STPU
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef STPU_H
+N#define STPU_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_STPU_H_REVISION     "$Revision: 1.7 $"
+N#define LLDD_STPU_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N/* stpu device no. */
+Ntypedef enum tag_stpu_dev_e
+N{
+N   STPU0 = 0,                              /* stpu device #0 */
+N   STPU1 = 1,                              /* stpu device #1 */
+N   STPU2 = 2,                              /* stpu device #2 */
+N   STPU3 = 3,                              /* stpu device #3 */
+N   STPU4 = 4,                              /* stpu device #4 */
+N   STPU5 = 5,                              /* stpu device #5 */
+N   STPU6 = 6,                              /* stpu device #6 */
+N   STPU7 = 7                               /* stpu device #7 */
+N} stpu_dev_e;
+N
+N/* enable */
+Ntypedef enum tag_stpu_enable_e
+N{
+N   STPU_DIS = 0,                           /* disable */
+N   STPU_EN  = 1                            /* enable  */
+N} stpu_enable_e;
+N
+N/* Timer mode operation */
+Ntypedef enum tag_stpu_timer_mode_e
+N{
+N   STPU_MODE_0 = 0,                        /* timer mode 0 */
+N   STPU_MODE_1 = 1,                        /* timer mode 1  */
+N   STPU_MODE_2 = 2,                        /* timer mode 2  */
+N   STPU_MODE_3 = 3                         /* timer mode 3  */
+N} stpu_timer_mode_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N/* Timer config */
+Ntypedef struct tag_stpu_timer_config_st
+N{
+N   stpu_timer_mode_e eTimerMode;           /* timer mode */
+N   stpu_enable_e     ePreloadEnable;       /* preload enable  */
+N   uint32_t          u32TimerBudgetValue;  /* timer budget value */
+N} stpu_timer_config_st;
+N
+N/* Common prescaler config */
+Ntypedef struct tag_stpu_common_prescaler_config_st
+N{
+N   uint8_t           u8CommonPrescalerValue;  /* common prescaler value */
+N   stpu_enable_e     eCommonPrescalerEnable;  /* common prescaler enable  */
+N} stpu_common_prescaler_config_st;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*            Forward declarations             *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                      uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                      uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      u32STPU_GetVersion
+N *
+N * Purpose:       Return STPU module version number
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: STPU module version number
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32STPU_GetVersion(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_ConfigureCommonPrescaler
+N *
+N * Purpose:       Configure common prescaler
+N *
+N * Inputs:        stConfig    Configuration of common prescaler
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_ConfigureCommonPrescaler(stpu_common_prescaler_config_st stConfig);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_EnableInterrupt
+N *
+N * Purpose:       Enable/disable interrupt
+N *
+N * Inputs:        eEn    Enable/disable interrupt
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_EnableInterrupt(stpu_enable_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_EnableDiagnosisMode
+N *
+N * Purpose:       Enable/disable diagnosis mode
+N *
+N * Inputs:        eEn    Enable/disable diagnosis mode
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_EnableDiagnosisMode(stpu_enable_e eEn);
+N
+N/****************************************************************************
+N *
+N * Function:      u32STPU_GetTimerStatusBits
+N *
+N * Purpose:       Read timer status
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: Timer status
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32STPU_GetTimerStatusBits(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_DisableInterrupts
+N *
+N * Purpose:       Disable interrupt
+N *
+N * Inputs:        u32Value    Disable interrupt mask
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_DisableInterrupts(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      u32STPU_GetInterruptStatusBits
+N *
+N * Purpose:       Read interrupt status
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: Interrupt status
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32STPU_GetInterruptStatusBits(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_EnableInterrupts
+N *
+N * Purpose:       Enable interrupts
+N *
+N * Inputs:        u32Value    Enable interrupts mask
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_EnableInterrupts(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_ClearInterrupts
+N *
+N * Purpose:       Clear interrupts
+N *
+N * Inputs:        u32Value    Clear interrupts mask
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_ClearInterrupts(uint32_t u32Value);
+N
+N/****************************************************************************
+N *
+N * Function:      i32STPU_Continue
+N *
+N * Purpose:       Continue timer
+N *
+N * Inputs:        eDevice     Timer number
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32STPU_Continue(stpu_dev_e eDevice);
+N
+N/****************************************************************************
+N *
+N * Function:      i32STPU_Stop
+N *
+N * Purpose:       Stop timer
+N *
+N * Inputs:        eDevice     Timer number
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32STPU_Stop(stpu_dev_e eDevice);
+N
+N/****************************************************************************
+N *
+N * Function:      i32STPU_Start
+N *
+N * Purpose:       Start timer
+N *
+N * Inputs:        eDevice     Timer number
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS on success
+N *                C_FAILED on ivalid parameter range
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32STPU_Start(stpu_dev_e eDevice);
+N
+N/****************************************************************************
+N *
+N * Function:      vSTPU_Configure
+N *
+N * Purpose:       Configure timer
+N *
+N * Inputs:        eDevice     Timer number
+N *                stConfig    Timer configuration
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSTPU_Configure(stpu_dev_e eDevice, stpu_timer_config_st stConfig);
+N
+N/****************************************************************************
+N *
+N * Function:      u32STPU_GetTimerValue
+N *
+N * Purpose:       read timer value
+N *
+N * Inputs:        eDevice     Timer number
+N *
+N * Outputs:       none
+N *
+N * Return Values: timer value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32STPU_GetTimerValue(stpu_dev_e eDevice);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* STPU_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\stpu.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_STPU_C_REVISION     "$Revision: 1.6 $"
+N#define LLDD_STPU_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/ 
+N
+Nstatic uint8_t au8LLDD_STPU_C_REVISION[]    = LLDD_STPU_C_REVISION;
+Xstatic uint8_t au8LLDD_STPU_C_REVISION[]    = "$Revision: 1.6 $";
+Nstatic uint8_t au8LLDD_STPU_C_TAG[]         = LLDD_STPU_C_TAG;
+Xstatic uint8_t au8LLDD_STPU_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_STPU_H_REVISION[]    = LLDD_STPU_H_REVISION;
+Xstatic uint8_t au8LLDD_STPU_H_REVISION[]    = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_STPU_H_TAG[]         = LLDD_STPU_H_TAG;
+Xstatic uint8_t au8LLDD_STPU_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_STPU_IO_H_REVISION[] = LLDD_STPU_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_STPU_IO_H_REVISION[] = "$Revision: 1.9 $";
+Nstatic uint8_t au8LLDD_STPU_IO_H_TAG[]      = LLDD_STPU_IO_H_TAG;
+Xstatic uint8_t au8LLDD_STPU_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Function definition             *
+N**********************************************/
+N
+Nvoid vSTPU_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_STPU_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_STPU_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_STPU_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_STPU_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_STPU_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_STPU_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32STPU_GetVersion(void)
+N{
+N    return u32GetSTPU_TMRVER();
+X    return (*((volatile u32STPU_TMRVER_word_view *)(0xC0100000U )) );
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_ConfigureCommonPrescaler(stpu_common_prescaler_config_st stConfig)
+N{
+N    vSetSTPU_CFG_CMPRSCLR(stConfig.u8CommonPrescalerValue);
+X    (((volatile STPU_CFG_bit_view_st *)(0xC0100004U )) -> CMPRSCLR=(stConfig . u8CommonPrescalerValue));
+N    vSetSTPU_CFG_CMPRSCLREN(stConfig.eCommonPrescalerEnable);
+X    (((volatile STPU_CFG_bit_view_st *)(0xC0100004U )) -> CMPRSCLREN=(stConfig . eCommonPrescalerEnable));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_EnableInterrupt(stpu_enable_e eEn)
+N{
+N    vSetSTPU_CFG_INTREN(eEn);
+X    (((volatile STPU_CFG_bit_view_st *)(0xC0100004U )) -> INTREN=(eEn));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_EnableDiagnosisMode(stpu_enable_e eEn)
+N{
+N    vSetSTPU_CFG_DIGNMDEN(eEn);
+X    (((volatile STPU_CFG_bit_view_st *)(0xC0100004U )) -> DIGNMDEN=(eEn));
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32STPU_GetTimerStatusBits(void)
+N{
+N    return biGetSTPU_TMRST_IST();
+X    return (((volatile STPU_TMRST_bit_view_st *)(0xC0100008U )) -> IST);
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_DisableInterrupts(uint32_t u32Value)
+N{
+N    vSetSTPU_TMRINTDS_INTD(u32Value);
+X    (((volatile STPU_TMRINTDS_bit_view_st *)(0xC010000CU )) -> INTD=(u32Value));
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32STPU_GetInterruptStatusBits(void)
+N{
+N    return biGetSTPU_TMRINTRST_INTST();
+X    return (((volatile STPU_TMRINTRST_bit_view_st *)(0xC0100010U )) -> INTST);
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_EnableInterrupts(uint32_t u32Value)
+N{
+N    vSetSTPU_TMRINTREN_IEN(u32Value);
+X    (((volatile STPU_TMRINTREN_bit_view_st *)(0xC0100014U )) -> IEN=(u32Value));
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_ClearInterrupts(uint32_t u32Value)
+N{
+N    vSetSTPU_TMRINTRCL_ICL(u32Value);
+X    (((volatile STPU_TMRINTRCL_bit_view_st *)(0xC0100018U )) -> ICL=(u32Value));
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32STPU_Continue(stpu_dev_e eDevice)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eDevice <= STPU7)
+N    {
+N        vSetSTPU_TMRCTRL_CON(eDevice, 1);
+X        (((volatile STPU_TMRCTRL_bit_view_st *)(0xC010001CU + ((uint16_t)(eDevice) * 0x10U))) -> CON=(1));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32STPU_Stop(stpu_dev_e eDevice)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eDevice <= STPU7)
+N    {
+N        vSetSTPU_TMRCTRL_STP(eDevice, 1);
+X        (((volatile STPU_TMRCTRL_bit_view_st *)(0xC010001CU + ((uint16_t)(eDevice) * 0x10U))) -> STP=(1));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nint32_t i32STPU_Start(stpu_dev_e eDevice)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N
+N    if (eDevice <= STPU7)
+N    {
+N        vSetSTPU_TMRCTRL_STR(eDevice, 1);
+X        (((volatile STPU_TMRCTRL_bit_view_st *)(0xC010001CU + ((uint16_t)(eDevice) * 0x10U))) -> STR=(1));
+N    }
+N    else
+N    {
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vSTPU_Configure(stpu_dev_e eDevice, stpu_timer_config_st stConfig)
+N{
+N    vSetSTPU_TMRMDCTRL_TMRMD(eDevice, stConfig.eTimerMode);
+X    (((volatile STPU_TMRMDCTRL_bit_view_st *)(0xC0100020U + ((uint16_t)(eDevice) * 0x10U))) -> TMRMD=(stConfig . eTimerMode));
+N    vSetSTPU_TMRMDCTRL_TMRPRLD(eDevice, stConfig.ePreloadEnable);
+X    (((volatile STPU_TMRMDCTRL_bit_view_st *)(0xC0100020U + ((uint16_t)(eDevice) * 0x10U))) -> TMRPRLD=(stConfig . ePreloadEnable));
+N    vSetSTPU_TMRBTPL_BTPL(eDevice, stConfig.u32TimerBudgetValue);
+X    (((volatile STPU_TMRBTPL_bit_view_st *)(0xC0100024U + ((uint16_t)(eDevice) * 0x10U))) -> BTPL=(stConfig . u32TimerBudgetValue));
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32STPU_GetTimerValue(stpu_dev_e eDevice)
+N{
+N    return biGetSTPU_TMRCCV_TMRCCV(eDevice);
+X    return (((volatile STPU_TMRCCV_bit_view_st *)(0xC0100028U + ((uint16_t)(eDevice) * 0x10U))) -> TMRCCV);
+N}
+N
+N/****************************************************************************/
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: stpu.c
+N**  $Revision: 1.6 $
+N**  $Date: 2015/05/04 09:07:15 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   :  5 (0286) String literal contains character which is not a
+N** |                    member of the basic source character set.
+N** |           5 (0288) Source file '<TEXT>' has comments containing characters
+N** |                    which are not members of the basic source character set.
+N** |          22 (3218) File scope static, '<TEXT>', only accessed in one
+N** |                    function.
+N** |          45 (0303) Cast between a pointer to volatile object and an
+N** |                    integral type.
+N** |          52 (1503) The function '%1s' is defined but is not used within
+N** |                    this project.
+N** |
+N** | REASON : This is neccessary because of driver version control.
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N/****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

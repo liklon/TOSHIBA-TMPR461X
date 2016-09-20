@@ -1,0 +1,1562 @@
+L 1 "..\..\..\..\lldd\src\timer_pwm.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : TIMER_PWM low level driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_PWM
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "timer_pwm_io.h"                  /* PWM timer registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\timer_pwm_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : PWM 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  18:00:57.146+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.13 $ 
+N/  Excel Sheet ver.             : vv1.1
+N/  Excel Sheet date             : 2013-Jun-19
+N/  Excel Sheet author           : VAG
+N/##########################################################################*/
+N
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : TIMER_PWM low level device driver io-header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_PWM
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.13 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef PWMIO_H
+N#define PWMIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */ 
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 40 "..\..\..\..\lldd\hdr\timer_pwm_io.h" 2
+N     
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_TIMER_PWM_IO_H_REVISION     "$Revision: 1.13 $"
+N#define LLDD_TIMER_PWM_IO_H_TAG          "$Name: LLDD_1_6 $"    
+N
+N/****************************************************************************
+N*                          CONTROLER SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+Ntypedef enum tag_timer_pwm_cntrl_def_e
+N{
+N  TIMER_PWM_CNTRL_0__  =0,
+N  TIMER_PWM_CNTRL_1__  =0x1000,
+N  TIMER_PWM_CNTRL_2__  =0x2000,
+N  TIMER_PWM_CNTRL_3__  =0x3000,
+N  TIMER_PWM_CNTRL_4__  =0x4000,
+N  TIMER_PWM_CNTRL_5__  =0x5000,
+N  TIMER_PWM_CNTRL_6__  =0x6000,
+N  TIMER_PWM_CNTRL_7__  =0x7000,
+N  TIMER_PWM_CNTRL_8__  =0x8000,
+N  TIMER_PWM_CNTRL_9__  =0x9000,
+N  TIMER_PWM_CNTRL_10__ =0xA000,
+N  TIMER_PWM_CNTRL_11__ =0xB000,
+N  TIMER_PWM_CNTRL_12__ =0xC000,
+N  TIMER_PWM_CNTRL_13__ =0xD000,
+N  TIMER_PWM_CNTRL_14__ =0xE000,
+N  TIMER_PWM_CNTRL_15__ =0xF000,
+N  TIMER_PWM_CNTRL_16__ =0x10000,
+N  TIMER_PWM_CNTRL_17__ =0x11000,
+N  TIMER_PWM_CNTRL_18__ =0x12000,
+N  TIMER_PWM_CNTRL_19__ =0x13000,
+N  TIMER_PWM_CNTRL_20__ =0x14000,
+N  TIMER_PWM_CNTRL_21__ =0x15000,
+N  TIMER_PWM_CNTRL_22__ =0x16000,
+N  TIMER_PWM_CNTRL_23__ =0x17000
+N} timer_pwm_cntrl_def_e;
+N
+N
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: PWMCR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0304000                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define PWMCR_REG__       0xC0304000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   TRUN	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   GDC	:2; 	 /* 1..2  bit(s) R/W */
+N  uint16_t   	:1; 	 /* 3..3  bit(s) R */
+N  uint16_t   OL	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   DB	:1; 	 /* 5..5  bit(s) R/W */
+N  uint16_t   IE	:1; 	 /* 6..6  bit(s) R/W */
+N  uint16_t   	:1; 	 /* 7..7  bit(s) R */
+N  uint16_t   HED	:1; 	 /* 8..8  bit(s) R/W */
+N  uint16_t   VED	:1; 	 /* 9..9  bit(s) R/W */
+N  uint16_t   RC	:2; 	 /* 10..11  bit(s) R/W */
+N  uint16_t   SCLK	:3; 	 /* 12..14  bit(s) R/W */
+N  uint16_t   RSRVD15	:1; 	 /* 15..15  bit(s) R/W */                    
+N} PWMCR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} PWMCR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16PWMCR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitPWMCR(ctrlr)     ((volatile PWMCR_bit_view_st *)\
+N(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_bitPWMCR(ctrlr)     ((volatile PWMCR_bit_view_st *)(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8PWMCR(ctrlr)     ((volatile PWMCR_byte_view_st *)\
+N(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_u8PWMCR(ctrlr)     ((volatile PWMCR_byte_view_st *)(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16PWMCR(ctrlr)     ((volatile u16PWMCR_halfword_view *)\
+N(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+X#define pu16PWMCR(ctrlr)     ((volatile u16PWMCR_halfword_view *)(PWMCR_REG__  + (uint32_t)(ctrlr) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetPWMCR_TRUN(ctrlr) (pst_bitPWMCR(ctrlr) -> TRUN)
+N#define vSetPWMCR_TRUN(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> TRUN=(ParValue))
+N#define biGetPWMCR_GDC(ctrlr) (pst_bitPWMCR(ctrlr) -> GDC)
+N#define vSetPWMCR_GDC(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> GDC=(ParValue))
+N#define biGetPWMCR_OL(ctrlr) (pst_bitPWMCR(ctrlr) -> OL)
+N#define vSetPWMCR_OL(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> OL=(ParValue))
+N#define biGetPWMCR_DB(ctrlr) (pst_bitPWMCR(ctrlr) -> DB)
+N#define vSetPWMCR_DB(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> DB=(ParValue))
+N#define biGetPWMCR_IE(ctrlr) (pst_bitPWMCR(ctrlr) -> IE)
+N#define vSetPWMCR_IE(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> IE=(ParValue))
+N#define biGetPWMCR_HED(ctrlr) (pst_bitPWMCR(ctrlr) -> HED)
+N#define vSetPWMCR_HED(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> HED=(ParValue))
+N#define biGetPWMCR_VED(ctrlr) (pst_bitPWMCR(ctrlr) -> VED)
+N#define vSetPWMCR_VED(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> VED=(ParValue))
+N#define biGetPWMCR_RC(ctrlr) (pst_bitPWMCR(ctrlr) -> RC)
+N#define vSetPWMCR_RC(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> RC=(ParValue))
+N#define biGetPWMCR_SCLK(ctrlr) (pst_bitPWMCR(ctrlr) -> SCLK)
+N#define vSetPWMCR_SCLK(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> SCLK=(ParValue))
+N#define biGetPWMCR_RSRVD15(ctrlr) (pst_bitPWMCR(ctrlr) -> RSRVD15)
+N#define vSetPWMCR_RSRVD15(ctrlr,ParValue)  (pst_bitPWMCR(ctrlr) -> RSRVD15=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetPWMCRL(ctrlr,ParValue) (pst_u8PWMCR(ctrlr) -> u8L = (ParValue))
+N#define u8GetPWMCRL(ctrlr) (pst_u8PWMCR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetPWMCRH(ctrlr,ParValue) (pst_u8PWMCR(ctrlr) -> u8H = (ParValue))
+N#define u8GetPWMCRH(ctrlr) (pst_u8PWMCR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetPWMCR(ctrlr,ParValue) (*pu16PWMCR(ctrlr)  = (ParValue))
+N#define u16GetPWMCR(ctrlr) (*pu16PWMCR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: PWMPDR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0304004                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define PWMPDR_REG__       0xC0304004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   PWMPDR	:16; 	 /* 0..15  bit(s) R/W */                    
+N} PWMPDR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} PWMPDR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16PWMPDR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitPWMPDR(ctrlr)     ((volatile PWMPDR_bit_view_st *)\
+N(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_bitPWMPDR(ctrlr)     ((volatile PWMPDR_bit_view_st *)(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8PWMPDR(ctrlr)     ((volatile PWMPDR_byte_view_st *)\
+N(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_u8PWMPDR(ctrlr)     ((volatile PWMPDR_byte_view_st *)(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16PWMPDR(ctrlr)     ((volatile u16PWMPDR_halfword_view *)\
+N(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pu16PWMPDR(ctrlr)     ((volatile u16PWMPDR_halfword_view *)(PWMPDR_REG__  + (uint32_t)(ctrlr) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetPWMPDR_PWMPDR(ctrlr) (pst_bitPWMPDR(ctrlr) -> PWMPDR)
+N#define vSetPWMPDR_PWMPDR(ctrlr,ParValue)  (pst_bitPWMPDR(ctrlr) -> PWMPDR=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetPWMPDRL(ctrlr,ParValue) (pst_u8PWMPDR(ctrlr) -> u8L = (ParValue))
+N#define u8GetPWMPDRL(ctrlr) (pst_u8PWMPDR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetPWMPDRH(ctrlr,ParValue) (pst_u8PWMPDR(ctrlr) -> u8H = (ParValue))
+N#define u8GetPWMPDRH(ctrlr) (pst_u8PWMPDR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetPWMPDR(ctrlr,ParValue) (*pu16PWMPDR(ctrlr)  = (ParValue))
+N#define u16GetPWMPDR(ctrlr) (*pu16PWMPDR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: PWMDDR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0304008                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define PWMDDR_REG__       0xC0304008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   PWMDDR	:16; 	 /* 0..15  bit(s) R/W */                    
+N} PWMDDR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} PWMDDR_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16PWMDDR_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitPWMDDR(ctrlr)     ((volatile PWMDDR_bit_view_st *)\
+N(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_bitPWMDDR(ctrlr)     ((volatile PWMDDR_bit_view_st *)(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8PWMDDR(ctrlr)     ((volatile PWMDDR_byte_view_st *)\
+N(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_u8PWMDDR(ctrlr)     ((volatile PWMDDR_byte_view_st *)(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16PWMDDR(ctrlr)     ((volatile u16PWMDDR_halfword_view *)\
+N(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+X#define pu16PWMDDR(ctrlr)     ((volatile u16PWMDDR_halfword_view *)(PWMDDR_REG__  + (uint32_t)(ctrlr) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetPWMDDR_PWMDDR(ctrlr) (pst_bitPWMDDR(ctrlr) -> PWMDDR)
+N#define vSetPWMDDR_PWMDDR(ctrlr,ParValue)  (pst_bitPWMDDR(ctrlr) -> PWMDDR=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetPWMDDRL(ctrlr,ParValue) (pst_u8PWMDDR(ctrlr) -> u8L = (ParValue))
+N#define u8GetPWMDDRL(ctrlr) (pst_u8PWMDDR(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetPWMDDRH(ctrlr,ParValue) (pst_u8PWMDDR(ctrlr) -> u8H = (ParValue))
+N#define u8GetPWMDDRH(ctrlr) (pst_u8PWMDDR(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetPWMDDR(ctrlr,ParValue) (*pu16PWMDDR(ctrlr)  = (ParValue))
+N#define u16GetPWMDDR(ctrlr) (*pu16PWMDDR(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: PWMCNT                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC030400C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define PWMCNT_REG__       0xC030400CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   PWMCNT	:16; 	 /* 0..15  bit(s) R */                    
+N} PWMCNT_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} PWMCNT_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16PWMCNT_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitPWMCNT(ctrlr)     ((volatile PWMCNT_bit_view_st *)\
+N(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_bitPWMCNT(ctrlr)     ((volatile PWMCNT_bit_view_st *)(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8PWMCNT(ctrlr)     ((volatile PWMCNT_byte_view_st *)\
+N(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+X#define pst_u8PWMCNT(ctrlr)     ((volatile PWMCNT_byte_view_st *)(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16PWMCNT(ctrlr)     ((volatile u16PWMCNT_halfword_view *)\
+N(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+X#define pu16PWMCNT(ctrlr)     ((volatile u16PWMCNT_halfword_view *)(PWMCNT_REG__  + (uint32_t)(ctrlr) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetPWMCNT_PWMCNT(ctrlr) (pst_bitPWMCNT(ctrlr) -> PWMCNT)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetPWMCNTL(ctrlr) (pst_u8PWMCNT(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetPWMCNTH(ctrlr) (pst_u8PWMCNT(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetPWMCNT(ctrlr) (*pu16PWMCNT(ctrlr) )
+N
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/ 
+N
+N
+N    
+N
+N#endif /* PWMIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\timer_pwm.c" 2
+N#include "timer_pwm.h"                     /* Timer LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\timer_pwm.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : TIMER_PWM low level driver header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_PWM
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef TIMER_PWM_H
+N#define TIMER_PWM_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_TIMER_PWM_H_REVISION     "$Revision: 1.10 $"
+N#define LLDD_TIMER_PWM_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/****************************************************************************
+N*                          CONTROLER SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+Ntypedef enum tag_timer_pwm_cntrl_e
+N{
+N  TIMER_PWM_CNTRL_0  =0,
+N  TIMER_PWM_CNTRL_1  =0x1000,
+N  TIMER_PWM_CNTRL_2  =0x2000,
+N  TIMER_PWM_CNTRL_3  =0x3000,
+N  TIMER_PWM_CNTRL_4  =0x4000,
+N  TIMER_PWM_CNTRL_5  =0x5000,
+N  TIMER_PWM_CNTRL_6  =0x6000,
+N  TIMER_PWM_CNTRL_7  =0x7000,
+N  TIMER_PWM_CNTRL_8  =0x8000,
+N  TIMER_PWM_CNTRL_9  =0x9000,
+N  TIMER_PWM_CNTRL_10 =0xA000,
+N  TIMER_PWM_CNTRL_11 =0xB000,
+N  TIMER_PWM_CNTRL_12 =0xC000,
+N  TIMER_PWM_CNTRL_13 =0xD000,
+N  TIMER_PWM_CNTRL_14 =0xE000,
+N  TIMER_PWM_CNTRL_15 =0xF000,
+N  TIMER_PWM_CNTRL_16 =0x10000,
+N  TIMER_PWM_CNTRL_17 =0x11000,
+N  TIMER_PWM_CNTRL_18 =0x12000,
+N  TIMER_PWM_CNTRL_19 =0x13000,
+N  TIMER_PWM_CNTRL_20 =0x14000,
+N  TIMER_PWM_CNTRL_21 =0x15000,
+N  TIMER_PWM_CNTRL_22 =0x16000,
+N  TIMER_PWM_CNTRL_23 =0x17000
+N} timer_pwm_cntrl_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N/* TBRUN.DBE / TBRUN.SYNC / TBRUN.OFI - double buffer/synchronous reset/overflow interrupt selection */
+Ntypedef enum tag_timer_pwm_en_e
+N{
+N    TIMER_PWM_DISABLE = 0x0,                    /* Double buffer disabled */
+N    TIMER_PWM_ENABLE  = 0x1                     /* Double buffering enabled */
+N} timer_pwm_en_e;
+N
+N/* PWMCR.SCLK / HSPWMCR.SCLK / GPWMCR.SCLK - prescaler selection */
+Ntypedef enum tag_timer_pwm_sclk_e
+N{
+N    TIMER_PWM_SCLK_DIV1   = 0x0,            /* IM-Bus frequency [40 MHz] / G-Bus frequency [140 MHz] / Dot Clock */
+N    TIMER_PWM_SCLK_DIV2   = 0x1,            /* IM-Bus/G-Bus/Dot-Clock frequency / 2 */
+N    TIMER_PWM_SCLK_DIV4   = 0x2,            /* IM-Bus/G-Bus/Dot-Clock frequency / 4 */
+N    TIMER_PWM_SCLK_DIV8   = 0x3,            /* IM-Bus/G-Bus/Dot-Clock frequency / 8 */
+N    TIMER_PWM_SCLK_DIV16  = 0x4,            /* IM-Bus/G-Bus/Dot-Clock frequency / 16 */
+N    TIMER_PWM_SCLK_DIV32  = 0x5,            /* IM-Bus/G-Bus/Dot-Clock frequency / 32 */
+N    TIMER_PWM_SCLK_DIV64  = 0x6,            /* IM-Bus/G-Bus/Dot-Clock frequency / 64 */
+N    TIMER_PWM_SCLK_DIV128 = 0x7             /* IM-Bus/G-Bus/Dot-Clock frequency / 128 */
+N} timer_pwm_sclk_e;
+N
+N/* PWMCR.RC / GPWMCR.RC - reset of the counter */
+Ntypedef enum tag_timer_pwm_rc_e
+N{
+N    TIMER_PWM_PDR_ONLY   = 0x0,              /* Reset on PWMPDR match only */
+N    TIMER_PWM_PDR_HSYNC  = 0x1,              /* Reset on HSync edge and on PWMPDR match */
+N    TIMER_PWM_PDR_VSYNC  = 0x2,              /* Reset on VSync edge and on PWMPDR match */
+N    TIMER_PWM_PDR_HVSYNC = 0x3               /* Reset on HSync, Vsync and on PWMPDR match */
+N} timer_pwm_rc_e;
+N
+N/* PWMCR.VED / PWMCR.HED / GPWMCR.VED / GPWMCR.HED  - sync edge detection */
+Ntypedef enum tag_timer_pwm_ved_e
+N{
+N    TIMER_PWM_SYNC_POS = 0x0,                   /* Positive V/HSync edge detected */
+N    TIMER_PWM_SYNC_NEG = 0x1                    /* Negative V/HSync edge detected */
+N} timer_pwm_ved_e;
+N
+N/* PWMCR.OL / HSPWMCR.OL / GPWMCR.OL - output level */
+Ntypedef enum tag_timer_pwm_ol_e
+N{
+N    TIMER_PWM_LEVEL_LO = 0x0,                   /* PWM starts active low (low duty cycle) */
+N    TIMER_PWM_LEVEL_HI = 0x1                    /* PWM starts active high (high duty cycle) */
+N} timer_pwm_ol_e;
+N
+N/* PWMCR.GDC / GPWMCR.GDC - display synchronization signals */
+Ntypedef enum tag_timer_pwm_gdc_e
+N{
+N    TIMER_PWM_HSYNC   = 0x0,                    /* HSync selected */
+N    TIMER_PWM_DOTCLK  = 0x1,                    /* DotClock selected */
+N    TIMER_PWM_PRESCAL = 0x2                     /* Prescaler selected */
+N} timer_pwm_gdc_e;
+N
+N/* GPWMCR.TCORE_EN - timer_pwm core control */
+Ntypedef enum tag_timer_pwm_tcore_e
+N{
+N    TIMER_PWM_CORE_DISABLE = 0x0,               /* Timer is disabled */
+N    TIMER_PWM_CORE_ENABLE  = 0x1,               /* Timer is enabled */
+N} timer_pwm_tcore_e;
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/* PWM timer configuration  */
+Ntypedef struct tag_timer_pwm_Cfg_st
+N{
+N    timer_pwm_sclk_e  ePrescalClk;              /* Peripheral clock prescaler */
+N    timer_pwm_rc_e    eRst;                     /* Reset counter condition */
+N    timer_pwm_ved_e   eVSyncEd;                 /* VSync edge detection */
+N    timer_pwm_ved_e   eHsyncEd;                 /* HSync edge detection */
+N    timer_pwm_en_e    eIrqEn;                   /* Period end interrupt enable/disable */
+N    timer_pwm_en_e    eDblBuffEn;               /* Double-buffer on/off */
+N    timer_pwm_ol_e    eOutLevel;                /* Output level */
+N    timer_pwm_gdc_e   eClkSrc;                  /* Display synchronization signals */
+N} timer_pwm_Cfg_st;
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                           uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                           uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      boTIMER_PWM_Config
+N *
+N * Purpose:       Configure a PWM timer
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eCfg     Target configuration
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE  on success
+N *                C_FALSE on inalid PWM controller type
+N *
+N * Limitations:   Only Standard PWM timer controllers may be provided
+N *
+N ***************************************************************************/
+Nbool_t boTIMER_PWM_Config(timer_pwm_cntrl_e eCntrl, timer_pwm_Cfg_st stCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetPeriod
+N *
+N * Purpose:       Preset the PWM timer period
+N *
+N * Inputs:        eCntrl    PWM timer controller
+N *                usPeriod  PWM timer period
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetPeriod(timer_pwm_cntrl_e eCntrl, uint16_t u16Period);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetDuty
+N *
+N * Purpose:       Preset the PWM timer duty
+N *
+N * Inputs:        eCntrl  PWM timer controller
+N *                usDuty  PWM Timer duty cycle
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetDuty(timer_pwm_cntrl_e eCntrl, uint16_t u16Duty);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_PWM_GetDuty
+N *
+N * Purpose:       Retrieve the PWM timer duty
+N *
+N * Inputs:        eCntrl  PWM timer controller
+N *
+N * Outputs:       Current duty cycle value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_PWM_GetDuty(timer_pwm_cntrl_e eCntrl);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32TIMER_PWM_SetWaveform
+N *
+N * Purpose:       Set the PWM timer square waveform
+N *
+N * Inputs:        eCntrl     PWM timer controller
+N *                usPeriod   PWM timer period
+N *                usDuty     PWM timer duty cycle [range 0-100]
+N *                eOutLevel  PWM output level 
+N *
+N * Outputs:       none
+N *
+N * Return Values: 0-100  achieved duty-cycle value on success 
+N *                0xFF   on error
+N *
+N * Limitations:   The timer must be stopped if doublebuffering is switched
+N *                off in order to be successfully configured. If this is
+N *                however not the case, the function will immediately return
+N *                with 0xFF, without setting any parameters
+N *
+N ***************************************************************************/
+Nint32_t i32TIMER_PWM_SetWaveform(timer_pwm_cntrl_e eCntrl, uint16_t u16Period, uint16_t u16Duty, timer_pwm_ol_e eOutLevel);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetPrescaler
+N *
+N * Purpose:       Set the PWM timer prescaler divider
+N *
+N * Inputs:        eCntrl    PWM timer controller
+N *                ePrescal  Division factor
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetPrescaler(timer_pwm_cntrl_e eCntrl, timer_pwm_sclk_e ePrescal);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetRstCondition
+N *
+N * Purpose:       Set the PWM counter reset condition
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eRst     Reset condition
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetRstCondition(timer_pwm_cntrl_e eCntrl, timer_pwm_rc_e eRst);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetDetEdgeVsync
+N *
+N * Purpose:       Set the VSync detection edge
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eEdge    Positive/negative edge
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetDetEdgeVsync(timer_pwm_cntrl_e eCntrl, timer_pwm_ved_e eEdge);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetDetEdgeHSync
+N *
+N * Purpose:       Set the HSync detection edge
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eEdge    Positive/negative edge
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetDetEdgeHSync(timer_pwm_cntrl_e eCntrl, timer_pwm_ved_e eEdge);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_IrqEnable
+N *
+N * Purpose:       Enable/disable the interrupt request
+N *
+N * Inputs:        eCntrl    PWM timer controller
+N *                eEnable   On/off request
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_IrqEnable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_DBuffEnable
+N *
+N * Purpose:       Enable/disable the double buffeing
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eEnable  On/off request
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_DBuffEnable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32TIMER_PWM_SetOutLevel
+N *
+N * Purpose:       Set the PWM initial output level
+N *
+N * Inputs:        eCntrl    PWM timer controller
+N *                eLevel    Desired output level
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS  on sucess
+N *                C_FAILED   if timer runs
+N *
+N * Limitations:   This function cannot change the setting of output level
+N *                when the PWM Timer is running. In this case, the function
+N *                will immediately return with error
+N *
+N ***************************************************************************/
+Nint32_t i32TIMER_PWM_SetOutLevel(timer_pwm_cntrl_e eCntrl, timer_pwm_ol_e eLevel);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_SetClkSource
+N *
+N * Purpose:       Select PWM timer clock source
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eSource  Clock source
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_SetClkSource(timer_pwm_cntrl_e eCntrl, timer_pwm_gdc_e eSource);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_PWM_Enable
+N *
+N * Purpose:       Enable/disables the PWM timer
+N *
+N * Inputs:        eCntrl   PWM timer controller
+N *                eEnable  Enable/disable request
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_PWM_Enable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_PWM_GetCountVal
+N *
+N * Purpose:       Retrieve the current value of the PWM counter
+N *
+N * Inputs:        eCntrl  PWM timer controller
+N *
+N * Outputs:       none
+N *
+N * Return Values: current PWM counter value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_PWM_GetCountVal(timer_pwm_cntrl_e eCntrl);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* TIMER_PWM_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\timer_pwm.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_TIMER_PWM_C_REVISION     "$Revision: 1.8 $"
+N#define LLDD_TIMER_PWM_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_TIMER_PWM_C_REVISION[]    = LLDD_TIMER_PWM_C_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_PWM_C_REVISION[]    = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_TIMER_PWM_C_TAG[]         = LLDD_TIMER_PWM_C_TAG;
+Xstatic uint8_t au8LLDD_TIMER_PWM_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_TIMER_PWM_H_REVISION[]    = LLDD_TIMER_PWM_H_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_PWM_H_REVISION[]    = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_TIMER_PWM_H_TAG[]         = LLDD_TIMER_PWM_H_TAG;
+Xstatic uint8_t au8LLDD_TIMER_PWM_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_TIMER_PWM_IO_H_REVISION[] = LLDD_TIMER_PWM_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_PWM_IO_H_REVISION[] = "$Revision: 1.13 $";
+Nstatic uint8_t au8LLDD_TIMER_PWM_IO_H_TAG[]      = LLDD_TIMER_PWM_IO_H_TAG;
+Xstatic uint8_t au8LLDD_TIMER_PWM_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/* indicator if PWM is running */
+Nstatic uint8_t au8PWMRunning[24] =
+N{
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0,
+N    0
+N};
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+Nvoid vTIMER_PWM_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                           uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                           uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_TIMER_PWM_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_TIMER_PWM_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_TIMER_PWM_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_TIMER_PWM_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_TIMER_PWM_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_TIMER_PWM_IO_H_TAG[0];
+N}
+N
+N/****************************************************************************/
+N
+N
+Nbool_t boTIMER_PWM_Config(timer_pwm_cntrl_e eCntrl, timer_pwm_Cfg_st stCfg)
+N{
+N    bool_t boResult = C_FALSE;    
+X    bool_t boResult = (0);    
+N
+N    /* Standard PWM timers */
+N    vSetPWMCR_RC(eCntrl, stCfg.eRst);       
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> RC=(stCfg . eRst));       
+N    vSetPWMCR_VED(eCntrl, stCfg.eVSyncEd);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> VED=(stCfg . eVSyncEd));
+N    vSetPWMCR_HED(eCntrl, stCfg.eHsyncEd);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> HED=(stCfg . eHsyncEd));
+N    vSetPWMCR_GDC(eCntrl, stCfg.eClkSrc);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> GDC=(stCfg . eClkSrc));
+N    vSetPWMCR_SCLK(eCntrl, stCfg.ePrescalClk);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> SCLK=(stCfg . ePrescalClk));
+N    vSetPWMCR_IE(eCntrl, stCfg.eIrqEn);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> IE=(stCfg . eIrqEn));
+N    vSetPWMCR_DB(eCntrl, stCfg.eDblBuffEn);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> DB=(stCfg . eDblBuffEn));
+N    vSetPWMCR_OL(eCntrl, stCfg.eOutLevel);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> OL=(stCfg . eOutLevel));
+N    boResult = C_TRUE;
+X    boResult = (1);
+N
+N    /* Configuration result */
+N    return boResult;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetPeriod(timer_pwm_cntrl_e eCntrl, uint16_t u16Period)
+N{
+N   vSetPWMPDR_PWMPDR(eCntrl, u16Period);
+X   (((volatile PWMPDR_bit_view_st *)(0xC0304004U + (uint32_t)(eCntrl) )) -> PWMPDR=(u16Period));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetDuty(timer_pwm_cntrl_e eCntrl, uint16_t u16Duty)
+N{
+N   vSetPWMDDR_PWMDDR(eCntrl, u16Duty);
+X   (((volatile PWMDDR_bit_view_st *)(0xC0304008U + (uint32_t)(eCntrl) )) -> PWMDDR=(u16Duty));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_PWM_GetDuty(timer_pwm_cntrl_e eCntrl)
+N{
+N    uint16_t u16Res;
+N
+N    u16Res = u16GetPWMDDR(eCntrl);
+X    u16Res = (*((volatile u16PWMDDR_halfword_view *)(0xC0304008U + (uint32_t)(eCntrl) )) );
+N
+N    return u16Res;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nint32_t i32TIMER_PWM_SetWaveform(timer_pwm_cntrl_e eCntrl, uint16_t u16Period, uint16_t u16Duty, timer_pwm_ol_e eOutLevel)
+N{
+N    int32_t i32Res;
+N    uint16_t u16DutyVal;
+N    timer_pwm_en_e eCurStat = TIMER_PWM_DISABLE;
+N    timer_pwm_en_e eBuffType = TIMER_PWM_DISABLE;
+N
+N    eCurStat = (timer_pwm_en_e)biGetPWMCR_TRUN(eCntrl);
+X    eCurStat = (timer_pwm_en_e)(((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN);
+N    eBuffType = (timer_pwm_en_e)biGetPWMCR_DB(eCntrl);
+X    eBuffType = (timer_pwm_en_e)(((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> DB);
+N
+N    /* check if change is allowed */
+N    if( ( TIMER_PWM_ENABLE != eCurStat ) || ( TIMER_PWM_DISABLE != eBuffType ) )
+N    {
+N        if(u16Duty <= 100)
+N        {
+N            if ((u16Duty != 0) && (u16Duty != 100))
+N            {
+N                /* Duty-counter value */
+N                u16DutyVal = (uint16_t)((u16Period * u16Duty)/100);
+N
+N                vSetPWMPDR_PWMPDR(eCntrl, u16Period);
+X                (((volatile PWMPDR_bit_view_st *)(0xC0304004U + (uint32_t)(eCntrl) )) -> PWMPDR=(u16Period));
+N                vSetPWMDDR_PWMDDR(eCntrl, u16DutyVal);
+X                (((volatile PWMDDR_bit_view_st *)(0xC0304008U + (uint32_t)(eCntrl) )) -> PWMDDR=(u16DutyVal));
+N
+N                /* enable timer if coming from 0% and 100% */
+N                if (au8PWMRunning[eCntrl] == 1)
+N                {
+N                    vSetPWMCR_TRUN(eCntrl, TIMER_PWM_ENABLE);
+X                    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN=(TIMER_PWM_ENABLE));
+N                }
+N
+N		/* Achieved Duty-cycle */
+N                i32Res = (u16DutyVal* 100) / u16Period;
+N            }
+N            else
+N            {
+N                /* special treatment for 0% and 100% */
+N                if (u16Duty == 0)
+N                {
+N                    /* 0% */
+N                    vSetPWMCR_TRUN(eCntrl, TIMER_PWM_DISABLE);
+X                    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN=(TIMER_PWM_DISABLE));
+N                    vSetPWMCR_OL(eCntrl, eOutLevel);
+X                    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> OL=(eOutLevel));
+N
+N		    /* Achieved Duty-cycle */
+N                    i32Res = 0;
+N                }
+N                else
+N                {
+N                    /* 100% */
+N                    vSetPWMCR_TRUN(eCntrl, TIMER_PWM_DISABLE);
+X                    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN=(TIMER_PWM_DISABLE));
+N                    vSetPWMCR_OL(eCntrl, ~eOutLevel);
+X                    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> OL=(~eOutLevel));
+N
+N		    /* Achieved Duty-cycle */
+N                    i32Res = 100;
+N                }
+N            }
+N        }
+N        else
+N        {
+N            /* Duty Cycle parameter out of range */
+N            i32Res = 0xff;
+N        }
+N    }
+N    else
+N    {
+N        /* PWM Timer running, no change allowed */
+N        i32Res = 0xff;
+N    }
+N
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetPrescaler(timer_pwm_cntrl_e eCntrl, timer_pwm_sclk_e ePrescal)
+N{
+N    vSetPWMCR_SCLK(eCntrl, ePrescal);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> SCLK=(ePrescal));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetRstCondition(timer_pwm_cntrl_e eCntrl, timer_pwm_rc_e eRst)
+N{
+N    vSetPWMCR_RC(eCntrl, eRst);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> RC=(eRst));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetDetEdgeVsync(timer_pwm_cntrl_e eCntrl, timer_pwm_ved_e eEdge)
+N{
+N    vSetPWMCR_VED(eCntrl, eEdge);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> VED=(eEdge));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetDetEdgeHSync(timer_pwm_cntrl_e eCntrl, timer_pwm_ved_e eEdge)
+N{
+N    vSetPWMCR_HED(eCntrl, eEdge);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> HED=(eEdge));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_IrqEnable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable)
+N{
+N    vSetPWMCR_IE(eCntrl, eEnable);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> IE=(eEnable));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_DBuffEnable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable)
+N{
+N    vSetPWMCR_DB(eCntrl, eEnable);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> DB=(eEnable));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nint32_t i32TIMER_PWM_SetOutLevel(timer_pwm_cntrl_e eCntrl, timer_pwm_ol_e eLevel)
+N{
+N    int32_t i32Res = C_SUCCESS;
+X    int32_t i32Res = (0);
+N    timer_pwm_en_e eCurStat = TIMER_PWM_DISABLE;
+N
+N    eCurStat = (timer_pwm_en_e)biGetPWMCR_TRUN(eCntrl);
+X    eCurStat = (timer_pwm_en_e)(((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN);
+N
+N    /* Change allowed only when Timer is not Running */
+N    if( TIMER_PWM_ENABLE != eCurStat )
+N    {
+N        /* Change Output Level */
+N        vSetPWMCR_OL(eCntrl, eLevel);
+X        (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> OL=(eLevel));
+N    }
+N    else
+N    {
+N        /* No change allowed (PWM Timer running) */
+N        i32Res = C_FAILED;
+X        i32Res = (-1);
+N    }
+N
+N    return i32Res;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_PWM_SetClkSource(timer_pwm_cntrl_e eCntrl, timer_pwm_gdc_e eSource)
+N{
+N    vSetPWMCR_GDC(eCntrl, eSource);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> GDC=(eSource));
+N}
+N
+N/****************************************************************************/
+N
+N
+N
+Nvoid vTIMER_PWM_Enable(timer_pwm_cntrl_e eCntrl, timer_pwm_en_e eEnable)
+N{
+N    vSetPWMCR_TRUN(eCntrl, eEnable);
+X    (((volatile PWMCR_bit_view_st *)(0xC0304000U + (uint32_t)(eCntrl) )) -> TRUN=(eEnable));
+N    au8PWMRunning[eCntrl] = (uint8_t)eEnable;
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_PWM_GetCountVal(timer_pwm_cntrl_e eCntrl)
+N{
+N    return (uint16_t) biGetPWMCNT_PWMCNT(eCntrl);
+X    return (uint16_t) (((volatile PWMCNT_bit_view_st *)(0xC030400CU + (uint32_t)(eCntrl) )) -> PWMCNT);
+N}
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

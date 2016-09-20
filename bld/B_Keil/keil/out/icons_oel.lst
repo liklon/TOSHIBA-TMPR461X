@@ -1,0 +1,659 @@
+L 1 "..\..\Pictures\icons_oel.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved 
+N*   Toshiba Electronics Europe GmbH 
+N*   European LSI Design and Engineering Center (ELDEC)
+N****************************************************************************** 
+N*   File Name   : $RCSfile: icons_oel.c,v $ 
+N*   Description : Image files
+N****************************************************************************** 
+N*   PROJECT     : Capricorn 
+N*   MODULE      : Graphics 
+N*               : $Name:  $ 
+N*   LIBRARIES   : None 
+N*   AUTHOR      : $Author: mto $
+N****************************************************************************** 
+N*   VERSION     : $Revision: 1.1 $ 
+N*   RELEASE     : Preliminary & Confidential 
+N*   DATE        : $Date: 2014/05/09 14:05:52 $ 
+N*   SOURCE MOD. : $Source: /teenet/mpumcu/Capricorn/Capricorn_Bt/bld/Basic_Graphics_Keil/Pictures/icons_oel.c,v $ 
+N*   LOG:        : please have a look at the end of the file
+N*****************************************************************************/
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 1.16
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 11.3.2013 @ 11:43
+N * Output format: FMT_RLERGBA32
+N * Image Dimensions : Width=59, Height=42
+N * Input Filename: C:\Ortmann20130227\Capricorn\Software\Demos\Capricorn_F\Valeo\icons_oel.png
+N * Data is RLE compressed
+N * Uncompressed Data Size : 9.68 KB
+N * Compressed Data Size : 6.08 KB
+N * Compression Ratio : 37.19%
+N ************************************************************************/
+N
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 38 "..\..\Pictures\icons_oel.c" 2
+N#include "images_defs.h"
+L 1 "..\..\usecases\images\inc\images_defs.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved 
+N*   Toshiba Electronics Europe GmbH 
+N*   European LSI Design and Engineering Center (ELDEC)
+N****************************************************************************** 
+N*   File Name   : $RCSfile: images_defs.h,v $ 
+N*   Description : Image files
+N****************************************************************************** 
+N*   PROJECT     : Capricorn 
+N*   MODULE      : Graphics 
+N*               : $Name:  $ 
+N*   LIBRARIES   : None 
+N*   AUTHOR      : $Author: mto $
+N****************************************************************************** 
+N*   VERSION     : $Revision: 1.1 $ 
+N*   RELEASE     : Preliminary & Confidential 
+N*   DATE        : $Date: 2014/05/09 14:05:52 $ 
+N*   SOURCE MOD. : $Source: /teenet/mpumcu/Capricorn/Capricorn_Bt/bld/Basic_Graphics_Keil/usecases/images/inc/images_defs.h,v $ 
+N*   LOG:        : please have a look at the end of the file
+N*****************************************************************************/
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 1.16
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 11.3.2013 @ 11:43
+N ************************************************************************/
+N#ifndef IMAGES_DEFS_H
+N#define IMAGES_DEFS_H
+N
+N#define BACKGROUND_COLOR_0 (0x0000FFFF)
+N#define BACKGROUND_COLOR_1 (0x00FF00FF)
+N
+N#define BLINKER_LINKS_OFF_SIZE (2467)
+N#define BLINKER_LINKS_OFF_HEIGHT (69)
+N#define BLINKER_LINKS_OFF_WIDTH (65)
+N#define BLINKER_LINKS_OFF_XPOS (0)
+N#define BLINKER_LINKS_OFF_YPOS (0)
+N#define BLINKER_LINKS_OFF_XCPOS (0)
+N#define BLINKER_LINKS_OFF_YCPOS (0)
+N#define STIMAGE_INDICATOR_SIZE_X (4)
+N#define STIMAGE_INDICATOR_SIZE_Y (1)
+N
+N#define BLINKER_LINKS_ON_SIZE (3496)
+N#define BLINKER_LINKS_ON_HEIGHT (69)
+N#define BLINKER_LINKS_ON_WIDTH (65)
+N#define BLINKER_LINKS_ON_XPOS (0)
+N#define BLINKER_LINKS_ON_YPOS (0)
+N#define BLINKER_LINKS_ON_XCPOS (0)
+N#define BLINKER_LINKS_ON_YCPOS (0)
+N
+N#define BLINKER_RECHTS_OFF_SIZE (2505)
+N#define BLINKER_RECHTS_OFF_HEIGHT (69)
+N#define BLINKER_RECHTS_OFF_WIDTH (65)
+N#define BLINKER_RECHTS_OFF_XPOS (0)
+N#define BLINKER_RECHTS_OFF_YPOS (0)
+N#define BLINKER_RECHTS_OFF_XCPOS (0)
+N#define BLINKER_RECHTS_OFF_YCPOS (0)
+N
+N#define BLINKER_RECHTS_ON_SIZE (3481)
+N#define BLINKER_RECHTS_ON_HEIGHT (69)
+N#define BLINKER_RECHTS_ON_WIDTH (65)
+N#define BLINKER_RECHTS_ON_XPOS (0)
+N#define BLINKER_RECHTS_ON_YPOS (0)
+N#define BLINKER_RECHTS_ON_XCPOS (0)
+N#define BLINKER_RECHTS_ON_YCPOS (0)
+N
+N#define ICONS_ABBLENDLICHT_SIZE (1662)
+N#define ICONS_ABBLENDLICHT_HEIGHT (42)
+N#define ICONS_ABBLENDLICHT_WIDTH (59)
+N#define ICONS_ABBLENDLICHT_XPOS (0)
+N#define ICONS_ABBLENDLICHT_YPOS (0)
+N#define ICONS_ABBLENDLICHT_XCPOS (0)
+N#define ICONS_ABBLENDLICHT_YCPOS (0)
+N#define STIMAGE_ICONS_SIZE_X (4)
+N#define STIMAGE_ICONS_SIZE_Y (1)
+N
+N#define ICONS_BATTERIE_SIZE (1552)
+N#define ICONS_BATTERIE_HEIGHT (42)
+N#define ICONS_BATTERIE_WIDTH (59)
+N#define ICONS_BATTERIE_XPOS (0)
+N#define ICONS_BATTERIE_YPOS (0)
+N#define ICONS_BATTERIE_XCPOS (0)
+N#define ICONS_BATTERIE_YCPOS (0)
+N
+N#define ICONS_FERNLICHT_SIZE (1519)
+N#define ICONS_FERNLICHT_HEIGHT (42)
+N#define ICONS_FERNLICHT_WIDTH (59)
+N#define ICONS_FERNLICHT_XPOS (0)
+N#define ICONS_FERNLICHT_YPOS (0)
+N#define ICONS_FERNLICHT_XCPOS (0)
+N#define ICONS_FERNLICHT_YCPOS (0)
+N
+N#define ICONS_OEL_SIZE (1557)
+N#define ICONS_OEL_HEIGHT (42)
+N#define ICONS_OEL_WIDTH (59)
+N#define ICONS_OEL_XPOS (0)
+N#define ICONS_OEL_YPOS (0)
+N#define ICONS_OEL_XCPOS (0)
+N#define ICONS_OEL_YCPOS (0)
+N
+N#endif
+N/***************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the ï¿½Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (ï¿½Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customerï¿½s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+N/********************************* BEGIN OF LOG ******************************
+N*
+N* $Log: images_defs.h,v $
+N* Revision 1.1  2014/05/09 14:05:52  mto
+N* initial version
+N*
+N* 
+N********************************** END OF LOG ******************************/ 
+L 39 "..\..\Pictures\icons_oel.c" 2
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section data = ".ROMgraphics"
+S#define ALIGNED
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .data ".ROMgraphics"
+S/* fixme: specify alignment */
+S#define ALIGNED
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rwdata = ".ROMgraphics"
+N#define ALIGNED __align(8)
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma alignvar(8)
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+NALIGNED uint32_t u32_icons_oel_RLE[ICONS_OEL_SIZE] = {
+X__align(8) uint32_t u32_icons_oel_RLE[(1557)] = {
+N0x9494008b, 0x94000bfc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 
+N0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x0084fc94, 0x08fc9494, 0xfc949400, 0xfc949404, 
+N0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0x94940085, 0x940002fc, 
+N0x9404fc94, 0x008ffc94, 0x0bfc9494, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 
+N0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0x9494008e, 0x940002fc, 
+N0x9404fc94, 0x008afc94, 0x02fc9494, 0xfc949400, 0xfc949404, 0x94940085, 0x94000efc, 0x9404fc94, 
+N0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 
+N0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x00abfc94, 0x02fc9494, 0xfc949400, 0xfc949404, 
+N0x94940092, 0x940002fc, 0x9404fc94, 0x00a2fc94, 0x02fc9494, 0xfc949400, 0xfc949404, 0x9494008e, 
+N0x940005fc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x008bfc94, 0x01fc9494, 0xfc949400, 
+N0x94940483, 0x940401fc, 0x0084fc94, 0x01fc9494, 0xfc949400, 0x9494048b, 0x940401fc, 0x00a2fc94, 
+N0x03fc9494, 0xfc949400, 0xfc949404, 0xfc949404, 0x94940884, 0x940801fc, 0x0484fc94, 0x01fc9494, 
+N0xfc949404, 0x94940882, 0x940805fc, 0x940cfc94, 0x9408fc94, 0x9408fc94, 0x940cfc94, 0x0885fc94, 
+N0x03fc9494, 0xfc949408, 0xfc949404, 0xfc949404, 0x9494008b, 0x940002fc, 0x9404fc94, 0x0087fc94, 
+N0x02fc9494, 0xfc949400, 0xfc949404, 0x94940087, 0x940005fc, 0x9404fc94, 0x9404fc94, 0x9408fc94, 
+N0x9408fc94, 0x0c86fc94, 0x03fc9494, 0xfc94940c, 0xfc949408, 0xfc949408, 0x94940c82, 0x940c0ffc, 
+N0x9410fc94, 0x940cfc94, 0x9410fc94, 0x940cfc94, 0x9410fc94, 0x940cfc94, 0x9410fc94, 0x940cfc94, 
+N0x9410fc94, 0x940cfc94, 0x940cfc94, 0x9408fc94, 0x9404fc94, 0x9404fc94, 0x0086fc94, 0x01fc9494, 
+N0xfc949400, 0x94940482, 0x940403fc, 0x9408fc94, 0x9408fc94, 0x0482fc94, 0x01fc9494, 0xfc949404, 
+N0x9494008d, 0x940008fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x940cfc94, 0x9410fc94, 0x9410fc94, 
+N0x9414fc94, 0x1083fc94, 0x01fc9494, 0xfc949410, 0x94940c82, 0x940c03fc, 0x9410fc94, 0x9410fc94, 
+N0x1487fc94, 0x01fc9494, 0xfc949414, 0x94941082, 0x941005fc, 0x940cfc94, 0x940cfc94, 0x9408fc94, 
+N0x9404fc94, 0x0082fc94, 0x03fc9494, 0xfc949400, 0xfc949404, 0xfc949404, 0x94940882, 0x940801fc, 
+N0x0c83fc94, 0x05fc9494, 0xfc94940c, 0xfc949408, 0xfc949408, 0xfc949404, 0xfc949404, 0x94940084, 
+N0x940002fc, 0x9404fc94, 0x0084fc94, 0x07fc9494, 0xfc949400, 0xfc949404, 0xfc949408, 0xfc94940c, 
+N0xfc949410, 0xfc949414, 0xfc949414, 0x94941883, 0x941807fc, 0x9414fc94, 0x9410fc94, 0x9414fc94, 
+N0x9410fc94, 0x9414fc94, 0x9414fc94, 0x188afc94, 0x07fc9494, 0xfc949418, 0xfc949414, 0xfc949414, 
+N0xfc94940c, 0xfc94940c, 0xfc949408, 0xfc949404, 0x94940883, 0x940801fc, 0x0c82fc94, 0x01fc9494, 
+N0xfc94940c, 0x94941083, 0x941006fc, 0x940cfc94, 0x940cfc94, 0x9408fc94, 0x9408fc94, 0x9404fc94, 
+N0x0088fc94, 0x08fc9494, 0xfc949400, 0xfc949404, 0xfc949408, 0xfc94940c, 0xfc949410, 0xfc949410, 
+N0xfc949418, 0xfc949418, 0x94941c83, 0x941c01fc, 0x1882fc94, 0x0cfc9494, 0xfc949418, 0xfc949414, 
+N0xfc949418, 0xfc94941c, 0xfc94941c, 0xfc949420, 0xfc94941c, 0xfc949420, 0xfc94941c, 0xfc949420, 
+N0xfc94941c, 0xfc949420, 0x94941c82, 0x941c05fc, 0x9418fc94, 0x9414fc94, 0x9414fc94, 0x940cfc94, 
+N0x0882fc94, 0x03fc9494, 0xfc949408, 0xfc94940c, 0xfc94940c, 0x94941082, 0x941001fc, 0x1485fc94, 
+N0x06fc9494, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 0xfc949408, 0xfc949404, 0x94940087, 
+N0x94000afc, 0x9408fc94, 0x9408fc94, 0x940cfc94, 0x9414fc94, 0x9418fc94, 0x9418fc94, 0x9420fc94, 
+N0x9420fc94, 0x9424fc94, 0x2083fc94, 0x01fc9494, 0xfc949420, 0x94941c82, 0x941c01fc, 0x2082fc94, 
+N0x01fc9494, 0xfc949420, 0x94942485, 0x94240afc, 0x9420fc94, 0x9424fc94, 0x9420fc94, 0x941cfc94, 
+N0x9418fc94, 0x9414fc94, 0x9410fc94, 0x940cfc94, 0x940cfc94, 0x1082fc94, 0x0ffc9494, 0xfc949410, 
+N0xfc949414, 0xfc949414, 0xfc949418, 0xfc949418, 0xfc94941c, 0xfc949418, 0xfc94941c, 0xfc949418, 
+N0xfc949418, 0xfc949414, 0xfc949410, 0xfc949410, 0xfc949408, 0xfc949404, 0x94940087, 0x94000dfc, 
+N0x9408fc94, 0x940cfc94, 0x9410fc94, 0x9414fc94, 0x9418fc94, 0x9420fc94, 0x9424fc94, 0x9424fc94, 
+N0x9428fc94, 0x9428fc94, 0x9424fc94, 0x9424fc94, 0x2083fc94, 0x02fc9494, 0xfc949420, 0xfc949424, 
+N0x94942889, 0x942807fc, 0x9424fc94, 0x9420fc94, 0x941cfc94, 0x9418fc94, 0x9414fc94, 0x9410fc94, 
+N0x1482fc94, 0x01fc9494, 0xfc949414, 0x94941882, 0x941803fc, 0x941cfc94, 0x941cfc94, 0x2083fc94, 
+N0x08fc9494, 0xfc949420, 0xfc94941c, 0xfc949418, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 
+N0xfc949404, 0x94940085, 0x94000afc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9410fc94, 0x9418fc94, 
+N0x941cfc94, 0x9424fc94, 0x9424fc94, 0x9428fc94, 0x2c82fc94, 0x01fc9494, 0xfc94942c, 0x94942882, 
+N0x942801fc, 0x2482fc94, 0x04fc9494, 0xfc949424, 0xfc949428, 0xfc94942c, 0xfc94942c, 0x94943084, 
+N0x943007fc, 0x942cfc94, 0x942cfc94, 0x9428fc94, 0x9424fc94, 0x9420fc94, 0x9418fc94, 0x1482fc94, 
+N0x04fc9494, 0xfc949414, 0xfc949418, 0xfc94941c, 0xfc94941c, 0x94942082, 0x942001fc, 0x2484fc94, 
+N0x09fc9494, 0xfc949424, 0xfc949420, 0xfc94941c, 0xfc949418, 0xfc949414, 0xfc94940c, 0xfc94940c, 
+N0xfc949404, 0xfc949404, 0x94940084, 0x940010fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9414fc94, 
+N0x9418fc94, 0x941cfc94, 0x9424fc94, 0x9428fc94, 0x942cfc94, 0x24ccfc94, 0x30b8fc24, 0x5880fc30, 
+N0x8448fc58, 0x942cfc84, 0x942cfc94, 0x2882fc94, 0x03fc9494, 0xfc949428, 0xfc94942c, 0xfc1c1cd4, 
+N0x0000fc86, 0x00fc07fc, 0x7060fc00, 0x9428fc70, 0x9424fc94, 0x9420fc94, 0x9418fc94, 0x9418fc94, 
+N0x1c82fc94, 0x13fc9494, 0xfc94941c, 0xfc949420, 0xfc949424, 0xfc949420, 0xfc949424, 0xfc949424, 
+N0xfc949428, 0xfc949428, 0xfc94942c, 0xfc949428, 0xfc949428, 0xfc949424, 0xfc949420, 0xfc949418, 
+N0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 0xfc949404, 0x94940084, 0x94000afc, 0x9404fc94, 
+N0x9408fc94, 0x9410fc94, 0x9414fc94, 0x9418fc94, 0x9420fc94, 0x9424fc94, 0x9428fc94, 0x9034fc94, 
+N0xfc83fc90, 0x08fc0000, 0xfc0000fc, 0xfc1414e0, 0xfc4040a4, 0xfc646470, 0xfc8c8c38, 0xfc94942c, 
+N0xfc94942c, 0xfc2020d4, 0x0000fc86, 0x00fc06fc, 0x7060fc00, 0x9428fc70, 0x9424fc94, 0x9420fc94, 
+N0x941cfc94, 0x2082fc94, 0x01fc9494, 0xfc949420, 0x94942482, 0x942411fc, 0x9428fc94, 0x9428fc94, 
+N0x942cfc94, 0x942cfc94, 0x883cfc94, 0x5c7cfc88, 0x6c60fc5c, 0x942cfc6c, 0x9424fc94, 0x9420fc94, 
+N0x941cfc94, 0x9418fc94, 0x9414fc94, 0x9410fc94, 0x9408fc94, 0x9404fc94, 0x0084fc94, 0x23fc9494, 
+N0xfc949400, 0xfc949404, 0xfc94940c, 0xfc949410, 0xfc949414, 0xfc949418, 0xfc949420, 0xfc949424, 
+N0xfc949428, 0xfc707060, 0xfc0000fc, 0xfc585884, 0xfc585884, 0xfc2828c4, 0xfc0404f8, 0xfc0000fc, 
+N0xfc0000fc, 0xfc1010e8, 0xfc8c8c34, 0xfc94942c, 0xfc909030, 0xfc909030, 0xfc2828c8, 0xfc0000fc, 
+N0xfc0000fc, 0xfc2020d0, 0xfc909030, 0xfc909030, 0xfc94942c, 0xfc949428, 0xfc949428, 0xfc949424, 
+N0xfc949424, 0xfc949420, 0xfc949424, 0x94942882, 0x942812fc, 0x942cfc94, 0x942cfc94, 0x8444fc94, 
+N0x5488fc84, 0x28c8fc54, 0x00fcfc28, 0x00fcfc00, 0x18e0fc00, 0x9030fc18, 0x9428fc90, 0x9424fc94, 
+N0x941cfc94, 0x9418fc94, 0x9414fc94, 0x9410fc94, 0x9408fc94, 0x9404fc94, 0x0084fc94, 0x13fc9494, 
+N0xfc949400, 0xfc949408, 0xfc94940c, 0xfc949410, 0xfc949414, 0xfc94941c, 0xfc949420, 0xfc949424, 
+N0xfc94942c, 0xfc545488, 0xfc0000fc, 0xfc84843c, 0xfc94942c, 0xfc94942c, 0xfc88883c, 0xfc545488, 
+N0xfc0000fc, 0xfc0000fc, 0xfc484898, 0x7c7c5082, 0x7c5005fc, 0x20d0fc7c, 0x00fcfc20, 0x00fcfc00, 
+N0x1cd8fc00, 0x5082fc1c, 0x06fc7c7c, 0xfc7c7c50, 0xfc7c7c4c, 0xfc94942c, 0xfc949428, 0xfc949424, 
+N0xfc949428, 0x94942c82, 0x942c04fc, 0x7850fc94, 0x4c94fc78, 0x1cd8fc4c, 0xfc85fc1c, 0x0afc0000, 
+N0xfc0000fc, 0xfc585880, 0xfc94942c, 0xfc949424, 0xfc949420, 0xfc94941c, 0xfc949414, 0xfc949410, 
+N0xfc94940c, 0xfc949408, 0x94940083, 0x94000dfc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9414fc94, 
+N0x9418fc94, 0x941cfc94, 0x9424fc94, 0x9424fc94, 0x942cfc94, 0x38b0fc94, 0x18dcfc38, 0x942cfc18, 
+N0x2882fc94, 0x03fc9494, 0xfc949428, 0xfc94942c, 0xfc44449c, 0x0000fc8c, 0x00fc08fc, 0x40a4fc00, 
+N0x9030fc40, 0x942cfc90, 0x902cfc94, 0x745cfc90, 0x44a0fc74, 0x14e0fc44, 0xfc85fc14, 0x0dfc0000, 
+N0xfc0000fc, 0xfc4040a4, 0xfc68686c, 0xfc68686c, 0xfc70705c, 0xfc949428, 0xfc949424, 0xfc949420, 
+N0xfc94941c, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 0x94940083, 0x940016fc, 0x9404fc94, 
+N0x9408fc94, 0x940cfc94, 0x9410fc94, 0x9418fc94, 0x941cfc94, 0x9420fc94, 0x9428fc94, 0x942cfc94, 
+N0x1cd8fc94, 0x10e4fc1c, 0x4c90fc10, 0x7858fc4c, 0x902cfc78, 0x942cfc90, 0x942cfc94, 0x4c94fc94, 
+N0x00fcfc4c, 0x18e0fc00, 0x24c8fc18, 0x24ccfc24, 0xc887fc24, 0x06fc2424, 0xfc2424c8, 0xfc2020d0, 
+N0xfc0000fc, 0xfc3030b8, 0xfc3c3cac, 0xfc1010ec, 0x0000fc82, 0x00fc09fc, 0x04f8fc00, 0x30bcfc04, 
+N0x28c4fc30, 0x00fcfc28, 0x00fcfc00, 0x28c4fc00, 0x902cfc28, 0x942cfc90, 0x2882fc94, 0x08fc9494, 
+N0xfc949428, 0xfc949424, 0xfc949420, 0xfc949418, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949404, 
+N0x94940083, 0x940015fc, 0x9404fc94, 0x9408fc94, 0x9410fc94, 0x9414fc94, 0x9418fc94, 0x941cfc94, 
+N0x9424fc94, 0x9428fc94, 0x942cfc94, 0x30b8fc94, 0x08f4fc30, 0x00fcfc08, 0x00fcfc00, 0x0cf0fc00, 
+N0x30b8fc0c, 0x5884fc30, 0x3ca8fc58, 0x00fcfc3c, 0x6478fc00, 0x902cfc64, 0x2c89fc90, 0x02fc9494, 
+N0xfc94942c, 0xfc4c4c90, 0x0000fc83, 0x00fc15fc, 0x24ccfc00, 0x5880fc24, 0x8c3cfc58, 0x9430fc8c, 
+N0x489cfc94, 0x00fcfc48, 0x10e8fc00, 0x883cfc10, 0x9428fc88, 0x9428fc94, 0x883cfc94, 0x8838fc88, 
+N0x9424fc88, 0x9424fc94, 0x9420fc94, 0x941cfc94, 0x9414fc94, 0x9410fc94, 0x940cfc94, 0x9408fc94, 
+N0x0083fc94, 0x0ffc9494, 0xfc949400, 0xfc949404, 0xfc949408, 0xfc94940c, 0xfc949410, 0xfc949418, 
+N0xfc94941c, 0xfc949424, 0xfc949424, 0xfc949428, 0xfc94942c, 0xfc8c8c34, 0xfc68686c, 0xfc3838ac, 
+N0xfc0c0cec, 0x0000fc83, 0x00fc02fc, 0x5c78fc00, 0x2888fc5c, 0x1dfc9494, 0xfc949428, 0xfc949424, 
+N0xfc949428, 0xfc94942c, 0xfc545488, 0xfc1818dc, 0xfc4c4c90, 0xfc808048, 0xfc94942c, 0xfc94942c, 
+N0xfc949430, 0xfc646470, 0xfc0000fc, 0xfc0404f8, 0xfc747458, 0xfc94942c, 0xfc949424, 0xfc949428, 
+N0xfc44449c, 0xfc4c4c94, 0xfc949428, 0xfc949424, 0xfc949420, 0xfc94941c, 0xfc949414, 0xfc949414, 
+N0xfc94940c, 0xfc949408, 0xfc949404, 0x94940083, 0x940007fc, 0x9408fc94, 0x940cfc94, 0x9410fc94, 
+N0x9414fc94, 0x9418fc94, 0x941cfc94, 0x2482fc94, 0x0cfc9494, 0xfc949424, 0xfc949428, 0xfc949428, 
+N0xfc94942c, 0xfc909030, 0xfc6c6c60, 0xfc4040a4, 0xfc1010e8, 0xfc0000fc, 0xfc5c5c78, 0xfc94942c, 
+N0xfc949424, 0x94942086, 0x942006fc, 0x9424fc94, 0x9424fc94, 0x9428fc94, 0x942cfc94, 0x942cfc94, 
+N0x2882fc94, 0x15fc9494, 0xfc949428, 0xfc94942c, 0xfc7c7c4c, 0xfc0808f4, 0xfc0000fc, 0xfc545488, 
+N0xfc94942c, 0xfc949428, 0xfc949424, 0xfc94942c, 0xfc2020d0, 0xfc2424c8, 0xfc94942c, 0xfc949424, 
+N0xfc949420, 0xfc949420, 0xfc949418, 0xfc949410, 0xfc94940c, 0xfc949408, 0xfc949404, 0x94940083, 
+N0x940009fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9410fc94, 0x9418fc94, 0x941cfc94, 0x9420fc94, 
+N0x9420fc94, 0x2482fc94, 0x01fc9494, 0xfc949424, 0x94942882, 0x942807fc, 0x942cfc94, 0x4c94fc94, 
+N0x00fcfc4c, 0x5c78fc00, 0x9428fc5c, 0x9424fc94, 0x2087fc94, 0x01fc9494, 0xfc949420, 0x94942482, 
+N0x942401fc, 0x2882fc94, 0x16fc9494, 0xfc949428, 0xfc94942c, 0xfc909034, 0xfc1c1cd8, 0xfc0000fc, 
+N0xfc3030b8, 0xfc94942c, 0xfc949428, 0xfc949424, 0xfc949424, 0xfc8c8c34, 0xfc0404f8, 0xfc0404f8, 
+N0xfc909030, 0xfc949424, 0xfc949424, 0xfc94941c, 0xfc949418, 0xfc949414, 0xfc949410, 0xfc949408, 
+N0xfc949404, 0x94940083, 0x94000afc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9410fc94, 0x9410fc94, 
+N0x9418fc94, 0x9418fc94, 0x941cfc94, 0x941cfc94, 0x2082fc94, 0x09fc9494, 0xfc949420, 0xfc949424, 
+N0xfc949424, 0xfc94942c, 0xfc4c4c90, 0xfc0000fc, 0xfc5c5c78, 0xfc94942c, 0xfc949424, 0x94942088, 
+N0x942001fc, 0x2483fc94, 0x17fc9494, 0xfc949424, 0xfc949428, 0xfc94942c, 0xfc3838b0, 0xfc0000fc, 
+N0xfc1818e0, 0xfc8c8c34, 0xfc949428, 0xfc949428, 0xfc949424, 0xfc949424, 0xfc74745c, 0xfc0000fc, 
+N0xfc0000fc, 0xfc7c7c4c, 0xfc949424, 0xfc949424, 0xfc949420, 0xfc949418, 0xfc949414, 0xfc949410, 
+N0xfc949408, 0xfc949408, 0x94940084, 0x940005fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9410fc94, 
+N0x1482fc94, 0x30fc9494, 0xfc949414, 0xfc949418, 0xfc949418, 0xfc94941c, 0xfc949420, 0xfc949420, 
+N0xfc949428, 0xfc949428, 0xfc4c4c94, 0xfc0000fc, 0xfc646478, 0xfc949428, 0xfc949428, 0xfc949424, 
+N0xfc949428, 0xfc949424, 0xfc949424, 0xfc949428, 0xfc949424, 0xfc949424, 0xfc949428, 0xfc949424, 
+N0xfc949424, 0xfc949428, 0xfc949424, 0xfc949428, 0xfc94942c, 0xfc5c5c7c, 0xfc0000fc, 0xfc0404f4, 
+N0xfc787850, 0xfc949428, 0xfc949428, 0xfc949420, 0xfc949424, 0xfc949424, 0xfc909034, 0xfc3434b4, 
+N0xfc3838ac, 0xfc94942c, 0xfc949424, 0xfc949424, 0xfc949420, 0xfc949418, 0xfc949414, 0xfc949410, 
+N0xfc94940c, 0xfc949404, 0x94940085, 0x940006fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x940cfc94, 
+N0x9410fc94, 0x1482fc94, 0x20fc9494, 0xfc949414, 0xfc949418, 0xfc949418, 0xfc949420, 0xfc949428, 
+N0xfc949428, 0xfc4c4c94, 0xfc0000fc, 0xfc5c5c78, 0xfc94942c, 0xfc94942c, 0xfc949428, 0xfc94942c, 
+N0xfc949428, 0xfc94942c, 0xfc949428, 0xfc94942c, 0xfc949428, 0xfc94942c, 0xfc949428, 0xfc94942c, 
+N0xfc949428, 0xfc94942c, 0xfc94942c, 0xfc787850, 0xfc0404f8, 0xfc0000fc, 0xfc5c5c7c, 0xfc94942c, 
+N0xfc949428, 0xfc949424, 0xfc949420, 0x94942482, 0x94240cfc, 0x942cfc94, 0x9428fc94, 0x9424fc94, 
+N0x9424fc94, 0x9420fc94, 0x941cfc94, 0x9418fc94, 0x9414fc94, 0x940cfc94, 0x9408fc94, 0x9404fc94, 
+N0x0086fc94, 0x04fc9494, 0xfc949400, 0xfc949404, 0xfc949404, 0xfc949408, 0x94940c82, 0x940c0afc, 
+N0x9410fc94, 0x9414fc94, 0x941cfc94, 0x9420fc94, 0x9424fc94, 0x942cfc94, 0x4c94fc94, 0x00fcfc4c, 
+N0x28c4fc00, 0xa48efc28, 0x0afc4040, 0xfc4040a4, 0xfc1414e4, 0xfc0000fc, 0xfc3838ac, 0xfc94942c, 
+N0xfc949428, 0xfc949424, 0xfc949420, 0xfc94941c, 0xfc94941c, 0x94942485, 0x942408fc, 0x941cfc94, 
+N0x941cfc94, 0x9414fc94, 0x9410fc94, 0x940cfc94, 0x9408fc94, 0x9404fc94, 0x0082fc94, 0x02fc9494, 
+N0xfc949400, 0xfc949404, 0x94940083, 0x940001fc, 0x0482fc94, 0x0afc9494, 0xfc949404, 0xfc949408, 
+N0xfc94940c, 0xfc949410, 0xfc949414, 0xfc94941c, 0xfc949420, 0xfc949424, 0xfc94942c, 0xfc4c4c90, 
+N0x0000fc91, 0x00fc06fc, 0x1cd8fc00, 0x8c34fc1c, 0x9428fc8c, 0x9424fc94, 0x9420fc94, 0x1c83fc94, 
+N0x03fc9494, 0xfc94941c, 0xfc949420, 0xfc949424, 0x94942082, 0x942007fc, 0x941cfc94, 0x9414fc94, 
+N0x9414fc94, 0x940cfc94, 0x9408fc94, 0x9408fc94, 0x008afc94, 0x0bfc9494, 0xfc949400, 0xfc949404, 
+N0xfc949404, 0xfc94940c, 0xfc949410, 0xfc949414, 0xfc94941c, 0xfc949420, 0xfc949424, 0xfc949428, 
+N0xfc68686c, 0x3838b091, 0x38b00afc, 0x8048fc38, 0x9428fc80, 0x9428fc94, 0x9420fc94, 0x9420fc94, 
+N0x9418fc94, 0x9414fc94, 0x9414fc94, 0x9418fc94, 0x1c83fc94, 0x08fc9494, 0xfc94941c, 0xfc949418, 
+N0xfc949414, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 0xfc949404, 0x94940083, 0x940005fc, 
+N0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x0083fc94, 0x0afc9494, 0xfc949400, 0xfc949408, 
+N0xfc94940c, 0xfc949410, 0xfc949414, 0xfc949418, 0xfc949420, 0xfc949424, 0xfc949428, 0xfc949428, 
+N0x94942c91, 0x942c07fc, 0x9428fc94, 0x9428fc94, 0x9420fc94, 0x9420fc94, 0x9418fc94, 0x9418fc94, 
+N0x1482fc94, 0x01fc9494, 0xfc949414, 0x94941883, 0x941807fc, 0x9414fc94, 0x9414fc94, 0x9410fc94, 
+N0x940cfc94, 0x9408fc94, 0x9404fc94, 0x008cfc94, 0x0afc9494, 0xfc949400, 0xfc949404, 0xfc949408, 
+N0xfc94940c, 0xfc949414, 0xfc949418, 0xfc94941c, 0xfc949420, 0xfc949424, 0xfc949424, 0x94942891, 
+N0x942814fc, 0x9424fc94, 0x9424fc94, 0x9420fc94, 0x941cfc94, 0x9418fc94, 0x9410fc94, 0x9410fc94, 
+N0x940cfc94, 0x9410fc94, 0x9410fc94, 0x9414fc94, 0x9414fc94, 0x9410fc94, 0x9410fc94, 0x940cfc94, 
+N0x940cfc94, 0x9408fc94, 0x9404fc94, 0x9404fc94, 0x0084fc94, 0x05fc9494, 0xfc949400, 0xfc949404, 
+N0xfc949400, 0xfc949400, 0xfc949404, 0x94940083, 0x940008fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 
+N0x9410fc94, 0x9414fc94, 0x9418fc94, 0x941cfc94, 0x2094fc94, 0x08fc9494, 0xfc949420, 0xfc94941c, 
+N0xfc94941c, 0xfc949418, 0xfc949414, 0xfc949410, 0xfc94940c, 0xfc949408, 0x94940c82, 0x940c07fc, 
+N0x9410fc94, 0x940cfc94, 0x940cfc94, 0x9408fc94, 0x9404fc94, 0x9404fc94, 0x0083fc94, 0x02fc9494, 
+N0xfc949400, 0xfc949404, 0x9494008a, 0x940008fc, 0x9404fc94, 0x9408fc94, 0x940cfc94, 0x9410fc94, 
+N0x9414fc94, 0x9418fc94, 0x9418fc94, 0x1c94fc94, 0x07fc9494, 0xfc94941c, 0xfc949418, 0xfc949414, 
+N0xfc949410, 0xfc949410, 0xfc949408, 0xfc949404, 0x94940884, 0x940801fc, 0x0482fc94, 0x01fc9494, 
+N0xfc949404, 0x94940087, 0x940005fc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x0084fc94, 
+N0x06fc9494, 0xfc949400, 0xfc949404, 0xfc949408, 0xfc94940c, 0xfc94940c, 0xfc949410, 0x94941482, 
+N0x941410fc, 0x9418fc94, 0x9418fc94, 0x9414fc94, 0x9418fc94, 0x9418fc94, 0x9414fc94, 0x9418fc94, 
+N0x9418fc94, 0x9414fc94, 0x9418fc94, 0x9418fc94, 0x9414fc94, 0x9418fc94, 0x9418fc94, 0x9414fc94, 
+N0x1882fc94, 0x01fc9494, 0xfc949418, 0x94941482, 0x941407fc, 0x9410fc94, 0x940cfc94, 0x9408fc94, 
+N0x9404fc94, 0x9404fc94, 0x9400fc94, 0x0482fc94, 0x03fc9494, 0xfc949404, 0xfc949400, 0xfc949404, 
+N0x94940084, 0x940002fc, 0x9404fc94, 0x008dfc94, 0x05fc9494, 0xfc949400, 0xfc949404, 0xfc949404, 
+N0xfc94940c, 0xfc94940c, 0x94941084, 0x941010fc, 0x9414fc94, 0x9410fc94, 0x9414fc94, 0x9410fc94, 
+N0x9414fc94, 0x9410fc94, 0x9414fc94, 0x9410fc94, 0x9414fc94, 0x9410fc94, 0x9414fc94, 0x9410fc94, 
+N0x9414fc94, 0x9410fc94, 0x9414fc94, 0x1082fc94, 0x06fc9494, 0xfc949410, 0xfc94940c, 0xfc94940c, 
+N0xfc949408, 0xfc949404, 0xfc949404, 0x94940090, 0x940008fc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 
+N0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x0083fc94, 0x04fc9494, 0xfc949400, 0xfc949404, 
+N0xfc949404, 0xfc949408, 0x94940c96, 0x940c05fc, 0x9408fc94, 0x9408fc94, 0x9404fc94, 0x9404fc94, 
+N0x0082fc94, 0x0efc9494, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 
+N0x9494008e, 0x940003fc, 0x9404fc94, 0x9404fc94, 0x0895fc94, 0x03fc9494, 0xfc949408, 0xfc949404, 
+N0xfc949404, 0x94940093, 0x94000bfc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 
+N0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x0086fc94, 0x12fc9494, 0xfc949400, 
+N0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949404, 0x94940087, 0x94000efc, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 
+N0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 0x9400fc94, 0x9400fc94, 0x9404fc94, 
+N0x00befc94, 0x38fc9494, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 
+N0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 
+N0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 
+N0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 
+N0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 0xfc949400, 0xfc949404, 0xfc949400, 
+N0xfc949400, 0xfc949404, 0x949400f8, 0x940001fc, 0x0000fc94
+N};
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section data = "default"
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .data "default"
+S/* fixme: specify alignment */
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rwdata
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N/***************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the ï¿½Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (ï¿½Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customerï¿½s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+N/********************************* BEGIN OF LOG ******************************
+N*
+N* $Log: icons_oel.c,v $
+N* Revision 1.1  2014/05/09 14:05:52  mto
+N* initial version
+N*
+N*
+N********************************** END OF LOG ******************************/ 

@@ -1,0 +1,83 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;/******************************************************
+                       **********************
+    2 00000000         ;*   This software is copyright protected. All rights re
+                       served
+    3 00000000         ;*   Toshiba Electronics Europe GmbH,
+    4 00000000         ;*   European LSI Design and Engineering Centre (ELDEC)
+    5 00000000         ;*******************************************************
+                       **********************
+    6 00000000         ;*   DESCRIPTION :
+    7 00000000         ;*******************************************************
+                       **********************
+    8 00000000         ;*   PLATFORM    : TMPR46xXBG-300
+    9 00000000         ;*   PROJECT     :
+   10 00000000         ;*   MODULE      : 
+   11 00000000         ;*   LIBRARIES   :
+   12 00000000         ;;******************************************************
+                       ***********************
+   13 00000000         ;*   VERSION     : $Revision: 1.6 $ 
+   14 00000000         ;*   DATE        : $Date: 2015/05/04 09:07:15 $
+   15 00000000         ;*   TAG         : $Name: LLDD_1_6 $
+   16 00000000         ;*   RELEASE     : Preliminary and Confidential
+   17 00000000         ;*******************************************************
+                       **********************/
+   18 00000000         
+   19 00000000         ;*******************************************************
+                       **********************
+   20 00000000         ; exported function prototypes
+   21 00000000         ;*******************************************************
+                       **********************
+   22 00000000                 EXPORT           vNF_AddrBrstWr
+   23 00000000         
+   24 00000000                 AREA             rw_support, CODE, READONLY ;REA
+                                                            DONLY is default fo
+                                                            r CODE
+   25 00000000         
+   26 00000000         ;*******************************************************
+                       **********************
+   27 00000000         ; void vNF_AddrBrstWr(uint32_t u32CmdPhAddr, uint32_t u3
+                       2BlkWrd0, uint32_t u32BlkWrd1)
+   28 00000000         ; Function writes a burst of 2 32-bit words.
+   29 00000000         ;*******************************************************
+                       **********************
+   30 00000000         vNF_AddrBrstWr
+   31 00000000 E52DE004        PUSH             {lr}
+   32 00000004 E8800006        STM              r0, {r1-r2}
+   33 00000008 E49DF004        POP              {pc}
+   34 0000000C         
+   35 0000000C                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-R4 --apcs=interw
+ork --depend=..\out\pl353_rw_support.d -o..\out\pl353_rw_support.o -I..\..\..\.
+.\cortex_r4_keil\inc -IC:\Keil_v5\ARM\RV31\INC -IC:\Keil_v5\ARM\CMSIS\Include -
+-predefine="__UVISION_VERSION SETA 516" --list=..\out\pl353_rw_support.lst ..\.
+.\..\..\lldd\src\pl353_rw_support.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+rw_support 00000000
+
+Symbol: rw_support
+   Definitions
+      At line 24 in file ..\..\..\..\lldd\src\pl353_rw_support.s
+   Uses
+      None
+Comment: rw_support unused
+vNF_AddrBrstWr 00000000
+
+Symbol: vNF_AddrBrstWr
+   Definitions
+      At line 30 in file ..\..\..\..\lldd\src\pl353_rw_support.s
+   Uses
+      At line 22 in file ..\..\..\..\lldd\src\pl353_rw_support.s
+Comment: vNF_AddrBrstWr used once
+2 symbols
+333 symbols in table

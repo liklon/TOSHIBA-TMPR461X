@@ -1,0 +1,1614 @@
+L 1 "..\..\Pictures\disfont_14x\disfont2.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved 
+N*   Toshiba Electronics Europe GmbH 
+N*   European LSI Design and Engineering Center (ELDEC)
+N****************************************************************************** 
+N*   File Name   : $RCSfile: $ 
+N*   Description : Image file
+N****************************************************************************** 
+N*   PROJECT     : Capricorn 
+N*   MODULE      : Graphics 
+N*               : $Name: $ 
+N*   LIBRARIES   : None 
+N*   AUTHOR      : $Author: $
+N****************************************************************************** 
+N*   VERSION     : $Revision: $ 
+N*   RELEASE     : Preliminary & Confidential 
+N*   DATE        : $Date: $ 
+N*   SOURCE MOD. : $Source: $ 
+N*   LOG:        : please have a look at the end of the file
+N*****************************************************************************/
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 2.00
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 22.04.2016 @ 18:20
+N * Output format: FMT_RLERGBA24
+N * Image Dimensions : Width=13, Height=20
+N * Input Filename: C:\Users\liklon\Desktop\CM000\10\disfont2.png
+N * Data is RLE compressed
+N * Uncompressed Data Size : 1.02 KB
+N * Compressed Data Size : 0.46 KB
+N * Compression Ratio : 54.90%
+N ************************************************************************/
+N
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 38 "..\..\Pictures\disfont_14x\disfont2.c" 2
+N#include "images_defs.h"
+L 1 "..\..\usecases\images\inc\images_defs.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved 
+N*   Toshiba Electronics Europe GmbH 
+N*   European LSI Design and Engineering Center (ELDEC)
+N****************************************************************************** 
+N*   File Name   : $RCSfile: $ 
+N*   Description : Image file
+N****************************************************************************** 
+N*   PROJECT     : Capricorn 
+N*   MODULE      : Graphics 
+N*               : $Name: $ 
+N*   LIBRARIES   : None 
+N*   AUTHOR      : $Author: $
+N****************************************************************************** 
+N*   VERSION     : $Revision: $ 
+N*   RELEASE     : Preliminary & Confidential 
+N*   DATE        : $Date: $ 
+N*   SOURCE MOD. : $Source: $ 
+N*   LOG:        : please have a look at the end of the file
+N*****************************************************************************/
+N/************************************************************************
+N * Generated using TEE Capricorn: Image to C Code Generator
+N * Version 2.00
+N * Toshiba Electronics Europe GmbH
+N * This software is copyright protected. All rights reserved
+N ************************************************************************
+N * Converted on: 21.01.2016 @ 10:59
+N ************************************************************************/
+N#ifndef IMAGES_DEFS_H
+N#define IMAGES_DEFS_H
+N
+N/**   
+N	A -- Z
+N*/
+N
+N/******************************************************************AZ**/
+N
+N#define AA0_SIZE (134)
+N#define AA0_HEIGHT (20)
+N#define AA0_WIDTH (14)
+N#define AA0_XPOS (0)
+N#define AA0_YPOS (0)
+N#define AA0_XCPOS (0)
+N#define AA0_YCPOS (0)
+N
+N#define AA1_SIZE (141)
+N#define AA1_HEIGHT (20)
+N#define AA1_WIDTH (14)
+N#define AA1_XPOS (0)
+N#define AA1_YPOS (0)
+N#define AA1_XCPOS (0)
+N#define AA1_YCPOS (0)
+N
+N#define AA10_SIZE (149)
+N#define AA10_HEIGHT (20)
+N#define AA10_WIDTH (14)
+N#define AA10_XPOS (0)
+N#define AA10_YPOS (0)
+N#define AA10_XCPOS (0)
+N#define AA10_YCPOS (0)
+N
+N#define AA11_SIZE (79)
+N#define AA11_HEIGHT (20)
+N#define AA11_WIDTH (14)
+N#define AA11_XPOS (0)
+N#define AA11_YPOS (0)
+N#define AA11_XCPOS (0)
+N#define AA11_YCPOS (0)
+N
+N#define AA12_SIZE (182)
+N#define AA12_HEIGHT (20)
+N#define AA12_WIDTH (14)
+N#define AA12_XPOS (0)
+N#define AA12_YPOS (0)
+N#define AA12_XCPOS (0)
+N#define AA12_YCPOS (0)
+N
+N#define AA13_SIZE (180)
+N#define AA13_HEIGHT (20)
+N#define AA13_WIDTH (14)
+N#define AA13_XPOS (0)
+N#define AA13_YPOS (0)
+N#define AA13_XCPOS (0)
+N#define AA13_YCPOS (0)
+N
+N#define AA14_SIZE (156)
+N#define AA14_HEIGHT (20)
+N#define AA14_WIDTH (14)
+N#define AA14_XPOS (0)
+N#define AA14_YPOS (0)
+N#define AA14_XCPOS (0)
+N#define AA14_YCPOS (0)
+N
+N#define AA15_SIZE (135)
+N#define AA15_HEIGHT (20)
+N#define AA15_WIDTH (14)
+N#define AA15_XPOS (0)
+N#define AA15_YPOS (0)
+N#define AA15_XCPOS (0)
+N#define AA15_YCPOS (0)
+N
+N#define AA16_SIZE (160)
+N#define AA16_HEIGHT (20)
+N#define AA16_WIDTH (14)
+N#define AA16_XPOS (0)
+N#define AA16_YPOS (0)
+N#define AA16_XCPOS (0)
+N#define AA16_YCPOS (0)
+N
+N#define AA17_SIZE (145)
+N#define AA17_HEIGHT (20)
+N#define AA17_WIDTH (14)
+N#define AA17_XPOS (0)
+N#define AA17_YPOS (0)
+N#define AA17_XCPOS (0)
+N#define AA17_YCPOS (0)
+N
+N#define AA18_SIZE (147)
+N#define AA18_HEIGHT (20)
+N#define AA18_WIDTH (14)
+N#define AA18_XPOS (0)
+N#define AA18_YPOS (0)
+N#define AA18_XCPOS (0)
+N#define AA18_YCPOS (0)
+N
+N#define AA19_SIZE (79)
+N#define AA19_HEIGHT (20)
+N#define AA19_WIDTH (14)
+N#define AA19_XPOS (0)
+N#define AA19_YPOS (0)
+N#define AA19_XCPOS (0)
+N#define AA19_YCPOS (0)
+N
+N#define AA2_SIZE (147)
+N#define AA2_HEIGHT (20)
+N#define AA2_WIDTH (14)
+N#define AA2_XPOS (0)
+N#define AA2_YPOS (0)
+N#define AA2_XCPOS (0)
+N#define AA2_YCPOS (0)
+N
+N#define AA20_SIZE (158)
+N#define AA20_HEIGHT (20)
+N#define AA20_WIDTH (14)
+N#define AA20_XPOS (0)
+N#define AA20_YPOS (0)
+N#define AA20_XCPOS (0)
+N#define AA20_YCPOS (0)
+N
+N#define AA21_SIZE (148)
+N#define AA21_HEIGHT (20)
+N#define AA21_WIDTH (14)
+N#define AA21_XPOS (0)
+N#define AA21_YPOS (0)
+N#define AA21_XCPOS (0)
+N#define AA21_YCPOS (0)
+N
+N#define AA22_SIZE (184)
+N#define AA22_HEIGHT (20)
+N#define AA22_WIDTH (14)
+N#define AA22_XPOS (0)
+N#define AA22_YPOS (0)
+N#define AA22_XCPOS (0)
+N#define AA22_YCPOS (0)
+N
+N#define AA23_SIZE (146)
+N#define AA23_HEIGHT (20)
+N#define AA23_WIDTH (14)
+N#define AA23_XPOS (0)
+N#define AA23_YPOS (0)
+N#define AA23_XCPOS (0)
+N#define AA23_YCPOS (0)
+N
+N#define AA24_SIZE (121)
+N#define AA24_HEIGHT (20)
+N#define AA24_WIDTH (14)
+N#define AA24_XPOS (0)
+N#define AA24_YPOS (0)
+N#define AA24_XCPOS (0)
+N#define AA24_YCPOS (0)
+N
+N#define AA25_SIZE (92)
+N#define AA25_HEIGHT (20)
+N#define AA25_WIDTH (14)
+N#define AA25_XPOS (0)
+N#define AA25_YPOS (0)
+N#define AA25_XCPOS (0)
+N#define AA25_YCPOS (0)
+N
+N#define AA3_SIZE (148)
+N#define AA3_HEIGHT (20)
+N#define AA3_WIDTH (14)
+N#define AA3_XPOS (0)
+N#define AA3_YPOS (0)
+N#define AA3_XCPOS (0)
+N#define AA3_YCPOS (0)
+N
+N#define AA4_SIZE (96)
+N#define AA4_HEIGHT (20)
+N#define AA4_WIDTH (14)
+N#define AA4_XPOS (0)
+N#define AA4_YPOS (0)
+N#define AA4_XCPOS (0)
+N#define AA4_YCPOS (0)
+N
+N#define AA5_SIZE (88)
+N#define AA5_HEIGHT (20)
+N#define AA5_WIDTH (14)
+N#define AA5_XPOS (0)
+N#define AA5_YPOS (0)
+N#define AA5_XCPOS (0)
+N#define AA5_YCPOS (0)
+N
+N#define AA6_SIZE (152)
+N#define AA6_HEIGHT (20)
+N#define AA6_WIDTH (14)
+N#define AA6_XPOS (0)
+N#define AA6_YPOS (0)
+N#define AA6_XCPOS (0)
+N#define AA6_YCPOS (0)
+N
+N#define AA7_SIZE (146)
+N#define AA7_HEIGHT (20)
+N#define AA7_WIDTH (14)
+N#define AA7_XPOS (0)
+N#define AA7_YPOS (0)
+N#define AA7_XCPOS (0)
+N#define AA7_YCPOS (0)
+N
+N#define AA8_SIZE (79)
+N#define AA8_HEIGHT (20)
+N#define AA8_WIDTH (14)
+N#define AA8_XPOS (0)
+N#define AA8_YPOS (0)
+N#define AA8_XCPOS (0)
+N#define AA8_YCPOS (0)
+N
+N#define AA9_SIZE (120)
+N#define AA9_HEIGHT (20)
+N#define AA9_WIDTH (14)
+N#define AA9_XPOS (0)
+N#define AA9_YPOS (0)
+N#define AA9_XCPOS (0)
+N#define AA9_YCPOS (0)
+N/*****************************************************************************************END A--Z ***/
+N
+N/**
+N	a_z
+N*/
+N
+N#define A0_SIZE (119)
+N#define A0_HEIGHT (20)
+N#define A0_WIDTH (14)
+N#define A0_XPOS (0)
+N#define A0_YPOS (0)
+N#define A0_XCPOS (0)
+N#define A0_YCPOS (0)
+N
+N#define A1_SIZE (143)
+N#define A1_HEIGHT (20)
+N#define A1_WIDTH (14)
+N#define A1_XPOS (0)
+N#define A1_YPOS (0)
+N#define A1_XCPOS (0)
+N#define A1_YCPOS (0)
+N
+N#define A10_SIZE (140)
+N#define A10_HEIGHT (20)
+N#define A10_WIDTH (14)
+N#define A10_XPOS (0)
+N#define A10_YPOS (0)
+N#define A10_XCPOS (0)
+N#define A10_YCPOS (0)
+N
+N#define A11_SIZE (79)
+N#define A11_HEIGHT (20)
+N#define A11_WIDTH (14)
+N#define A11_XPOS (0)
+N#define A11_YPOS (0)
+N#define A11_XCPOS (0)
+N#define A11_YCPOS (0)
+N
+N#define A12_SIZE (139)
+N#define A12_HEIGHT (20)
+N#define A12_WIDTH (14)
+N#define A12_XPOS (0)
+N#define A12_YPOS (0)
+N#define A12_XCPOS (0)
+N#define A12_YCPOS (0)
+N
+N#define A13_SIZE (119)
+N#define A13_HEIGHT (20)
+N#define A13_WIDTH (14)
+N#define A13_XPOS (0)
+N#define A13_YPOS (0)
+N#define A13_XCPOS (0)
+N#define A13_YCPOS (0)
+N
+N#define A14_SIZE (113)
+N#define A14_HEIGHT (20)
+N#define A14_WIDTH (14)
+N#define A14_XPOS (0)
+N#define A14_YPOS (0)
+N#define A14_XCPOS (0)
+N#define A14_YCPOS (0)
+N
+N#define A15_SIZE (130)
+N#define A15_HEIGHT (20)
+N#define A15_WIDTH (14)
+N#define A15_XPOS (0)
+N#define A15_YPOS (0)
+N#define A15_XCPOS (0)
+N#define A15_YCPOS (0)
+N
+N#define A16_SIZE (132)
+N#define A16_HEIGHT (20)
+N#define A16_WIDTH (14)
+N#define A16_XPOS (0)
+N#define A16_YPOS (0)
+N#define A16_XCPOS (0)
+N#define A16_YCPOS (0)
+N
+N#define A17_SIZE (80)
+N#define A17_HEIGHT (20)
+N#define A17_WIDTH (14)
+N#define A17_XPOS (0)
+N#define A17_YPOS (0)
+N#define A17_XCPOS (0)
+N#define A17_YCPOS (0)
+N
+N#define A18_SIZE (109)
+N#define A18_HEIGHT (20)
+N#define A18_WIDTH (14)
+N#define A18_XPOS (0)
+N#define A18_YPOS (0)
+N#define A18_XCPOS (0)
+N#define A18_YCPOS (0)
+N
+N#define A19_SIZE (98)
+N#define A19_HEIGHT (20)
+N#define A19_WIDTH (14)
+N#define A19_XPOS (0)
+N#define A19_YPOS (0)
+N#define A19_XCPOS (0)
+N#define A19_YCPOS (0)
+N
+N#define A2_SIZE (107)
+N#define A2_HEIGHT (20)
+N#define A2_WIDTH (14)
+N#define A2_XPOS (0)
+N#define A2_YPOS (0)
+N#define A2_XCPOS (0)
+N#define A2_YCPOS (0)
+N
+N#define A20_SIZE (117)
+N#define A20_HEIGHT (20)
+N#define A20_WIDTH (14)
+N#define A20_XPOS (0)
+N#define A20_YPOS (0)
+N#define A20_XCPOS (0)
+N#define A20_YCPOS (0)
+N
+N#define A21_SIZE (104)
+N#define A21_HEIGHT (20)
+N#define A21_WIDTH (14)
+N#define A21_XPOS (0)
+N#define A21_YPOS (0)
+N#define A21_XCPOS (0)
+N#define A21_YCPOS (0)
+N
+N#define A22_SIZE (132)
+N#define A22_HEIGHT (20)
+N#define A22_WIDTH (14)
+N#define A22_XPOS (0)
+N#define A22_YPOS (0)
+N#define A22_XCPOS (0)
+N#define A22_YCPOS (0)
+N
+N#define A23_SIZE (109)
+N#define A23_HEIGHT (20)
+N#define A23_WIDTH (14)
+N#define A23_XPOS (0)
+N#define A23_YPOS (0)
+N#define A23_XCPOS (0)
+N#define A23_YCPOS (0)
+N
+N#define A24_SIZE (117)
+N#define A24_HEIGHT (20)
+N#define A24_WIDTH (14)
+N#define A24_XPOS (0)
+N#define A24_YPOS (0)
+N#define A24_XCPOS (0)
+N#define A24_YCPOS (0)
+N
+N#define A25_SIZE (78)
+N#define A25_HEIGHT (20)
+N#define A25_WIDTH (14)
+N#define A25_XPOS (0)
+N#define A25_YPOS (0)
+N#define A25_XCPOS (0)
+N#define A25_YCPOS (0)
+N
+N#define A3_SIZE (146)
+N#define A3_HEIGHT (20)
+N#define A3_WIDTH (14)
+N#define A3_XPOS (0)
+N#define A3_YPOS (0)
+N#define A3_XCPOS (0)
+N#define A3_YCPOS (0)
+N
+N#define A4_SIZE (106)
+N#define A4_HEIGHT (20)
+N#define A4_WIDTH (14)
+N#define A4_XPOS (0)
+N#define A4_YPOS (0)
+N#define A4_XCPOS (0)
+N#define A4_YCPOS (0)
+N
+N#define A5_SIZE (110)
+N#define A5_HEIGHT (20)
+N#define A5_WIDTH (14)
+N#define A5_XPOS (0)
+N#define A5_YPOS (0)
+N#define A5_XCPOS (0)
+N#define A5_YCPOS (0)
+N
+N#define A6_SIZE (131)
+N#define A6_HEIGHT (20)
+N#define A6_WIDTH (14)
+N#define A6_XPOS (0)
+N#define A6_YPOS (0)
+N#define A6_XCPOS (0)
+N#define A6_YCPOS (0)
+N
+N#define A7_SIZE (140)
+N#define A7_HEIGHT (20)
+N#define A7_WIDTH (14)
+N#define A7_XPOS (0)
+N#define A7_YPOS (0)
+N#define A7_XCPOS (0)
+N#define A7_YCPOS (0)
+N
+N#define A8_SIZE (70)
+N#define A8_HEIGHT (20)
+N#define A8_WIDTH (14)
+N#define A8_XPOS (0)
+N#define A8_YPOS (0)
+N#define A8_XCPOS (0)
+N#define A8_YCPOS (0)
+N
+N#define A9_SIZE (85)
+N#define A9_HEIGHT (20)
+N#define A9_WIDTH (14)
+N#define A9_XPOS (0)
+N#define A9_YPOS (0)
+N#define A9_XCPOS (0)
+N#define A9_YCPOS (0)
+N/****************************************************************************END a_z****/
+N
+N/**
+N	car_door
+N*/
+N
+N
+N#define DOOR_D1_SIZE (8258)
+N#define DOOR_D1_HEIGHT (149)
+N#define DOOR_D1_WIDTH (188)
+N#define DOOR_D1_XPOS (0)
+N#define DOOR_D1_YPOS (0)
+N#define DOOR_D1_XCPOS (0)
+N#define DOOR_D1_YCPOS (0)
+N
+N#define DOOR_D10_SIZE (8629)
+N#define DOOR_D10_HEIGHT (120)
+N#define DOOR_D10_WIDTH (186)
+N#define DOOR_D10_XPOS (0)
+N#define DOOR_D10_YPOS (0)
+N#define DOOR_D10_XCPOS (0)
+N#define DOOR_D10_YCPOS (0)
+N
+N#define DOOR_D11_SIZE (8910)
+N#define DOOR_D11_HEIGHT (156)
+N#define DOOR_D11_WIDTH (187)
+N#define DOOR_D11_XPOS (0)
+N#define DOOR_D11_YPOS (0)
+N#define DOOR_D11_XCPOS (0)
+N#define DOOR_D11_YCPOS (0)
+N
+N#define DOOR_D12_SIZE (8731)
+N#define DOOR_D12_HEIGHT (148)
+N#define DOOR_D12_WIDTH (186)
+N#define DOOR_D12_XPOS (0)
+N#define DOOR_D12_YPOS (0)
+N#define DOOR_D12_XCPOS (0)
+N#define DOOR_D12_YCPOS (0)
+N
+N#define DOOR_D13_SIZE (8942)
+N#define DOOR_D13_HEIGHT (151)
+N#define DOOR_D13_WIDTH (187)
+N#define DOOR_D13_XPOS (0)
+N#define DOOR_D13_YPOS (0)
+N#define DOOR_D13_XCPOS (0)
+N#define DOOR_D13_YCPOS (0)
+N
+N#define DOOR_D14_SIZE (9005)
+N#define DOOR_D14_HEIGHT (146)
+N#define DOOR_D14_WIDTH (187)
+N#define DOOR_D14_XPOS (0)
+N#define DOOR_D14_YPOS (0)
+N#define DOOR_D14_XCPOS (0)
+N#define DOOR_D14_YCPOS (0)
+N
+N#define DOOR_D15_SIZE (9465)
+N#define DOOR_D15_HEIGHT (149)
+N#define DOOR_D15_WIDTH (187)
+N#define DOOR_D15_XPOS (0)
+N#define DOOR_D15_YPOS (0)
+N#define DOOR_D15_XCPOS (0)
+N#define DOOR_D15_YCPOS (0)
+N
+N#define DOOR_D2_SIZE (8335)
+N#define DOOR_D2_HEIGHT (156)
+N#define DOOR_D2_WIDTH (188)
+N#define DOOR_D2_XPOS (0)
+N#define DOOR_D2_YPOS (0)
+N#define DOOR_D2_XCPOS (0)
+N#define DOOR_D2_YCPOS (0)
+N
+N#define DOOR_D3_SIZE (8558)
+N#define DOOR_D3_HEIGHT (156)
+N#define DOOR_D3_WIDTH (186)
+N#define DOOR_D3_XPOS (0)
+N#define DOOR_D3_YPOS (0)
+N#define DOOR_D3_XCPOS (0)
+N#define DOOR_D3_YCPOS (0)
+N
+N#define DOOR_D4_SIZE (8382)
+N#define DOOR_D4_HEIGHT (151)
+N#define DOOR_D4_WIDTH (188)
+N#define DOOR_D4_XPOS (0)
+N#define DOOR_D4_YPOS (0)
+N#define DOOR_D4_XCPOS (0)
+N#define DOOR_D4_YCPOS (0)
+N
+N#define DOOR_D5_SIZE (8582)
+N#define DOOR_D5_HEIGHT (146)
+N#define DOOR_D5_WIDTH (186)
+N#define DOOR_D5_XPOS (0)
+N#define DOOR_D5_YPOS (0)
+N#define DOOR_D5_XCPOS (0)
+N#define DOOR_D5_YCPOS (0)
+N
+N#define DOOR_D6_SIZE (8671)
+N#define DOOR_D6_HEIGHT (149)
+N#define DOOR_D6_WIDTH (186)
+N#define DOOR_D6_XPOS (0)
+N#define DOOR_D6_YPOS (0)
+N#define DOOR_D6_XCPOS (0)
+N#define DOOR_D6_YCPOS (0)
+N
+N#define DOOR_D7_SIZE (8875)
+N#define DOOR_D7_HEIGHT (148)
+N#define DOOR_D7_WIDTH (187)
+N#define DOOR_D7_XPOS (0)
+N#define DOOR_D7_YPOS (0)
+N#define DOOR_D7_XCPOS (0)
+N#define DOOR_D7_YCPOS (0)
+N
+N#define DOOR_D8_SIZE (8390)
+N#define DOOR_D8_HEIGHT (148)
+N#define DOOR_D8_WIDTH (188)
+N#define DOOR_D8_XPOS (0)
+N#define DOOR_D8_YPOS (0)
+N#define DOOR_D8_XCPOS (0)
+N#define DOOR_D8_YCPOS (0)
+N
+N#define DOOR_D9_SIZE (8611)
+N#define DOOR_D9_HEIGHT (151)
+N#define DOOR_D9_WIDTH (186)
+N#define DOOR_D9_XPOS (0)
+N#define DOOR_D9_YPOS (0)
+N#define DOOR_D9_XCPOS (0)
+N#define DOOR_D9_YCPOS (0)
+N
+N/*********************************************************************END car_door****/
+N
+N/**
+N	disfont_14x
+N*/
+N
+N#define DISFONT0_SIZE (159)
+N#define DISFONT0_HEIGHT (20)
+N#define DISFONT0_WIDTH (14)
+N#define DISFONT0_XPOS (0)
+N#define DISFONT0_YPOS (0)
+N#define DISFONT0_XCPOS (0)
+N#define DISFONT0_YCPOS (0)
+N
+N#define DISFONT1_SIZE (92)
+N#define DISFONT1_HEIGHT (20)
+N#define DISFONT1_WIDTH (8)
+N#define DISFONT1_XPOS (0)
+N#define DISFONT1_YPOS (0)
+N#define DISFONT1_XCPOS (0)
+N#define DISFONT1_YCPOS (0)
+N
+N#define DISFONT10_SIZE (17)
+N#define DISFONT10_HEIGHT (9)
+N#define DISFONT10_WIDTH (8)
+N#define DISFONT10_XPOS (0)
+N#define DISFONT10_YPOS (0)
+N#define DISFONT10_XCPOS (0)
+N#define DISFONT10_YCPOS (0)
+N
+N#define DISFONT2_SIZE (118)
+N#define DISFONT2_HEIGHT (20)
+N#define DISFONT2_WIDTH (13)
+N#define DISFONT2_XPOS (0)
+N#define DISFONT2_YPOS (0)
+N#define DISFONT2_XCPOS (0)
+N#define DISFONT2_YCPOS (0)
+N
+N#define DISFONT3_SIZE (121)
+N#define DISFONT3_HEIGHT (20)
+N#define DISFONT3_WIDTH (13)
+N#define DISFONT3_XPOS (0)
+N#define DISFONT3_YPOS (0)
+N#define DISFONT3_XCPOS (0)
+N#define DISFONT3_YCPOS (0)
+N
+N#define DISFONT4_SIZE (128)
+N#define DISFONT4_HEIGHT (20)
+N#define DISFONT4_WIDTH (15)
+N#define DISFONT4_XPOS (0)
+N#define DISFONT4_YPOS (0)
+N#define DISFONT4_XCPOS (0)
+N#define DISFONT4_YCPOS (0)
+N
+N#define DISFONT5_SIZE (108)
+N#define DISFONT5_HEIGHT (20)
+N#define DISFONT5_WIDTH (12)
+N#define DISFONT5_XPOS (0)
+N#define DISFONT5_YPOS (0)
+N#define DISFONT5_XCPOS (0)
+N#define DISFONT5_YCPOS (0)
+N
+N#define DISFONT6_SIZE (153)
+N#define DISFONT6_HEIGHT (20)
+N#define DISFONT6_WIDTH (14)
+N#define DISFONT6_XPOS (0)
+N#define DISFONT6_YPOS (0)
+N#define DISFONT6_XCPOS (0)
+N#define DISFONT6_YCPOS (0)
+N
+N#define DISFONT7_SIZE (94)
+N#define DISFONT7_HEIGHT (20)
+N#define DISFONT7_WIDTH (13)
+N#define DISFONT7_XPOS (0)
+N#define DISFONT7_YPOS (0)
+N#define DISFONT7_XCPOS (0)
+N#define DISFONT7_YCPOS (0)
+N
+N#define DISFONT8_SIZE (156)
+N#define DISFONT8_HEIGHT (20)
+N#define DISFONT8_WIDTH (13)
+N#define DISFONT8_XPOS (0)
+N#define DISFONT8_YPOS (0)
+N#define DISFONT8_XCPOS (0)
+N#define DISFONT8_YCPOS (0)
+N
+N#define DISFONT9_SIZE (153)
+N#define DISFONT9_HEIGHT (20)
+N#define DISFONT9_WIDTH (14)
+N#define DISFONT9_XPOS (0)
+N#define DISFONT9_YPOS (0)
+N#define DISFONT9_XCPOS (0)
+N#define DISFONT9_YCPOS (0)
+N/*****************************************************************************END disfont_14x****/
+N
+N/**
+N	err_word
+N*/
+N
+N#define ERR1_SIZE (7272)
+N#define ERR1_HEIGHT (36)
+N#define ERR1_WIDTH (202)
+N#define ERR1_XPOS (0)
+N#define ERR1_YPOS (0)
+N#define ERR1_XCPOS (0)
+N#define ERR1_YCPOS (0)
+N
+N#define ERR10_SIZE (7140)
+N#define ERR10_HEIGHT (35)
+N#define ERR10_WIDTH (204)
+N#define ERR10_XPOS (0)
+N#define ERR10_YPOS (0)
+N#define ERR10_XCPOS (0)
+N#define ERR10_YCPOS (0)
+N
+N#define ERR11_SIZE (7488)
+N#define ERR11_HEIGHT (36)
+N#define ERR11_WIDTH (208)
+N#define ERR11_XPOS (0)
+N#define ERR11_YPOS (0)
+N#define ERR11_XCPOS (0)
+N#define ERR11_YCPOS (0)
+N
+N#define ERR12_SIZE (6864)
+N#define ERR12_HEIGHT (33)
+N#define ERR12_WIDTH (208)
+N#define ERR12_XPOS (0)
+N#define ERR12_YPOS (0)
+N#define ERR12_XCPOS (0)
+N#define ERR12_YCPOS (0)
+N
+N#define ERR13_SIZE (7072)
+N#define ERR13_HEIGHT (34)
+N#define ERR13_WIDTH (208)
+N#define ERR13_XPOS (0)
+N#define ERR13_YPOS (0)
+N#define ERR13_XCPOS (0)
+N#define ERR13_YCPOS (0)
+N
+N#define ERR14_SIZE (7904)
+N#define ERR14_HEIGHT (38)
+N#define ERR14_WIDTH (208)
+N#define ERR14_XPOS (0)
+N#define ERR14_YPOS (0)
+N#define ERR14_XCPOS (0)
+N#define ERR14_YCPOS (0)
+N
+N#define ERR15_SIZE (7280)
+N#define ERR15_HEIGHT (35)
+N#define ERR15_WIDTH (208)
+N#define ERR15_XPOS (0)
+N#define ERR15_YPOS (0)
+N#define ERR15_XCPOS (0)
+N#define ERR15_YCPOS (0)
+N
+N#define ERR16_SIZE (7308)
+N#define ERR16_HEIGHT (36)
+N#define ERR16_WIDTH (203)
+N#define ERR16_XPOS (0)
+N#define ERR16_YPOS (0)
+N#define ERR16_XCPOS (0)
+N#define ERR16_YCPOS (0)
+N
+N#define ERR17_SIZE (6699)
+N#define ERR17_HEIGHT (33)
+N#define ERR17_WIDTH (203)
+N#define ERR17_XPOS (0)
+N#define ERR17_YPOS (0)
+N#define ERR17_XCPOS (0)
+N#define ERR17_YCPOS (0)
+N
+N#define ERR18_SIZE (6902)
+N#define ERR18_HEIGHT (34)
+N#define ERR18_WIDTH (203)
+N#define ERR18_XPOS (0)
+N#define ERR18_YPOS (0)
+N#define ERR18_XCPOS (0)
+N#define ERR18_YCPOS (0)
+N
+N#define ERR19_SIZE (15184)
+N#define ERR19_HEIGHT (73)
+N#define ERR19_WIDTH (208)
+N#define ERR19_XPOS (0)
+N#define ERR19_YPOS (0)
+N#define ERR19_XCPOS (0)
+N#define ERR19_YCPOS (0)
+N
+N#define ERR2_SIZE (6666)
+N#define ERR2_HEIGHT (33)
+N#define ERR2_WIDTH (202)
+N#define ERR2_XPOS (0)
+N#define ERR2_YPOS (0)
+N#define ERR2_XCPOS (0)
+N#define ERR2_YCPOS (0)
+N
+N#define ERR3_SIZE (6868)
+N#define ERR3_HEIGHT (34)
+N#define ERR3_WIDTH (202)
+N#define ERR3_XPOS (0)
+N#define ERR3_YPOS (0)
+N#define ERR3_XCPOS (0)
+N#define ERR3_YCPOS (0)
+N
+N#define ERR4_SIZE (7676)
+N#define ERR4_HEIGHT (38)
+N#define ERR4_WIDTH (202)
+N#define ERR4_XPOS (0)
+N#define ERR4_YPOS (0)
+N#define ERR4_XCPOS (0)
+N#define ERR4_YCPOS (0)
+N
+N#define ERR5_SIZE (14892)
+N#define ERR5_HEIGHT (73)
+N#define ERR5_WIDTH (204)
+N#define ERR5_XPOS (0)
+N#define ERR5_YPOS (0)
+N#define ERR5_XCPOS (0)
+N#define ERR5_YCPOS (0)
+N
+N#define ERR6_SIZE (7344)
+N#define ERR6_HEIGHT (36)
+N#define ERR6_WIDTH (204)
+N#define ERR6_XPOS (0)
+N#define ERR6_YPOS (0)
+N#define ERR6_XCPOS (0)
+N#define ERR6_YCPOS (0)
+N
+N#define ERR7_SIZE (6732)
+N#define ERR7_HEIGHT (33)
+N#define ERR7_WIDTH (204)
+N#define ERR7_XPOS (0)
+N#define ERR7_YPOS (0)
+N#define ERR7_XCPOS (0)
+N#define ERR7_YCPOS (0)
+N
+N#define ERR8_SIZE (6936)
+N#define ERR8_HEIGHT (34)
+N#define ERR8_WIDTH (204)
+N#define ERR8_XPOS (0)
+N#define ERR8_YPOS (0)
+N#define ERR8_XCPOS (0)
+N#define ERR8_YCPOS (0)
+N
+N#define ERR9_SIZE (7752)
+N#define ERR9_HEIGHT (38)
+N#define ERR9_WIDTH (204)
+N#define ERR9_XPOS (0)
+N#define ERR9_YPOS (0)
+N#define ERR9_XCPOS (0)
+N#define ERR9_YCPOS (0)
+N
+N/***************************************************************************END err_word***/
+N
+N/**
+N	lamp
+N*/
+N
+N#define SSPIC0_SIZE (1200)
+N#define SSPIC0_HEIGHT (30)
+N#define SSPIC0_WIDTH (40)
+N#define SSPIC0_XPOS (0)
+N#define SSPIC0_YPOS (0)
+N#define SSPIC0_XCPOS (0)
+N#define SSPIC0_YCPOS (0)
+N
+N#define SSPIC1_SIZE (1026)
+N#define SSPIC1_HEIGHT (27)
+N#define SSPIC1_WIDTH (38)
+N#define SSPIC1_XPOS (0)
+N#define SSPIC1_YPOS (0)
+N#define SSPIC1_XCPOS (0)
+N#define SSPIC1_YCPOS (0)
+N
+N#define SSPIC10_SIZE (1419)
+N#define SSPIC10_HEIGHT (33)
+N#define SSPIC10_WIDTH (43)
+N#define SSPIC10_XPOS (0)
+N#define SSPIC10_YPOS (0)
+N#define SSPIC10_XCPOS (0)
+N#define SSPIC10_YCPOS (0)
+N
+N#define SSPIC11_SIZE (1248)
+N#define SSPIC11_HEIGHT (32)
+N#define SSPIC11_WIDTH (39)
+N#define SSPIC11_XPOS (0)
+N#define SSPIC11_YPOS (0)
+N#define SSPIC11_XCPOS (0)
+N#define SSPIC11_YCPOS (0)
+N
+N#define SSPIC12_SIZE (858)
+N#define SSPIC12_HEIGHT (22)
+N#define SSPIC12_WIDTH (39)
+N#define SSPIC12_XPOS (0)
+N#define SSPIC12_YPOS (0)
+N#define SSPIC12_XCPOS (0)
+N#define SSPIC12_YCPOS (0)
+N
+N#define SSPIC13_SIZE (1131)
+N#define SSPIC13_HEIGHT (29)
+N#define SSPIC13_WIDTH (39)
+N#define SSPIC13_XPOS (0)
+N#define SSPIC13_YPOS (0)
+N#define SSPIC13_XCPOS (0)
+N#define SSPIC13_YCPOS (0)
+N
+N#define SSPIC14_SIZE (928)
+N#define SSPIC14_HEIGHT (29)
+N#define SSPIC14_WIDTH (32)
+N#define SSPIC14_XPOS (0)
+N#define SSPIC14_YPOS (0)
+N#define SSPIC14_XCPOS (0)
+N#define SSPIC14_YCPOS (0)
+N
+N#define SSPIC15_SIZE (1064)
+N#define SSPIC15_HEIGHT (28)
+N#define SSPIC15_WIDTH (38)
+N#define SSPIC15_XPOS (0)
+N#define SSPIC15_YPOS (0)
+N#define SSPIC15_XCPOS (0)
+N#define SSPIC15_YCPOS (0)
+N
+N#define SSPIC16_SIZE (1053)
+N#define SSPIC16_HEIGHT (27)
+N#define SSPIC16_WIDTH (39)
+N#define SSPIC16_XPOS (0)
+N#define SSPIC16_YPOS (0)
+N#define SSPIC16_XCPOS (0)
+N#define SSPIC16_YCPOS (0)
+N
+N#define SSPIC17_SIZE (874)
+N#define SSPIC17_HEIGHT (23)
+N#define SSPIC17_WIDTH (38)
+N#define SSPIC17_XPOS (0)
+N#define SSPIC17_YPOS (0)
+N#define SSPIC17_XCPOS (0)
+N#define SSPIC17_YCPOS (0)
+N
+N#define SSPIC18_SIZE (1073)
+N#define SSPIC18_HEIGHT (29)
+N#define SSPIC18_WIDTH (37)
+N#define SSPIC18_XPOS (0)
+N#define SSPIC18_YPOS (0)
+N#define SSPIC18_XCPOS (0)
+N#define SSPIC18_YCPOS (0)
+N
+N#define SSPIC19_SIZE (1024)
+N#define SSPIC19_HEIGHT (16)
+N#define SSPIC19_WIDTH (64)
+N#define SSPIC19_XPOS (0)
+N#define SSPIC19_YPOS (0)
+N#define SSPIC19_XCPOS (0)
+N#define SSPIC19_YCPOS (0)
+N
+N#define SSPIC2_SIZE (1102)
+N#define SSPIC2_HEIGHT (29)
+N#define SSPIC2_WIDTH (38)
+N#define SSPIC2_XPOS (0)
+N#define SSPIC2_YPOS (0)
+N#define SSPIC2_XCPOS (0)
+N#define SSPIC2_YCPOS (0)
+N
+N#define SSPIC20_SIZE (1148)
+N#define SSPIC20_HEIGHT (28)
+N#define SSPIC20_WIDTH (41)
+N#define SSPIC20_XPOS (0)
+N#define SSPIC20_YPOS (0)
+N#define SSPIC20_XCPOS (0)
+N#define SSPIC20_YCPOS (0)
+N
+N#define SSPIC21_SIZE (868)
+N#define SSPIC21_HEIGHT (31)
+N#define SSPIC21_WIDTH (28)
+N#define SSPIC21_XPOS (0)
+N#define SSPIC21_YPOS (0)
+N#define SSPIC21_XCPOS (0)
+N#define SSPIC21_YCPOS (0)
+N
+N#define SSPIC22_SIZE (1426)
+N#define SSPIC22_HEIGHT (31)
+N#define SSPIC22_WIDTH (46)
+N#define SSPIC22_XPOS (0)
+N#define SSPIC22_YPOS (0)
+N#define SSPIC22_XCPOS (0)
+N#define SSPIC22_YCPOS (0)
+N
+N#define SSPIC23_SIZE (1290)
+N#define SSPIC23_HEIGHT (30)
+N#define SSPIC23_WIDTH (43)
+N#define SSPIC23_XPOS (0)
+N#define SSPIC23_YPOS (0)
+N#define SSPIC23_XCPOS (0)
+N#define SSPIC23_YCPOS (0)
+N
+N#define SSPIC24_SIZE (768)
+N#define SSPIC24_HEIGHT (32)
+N#define SSPIC24_WIDTH (24)
+N#define SSPIC24_XPOS (0)
+N#define SSPIC24_YPOS (0)
+N#define SSPIC24_XCPOS (0)
+N#define SSPIC24_YCPOS (0)
+N
+N#define SSPIC25_SIZE (1160)
+N#define SSPIC25_HEIGHT (29)
+N#define SSPIC25_WIDTH (40)
+N#define SSPIC25_XPOS (0)
+N#define SSPIC25_YPOS (0)
+N#define SSPIC25_XCPOS (0)
+N#define SSPIC25_YCPOS (0)
+N
+N#define SSPIC26_SIZE (1064)
+N#define SSPIC26_HEIGHT (28)
+N#define SSPIC26_WIDTH (38)
+N#define SSPIC26_XPOS (0)
+N#define SSPIC26_YPOS (0)
+N#define SSPIC26_XCPOS (0)
+N#define SSPIC26_YCPOS (0)
+N
+N#define SSPIC3_SIZE (1258)
+N#define SSPIC3_HEIGHT (34)
+N#define SSPIC3_WIDTH (37)
+N#define SSPIC3_XPOS (0)
+N#define SSPIC3_YPOS (0)
+N#define SSPIC3_XCPOS (0)
+N#define SSPIC3_YCPOS (0)
+N
+N#define SSPIC4_SIZE (1247)
+N#define SSPIC4_HEIGHT (29)
+N#define SSPIC4_WIDTH (43)
+N#define SSPIC4_XPOS (0)
+N#define SSPIC4_YPOS (0)
+N#define SSPIC4_XCPOS (0)
+N#define SSPIC4_YCPOS (0)
+N
+N#define SSPIC5_SIZE (1240)
+N#define SSPIC5_HEIGHT (31)
+N#define SSPIC5_WIDTH (40)
+N#define SSPIC5_XPOS (0)
+N#define SSPIC5_YPOS (0)
+N#define SSPIC5_XCPOS (0)
+N#define SSPIC5_YCPOS (0)
+N
+N#define SSPIC6_SIZE (1400)
+N#define SSPIC6_HEIGHT (35)
+N#define SSPIC6_WIDTH (40)
+N#define SSPIC6_XPOS (0)
+N#define SSPIC6_YPOS (0)
+N#define SSPIC6_XCPOS (0)
+N#define SSPIC6_YCPOS (0)
+N
+N#define SSPIC7_SIZE (1240)
+N#define SSPIC7_HEIGHT (31)
+N#define SSPIC7_WIDTH (40)
+N#define SSPIC7_XPOS (0)
+N#define SSPIC7_YPOS (0)
+N#define SSPIC7_XCPOS (0)
+N#define SSPIC7_YCPOS (0)
+N
+N#define SSPIC8_SIZE (1080)
+N#define SSPIC8_HEIGHT (27)
+N#define SSPIC8_WIDTH (40)
+N#define SSPIC8_XPOS (0)
+N#define SSPIC8_YPOS (0)
+N#define SSPIC8_XCPOS (0)
+N#define SSPIC8_YCPOS (0)
+N
+N#define SSPIC9_SIZE (975)
+N#define SSPIC9_HEIGHT (25)
+N#define SSPIC9_WIDTH (39)
+N#define SSPIC9_XPOS (0)
+N#define SSPIC9_YPOS (0)
+N#define SSPIC9_XCPOS (0)
+N#define SSPIC9_YCPOS (0)
+N
+N/******************************************************************************END lamp****/
+N
+N
+N/**
+N	prnds
+N*/
+N
+N#define LEV_D_SIZE (1280)
+N#define LEV_D_HEIGHT (40)
+N#define LEV_D_WIDTH (32)
+N#define LEV_D_XPOS (0)
+N#define LEV_D_YPOS (0)
+N#define LEV_D_XCPOS (0)
+N#define LEV_D_YCPOS (0)
+N
+N#define LEV_N_SIZE (1200)
+N#define LEV_N_HEIGHT (40)
+N#define LEV_N_WIDTH (30)
+N#define LEV_N_XPOS (0)
+N#define LEV_N_YPOS (0)
+N#define LEV_N_XCPOS (0)
+N#define LEV_N_YCPOS (0)
+N
+N#define LEV_P_SIZE (1200)
+N#define LEV_P_HEIGHT (40)
+N#define LEV_P_WIDTH (30)
+N#define LEV_P_XPOS (0)
+N#define LEV_P_YPOS (0)
+N#define LEV_P_XCPOS (0)
+N#define LEV_P_YCPOS (0)
+N
+N#define LEV_R_SIZE (1360)
+N#define LEV_R_HEIGHT (40)
+N#define LEV_R_WIDTH (34)
+N#define LEV_R_XPOS (0)
+N#define LEV_R_YPOS (0)
+N#define LEV_R_XCPOS (0)
+N#define LEV_R_YCPOS (0)
+N
+N#define LEV_S_SIZE (1200)
+N#define LEV_S_HEIGHT (40)
+N#define LEV_S_WIDTH (30)
+N#define LEV_S_XPOS (0)
+N#define LEV_S_YPOS (0)
+N#define LEV_S_XCPOS (0)
+N#define LEV_S_YCPOS (0)
+N
+N/*******************************************************************************END prnds****/
+N
+N/**
+N	speedfont
+N*/
+N
+N#define SPEEDFONT0_SIZE (612)
+N#define SPEEDFONT0_HEIGHT (62)
+N#define SPEEDFONT0_WIDTH (41)
+N#define SPEEDFONT0_XPOS (0)
+N#define SPEEDFONT0_YPOS (0)
+N#define SPEEDFONT0_XCPOS (0)
+N#define SPEEDFONT0_YCPOS (0)
+N
+N#define SPEEDFONT1_SIZE (365)
+N#define SPEEDFONT1_HEIGHT (61)
+N#define SPEEDFONT1_WIDTH (22)
+N#define SPEEDFONT1_XPOS (0)
+N#define SPEEDFONT1_YPOS (0)
+N#define SPEEDFONT1_XCPOS (0)
+N#define SPEEDFONT1_YCPOS (0)
+N
+N#define SPEEDFONT2_SIZE (393)
+N#define SPEEDFONT2_HEIGHT (61)
+N#define SPEEDFONT2_WIDTH (39)
+N#define SPEEDFONT2_XPOS (0)
+N#define SPEEDFONT2_YPOS (0)
+N#define SPEEDFONT2_XCPOS (0)
+N#define SPEEDFONT2_YCPOS (0)
+N
+N#define SPEEDFONT3_SIZE (422)
+N#define SPEEDFONT3_HEIGHT (62)
+N#define SPEEDFONT3_WIDTH (36)
+N#define SPEEDFONT3_XPOS (0)
+N#define SPEEDFONT3_YPOS (0)
+N#define SPEEDFONT3_XCPOS (0)
+N#define SPEEDFONT3_YCPOS (0)
+N
+N#define SPEEDFONT4_SIZE (482)
+N#define SPEEDFONT4_HEIGHT (60)
+N#define SPEEDFONT4_WIDTH (46)
+N#define SPEEDFONT4_XPOS (0)
+N#define SPEEDFONT4_YPOS (0)
+N#define SPEEDFONT4_XCPOS (0)
+N#define SPEEDFONT4_YCPOS (0)
+N
+N#define SPEEDFONT5_SIZE (389)
+N#define SPEEDFONT5_HEIGHT (61)
+N#define SPEEDFONT5_WIDTH (36)
+N#define SPEEDFONT5_XPOS (0)
+N#define SPEEDFONT5_YPOS (0)
+N#define SPEEDFONT5_XCPOS (0)
+N#define SPEEDFONT5_YCPOS (0)
+N
+N#define SPEEDFONT6_SIZE (558)
+N#define SPEEDFONT6_HEIGHT (62)
+N#define SPEEDFONT6_WIDTH (40)
+N#define SPEEDFONT6_XPOS (0)
+N#define SPEEDFONT6_YPOS (0)
+N#define SPEEDFONT6_XCPOS (0)
+N#define SPEEDFONT6_YCPOS (0)
+N
+N#define SPEEDFONT7_SIZE (326)
+N#define SPEEDFONT7_HEIGHT (60)
+N#define SPEEDFONT7_WIDTH (39)
+N#define SPEEDFONT7_XPOS (0)
+N#define SPEEDFONT7_YPOS (0)
+N#define SPEEDFONT7_XCPOS (0)
+N#define SPEEDFONT7_YCPOS (0)
+N
+N#define SPEEDFONT8_SIZE (620)
+N#define SPEEDFONT8_HEIGHT (62)
+N#define SPEEDFONT8_WIDTH (40)
+N#define SPEEDFONT8_XPOS (0)
+N#define SPEEDFONT8_YPOS (0)
+N#define SPEEDFONT8_XCPOS (0)
+N#define SPEEDFONT8_YCPOS (0)
+N
+N#define SPEEDFONT9_SIZE (559)
+N#define SPEEDFONT9_HEIGHT (62)
+N#define SPEEDFONT9_WIDTH (40)
+N#define SPEEDFONT9_XPOS (0)
+N#define SPEEDFONT9_YPOS (0)
+N#define SPEEDFONT9_XCPOS (0)
+N#define SPEEDFONT9_YCPOS (0)
+N
+N/**************************************************************************END speedfont*****/
+N
+N/**
+N	instrument
+N*/
+N
+N#define DIAL_AMP_SIZE (18848)
+N#define DIAL_AMP_HEIGHT (124)
+N#define DIAL_AMP_WIDTH (152)
+N#define DIAL_AMP_XPOS (0)
+N#define DIAL_AMP_YPOS (0)
+N#define DIAL_AMP_XCPOS (0)
+N#define DIAL_AMP_YCPOS (0)
+N
+N#define DIAL_SOC_SIZE (194034)
+N#define DIAL_SOC_HEIGHT (443)
+N#define DIAL_SOC_WIDTH (438)
+N#define DIAL_SOC_XPOS (0)
+N#define DIAL_SOC_YPOS (0)
+N#define DIAL_SOC_XCPOS (0)
+N#define DIAL_SOC_YCPOS (0)
+N
+N#define DIAL_SPEED_SIZE (195363)
+N#define DIAL_SPEED_HEIGHT (443)
+N#define DIAL_SPEED_WIDTH (441)
+N#define DIAL_SPEED_XPOS (0)
+N#define DIAL_SPEED_YPOS (0)
+N#define DIAL_SPEED_XCPOS (0)
+N#define DIAL_SPEED_YCPOS (0)
+N
+N/***************************************************************************************END instrument**********/
+N
+N
+N/**
+N	needle
+N*/
+N	#define NEEDLE_AMP_SIZE (3782)
+N	#define NEEDLE_AMP_HEIGHT (61)
+N	#define NEEDLE_AMP_WIDTH (62)
+N	#define NEEDLE_AMP_XPOS (0)
+N	#define NEEDLE_AMP_YPOS (0)
+N	#define NEEDLE_AMP_XCPOS (10)
+N	#define NEEDLE_AMP_YCPOS (9)
+N
+N	#define NEEDLE_SPEED_SIZE (51600)
+N	#define NEEDLE_SPEED_HEIGHT (240)
+N	#define NEEDLE_SPEED_WIDTH (215)
+N	#define NEEDLE_SPEED_XPOS (0)
+N	#define NEEDLE_SPEED_YPOS (0)
+N	#define NEEDLE_SPEED_XCPOS (94)
+N	#define NEEDLE_SPEED_YCPOS (145)
+N/***************************************************************************************END needle**********/
+N
+N
+N
+N#endif
+N/****************************************************************************/
+N
+N/************************** BEGIN of DISCLAIMER   **************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of   
+N  its products. Nevertheless, semiconductor devices in general can
+N  malfunction or fail due to their inherent electrical sensitivity and 
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of
+N  human life, bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications.
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  ï¿½Handling Guide for Semiconductor Devices,ï¿?or 
+N  ï¿½TOSHIBA Semiconductor Reliability Handbookï¿?etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (ï¿½Unintended Usageï¿?. Unintended Usage include atomic energy control
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customerï¿½s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use. 
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+N/********************************* BEGIN OF LOG ******************************
+N*
+N* $Log: $
+N*
+N*********************************** END OF LOG ******************************/
+L 39 "..\..\Pictures\disfont_14x\disfont2.c" 2
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section rodata = ".ROMgraphics"
+S#define ALIGNED
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .rodata ".ROMgraphics"
+S/* fixme: specify alignment */
+S#define ALIGNED
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rodata = ".ROMgraphics"
+N#define ALIGNED __align(8)
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma alignvar(8)
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+NALIGNED const uint32_t u32_disfont2_RLE[DISFONT2_SIZE] = {
+X__align(8) const uint32_t u32_disfont2_RLE[(118)] = {
+N0xFFFFC082, 0xFFFFC003, 0xF7FFFFDD, 0xFF82FFFF, 0xFF03FFFF, 0xFFEAFFFF, 0xFFFFD9FF, 0xFFFFC083, 
+N0xFFFFC003, 0xFBFFFFD1, 0xFF86FFFF, 0xFF02FFFF, 0xFFEEFFFF, 0xFFC082FF, 0xFFC010FF, 0xFFFFEEFF, 
+N0xEAFFFFFF, 0xFFD1FFFF, 0xFFFFC0FF, 0xCCFFFFC0, 0xFFEAFFFF, 0xFFFFFFFF, 0xE2FFFFFF, 0xFFC0FFFF, 
+N0xFFFFC0FF, 0xD5FFFFEE, 0xC085FFFF, 0xC007FFFF, 0xFFEEFFFF, 0xFFFFFFFF, 0xC4FFFFFF, 0xFFC0FFFF, 
+N0xFFFFC8FF, 0xFFFFC086, 0xFFFFC005, 0xFFFFFFD5, 0xFFFFFFFF, 0xFFFFD1FF, 0xFFFFC088, 0xFFFFC005, 
+N0xFFFFFFD1, 0xFFFFFFFF, 0xFFFFD1FF, 0xFFFFC088, 0xFFFFC005, 0xFFFFFFD5, 0xFFFFFFFF, 0xFFFFCCFF, 
+N0xFFFFC088, 0xFFFFC005, 0xFFFFFFE6, 0xFFFBFFFF, 0xFFFFC4FF, 0xFFFFC087, 0xFFFFC005, 0xFFFFFFCC, 
+N0xFFFFFFFF, 0xFFFFE6FF, 0xFFFFC087, 0xFFFFC006, 0xFBFFFFCC, 0xFFFFFFFF, 0xFFFFFBFF, 0x86FFFFC8, 
+N0x02FFFFC0, 0xD5FFFFC0, 0xFF82FFFF, 0xFF02FFFF, 0xFFCCFFFF, 0xFFC086FF, 0xFFC006FF, 0xFFFFEAFF, 
+N0xFFFFFFFF, 0xFFF7FFFF, 0xFFFFCCFF, 0xFFFFC085, 0xFFFFC007, 0xF7FFFFCC, 0xFFFFFFFF, 0xFFFFFFFF, 
+N0xC4FFFFEA, 0xC085FFFF, 0xC006FFFF, 0xFFCCFFFF, 0xFFFFFBFF, 0xFFFFFFFF, 0xFFD9FFFF, 0xFFC086FF, 
+N0xFFC006FF, 0xFFFFC8FF, 0xFFFFFFFB, 0xFFF7FFFF, 0xFFFFCCFF, 0xFFFFC087, 0xFFFFC005, 0xFFFFFFEE, 
+N0xFFF7FFFF, 0xFFFFC8FF, 0xFFFFC087, 0xFFFFC005, 0xFFFFFFCC, 0xFFFFFFFF, 0xFFFFD9FF, 0xFFFFC088, 
+N0xFFFFC005, 0xFFFFFFD9, 0xFFFFFFFF, 0xFFFFC8FF, 0xFFFFC088, 0xFFFFC002, 0x8AFFFFDD, 0x03FFFFFF, 
+N0xF7FFFFFF, 0xFFDDFFFF, 0xFFFF8AFF, 0xFFFF01FF, 0xFFF701FF, 0x000000FF
+N};
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section rodata = default
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(_DIAB_TOOL)
+X#if 0L
+S#pragma section .rodata "default"
+S/* fixme: specify alignment */
+N#endif /* defined(_DIAB_TOOL) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rodata
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N/****************************************************************************/
+N
+N/************************** BEGIN of DISCLAIMER   **************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of   
+N  its products. Nevertheless, semiconductor devices in general can
+N  malfunction or fail due to their inherent electrical sensitivity and 
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of
+N  human life, bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications.
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  ï¿½Handling Guide for Semiconductor Devices,ï¿½ or 
+N  ï¿½TOSHIBA Semiconductor Reliability Handbookï¿½ etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (ï¿½Unintended Usageï¿½). Unintended Usage include atomic energy control
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customerï¿½s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use. 
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+N/********************************* BEGIN OF LOG ******************************
+N*
+N* $Log: $
+N*
+N*********************************** END OF LOG ******************************/

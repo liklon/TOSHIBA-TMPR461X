@@ -1,0 +1,3643 @@
+L 1 "..\..\..\..\lldd\src\rotation_matrix.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Graphic Accelerator
+N*                 Reference Low-Level Driver (Rotation Engine matrix based)
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Graphic Accelerator Rotation Engine
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.12 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N/*======================================
+N            Include Files
+N=======================================*/
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\rotation_matrix.c" 2
+N#include "rotation_matrix.h"
+L 1 "..\..\..\..\lldd\inc\rotation_matrix.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Graphic Accelerator
+N*                 Reference Low-Level Driver Matrix Form (Rotation Engine)
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Graphic Accelerator Rotation Engine
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.15 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef ROTATION_MATRIX_H
+N#define ROTATION_MATRIX_H
+N
+N/*======================================
+N             Include Files
+N=======================================*/
+N#include "captypes.h"
+N#include "ga_common.h"
+L 1 "..\..\..\..\lldd\inc\ga_common.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Graphic Accelerator
+N*                 Reference Low-Level Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Graphic Accelerator
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.14 $
+N*   DATE        : $Date: 2015/07/21 12:30:20 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef GA_COMMON_H
+N#define GA_COMMON_H
+N
+N/*======================================
+N             Include Files
+N=======================================*/
+N#include "captypes.h"
+N
+N#define LLDD_GA_COMMON_H_REVISION     "$Revision: 1.14 $"
+N#define LLDD_GA_COMMON_H_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/*==========================================================================
+N|                       GA Configuration Parameters                         |
+N ==========================================================================*/
+N/*---------------------------------------
+N|        GA Sub-Module inclusion         |
+N ---------------------------------------*/
+N/* Blitting Engine */
+N#define GA_USE_BLITTING
+N
+N/* Transformation Engine */
+N#define GA_USE_TRANSFORM
+N
+N/* Rotation Engine */
+N#define GA_USE_ROTATION
+N
+N/* Drawing Engine */
+N#define GA_USE_DRAWING
+N
+N/*---------------------------------------
+N|         GA List Configuration          |
+N ---------------------------------------*/
+N/* Maximal Number of commands in one list */
+N#define GA_CMD_MAX    2048
+N
+N/*---------------------------------------
+N|  Enable/Disable boundary check for     |
+N|         GA Command List                |
+N ---------------------------------------*/
+N/* Enable/Disable boundary check in drivers for command buffer: */
+N/* #define GA_CMDSLIST_BOUNDARY_CHECK */
+N
+N
+N/* 1 double word more will be reserved by calculation of needed
+N   buffers for GA-API's. This is necesary to add later an END-Command to 
+N   finalize the command: 
+N*/   
+N#define RESERVED_FOR_END_CMD    1
+N
+N/*======================================
+N                Defs
+N=======================================*/
+N
+N/*--------------------------------------
+N|     GA General Purpose Registers      |
+N --------------------------------------*/
+N#define GA_GPR0   0
+N#define GA_GPR1   1
+N#define GA_GPR2   2
+N#define GA_GPR3   3
+N#define GA_GPR4   4
+N#define GA_GPR5   5
+N#define GA_GPR6   6
+N#define GA_GPR7   7
+N#define GA_GPR8   8
+N#define GA_GPR9   9
+N#define GA_GPR10  10
+N#define GA_GPR11  11
+N#define GA_GPR12  12
+N#define GA_GPR13  13
+N#define GA_GPR14  14
+N#define GA_GPR15  15
+N#define GA_GPR16  16
+N#define GA_GPR17  17
+N#define GA_GPR18  18
+N#define GA_GPR19  19
+N#define GA_GPR20  20
+N#define GA_GPR21  21
+N#define GA_GPR22  22
+N#define GA_GPR23  23
+N#define GA_GPR24  24
+N#define GA_GPR25  25
+N#define GA_GPR26  26
+N#define GA_GPR27  27
+N#define GA_GPR28  28
+N#define GA_GPR29  29
+N#define GA_GPR30  30
+N#define GA_GPR31  31
+N
+N
+N/*--------------------------------------
+N|         GA Command Parameters         |
+N --------------------------------------*/
+N/* Selection of module to wait on */
+Ntypedef enum tag_ga_modul_e
+N{
+N    GA_GDC0        = 0x0u,
+N    GA_FG0         = 0x1u,
+N    GA_GDC1        = 0x2u
+N} ga_modul_e;
+N
+N/* Enables/Disables option */
+Ntypedef enum tag_ga_en_e
+N{
+N    GA_DIS         = 0x0u,     /* Disable/off */
+N    GA_EN          = 0x1u      /* Enable/on */
+N} ga_en_e;
+N
+N/* Blending Order */
+Ntypedef enum tag_blendOrd_e
+N{
+N    GA_ONTO_DEST   = 0x0u,     /* Onto destination */
+N    GA_BEHIND_DEST = 0x1u      /* Behind destination */
+N} ga_blendOrd_e;
+N
+N/* Color format selection */
+Ntypedef enum tag_ga_colFmt_e
+N{
+N    GA_RGB16       = 0x0u,      /* 16-bit RGB format */
+N    GA_RGBA32      = 0x1u       /* 32-bit RGBA format */
+N} ga_colFmt_e;
+N
+N/*--------------------------------------
+N|        GA Command Construction        |
+N --------------------------------------*/
+N/* Command Field Masks */
+N#define GA_MASK1           0x1u
+N#define GA_MASK2           0x3u
+N#define GA_MASK3           0x7u
+N#define GA_MASK4           0xfu
+N#define GA_MASK5           0x1fu
+N#define GA_MASK6           0x3fu
+N#define GA_MASK7           0x7fu
+N#define GA_MASK8           0xffu
+N#define GA_MASK9           0x1ffu
+N#define GA_MASK10          0x3ffu
+N#define GA_MASK12          0xfffu
+N#define GA_MASK14          0x3fffu
+N#define GA_MASK15          0x7fffu
+N#define GA_MASK16          0xffffu
+N#define GA_MASK22          0x3fffffu
+N#define GA_MASK24          0xffffffu
+N#define GA_MASK32          0xffffffffu
+N#define GA_MASK36          0xfffffffffull
+N#define GA_MASK48          0xffffffffffffull
+N#define GA_MASK64          0xffffffffffffffffull
+N
+N/* GA Unit selection */
+N#define GA_SCHED           0x0u
+N#define GA_BLITING         0x1u
+N#define GA_DRAWING         0x2u
+N#define GA_ROTATION        0x3u
+N#define GA_TRANSFORM       0x4u
+N
+N/*** Command Codes ***/
+N#define GA_CMC_LGPR        0x1u
+N#define GA_CMC_CSWVSYNC    0x2u
+N#define GA_CMC_CSUIC	     0x3u
+N#define GA_CMC_CSGDC0CC	   0x4u
+N#define GA_CMC_CSGDC1CC	   0x5u
+N#define GA_CMC_END         0xffu
+N
+N/* Blitting Engine Command Codes */
+N
+N#define GA_CMC_BLTO16      0x02u
+N#define GA_CMC_BLTO32      0x04u
+N#define GA_CMC_BLTORLEI16  0x0au
+N#define GA_CMC_BLTORLEI24  0x06u
+N#define GA_CMC_BLTORLEI24A 0x0Eu
+N#define GA_CMC_BLTORLEI32  0x0cu
+N#define GA_CMC_BLTOP16     0x12u
+N#define GA_CMC_BLTOP32     0x14u
+N#define GA_CMC_BLTB16      0x03u
+N#define GA_CMC_BLTB32      0x07u
+N#define GA_CMC_BLTBRLEI16  0x0bu
+N#define GA_CMC_BLTBRLEI24  0x05u
+N#define GA_CMC_BLTBRLEI24A 0x0fu
+N#define GA_CMC_BLTBRLEI32  0x0du
+N#define GA_CMC_BLTBP16     0x13u
+N#define GA_CMC_BLTBP32     0x17u
+N
+N/* Transformation Engine Command Code */
+N#define GA_CMC_TRANSF      0x01u
+N#define GA_CMC_TRANSFB     0x00u
+N
+N/* Rotation Engine Command Code */
+N#define GA_CMC_ROT         0x01u
+N#define GA_CMC_ROTB        0x00u
+N
+N/* Drawing Engine Command Codes */
+N#define GA_CMC_DE_DLRGBA32 0x03u
+N#define GA_CMC_DE_DLRGB16  0x04u
+N#define GA_CMC_DE_DTRGBA32 0x05u
+N#define GA_CMC_DE_DTRGB16  0x06u
+N
+N/* Command Field Offsets */
+N#define GA_ENG_OFF         60
+N#define GA_LEN_OFF         56
+N#define GA_CMC_OFF         48
+N#define GA_SPC_OFF          0
+N
+N/* Command Field Masks */
+N#define GA_ENG_MSK         (GA_MASK3)
+N#define GA_LEN_MSK         (GA_MASK4)
+N#define GA_CMC_MSK         (GA_MASK8)
+N#define GA_SPC_MSK         (GA_MASK48)
+N
+N/* Macro for command field positioning */
+N#define GA_FP(val, offset, mask) (((uint64_t)(val) & (mask)) << (offset))
+N
+N/* GA Command Fields (Engine, Length, Command code, Cmd Specific Params.)*/
+N#define GA_ENG(Engine) (GA_FP((Engine), GA_ENG_OFF, GA_ENG_MSK))
+N#define GA_LEN(Len)    (GA_FP((Len)   , GA_LEN_OFF, GA_LEN_MSK))
+N#define GA_CMC(Code)   (GA_FP((Code)  , GA_CMC_OFF, GA_CMC_MSK))
+N#define GA_SPC(spec)   (GA_FP((spec)  , GA_SPC_OFF, GA_SPC_MSK))
+N
+N/* GA Command Construction Macro */
+N#define GA_CMN(Engine, Len, CmdCode, CmdSpec) ((uint64_t)0x0ull    | \
+N                                                GA_ENG((Engine))   | \
+N                                                GA_LEN((Len))      | \
+N                                                GA_CMC((CmdCode))  | \
+N                                                GA_SPC((CmdSpec)))
+X#define GA_CMN(Engine, Len, CmdCode, CmdSpec) ((uint64_t)0x0ull    |                                                 GA_ENG((Engine))   |                                                 GA_LEN((Len))      |                                                 GA_CMC((CmdCode))  |                                                 GA_SPC((CmdSpec)))
+N
+N/*=========================================================================
+N|                        SCHEDULER OPERATION COMMANDS                      |
+N ==========================================================================*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load General-Purpose Register Command (LGPR)
+N|
+N|  Descr  :   The Load General-Purpose Register command is used to configure
+N|             one out of the 32 General-Purpose Registers. The command
+N|             specific parameter for this command is the number of the
+N|             register that should be loaded and the value itself.
+N|
+N|  Params:    regNr   - The number of the General-Purpose Register that
+N|                       should be loaded
+N|
+N|             uiVal   - Value that should be stored within the selected
+N|                       register. If the register does not encapsulate
+N|                       32 bits the value within the command has to be right
+N|                       aligned.
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_LOAD(regNr, uiVal) (GA_CMN(GA_SCHED, 1, GA_CMC_LGPR,       \
+N                               GA_FP ((regNr), 32, GA_MASK5)      |   \
+N                               GA_FP ((uiVal),  0,  GA_MASK32)))
+X#define GA_LOAD(regNr, uiVal) (GA_CMN(GA_SCHED, 1, GA_CMC_LGPR,                                      GA_FP ((regNr), 32, GA_MASK5)      |                                  GA_FP ((uiVal),  0,  GA_MASK32)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   END Command (CSEND)
+N|
+N|  Descr  :   The CSEND command must be placed at the end of every command
+N|             list. It signals the Command Scheduler that all commands have
+N|             been executed. When the Command Scheduler is detecting this
+N|             mark, a flag in the status register signals that the command
+N|             list was executed. Optionally an interrupt is generated.
+N|
+N|  Params:    none
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_END() (GA_CMN(GA_SCHED, 0x1u, GA_CMC_END,0x0u))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Wait VSYNC Command (CSWVSYNC)
+N|
+N|  Descr  :   The CSWVSYNC command can be used to synchronize parts of the
+N|             command list with the vertical synchronization signal VSYNC
+N|             from the GDC or the Frame Grabber.
+N|
+N|             When the Command Scheduler is reading the CSWVSYNC command
+N|             it waits until the next vertical synchronization of the
+N|             display/camera input takes place before executing the next
+N|             command.
+N|
+N|  Params:    module   -  VSYNC select:
+N|                         Use: GA_GDC0     - Wait on GDC0
+N|                              GA_FG0      - Wait on FG0
+N|                              GA_GDC1     - Wait on GDC1
+N|                              GA_FG1      - Wait on FG1
+N|
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_WAIT(module) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSWVSYNC,        \
+N                         GA_FP ((module), 0, GA_MASK2)))
+X#define GA_WAIT(module) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSWVSYNC,                                 GA_FP ((module), 0, GA_MASK2)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   User Interrupt Command (CSUIC)
+N|
+N|  Descr  :   The CSUIC command can be used to signal the MCU that a
+N|             certain part of the Command List is already executed or
+N|             will now start execution.
+N|
+N|  Params:    interrupt number:
+N|                          Use: 0 - 23
+N|                               values > 23 will be ignored
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_USERINTERRUPT(number) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSUIC,    \
+N                                  GA_FP ((number), 0, GA_MASK6)))
+X#define GA_USERINTERRUPT(number) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSUIC,                                      GA_FP ((number), 0, GA_MASK6)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Command Scheduler GDC0 Configuration Command (CSGDC0CC)
+N|
+N|  Descr  :   The CSGDC0CC command can be used to change the content of GDC0 registers
+N|
+N|  Params:    
+N|             register offset:
+N|                          16-bits GDC0 adress register offest
+N|
+N|             register value:
+N|                          32-bits
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_GDC0CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC0CC,  \
+N                                         GA_FP((regOffset), 32, GA_MASK16)      |   \
+N                                         GA_FP((value),      0, GA_MASK32)))
+X#define GA_GDC0CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC0CC,                                           GA_FP((regOffset), 32, GA_MASK16)      |                                            GA_FP((value),      0, GA_MASK32)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Command Scheduler GDC1 Configuration Command (CSGDC1CC)
+N|
+N|  Descr  :   The CSGDC1CC command can be used to change the content of GDC1 registers
+N|
+N|  Params:    
+N|             register offset:
+N|                          16-bits GDC1 adress register offest
+N|
+N|             register value:
+N|                          32-bits
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_GDC1CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC1CC,  \
+N                                         GA_FP((regOffset), 32, GA_MASK16)      |   \
+N                                         GA_FP((value),      0, GA_MASK32)))
+X#define GA_GDC1CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC1CC,                                           GA_FP((regOffset), 32, GA_MASK16)      |                                            GA_FP((value),      0, GA_MASK32)))
+N
+N
+N/*======================================
+N              Structures
+N=======================================*/
+N/* Command List Structure */
+Ntypedef struct tag_ga_list_st
+N{
+N    uint64_t  ullCommands[GA_CMD_MAX] ;
+X    uint64_t  ullCommands[2048] ;
+N    uint64_t* pu64Current;
+N    uint32_t  u32UsedDoubleWords; /* used or needed double words for an  GA-API */
+N    int32_t   i32FreeSpaceStat;   /* C_SUCCESS: OK no space free error,
+N                                     C_FAILED:  No free space for GA-API */
+N} ga_list_st ;
+N
+N/****************************************************************************/
+N
+N
+N#endif /* GA_COMMON_H */
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: ga_common.h
+N**  $Revision: 1.14 $
+N**  $Date: 2015/07/21 12:30:20 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 
+N** | CONS.  : 
+N** | REASON :
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 27 "..\..\..\..\lldd\inc\rotation_matrix.h" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+S
+N#endif  
+N/*======================================
+N                Defs
+N=======================================*/
+N
+N#define LLDD_GA_ROTATE_MATRIX_H_REVISION     "$Revision: 1.15 $"
+N#define LLDD_GA_ROTATE_MATRIX_H_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/*--------------------------------------------------------------------------
+N|       ------------------------------------------------------------        |
+N|      | >>>>>>         ROTATION ENGINE COMMAND INDEX        <<<<<< |       |
+N|       ------------------------------------------------------------        |
+N|---------------------------------------------------------------------------|
+N|---------------------------------------------------------------------------|
+N|                                                                           |
+N|                      ------------------------------                       |
+N|                     |      OPERATION COMMANDS      |                      |
+N|                      ------------------------------                       |
+N|                                                                           |
+N| - Commands:                                                               |
+N|   1. ROT_ROTATE           - Rotation Command                              |
+N|   2. ROT_ROTATEB          - Rotation Command with blending                |
+N|                                                                           |
+N|---------------------------------------------------------------------------|
+N|                                                                           |
+N|                    ----------------------------------                     |
+N|                   |      LOAD REGISTER COMMANDS      |                    |
+N|                    ----------------------------------                     |
+N|                                                                           |
+N| - Source Regs:                                                            |
+N|   1. ROT_LOAD_SOURCEADDR  -  Load Source Address Reg.               (SAR) |
+N|   2. ROT_LOAD_SRCWIDTH    -  Load Source Memory Width Reg.         (SMWR) |
+N|                                                                           |
+N| - Destination Regs:                                                       |
+N|   3. ROT_LOAD_DESTADDR    -  Load Destination Address Reg.          (DAR) |
+N|   4. ROT_LOAD_DESTMEMDIM  -  Load Destination Memory Dim. Reg.     (DMDR) |
+N|                                                                           |
+N| - Color Regs:                                                             |
+N|   5. ROT_LOAD_COLORFMT    -  Load Color Format Register             (CFR) |
+N|                                                                           |
+N| - Alpha Regs:                                                             |
+N|   6. ROT_LOAD_SRCALPHAVAL - Load Source Alpha Value Register       (SAVR) |
+N|   7. ROT_LOAD_DSTALPHAVAL - Load Destination Alpha Value Register  (DAVR) |
+N|                                                                           |
+N| - Rotation Regs:                                                          |
+N|   8. ROT_LOAD_A11         - Load SXR Register                      (SXR)  |
+N|   9. ROT_LOAD_A12         - Load SHXR Register                     (SHXR) |
+N|  10. ROT_LOAD_A21         - Load SHYR Register                     (SHYR) |
+N|  11. ROT_LOAD_A22         - Load SYR Register                      (SYR)  |
+N|  12. ROT_LOAD_A31         - Load W0R Register                      (W0R)  |
+N|  13. ROT_LOAD_A32         - Load W1R Register                      (W1R)  |
+N|  14. ROT_LOAD_A33         - Load W2R Register                      (W2R)  |
+N|                                                                           |
+N| - Forward-Rotation Regs:                                                  |
+N|  15. ROT_LOAD_SRCADDRPOS  - Load Rotated Src. Address Pos. Reg.     (RSA) |
+N|  16. ROT_LOAD_COORD1      - Load Frwd-Rot. Corner Coord. Reg. 1  (FRCCR1) |
+N|  17. ROT_LOAD_COORD2      - Load Frwd-Rot. Corner Coord. Reg. 2  (FRCCR2) |
+N|  18. ROT_LOAD_COORD3      - Load Frwd-Rot. Corner Coord. Reg. 3  (FRCCR3) |
+N|  19. ROT_LOAD_COORD4      - Load Frwd-Rot. Corner Coord. Reg. 4  (FRCCR4) |
+N|                                                                           |
+N| - Clipping Window:                                                        |
+N|  20. ROT_LOAD_CLIPWNDUL   - Load Clipp.Wnd. Upper-Left Corner      (CWUL) |
+N|  21. ROT_LOAD_CLIPWNDLR   - Load Clipp.Wnd. Upper-Left Corner      (CWLR) |
+N|                                                                           |
+N --------------------------------------------------------------------------*/
+N/*=========================================================================
+N|                            OPERATION COMMANDS                             |
+N ==========================================================================*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   ROT_ROTATE
+N|
+N|  Descr  :   Rotate source to destination without blending.
+N|
+N|  Params:    clippEn  - Clipping Control
+N|                        Use: GA_EN  - Enable Clipping
+N|                             GA_DIS - Disable Clipping
+N|
+N|             filterEn - Filter Control
+N|                        Use: GA_EN  - Enable Filter
+N|                             GA_DIS - Disable Filter
+N|
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_ROTATE(clippEn, filterEn) (GA_CMN(GA_ROTATION, 1, GA_CMC_ROT,   \
+N                                       GA_FP ((clippEn),   1, GA_MASK1)   | \
+N                                       GA_FP ((filterEn),  0, GA_MASK1)))
+X#define ROT_ROTATE(clippEn, filterEn) (GA_CMN(GA_ROTATION, 1, GA_CMC_ROT,                                          GA_FP ((clippEn),   1, GA_MASK1)   |                                        GA_FP ((filterEn),  0, GA_MASK1)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   ROT_ROTATEB
+N|
+N|  Descr  :   Rotate source to destination with blending.
+N|
+N|  Params:    redChProt   - Red Channel Protection
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             greenChProt - Green Channel Protection
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             blueChProt  - Blue Channel Protection
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             alphaProt   - Alpha Channel Protection
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|
+N|             redChFad    - Red Channel Fading
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             greenChFad  - Green Channel Fading
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             blueChFad   - Blue Channel Fading
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|                         
+N|             alphaFad    - Alpha Channel Fading
+N|                           Use: GA_EN           - Channel Protected
+N|                                GA_DIS          - Channel Not Protected
+N|
+N|             blndOrder   - Blending Order
+N|                           Use: BLT_ONTO_DEST   - Onto destination
+N|                                BLT_BEHIND_DEST - Behind the destination
+N|                         
+N|             ClipWndEn   - Clipping Window Option
+N|                           Use: GA_EN           - Enable Option
+N|                                GA_DIS          - Disable Option
+N|                         
+N|             FilterContr - Filter Control Option
+N|                           Use: GA_EN           - Enable Option
+N|                                GA_DIS          - Disable Option
+N|
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_ROTATEB(redChProt,                                            \
+N                    greenChProt,                                          \
+N                    blueChProt,                                           \
+N                    alphaProt,                                            \
+N                    redChFad,                                             \
+N                    greenChFad,                                           \
+N                    blueChFad,                                            \
+N                    alphaFad,                                             \
+N                    blndOrder,                                            \
+N                    ClipWndEn,                                            \
+N                    FilterContr)                                          \
+N                    (GA_CMN(GA_ROTATION,   1, GA_CMC_ROTB,                \
+N                     GA_FP ((redChProt),  15, GA_MASK1)        |          \
+N                     GA_FP ((greenChProt),14, GA_MASK1)        |          \
+N                     GA_FP ((blueChProt), 13, GA_MASK1)        |          \
+N                     GA_FP ((alphaProt),  12, GA_MASK1)        |          \
+N                     GA_FP ((redChFad),   11, GA_MASK1)        |          \
+N                     GA_FP ((greenChFad), 10, GA_MASK1)        |          \
+N                     GA_FP ((blueChFad),   9, GA_MASK1)        |          \
+N                     GA_FP ((alphaFad),    8, GA_MASK1)        |          \
+N                     GA_FP ((blndOrder),   3, GA_MASK1)        |          \
+N                     GA_FP ((ClipWndEn),   1, GA_MASK1)        |          \
+N                     GA_FP ((FilterContr), 0, GA_MASK1)))
+X#define ROT_ROTATEB(redChProt,                                                                greenChProt,                                                              blueChProt,                                                               alphaProt,                                                                redChFad,                                                                 greenChFad,                                                               blueChFad,                                                                alphaFad,                                                                 blndOrder,                                                                ClipWndEn,                                                                FilterContr)                                                              (GA_CMN(GA_ROTATION,   1, GA_CMC_ROTB,                                     GA_FP ((redChProt),  15, GA_MASK1)        |                               GA_FP ((greenChProt),14, GA_MASK1)        |                               GA_FP ((blueChProt), 13, GA_MASK1)        |                               GA_FP ((alphaProt),  12, GA_MASK1)        |                               GA_FP ((redChFad),   11, GA_MASK1)        |                               GA_FP ((greenChFad), 10, GA_MASK1)        |                               GA_FP ((blueChFad),   9, GA_MASK1)        |                               GA_FP ((alphaFad),    8, GA_MASK1)        |                               GA_FP ((blndOrder),   3, GA_MASK1)        |                               GA_FP ((ClipWndEn),   1, GA_MASK1)        |                               GA_FP ((FilterContr), 0, GA_MASK1)))
+N
+N/*=========================================================================
+N|                          LOAD REGISTER COMMANDS                           |
+N ==========================================================================*/
+N/*------------------------------
+N|        SOURCE REGISTERS       |
+N -------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Source Address Register (SAR)
+N|
+N|  Descr  :   The Load General-Purpose Register command is used to load SAR.
+N|             The physical 32-bit address within the source address register
+N|             is the pointer to the first dot in memory of the source image.
+N|
+N|  Params:    addr - Source Address
+N|                    The lower 32 physical address bits that point to the
+N|                    first dot of the source.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_SOURCEADDR(addr) (GA_LOAD(GA_GPR9, (addr)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Source Memory Width Register (SMWR)
+N|
+N|  Descr  :   The Load General-Purpose Register command is used to load SMWR.
+N|             The source memory width register specifies the memory reserved
+N|             for one line within the source image in number of dots.
+N|
+N|
+N|  Params:    width - Source Memory Width
+N|                     Memory reserved per line within the source in dots
+N|                     (1 up to 4095)
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_SRCWIDTH(width) (GA_LOAD(GA_GPR10, (width)))
+N
+N/*------------------------------
+N|     DESTINATION REGISTERS     |
+N -------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Destination Address Register (DAR)
+N|
+N|  Descr  :   The physical 32-bit address within the destination address
+N|             register is the pointer to the first dot in the memory region,
+N|             where the rotated bitmap will be placed. Depending on the
+N|             source color format, which is equal to the destination color
+N|             format, this address has to be word- (RGBA32) or halfword-
+N|             (RGB16) aligned.
+N|
+N|  Params:    addr   - Destination Address
+N|                      The lower 32 physical address bits that point to the
+N|                      first dot of the destination.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_DESTADDR(addr) (GA_LOAD(GA_GPR4, (addr)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Destination Memory Dimension Register (DMDR)
+N|
+N|  Descr  :   The destination memory dimension register specifies the memory
+N|             reserved for one line within the destination image in number
+N|             of dots. Note that this value does not necessarily have to be
+N|             equal to the image width.
+N|
+N|  Params:    width  - Destination Memory Width
+N|                      Memory reserved per line within the source in dots
+N|                      (1 up to 4095)
+N|
+N|             height - Destination Memory Height
+N|                      Number of lines of the destination image
+N|                      (from 1 up to 4095).
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_DESTMEMDIM(width, height) (GA_LOAD(GA_GPR5,                    \
+N                                            GA_FP ((height), 16, GA_MASK12)  |  \
+N                                            GA_FP ((width),   0, GA_MASK12)))
+X#define ROT_LOAD_DESTMEMDIM(width, height) (GA_LOAD(GA_GPR5,                                                                GA_FP ((height), 16, GA_MASK12)  |                                              GA_FP ((width),   0, GA_MASK12)))
+N
+N/*------------------------------
+N|        COLOR REGISTERS        |
+N -------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Color Format Register (CFR)
+N|
+N|  Descr  :   This register specifies the color format of both, source
+N|             and destination. As the rotation engine does not perform color
+N|             conversion.
+N|
+N|  Params:    dstformat - Destination color format
+N|                         Use parameters:
+N|                         GA_RGB16  - 16-bit RGB
+N|                         GA_RGBA32 - 32-bit RGBA
+N|
+N|             srcformat - Source color format
+N|                         Use parameters:
+N|                         GA_RGB16  - 16-bit RGB
+N|                         GA_RGBA32 - 32-bit RGBA
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_COLORFMT(dstformat, srcformat) (GA_LOAD(GA_GPR11,                    \
+N                                                 GA_FP ((dstformat), 1, GA_MASK1)  |  \
+N                                                 GA_FP ((srcformat), 0, GA_MASK1)))
+X#define ROT_LOAD_COLORFMT(dstformat, srcformat) (GA_LOAD(GA_GPR11,                                                                     GA_FP ((dstformat), 1, GA_MASK1)  |                                                   GA_FP ((srcformat), 0, GA_MASK1)))
+N
+N/*------------------------------
+N|        ALPHA REGISTERS        |
+N -------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Source Fading Factor Register (SFFR)
+N|
+N|  Descr  :   The Source Fading Factor Register holds the fading factor enumerator
+N|             (SFFE) of the fading factor.
+N|
+N|  Params:    factor - Source Fading Factor Enumerator
+N|                      These bits specify the enumerator of the fading
+N|                      factor FFACT.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_FADEFACT(factor) (GA_LOAD(GA_GPR26,                       \
+N                                   ((factor) & GA_MASK8)))
+X#define ROT_LOAD_FADEFACT(factor) (GA_LOAD(GA_GPR26,                                                          ((factor) & GA_MASK8)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Source Alpha Value Register (SAVR)
+N|
+N|  Descr  :   The Source Alpha Value Register keeps the alpha value for
+N|             conversion of the source dots from the 16-bit RGB format to
+N|             the 32-bit RGBA format for internal processing.
+N|
+N|  Params:    format - Source alpha value
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_SRCALPHAVAL(value) (GA_LOAD(GA_GPR27,                     \
+N                                     ((value) & GA_MASK8)))
+X#define ROT_LOAD_SRCALPHAVAL(value) (GA_LOAD(GA_GPR27,                                                          ((value) & GA_MASK8)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Destination Alpha Value Register (DAVR)
+N|
+N|  Descr  :   The Destination Alpha Value Register keeps the alpha value
+N|             used during conversion of the destination dots from the
+N|             16-bit RGB format to the 32-bit RGBA format.
+N|
+N|  Params:    format - Source alpha value
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_DSTALPHAVAL(value) (GA_LOAD(GA_GPR28,                     \
+N                                     ((value) & GA_MASK8)))
+X#define ROT_LOAD_DSTALPHAVAL(value) (GA_LOAD(GA_GPR28,                                                          ((value) & GA_MASK8)))
+N
+N/*------------------------------
+N|      ROTATION REGISTERS        |
+N -------------------------------*/
+N               /* Rotation Matrix:
+N* 
+N*              [  sx   shx  0 ]
+N*              [  shy  sy   0 ]
+N*              [  w0   w1   w2]
+N*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load SXR Register
+N|
+N|  Descr  :   This register holds the SX value of the rotation matrix 
+N              multiplied by 65536. The signed two’s complement integer 
+N              value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted SX value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A11(val) (GA_LOAD(GA_GPR12,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A11(val) (GA_LOAD(GA_GPR12,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load SHXR Register
+N|
+N|  Descr  :   This register holds the SHX value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted SHX value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A12(val) (GA_LOAD(GA_GPR15,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A12(val) (GA_LOAD(GA_GPR15,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load SHYR Register
+N|
+N|  Descr  :   This register holds the SHY value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted SHY value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A21(val) (GA_LOAD(GA_GPR13,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A21(val) (GA_LOAD(GA_GPR13,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load SYR Register
+N|
+N|  Descr  :   This register holds the SHY value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted SYR value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A22(val) (GA_LOAD(GA_GPR14,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A22(val) (GA_LOAD(GA_GPR14,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load W0R Register
+N|
+N|  Descr  :   This register holds the W0 value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted W0 value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A31(val) (GA_LOAD(GA_GPR21,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A31(val) (GA_LOAD(GA_GPR21,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load W1R Register
+N|
+N|  Descr  :   This register holds the W0 value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted W1 value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A32(val) (GA_LOAD(GA_GPR22,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A32(val) (GA_LOAD(GA_GPR22,                                                          ((val) & GA_MASK22)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load W2R Register
+N|
+N|  Descr  :   This register holds the W2 value of the rotation matrix 
+N|             multiplied by 65536. The signed two’s complement integer 
+N|             value is in the range of -2097152 to +2097151.
+N|
+N|  Params:    val - The shifted and integer converted W2 value of the
+N|                   rotation matrix.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_A33(val) (GA_LOAD(GA_GPR23,                               \
+N                           ((val) & GA_MASK22)))
+X#define ROT_LOAD_A33(val) (GA_LOAD(GA_GPR23,                                                          ((val) & GA_MASK22)))
+N
+N/*------------------------------
+N|    FRWD-ROTATION REGISTERS    |
+N ------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Rotated Source Address Position (RSA)
+N|
+N|  Descr  :   This value specifies the index of the rotated corner that at
+N|             it’s original position maps to the source image start address.
+N|
+N|
+N|  Params:    position - Rotated Source Address Position
+N|                        Use following values:
+N|                        GA_FRCCR1 - FRCCR1 maps to the source start addr.
+N|                        GA_FRCCR2 - FRCCR2 maps to the source start addr.
+N|                        GA_FRCCR3 - FRCCR3 maps to the source start addr.
+N|                        GA_FRCCR4 - FRCCR4 maps to the source start addr.
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_SRCADDRPOS(position) (GA_LOAD(GA_GPR20,                   \
+N                                       ((position) & GA_MASK2)))
+X#define ROT_LOAD_SRCADDRPOS(position) (GA_LOAD(GA_GPR20,                                                          ((position) & GA_MASK2)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Forward-Rotated Corner Coordinates Register 1 (FRCCR1)
+N|
+N|  Descr  :   For detailed description how to select the please consult the
+N|             Capricorn documantation.
+N|
+N|             Please note that in order To provide a higher accuracy for
+N|             the Rotation Engine’s calculations, the forward-rotated
+N|             coordinate’s floating point values must be multiplied by 16
+N|             (shifted 4 bits to the left) before being converted to integer
+N|             and passed to the Rotation Engine.
+N|
+N|  Params:    x - Forward-rotated x-coordinate of corner 1 times 16.
+N|             y - Forward-rotated y-coordinate of corner 1 times 16
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_COORD1(x,y) (GA_LOAD(GA_GPR16,                      \
+N                              GA_FP ((x), 16, GA_MASK16)      |      \
+N                              GA_FP ((y),  0, GA_MASK16)))
+X#define ROT_LOAD_COORD1(x,y) (GA_LOAD(GA_GPR16,                                                    GA_FP ((x), 16, GA_MASK16)      |                                    GA_FP ((y),  0, GA_MASK16)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Forward-Rotated Corner Coordinates Register 2 (FRCCR2)
+N|
+N|  Descr  :   For detailed description how to select the please consult the
+N|             Capricorn documantation.
+N|
+N|             Please note that in order To provide a higher accuracy for
+N|             the Rotation Engine’s calculations, the forward-rotated
+N|             coordinate’s floating point values must be multiplied by 16
+N|             (shifted 4 bits to the left) before being converted to integer
+N|             and passed to the Rotation Engine.
+N|
+N|  Params:    x - Forward-rotated x-coordinate of corner 2 times 16.
+N|             y - Forward-rotated y-coordinate of corner 2 times 16
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_COORD2(x,y) (GA_LOAD(GA_GPR17,                    \
+N                              GA_FP ((x), 16, GA_MASK16)     |     \
+N                              GA_FP ((y),  0, GA_MASK16)))
+X#define ROT_LOAD_COORD2(x,y) (GA_LOAD(GA_GPR17,                                                  GA_FP ((x), 16, GA_MASK16)     |                                   GA_FP ((y),  0, GA_MASK16)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Forward-Rotated Corner Coordinates Register 3 (FRCCR3)
+N|
+N|  Descr  :   For detailed description how to select the please consult the
+N|             Capricorn documantation.
+N|
+N|             Please note that in order To provide a higher accuracy for
+N|             the Rotation Engine’s calculations, the forward-rotated
+N|             coordinate’s floating point values must be multiplied by 16
+N|             (shifted 4 bits to the left) before being converted to integer
+N|             and passed to the Rotation Engine.
+N|
+N|  Params:    x - Forward-rotated x-coordinate of corner 3 times 16.
+N|             y - Forward-rotated y-coordinate of corner 3 times 16
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_COORD3(x,y) (GA_LOAD(GA_GPR18,                       \
+N                              GA_FP ((x), 16, GA_MASK16)      |       \
+N                              GA_FP ((y),  0, GA_MASK16)))
+X#define ROT_LOAD_COORD3(x,y) (GA_LOAD(GA_GPR18,                                                     GA_FP ((x), 16, GA_MASK16)      |                                     GA_FP ((y),  0, GA_MASK16)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Forward-Rotated Corner Coordinates Register 4 (FRCCR4)
+N|
+N|  Descr  :   For detailed description how to select the please consult the
+N|             Capricorn documantation.
+N|
+N|             Please note that in order To provide a higher accuracy for
+N|             the Rotation Engine’s calculations, the forward-rotated
+N|             coordinate’s floating point values must be multiplied by 16
+N|             (shifted 4 bits to the left) before being converted to integer
+N|             and passed to the Rotation Engine.
+N|
+N|  Params:    x - Forward-rotated x-coordinate of corner 4 times 16.
+N|             y - Forward-rotated y-coordinate of corner 4 times 16
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_COORD4(x,y) (GA_LOAD(GA_GPR19,                       \
+N                              GA_FP ((x), 16, GA_MASK16)      |       \
+N                              GA_FP ((y),  0, GA_MASK16)))
+X#define ROT_LOAD_COORD4(x,y) (GA_LOAD(GA_GPR19,                                                     GA_FP ((x), 16, GA_MASK16)      |                                     GA_FP ((y),  0, GA_MASK16)))
+N
+N/*------------------------------
+N|    CLIPPING-WND REGISTERS     |
+N ------------------------------*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Clipping Window Upper Left Corner Coord. Reg. (CWUL)
+N|
+N|  Descr  :   This register defines the upper left corner coordinate of the
+N|             clipping window relative to the destination start address in
+N|             number of pixels.
+N|
+N|  Params:    x - Clipping window upper left corner x-coordinate
+N|             y - Clipping window upper left corner y-coordinate
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_CLIPWNDUL(x,y) (GA_LOAD(GA_GPR1,                       \
+N                                 GA_FP ((x), 16, GA_MASK12)      |      \
+N                                 GA_FP ((y),  0, GA_MASK12)))
+X#define ROT_LOAD_CLIPWNDUL(x,y) (GA_LOAD(GA_GPR1,                                                        GA_FP ((x), 16, GA_MASK12)      |                                       GA_FP ((y),  0, GA_MASK12)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load Clipping Window Lower Right Corner Coord. Reg. (CWLR)
+N|
+N|  Descr  :   This register defines the upper left corner coordinate of the
+N|             clipping window relative to the destination start address in
+N|             number of pixels.
+N|
+N|  Params:    x - Clipping window lower right corner x-coordinate
+N|             y - Clipping window lower right corner y-coordinate
+N|
+N -------------------------------------------------------------------------*/
+N#define ROT_LOAD_CLIPWNDLR(x,y) (GA_LOAD(GA_GPR2,                       \
+N                                 GA_FP ((x), 16, GA_MASK12)      |      \
+N                                 GA_FP ((y),  0, GA_MASK12)))
+X#define ROT_LOAD_CLIPWNDLR(x,y) (GA_LOAD(GA_GPR2,                                                        GA_FP ((x), 16, GA_MASK12)      |                                       GA_FP ((y),  0, GA_MASK12)))
+N
+N/*======================================
+N                Enums
+N=======================================*/
+N/* Rot.Src. Address Position  */
+Ntypedef enum tag_rot_SrcSel_e
+N{
+N    GA_FRCCR1 = 0x0u,
+N    GA_FRCCR2 = 0x1u,
+N    GA_FRCCR3 = 0x2u,
+N    GA_FRCCR4 = 0x3u
+N} rot_SrcSel_e;
+N
+N/*======================================
+N              Structures
+N=======================================*/
+N/* rotation matrix Parameters (all values are mult. by 16) */
+Ntypedef struct tag_rot_Mtrx_st
+N{
+N    uint32_t  u32A11;                /* The shifted and integer conv. sx  */
+N    uint32_t  u32A12;                /* The shifted and integer conv. shx */
+N    uint32_t  u32A21;                /* The shifted and integer conv. shy */
+N    uint32_t  u32A22;                /* The shifted and integer conv. sy  */
+N    uint32_t  u32A31;                /* The shifted and integer conv. w0  */
+N    uint32_t  u32A32;                /* The shifted and integer conv. w1  */
+N    uint32_t  u32A33;                /* The shifted and integer conv. w2  */
+N} rot_Mtrx_st;
+N
+N/* Forward-Rotated Corner Coordinates (all values are mult. by 16) */
+Ntypedef struct tag_rot_frccr_st
+N{
+N    uint16_t  u16X1;                 /* Frwd. Rotd. X-Coord (corner 1) */
+N    uint16_t  u16Y1;                 /* Frwd. Rotd. Y-Coord (corner 1) */
+N    uint16_t  u16X2;                 /* Frwd. Rotd. X-Coord (corner 2) */
+N    uint16_t  u16Y2;                 /* Frwd. Rotd. Y-Coord (corner 2) */
+N    uint16_t  u16X3;                 /* Frwd. Rotd. X-Coord (corner 3) */
+N    uint16_t  u16Y3;                 /* Frwd. Rotd. Y-Coord (corner 3) */
+N    uint16_t  u16X4;                 /* Frwd. Rotd. X-Coord (corner 4) */
+N    uint16_t  u16Y4;                 /* Frwd. Rotd. Y-Coord (corner 4) */
+N
+N    uint8_t  u8ScrAddrPos;           /* Source address position */
+N} rot_frccr_st;
+N
+N/* Memory Configuration */
+Ntypedef struct tag_rot_mem_st
+N{
+N    /* Source Mem. Params */
+N    uint16_t      u16SrcHeight;      /* Source Memory Height (Line Number) */
+N    uint16_t      u16SrcWidth;       /* Source Memory Width (Dots Per Line) */
+N    uint32_t      u32SrcAddr;        /* Source Memory Addr. First Src. Dot
+N                                       (Each function specifies its own
+N                                        memory alignment rules) */
+N
+N    /* Destination Mem. Params */
+N    uint32_t      u32DstAddr;        /* Dest. Memory Addr. First Src. Dot
+N                                       (Each function specifies its own
+N                                        memory alignment rules) */
+N    /* Dest. Image Area Size */
+N    uint16_t      u16DstImgWidth;    /* Destination Image Width */
+N    uint16_t      u16DstImgHeight;   /* Destination Image Height */
+N} rot_mem_st;
+N
+N/* Clipping Window Corner Coordinates */
+Ntypedef struct tag_rot_clipWnd_st
+N{
+N    uint16_t  u16UlX;                /* Upper Left X-Coord */
+N    uint16_t  u16UlY;                /* Upper Left Y-Coord */
+N    uint16_t  u16LrX;                /* Lower Right X-Coord */
+N    uint16_t  u16LrY;                /* Lower Right Y-Coord */
+N} rot_clipWnd_st;
+N
+N
+N/* Rotation Config. */
+Ntypedef struct tag_rot_rotCfg_st
+N{
+N    ga_colFmt_e    eSrcColFmt;       /* Source Color Format Selection */
+N    ga_colFmt_e    eDstColFmt;       /* Destination Color Format Selection */
+N    ga_en_e        eClipWndEn;       /* Clipping Window Enable */
+N    ga_en_e        eFilterEn;        /* Enable Filtering */
+N    uint8_t        u8FadingFctr;     /* Fading factor */
+N    uint8_t        u8SrcAlphaVal;    /* Source Alpha value */
+N    uint8_t        u8DstAlphaVal;    /* Destination Alpha value */
+N
+N    /* Optional */
+N    rot_clipWnd_st tClipWnd;
+N} rot_rotCfg_st;
+N
+N/* Rotation with blending Config.  */
+Ntypedef struct tag_rot_rotblendCfg_st
+N{
+N    ga_colFmt_e   eSrcColFmt;        /* Source Color Format Selection */
+N    ga_colFmt_e   eDstColFmt;        /* Destination Color Format Selection */
+N    ga_en_e       eClipWndEn;        /* Clipping Window Enable */
+N    ga_en_e       eFilterEn;         /* Enable Filtering */
+N    ga_en_e       eDstRedProt;       /* Destination red color protection */
+N    ga_en_e       eDstGreenProt;     /* Destination green color protection */
+N    ga_en_e       eDstBlueProt;      /* Destination blue color protection */
+N    ga_en_e       eDstAlphaProt;     /* Destination alpha protection */
+N    ga_en_e       eSrcRedFad;        /* Destination red color protection */
+N    ga_en_e       eSrcGreenFad;      /* Destination green color protection */
+N    ga_en_e       eSrcBlueFad;       /* Destination blue color protection */
+N    ga_en_e       eSrcAlphaFad;      /* Destination alpha protection */
+N    uint8_t       u8FadingFctr;      /* Fading factor */
+N    ga_blendOrd_e eBldOrd;           /* Blend order */
+N    uint8_t       u8SrcAlphaVal;     /* Source Alpha value */
+N    uint8_t       u8DstAlphaVal;     /* Destination Alpha value */
+N
+N    /* Optional */
+N    rot_clipWnd_st tClipWnd;
+N} rot_rotblendCfg_st;
+N
+N
+N/*======================================
+N          Function definitions
+N=======================================*/
+N/****************************************************************************
+N *
+N * Function:      vRot_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                            uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetMemSrc
+N *
+N * Purpose:       Sets Transf source parameters in Command List
+N *
+N * Inputs:        u32Addr    - Source Memory Address
+N *                             (First Dot of the source)
+N *
+N *                u32Width   - Source Memory Width
+N *                             (Memory reserved per line within the source in
+N *                              dots: 1 up to 4095)
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetMemSrc(uint32_t u32Addr, uint32_t u32Width, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetMemDest
+N *
+N * Purpose:       Sets the destination memory parameters in the Command List
+N *
+N * Inputs:        u32Addr    - Destination Memory Address
+N *                             (First Dot of the destination)
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetMemDest(uint32_t u32Addr, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetMemDim
+N *
+N * Purpose:       Sets the destination memory size in the Command List
+N *
+N * Inputs:        u16Width   - Destination Memory Width
+N *                             Number of lines of the destination image
+N *                             (from 1 up to 4095).
+N *
+N *                u16Height  - Destination Memory Height
+N *                             Memory reserved per line within the destination
+N *                             in dots (from 1 up to 4095).
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetMemDim(uint16_t u16Width, uint16_t u16Height, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetColorFmt
+N *
+N * Purpose:       Sets the color format of the both source and destination.
+N *
+N * Inputs:        eDstColFormat - Destination Color Format Selection
+N *                                (16-bit RGB/ 32-bit RGBA)
+N *
+N *                eSrcColFormat - SourceColor Format Selection
+N *                                (16-bit RGB/ 32-bit RGBA)
+N *
+N *                pstCmdList    - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   Please note that Rotation Engine cannot convert color
+N *                format, therefore formats for both (src. and dst.) must be
+N *                the same.
+N *
+N ***************************************************************************/
+Nvoid vRot_SetColorFmt(ga_colFmt_e eDstColFormat, ga_colFmt_e eSrcColFormat, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetRotMtrx
+N *
+N * Purpose:       Sets the rotation matrix coefficients.
+N *
+N * Inputs:        pstMatrix   - Pointer to rotation matrix Coefficients
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   Please note that the signed two’s complement integer values
+N *                are in the range of -2097152 to +2097151.
+N *
+N ***************************************************************************/
+Nvoid vRot_SetRotMtrx(rot_Mtrx_st* pstMatrix, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetFrwdCoord
+N *
+N * Purpose:       Sets the Forward Rotated Coordinates of all four corners.
+N *
+N * Inputs:        pstCoord    - Pointer to forward-rotated Corner Coordinates
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   Please note that if coordinates are not given in required
+N *                order it will be automatically re-arranged before they are
+N *                inserted in the command list (as described in FRCCReg
+N *                chapter).
+N *
+N ***************************************************************************/
+Nvoid vRot_SetFrwdCoord(rot_frccr_st* pstCoord, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetSrcAddrPos
+N *
+N * Purpose:       Sets the Rotated Source Address Position. This value
+N *                specifies the index of the rotated corner that at it’s
+N *                original position maps to the source image start address.
+N *
+N * Inputs:        eSrcSel    - Forward-Rotated Corner Coordinates
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetSrcAddrPos(rot_SrcSel_e eSrcSel, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetRotationCmd
+N *
+N * Purpose:       Inserts the rotation command in the Command List
+N *
+N * Inputs:        eClipWndEn - Enable Clipping Window
+N *
+N *                eFilterEn  - Enable Filtering
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetRotationCmd(ga_en_e eClipWndEn, ga_en_e eFilterEn, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_SetClippWnd
+N *
+N * Purpose:       Sets the Clipping Window Coordinates
+N *
+N * Inputs:        stClipWnd  - Pointer to clipping Window Coordinates
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_SetClippWnd(rot_clipWnd_st* pstClipWnd, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_RotateMatrix
+N *
+N * Purpose:       Inserts all required parameters for source object rotation
+N *                operation
+N *
+N * Inputs:        pstMem      - Pointer to memory configuration parameters
+N *
+N *                pstParam    - Pointer to scaling Parameters
+N *
+N *                pstMatrix   - Pointer to transformation matrix
+N *
+N *                pstCoord    - Pointer to forward rotated corner coordinates
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_RotateMatrix(rot_mem_st* pstMem, rot_rotCfg_st* pstParam, rot_Mtrx_st* pstMatrix,
+N                       rot_frccr_st* pstCoord, ga_list_st* pstCmdList);
+N
+N/****************************************************************************
+N *
+N * Function:      vRot_RotateBlendMatrix
+N *
+N * Purpose:       Inserts all required parameters for source object rotation
+N *                operation with blending
+N *
+N * Inputs:        pstMem      - Pointer to memory configuration parameters
+N *
+N *                pstParam    - Pointer to scaling Parameters
+N *
+N *                pstMatrix   - Pointer to transformation matrix
+N *
+N *                pstCoord    - Pointer to forward rotated corner coordinates
+N *
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRot_RotateBlendMatrix(rot_mem_st* pstMem, rot_rotblendCfg_st* pstParam, rot_Mtrx_st* pstMatrix,
+N                            rot_frccr_st* pstCoord, ga_list_st* pstCmdList);
+N
+N/****************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N/****************************************************************************/
+N
+N#endif /* ROATATION_MATRIX_H */
+N
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: rotation_matrix.h
+N**  $Revision: 1.15 $
+N**  $Date: 2015/05/04 09:07:14 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 
+N** |
+N** | CONS.  :
+N** |
+N** | REASON :
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\rotation_matrix.c" 2
+N#include "ga.h"
+L 1 "..\..\..\..\lldd\inc\ga.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Graphic Accelerator
+N*                 Reference Low-Level Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Graphic Accelerator
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.19 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef GA_H
+N#define GA_H
+N
+N/*======================================
+N             Include Files
+N=======================================*/
+N#include "ga_common.h"
+N/*======================================
+N                Defs
+N=======================================*/
+N
+N#define LLDD_GA_H_REVISION     "$Revision: 1.19 $"
+N#define LLDD_GA_H_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/* Timeout */
+N#define GA_TIMEOUT  10000
+N
+N/* Size of Draw Engine Filter RAM (in doublewords) */
+N#define GA_DE_FILTER_SIZE 64
+N
+N/* GA Interrupt Masks */
+N#define GA_IRQ_MASK_CENDIM  0x00000001U    /* GA Command End Interrupt Mask.                          */
+N#define GA_IRQ_MASK_CSCEIM  0x00000004U    /* Command Scheduler Command Error Interrupt Mask          */
+N#define GA_IRQ_MASK_CSLEIM  0x00000008U    /* Command Scheduler Command List Executed Interrupt Mask  */
+N#define GA_IRQ_MASK_WBWIM   0x00000010U    /* GA Write Buffer Write Bus-Error Interrupt Mask          */
+N#define GA_IRQ_MASK_WBRIM   0x00000020U    /* GA Write Buffer Read Bus-Error Interrupt Mask           */
+N#define GA_IRQ_MASK_CBIM    0x00000040U    /* GA Cache Buffer Bus-Error Interrupt Mask                */
+N#define GA_IRQ_MASK_RBIM    0x00000080U    /* GA Read Buffer Bus-Error Interrupt Mask                 */
+N#define GA_IRQ_MASK_CSLUIM  0xFFFFFF00U    /* Command List User Interrupt Mask 0 – 23                 */
+N
+N/*======================================
+N                Enums
+N=======================================*/
+N/****************************************
+N*         GAIMR Param.Values
+N****************************************/
+N/* IRQ Mask */
+Ntypedef enum tag_ga_irqen_e
+N{
+N    GA_IRQ_EN  = 0x1u,     /* Enable IRQ */
+N    GA_IRQ_DIS = 0x0u      /* Disable IRQ */
+N} ga_irqen_e;
+N
+N/* Bus type */
+Ntypedef enum tag_ga_bus_type_e
+N{
+N    GA_READ_BUF_BUS        = 0x00U,
+N    GA_CACHE_BUF_BUS       = 0x01U,
+N    GA_WRITE_BUF_READ_BUS  = 0x02U,
+N    GA_WRITE_BUF_WRITE_BUS = 0x03U,
+N    GA_MAX_TYPE_BUS        = 0x04U
+N} ga_bus_type_e;
+N
+N/* Read / Write Direction */
+Ntypedef enum tag_ga_buserr_dir_e
+N{
+N    GA_BUSERR_READ_TRANSF   = 0x0U,
+N    GA_BUSERR_WRITE_TRANSF  = 0x1U
+N} ga_buserr_dir_e;
+N
+N/* Burs error Type */
+Ntypedef enum tag_ga_buserr_bursttype
+N{
+N    GA_BUSERR_BURST_TYPE_FIXED   = 0x0U,
+N    GA_BUSERR_BURST_TYPE_INCR    = 0x1U
+N} ga_buserr_bursttype;
+N
+N/* Burst Size */
+Ntypedef enum tag_ga_buserr_burstsize
+N{
+N    GA_BUSERR_BURST_1BYTE     = 0x0U,
+N    GA_BUSERR_BURST_2BYTE     = 0x1U,
+N    GA_BUSERR_BURST_4BYTE     = 0x2U,
+N    GA_BUSERR_BURST_81BYTE    = 0x3U,
+N    GA_BUSERR_BURST_16BYTE    = 0x4U,
+N    GA_BUSERR_BURST_32BYTE    = 0x5U,
+N    GA_BUSERR_BURST_64BYTE    = 0x6U,
+N    GA_BUSERR_BURST_128BYTE   = 0x7U
+N} ga_buserr_burstsize;
+N
+N
+N/* Response Type */
+Ntypedef enum tag_ga_buserr_resptype
+N{
+N    GA_BUSERR_RESP_OK        = 0x0U,
+N    GA_BUSERR_RESP_EXOKAY    = 0x1U,
+N    GA_BUSERR_RESP_SLVERR    = 0x2U,
+N    GA_BUSERR_RESP_DECERR    = 0x3U
+N} ga_buserr_resptype;
+N
+N/* Memory Protection Region */
+Ntypedef enum tag_ga_memory_region_e
+N{
+N    GA_MEMORY_PROT_REGION_0   = 0x0U,
+N    GA_MEMORY_PROT_REGION_1   = 0x1U,
+N    GA_MEMORY_PROT_REGION_MAX = 0x2U
+N} ga_memory_region_e;
+N
+N/*======================================
+N              Structures
+N=======================================*/
+N/* GA bus Error Control Signal-Structure */
+Ntypedef struct tag_ga_bus_err_ctrl_st
+N{
+N    ga_buserr_dir_e      eDirection;       /* Read / Write direction */
+N    ga_buserr_bursttype  eBurstType;       /* Burst type */
+N    ga_buserr_burstsize  eBurstSize;       /* Burst size */
+N    ga_buserr_resptype   eRespType;        /* Response Type */
+N    uint8_t              u8ByteEnables;    /* Byte-enables for the erroneous transfer. */
+N    uint8_t              u8ID;             /* ID tag of the read/write transaction that triggered an error response. */
+N    uint8_t              u8BurstLength;    /* Burst length of the read/write transaction that triggered an error response */
+N} ga_bus_err_ctrl_st;
+N
+N/*======================================
+N      Exported Function Prototypes
+N=======================================*/
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8CommonRevision - pointer to common header revision string
+N *                pau8CommonTag      - pointer to common header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                    uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                    uint8_t** pau8CommonRevision, uint8_t** pau8CommonTag,
+N                    uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ResetMaxUsedBuffSize
+N *
+N * Purpose:       Resets the counter for used buffer of command list
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: used size buffer in Double Words
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ResetMaxUsedBuffSize(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32Ga_GetMaxUsedBuffSize
+N *
+N * Purpose:       To get max. used size of command buffer. This API can be
+N *                used to optimize the need size of "GA_CMD_MAX" in ga_list_st
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: used size buffer in Double Words
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32GA_GetMaxUsedBuffSize(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32GA_GetLastCmdBuffStatus
+N *
+N * Purpose:       returns the information if there was enough space free for
+N *                command over API
+N *
+N * Inputs:        pstCmdList - Pointer to Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: space status for command list
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32GA_GetLastCmdBuffStatus(ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32GA_GetLastCmdSize
+N *
+N * Purpose:       returns the uesed buffer size for last API call (in case it
+N *                was enough memory in buffer) or it returns needed size of buffer
+N *                for last API call (if there was not enough memory in command buffer)
+N *
+N * Inputs:        pstCmdList - Pointer to Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: sized of used buffer
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32GA_GetLastCmdSize(ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32GA_CheckList
+N *
+N * Purpose:       To check whether there is enough space in command buffer
+N *                to wrote some doble words 
+N *
+N * Inputs:        pstCmdList  - pointer to command list
+N *                u32NeededDW - needed double words 
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_FAILED  requested number of commands will not fit into list
+N *                C_SUCCESS requested number of commands will fit into list   
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32GA_CheckList(ga_list_st* pstCmdList, uint32_t u32NeededDW);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ResetList
+N *
+N * Purpose:       Resets the Command List
+N *
+N * Inputs:        pstCmdList - Pointer to command list
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   The pointer to current list position will be reset, the
+N *                content of the list will remain un-touched.
+N *
+N ***************************************************************************/
+Nvoid vGA_ResetList(ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_CloseList
+N *
+N * Purpose:       Closes the given list by inserting CSEND command
+N *
+N * Inputs:        pstCmdList - Pointer to Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_CloseList(ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_SyncList
+N *
+N * Purpose:       Inserts the VSYNC command in the command list in order to
+N *                synchronize the execution of the list with vertical (VSYNC)
+N *                signal from the GDC or Frame Grabber. When the command
+N *                sceduler reaches this command it will stop the list
+N *                execution until next VSYNC signal.
+N *
+N * Inputs:        eModul     - Modul selection to wait on (GDC/FG)
+N *                pstCmdList - Pointer to Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_SyncList(ga_modul_e eModule, ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_SetUserInt
+N *
+N * Purpose:       defines Interrupt to CPU
+N *
+N * Inputs:        u8Number   - Interrupt number
+N *                pstCmdList - Pointer to the Command List
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_SetUserInt(uint8_t u8Number, ga_list_st* pstCmdList);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_Enable
+N *
+N * Purpose:       Enables/Disables the Graphic Accelerator
+N *
+N * Inputs:        eEn - Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_Enable(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ReadAheadEnable
+N *
+N * Purpose:       Enables/Disables ReadBuffer Read Ahead feature
+N *
+N * Inputs:        eEn - Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ReadAheadEnable(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      i32GA_Reset
+N *
+N * Purpose:       Resets the Graphic Accelerator
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_SUCCESS - Reset successful
+N *                C_FAILED  - Reset timeout (Reset was not completted in
+N *                            predefined time interval)
+N *
+N * Limitations:   The function will wait the reset to complete (it can take
+N *                until recent bus cycle execution is finished)
+N *
+N ***************************************************************************/
+Nint32_t i32GA_Reset(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_SetCmdListAddr
+N *
+N * Purpose:       Sets the physical address of the current command list
+N *
+N * Inputs:        u32Addr  - Physical address of the command list
+N *                           (Must be 64-bit alligned -> uiAddr[2:0] = 0x0)
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   Make sure that when calling this function command scheduler
+N *                is NOT executing a command list !!! Please note, that after
+N *                the address is once written, the GA will automatically
+N *                start the command list execution.
+N *
+N ***************************************************************************/
+Nvoid vGA_SetCmdListAddr(uint32_t u32Addr);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u8GA_GetStatus
+N *
+N * Purpose:       Reads the Graphic Accelerator Status register
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: GA Status Register (GASR) value
+N *
+N * Limitations:   The caller must parse returned status byte. For this
+N *                purpose see the description of GASR Register.
+N *
+N ***************************************************************************/
+Nuint8_t u8GA_GetStatus(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_CmdListFinished
+N *
+N * Purpose:       Indicates that the operation of a command list was finished or
+N *                the GA was reset. This bit will be set to zero, when a new pointer
+N *                is written.
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE:  command List Finished (ready to get new values)
+N *                C_FALSE: command List is not Finished (not ready to get new values)
+N *
+N * Limitations: 
+N *
+N ***************************************************************************/
+Nbool_t boGA_CmdListFinished(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_CmdListError
+N *
+N * Purpose:       This function shows if the Command Scheduler detects an invalid command
+N *                or not. The Graphics Accelerator halts its operation and has to be reset
+N *                if error is any detected. 
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE:  any Error detected by command list
+N *                C_FALSE: no error detected
+N *
+N * Limitations:   
+N *
+N ***************************************************************************/
+Nbool_t boGA_CmdListError(void);
+N
+N
+N#ifndef _EXTENDED_GA_APIS_DISABLED_
+N/****************************************************************************
+N *
+N * Function:      boGA_CmdReg_IsBusy
+N *
+N * Purpose:       This function shows when any of the GA engines is currently operating.
+N *                Then also the write access to many registers is prohibited.
+N *                NOTE:
+N *                  This function should be used from user by using direct comamnd 
+N *                  registers instead of command list, before writing new commands. 
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE:  GA engine is busy.
+N *                C_FALSE: GA engine is ready (not busy).
+N *
+N * Limitations:   
+N *
+N ***************************************************************************/
+Nbool_t boGA_CmdReg_IsBusy(void);
+N#endif
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32GA_GetIrqCause
+N *
+N * Purpose:       Reads the Graphic Accelerator Interrupt Cause
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: GA IRQ Cause value
+N *
+N * Limitations:   The calling function must parse returned IRQ cause byte.
+N *                For this purpose see the GAICR register description.
+N *                Please note that the funtion will automatically clear
+N *                the interrupt source !!!
+N *
+N ***************************************************************************/
+Nuint32_t u32GA_GetIrqCause(void);
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqCause
+N *
+N * Purpose:       Clears the Graphic Accelerator Interrupt Cause
+N *
+N * Inputs:        u32CauseMask: Mask to clear the bits ("1" in the mask means clear Bit)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqCause(uint32_t u32CauseMask);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_SetIrqMask
+N *
+N * Purpose:       Sets all GA Interrupt masks in one shot
+N *
+N * Inputs:        u32Mask - Interrupt Mask. For this purpose you may use defines:
+N *                         GA_IRQ_MASK_CENDIM, GA_IRQ_MASK_CSCEIM, GA_IRQ_MASK_CSLEIM,
+N *                         GA_IRQ_MASK_WBWIM, GA_IRQ_MASK_WBRIM, GA_IRQ_MASK_CBIM,
+N *                         GA_IRQ_MASK_RBIM, GA_IRQ_MASK_CSLUIM   
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_SetIrqMask(uint32_t u32Mask);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableUserIrq
+N *
+N * Purpose:       Enables/Disables interrupt to CPU
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *		  u8Number - interrupt line to be enabled/disabled
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableUserIrq(uint8_t u8Number, ga_en_e eEn);
+N
+N
+N#ifndef _EXTENDED_GA_APIS_DISABLED_
+N/****************************************************************************
+N *
+N * Function:      vGA_CmdReg_EnableIrqCmdEnd
+N *
+N * Purpose:       Enables/Disables GA Command End Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_CmdReg_EnableIrqCmdEnd(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_CmdReg_ClearIrqCmdEnd
+N *
+N * Purpose:       Clears GA Command End Interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_CmdReg_ClearIrqCmdEnd(void);
+N
+N
+N#endif
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqCSLEI
+N *
+N * Purpose:       Enables/Disables Command Scheduler Command List
+N *                Executed Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqCSLEI(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqCSLEI
+N *
+N * Purpose:       Clears Command Scheduler Command List Executed Interrupt. 
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqCSLEI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqCSCEI
+N *
+N * Purpose:       Enables/Disables Command Scheduler Command Error IRQ
+N *                Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqCSCEI(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqCSCEI
+N *
+N * Purpose:       Clears GA Command Scheduler Command Error IRQ
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqCSCEI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_SetGADelay
+N *
+N * Purpose:       Sets the minimum delay in System Clock cycles between two
+N *                consecutive memory accesses performed by any Graphics 
+N *                Accelerator engine
+N *
+N * Inputs:        u16Delay: Delay Value (0x0000 .. 0xFFFF)
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_SetGADelay(uint16_t u16Delay);
+N
+N
+N/****************************************************************************/
+N
+N#ifndef _EXTENDED_GA_APIS_DISABLED_
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqGAWBWI
+N *
+N * Purpose:       Enables/Disables GA Write Buffer Write Error Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqGAWBWI(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqGAWBWI
+N *
+N * Purpose:       Clears GA Write Buffer Write Error Interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqGAWBWI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqGAWBRI
+N *
+N * Purpose:       Enables/Disables GA Write Buffer Read Error Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqGAWBRI(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqGAWBRI
+N *
+N * Purpose:       Clears GA Write Buffer Read Error Interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqGAWBRI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqGACBIM
+N *
+N * Purpose:       Enables/Disables GA Cache Buffer Error Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqGACBI(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqGACBI
+N *
+N * Purpose:       Clears GA Cache Buffer Error Interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqGACBI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableIrqGARBI
+N *
+N * Purpose:       Enables/Disables GA Read Buffer Error Interrupt
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableIrqGARBI(ga_en_e eEn);
+N
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearIrqGARBI
+N *
+N * Purpose:       Clears GA Read Buffer Error Interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearIrqGARBI(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearUserIrq
+N *
+N * Purpose:       Clears GA Command List User Interrupt 0 - 23
+N *
+N * Inputs:        u8CmdListIntr: No. of Interruot (0..23) to be cleared
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearUserIrq(uint8_t u8CmdListIntr);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_GetBusErrAddr
+N *
+N * Purpose:       Returns the address after bus error on GA 
+N *
+N * Inputs:        eBusType  Related Bus
+N *
+N * Outputs:       pu32BusErrAddr: Pointer to bus error address
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: NULL pointer
+N *
+N * Limitations:   Process one controller at a time
+N *
+N ***************************************************************************/
+Nbool_t boGA_GetBusErrAddr(ga_bus_type_e eBusType, uint32_t* pu32BusErrAddr);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_GetBusErrCtrlStatus
+N *
+N * Purpose:       Returns the triggering access’s control status after bus error on GA
+N *
+N * Inputs:        eBusType  Related Bus
+N *
+N * Outputs:       control status structure
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: Wrong parameter
+N *
+N * Limitations:   Process one controller at a time
+N *
+N ***************************************************************************/
+Nbool_t boGA_GetBusErrCtrlStatus(ga_bus_type_e eBusType, ga_bus_err_ctrl_st* pstCtrlStatus);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_SetMemoryProtRegionAddr
+N *
+N * Purpose:       Defines the lower and upper address of the memory region
+N *                0 or 1 (primary, secondary) GA is allowed to perform write accesses.
+N *                Write accesses outside the memory regions are discarded.
+N *                NOTE:
+N *                   The memory regions are defined with a granularity of 4Kbyte.
+N *
+N * Inputs:        eRegion  Related Region (0/1)
+N *                u32LowAddress: Lower protected address
+N *                u32HighAddress: Higher protected address
+N *
+N * Outputs:       none
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: Wrong parameter
+N *
+N * Limitations:   Process one controller at a time
+N *
+N ***************************************************************************/
+Nbool_t boGA_SetMemoryProtRegionAddr(ga_memory_region_e eRegion, uint32_t u32LowAddress, uint32_t u32HighAddress);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableMemoryProtecConfigIrq
+N *
+N * Purpose:       Enables/Disables interrupt, set if a non-privileged access 
+N *                tries to write to GAMR0L, GAMR0H, GAMR1L, GAMR1H, GAMPICR,
+N *                or GAMPIMR.
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableMemoryProtecConfigIrq(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_EnableMemoryProtecAccessIrq
+N *
+N * Purpose:       Enables/Disables interrupt, set if GA tries to write to 
+N *                memory outside the address range defined by GAMR0L-GAMR0H 
+N *                and GAMR1L-GAMR1H.
+N *
+N * Inputs:        eEn - Interrupt Enable/Disable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_EnableMemoryProtecAccessIrq(ga_en_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearMemoryProtecConfigIrq
+N *
+N * Purpose:       Clears interrupt generated if GA tries to have a non-privileged access 
+N *                tries to write to protection control registers
+N *                (GAMR0L, GAMR0H, GAMR1L, GAMR1H, GAMPICR, or GAMPIMR)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearMemoryProtecConfigIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vGA_ClearMemoryProtecAccessIrq
+N *
+N * Purpose:       Clears interrupt generated if GA tries to write to memory 
+N *                outside the address range defined by GAMR0L-GAMR0H and GAMR1L-GAMR1H
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vGA_ClearMemoryProtecAccessIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32GA_GetMemoryProtecErr_CaptAddr
+N *
+N * Purpose:       Get the address of the first write access performed by the 
+N *                Write Buffer’s write interface that caused a memory protection
+N *                violation. The register is automatically set by the Graphics 
+N *                Accelerator in case of a protection violation, it is reset to
+N *                zero automatically if the corresponding interrupt bit GAMPI is
+N *                cleared in the Graphics Accelerator Interrupt Cause Register (GAMPICR).
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: Address caused portection error
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32GA_GetMemoryProtecErr_CaptAddr(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_SetGeneralPurposeRegister
+N *
+N * Purpose:       Set one of 32 Purpose Registers of GA, which are used to define  
+N *                the required parameters for the triggered engine.
+N *                Read access is possible all the time, write access is only allowed
+N *                if no engine is currently operating (GASR.BUSY=0). Nevertheless, 
+N *                it is recommended to configure these registers using Command Lists.
+N *
+N * Inputs:        u8RegNo      No. of Register (0..31)
+N *                u32RegValue: Register value to be written
+N *
+N * Outputs:       none
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: Wrong RegNo or GA was busy and cannot accept new register values.
+N *
+N * Limitations:   Process one controller at a time. Api cannot be executed if GA is busy.
+N *
+N ***************************************************************************/
+Nbool_t boGA_SetGeneralPurposeRegister (uint8_t u8RegNo, uint32_t u32RegValue);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_GetGeneralPurposeRegister
+N *
+N * Purpose:       Get content of one of 32 Purpose Registers of GA, which are used   
+N *                to define the required parameters for the triggered engine.
+N *
+N * Inputs:        u8RegNo       No. of Register (0..31)
+N *                pu32RegValue: Pointer to Register value to be read
+N *
+N * Outputs:       none
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: Wrong RegNo NULL pointer 
+N *
+N * Limitations:   Process one controller at a time. Api cannot be executed if GA is busy.
+N *
+N ***************************************************************************/
+Nbool_t boGA_GetGeneralPurposeRegister (uint8_t u8RegNo, uint32_t* pu32RegValue);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boGA_SetCommandRegisterLowHigh
+N *
+N * Purpose:       Set command register directly (as alternative to command List).
+N *                For this mode, user should take care that GA should be ready 
+N *                (not busy) before writng in registers. 
+N *
+N * Inputs:        u32LowValue:  Lower 32 bits of 64 bits command (0..31)
+N *                u32HighValue: Higher 32 bits of 64 bits command (32..63)
+N *                NOTE:
+N *                  1) API should write first Lowe Part and then higher Part. 
+N *                    By writing of higehr word thorugh API GA will be trigegred 
+N *                    to execute command if it was not busy before.
+N *                  2) Related general purpose registers for command should be
+N *                     written before, 
+N *
+N * Outputs:       none
+N *
+N * Return Values: No Error?
+N *                C_TRUE:  No Error
+N *                C_FALSE: GA was busy and cannot accept new register values.
+N *
+N * Limitations:   Process one controller at a time. Api cannot be executed if GA is busy.
+N *
+N ***************************************************************************/
+Nbool_t boGA_SetCommandRegisterLowHigh (uint32_t u32LowValue,  uint32_t u32HighValue);
+N
+N
+N#endif /* _EXTENDED_GA_APIS_DISABLED_ */
+N
+N#endif /* GA_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\src\rotation_matrix.c" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S
+S  #pragma ghs nowarning 1858  /* Rule 17.4 [R] : subscript operator may only be applied to objects declared as an array type */
+S  #pragma ghs nowarning 1865  /* Rule 10.1 [R] : conversion from underlying type, "int", to same width underlying type, "uint32_t", not allowed */
+S  #pragma ghs nowarning 1866  /* Rule 10.1 [R] : implicit conversion from underlying type, "type", to underlying type, "type", changes signedness */
+S  #pragma ghs nowarning 1878  /* Rule 10.3 [R] : cast of complex integer expression with underlying type "type" to wider type "type" not allowed */
+S  #pragma ghs nowarning 1879  /* Rule 10.3 [R] : Restrict explicit casts for integer type expressions */
+S
+S  #pragma ghs nowarning 1723  /* Rule 5.6  [A] : No identifiers with the same name in different name spaces except for struct and union members.. */  
+S  #pragma ghs nowarning 1737  /* Rule 12.1 [A] :  expression may not depend on operator precedence rules */
+S  #pragma ghs nowarning 1840  /* Rule 5.7  [A] : No reuse of identifiers */
+S
+N#endif
+N
+N
+N/*======================================
+N    Stat. Var and Func. Prototypes
+N=======================================*/
+N
+N
+N/*======================================
+N    Glob. Var and Func. Prototypes
+N=======================================*/
+N
+N
+N/*======================================
+N                Macros
+N=======================================*/
+N#define LLDD_GA_ROTATE_MATRIX_C_REVISION     "$Revision: 1.12 $"
+N#define LLDD_GA_ROTATE_MATRIX_C_TAG          "$Name: LLDD_1_7_GFX $"
+N
+Nstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_C_REVISION[] = LLDD_GA_ROTATE_MATRIX_C_REVISION;
+Xstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_C_REVISION[] = "$Revision: 1.12 $";
+Nstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_C_TAG[]      = LLDD_GA_ROTATE_MATRIX_C_TAG;
+Xstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_C_TAG[]      = "$Name: LLDD_1_7_GFX $";
+Nstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_H_REVISION[] = LLDD_GA_ROTATE_MATRIX_H_REVISION;
+Xstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_H_REVISION[] = "$Revision: 1.15 $";
+Nstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_H_TAG[]      = LLDD_GA_ROTATE_MATRIX_H_TAG;
+Xstatic uint8_t au8LLDD_GA_ROTATE_MATRIX_H_TAG[]      = "$Name: LLDD_1_7_GFX $";
+N
+N#define WxR_VALUE_ONE  0x10000  /* WxR register set to 1 (shifted by 16 bits)*/
+N/*======================================
+N          Function definitions
+N=======================================*/
+N
+Nvoid vRot_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag)
+N{
+N     *pau8ModuleRevision = &au8LLDD_GA_ROTATE_MATRIX_C_REVISION[0];
+N     *pau8ModuleTag      = &au8LLDD_GA_ROTATE_MATRIX_C_TAG[0];
+N     *pau8HeaderRevision = &au8LLDD_GA_ROTATE_MATRIX_H_REVISION[0];
+N     *pau8HeaderTag      = &au8LLDD_GA_ROTATE_MATRIX_H_TAG[0];
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetMemSrc(uint32_t u32Addr, uint32_t u32Width, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 3;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_SRCWIDTH(u32Width);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((10)) & (0x1fu)) << (32)) | (((uint64_t)(((u32Width))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_SOURCEADDR(u32Addr);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((9)) & (0x1fu)) << (32)) | (((uint64_t)(((u32Addr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[2];
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetMemDest(uint32_t u32Addr, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N    
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 2U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_DESTADDR( u32Addr);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((4)) & (0x1fu)) << (32)) | (((uint64_t)(((u32Addr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[1];
+N    pstCmdList->u32UsedDoubleWords = 2U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetMemDim(uint16_t u16Width, uint16_t u16Height, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 1U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_DESTMEMDIM(u16Width, u16Height);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((5)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((u16Height)) & (0xfffu)) << (16)) | (((uint64_t)((u16Width)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[1];
+N    pstCmdList->u32UsedDoubleWords = 1U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetColorFmt(ga_colFmt_e eDstColFormat, ga_colFmt_e eSrcColFormat, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 1U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N    /* Color format for Rotation should be redefined to fit to HW implemenation:
+N     *  modify color format 0-->1 and 1-->0 
+N     *  */
+N    pu64Curr[0] = ROT_LOAD_COLORFMT((1 - (uint8_t) eDstColFormat), (1 - (uint8_t) eSrcColFormat));
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((11)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)(((1 - (uint8_t) eDstColFormat))) & (0x1u)) << (1)) | (((uint64_t)(((1 - (uint8_t) eSrcColFormat))) & (0x1u)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[1];
+N    pstCmdList->u32UsedDoubleWords = 1U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetRotMtrx(rot_Mtrx_st* pstMatrix, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 7U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N    
+N    pu64Curr[0] = ROT_LOAD_A11(pstMatrix->u32A11);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((12)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A11) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_A12(pstMatrix->u32A12);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((15)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A12) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[2] = ROT_LOAD_A21(pstMatrix->u32A21);
+X    pu64Curr[2] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((13)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A21) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[3] = ROT_LOAD_A22(pstMatrix->u32A22);
+X    pu64Curr[3] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((14)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A22) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    /* Load W0, W1, W2: */
+N    pu64Curr[4] = ROT_LOAD_A31(pstMatrix->u32A31);
+X    pu64Curr[4] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((21)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A31) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[5] = ROT_LOAD_A32(pstMatrix->u32A32);
+X    pu64Curr[5] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((22)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A32) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[6] = ROT_LOAD_A33(pstMatrix->u32A33);
+X    pu64Curr[6] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((23)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A33) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[7];
+N    pstCmdList->u32UsedDoubleWords = 7U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetFrwdCoord(rot_frccr_st* pstCoord, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 4U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_COORD1(pstCoord->u16X1, pstCoord->u16Y1);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((16)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X1)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y1)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_COORD2(pstCoord->u16X2, pstCoord->u16Y2);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((17)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X2)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y2)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[2] = ROT_LOAD_COORD3(pstCoord->u16X3, pstCoord->u16Y3);
+X    pu64Curr[2] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((18)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X3)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y3)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[3] = ROT_LOAD_COORD4(pstCoord->u16X4, pstCoord->u16Y4);
+X    pu64Curr[3] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((19)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X4)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y4)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[4];
+N    pstCmdList->u32UsedDoubleWords = 4U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetSrcAddrPos(rot_SrcSel_e eSrcSel, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 1U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_SRCADDRPOS((uint8_t) eSrcSel);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((20)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint8_t) eSrcSel) & 0x3u))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[1];
+N    pstCmdList->u32UsedDoubleWords = 4U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetRotationCmd(ga_en_e eClipWndEn, ga_en_e eFilterEn, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 1U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_ROTATE(eClipWndEn, eFilterEn);
+X    pu64Curr[0] = (((uint64_t)0x0ull | ((((uint64_t)(((0x3u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x01u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((eClipWndEn)) & (0x1u)) << (1)) | (((uint64_t)((eFilterEn)) & (0x1u)) << (0))))) & ((0xffffffffffffull))) << (0)))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[1];
+N    pstCmdList->u32UsedDoubleWords = 1U;
+N}
+N
+N/* ....................................................................... */
+Nvoid vRot_SetClippWnd(rot_clipWnd_st* pstClipWnd, ga_list_st* pstCmdList)
+N{
+N    uint64_t* pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S
+S    uint32_t u32NeededDW  = 2U;
+S   
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S    
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif
+N
+N    pu64Curr[0] = ROT_LOAD_CLIPWNDUL(pstClipWnd->u16UlX,pstClipWnd->u16UlY);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((1)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstClipWnd->u16UlX)) & (0xfffu)) << (16)) | (((uint64_t)((pstClipWnd->u16UlY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_CLIPWNDLR(pstClipWnd->u16LrX,pstClipWnd->u16LrY);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((2)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstClipWnd->u16LrX)) & (0xfffu)) << (16)) | (((uint64_t)((pstClipWnd->u16LrY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pstCmdList->pu64Current = &pu64Curr[2];
+N    pstCmdList->u32UsedDoubleWords = 2U;
+N}
+N/* ....................................................................... */
+Nvoid vRot_RotateMatrix(rot_mem_st* pstMem, rot_rotCfg_st* pstParam, 
+N                       rot_Mtrx_st* pstMatrix, rot_frccr_st* pstCoord,
+N                       ga_list_st* pstCmdList)
+N{
+N    uint8_t u8Curr = 20U;
+N    uint64_t* pu64Curr;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S    uint32_t u32NeededDW ;
+S    
+S    u32NeededDW = u8Curr;
+S    if(pstParam->eClipWndEn == GA_EN)
+S    {
+S        u32NeededDW += 2; /* window parameters */
+S    }
+S    u32NeededDW++; /* for ROT_ROTATE */
+S
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif 
+N
+N    pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N    /* Source Mem. Params */
+N    pu64Curr[0] = ROT_LOAD_SRCWIDTH(pstMem->u16SrcWidth);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((10)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u16SrcWidth))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_SOURCEADDR(pstMem->u32SrcAddr);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((9)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u32SrcAddr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Destination Mem. Params */
+N    pu64Curr[2] = ROT_LOAD_DESTADDR( pstMem->u32DstAddr);
+X    pu64Curr[2] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((4)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u32DstAddr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[3] = ROT_LOAD_DESTMEMDIM(pstMem->u16DstImgWidth, pstMem->u16DstImgHeight);
+X    pu64Curr[3] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((5)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstMem->u16DstImgHeight)) & (0xfffu)) << (16)) | (((uint64_t)((pstMem->u16DstImgWidth)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Color format for Rotation should be redefined to fit to HW implemenation:
+N     *  modify color format 0-->1 and 1-->0 
+N     *  */
+N    pu64Curr[4] = ROT_LOAD_COLORFMT((1 - (uint8_t)(pstParam->eDstColFmt)), (1 - (uint8_t)(pstParam->eSrcColFmt)));
+X    pu64Curr[4] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((11)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)(((1 - (uint8_t)(pstParam->eDstColFmt)))) & (0x1u)) << (1)) | (((uint64_t)(((1 - (uint8_t)(pstParam->eSrcColFmt)))) & (0x1u)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Transformation Matrix Config. */
+N    pu64Curr[5] = ROT_LOAD_A11(pstMatrix->u32A11);
+X    pu64Curr[5] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((12)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A11) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[6] = ROT_LOAD_A12(pstMatrix->u32A12);
+X    pu64Curr[6] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((15)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A12) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[7] = ROT_LOAD_A21(pstMatrix->u32A21);
+X    pu64Curr[7] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((13)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A21) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[8] = ROT_LOAD_A22(pstMatrix->u32A22);
+X    pu64Curr[8] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((14)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A22) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Load W0, W1, W2: */
+N    pu64Curr[9]  = ROT_LOAD_A31(pstMatrix->u32A31);
+X    pu64Curr[9]  = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((21)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A31) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[10] = ROT_LOAD_A32(pstMatrix->u32A32);
+X    pu64Curr[10] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((22)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A32) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[11] = ROT_LOAD_A33(pstMatrix->u32A33);
+X    pu64Curr[11] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((23)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A33) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* write forward rotated corner coordinates */
+N    pu64Curr[12] = ROT_LOAD_COORD1(pstCoord->u16X1, pstCoord->u16Y1);
+X    pu64Curr[12] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((16)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X1)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y1)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[13] = ROT_LOAD_COORD2(pstCoord->u16X2, pstCoord->u16Y2);
+X    pu64Curr[13] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((17)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X2)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y2)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[14] = ROT_LOAD_COORD3(pstCoord->u16X3, pstCoord->u16Y3);
+X    pu64Curr[14] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((18)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X3)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y3)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[15] = ROT_LOAD_COORD4(pstCoord->u16X4, pstCoord->u16Y4);
+X    pu64Curr[15] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((19)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X4)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y4)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[16] = ROT_LOAD_SRCADDRPOS(pstCoord->u8ScrAddrPos);
+X    pu64Curr[16] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((20)) & (0x1fu)) << (32)) | (((uint64_t)((((pstCoord->u8ScrAddrPos) & 0x3u))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[17] = ROT_LOAD_FADEFACT(pstParam->u8FadingFctr);
+X    pu64Curr[17] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((26)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8FadingFctr) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[18] = ROT_LOAD_SRCALPHAVAL(pstParam->u8SrcAlphaVal);
+X    pu64Curr[18] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((27)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8SrcAlphaVal) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[19] = ROT_LOAD_DSTALPHAVAL(pstParam->u8DstAlphaVal);
+X    pu64Curr[19] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((28)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8DstAlphaVal) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    
+N    /* Clipping Window */
+N    if(pstParam->eClipWndEn == GA_EN)
+N    {
+N        pu64Curr[u8Curr] = ROT_LOAD_CLIPWNDUL(pstParam->tClipWnd.u16UlX, pstParam->tClipWnd.u16UlY);
+X        pu64Curr[u8Curr] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((1)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstParam->tClipWnd . u16UlX)) & (0xfffu)) << (16)) | (((uint64_t)((pstParam->tClipWnd . u16UlY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N        u8Curr++;
+N
+N        pu64Curr[u8Curr] = ROT_LOAD_CLIPWNDLR(pstParam->tClipWnd.u16LrX, pstParam->tClipWnd.u16LrY);
+X        pu64Curr[u8Curr] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((2)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstParam->tClipWnd . u16LrX)) & (0xfffu)) << (16)) | (((uint64_t)((pstParam->tClipWnd . u16LrY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N        u8Curr++;
+N    }
+N
+N    /* Rotation Command */
+N    pu64Curr[u8Curr] = ROT_ROTATE(pstParam->eClipWndEn, pstParam->eFilterEn);
+X    pu64Curr[u8Curr] = (((uint64_t)0x0ull | ((((uint64_t)(((0x3u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x01u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((pstParam->eClipWndEn)) & (0x1u)) << (1)) | (((uint64_t)((pstParam->eFilterEn)) & (0x1u)) << (0))))) & ((0xffffffffffffull))) << (0)))));
+N    u8Curr++;
+N
+N    pstCmdList->pu64Current = &pu64Curr[u8Curr];
+N    pstCmdList->u32UsedDoubleWords = u8Curr;
+N}
+N
+N
+N/* ....................................................................... */
+Nvoid vRot_RotateBlendMatrix(rot_mem_st* pstMem, rot_rotblendCfg_st* pstParam, 
+N                            rot_Mtrx_st* pstMatrix, rot_frccr_st* pstCoord, 
+N                            ga_list_st* pstCmdList)
+N{
+N    uint8_t u8Curr = 20U;
+N    uint64_t* pu64Curr;
+N
+N#ifdef  GA_CMDSLIST_BOUNDARY_CHECK
+S    uint32_t u32NeededDW ;
+S    
+S    u32NeededDW = u8Curr;
+S    if(pstParam->eClipWndEn == GA_EN)
+S    {
+S        u32NeededDW += 2; /* window parameters */
+S    }
+S    u32NeededDW++; /* for ROT_ROTATEB */
+S
+S    u32NeededDW += RESERVED_FOR_END_CMD; /* 1 Double word more for later END command */
+S
+S    /* check if there is enough space in command list: */
+S    if ( i32GA_CheckList(pstCmdList, u32NeededDW) == C_FAILED)
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_FAILED;
+S      pstCmdList->u32UsedDoubleWords = u32NeededDW;
+S      return;
+S    }
+S    else 
+S    {
+S      pstCmdList->i32FreeSpaceStat = C_SUCCESS;
+S    }
+N#endif 
+N
+N    pu64Curr = (uint64_t*) pstCmdList->pu64Current;
+N
+N    /* Source Mem. Params */
+N    pu64Curr[0] = ROT_LOAD_SRCWIDTH(pstMem->u16SrcWidth);
+X    pu64Curr[0] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((10)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u16SrcWidth))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[1] = ROT_LOAD_SOURCEADDR(pstMem->u32SrcAddr);
+X    pu64Curr[1] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((9)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u32SrcAddr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Destination Mem. Params */
+N    pu64Curr[2] = ROT_LOAD_DESTADDR(pstMem->u32DstAddr);
+X    pu64Curr[2] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((4)) & (0x1fu)) << (32)) | (((uint64_t)(((pstMem->u32DstAddr))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[3] = ROT_LOAD_DESTMEMDIM(pstMem->u16DstImgWidth, pstMem->u16DstImgHeight);
+X    pu64Curr[3] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((5)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstMem->u16DstImgHeight)) & (0xfffu)) << (16)) | (((uint64_t)((pstMem->u16DstImgWidth)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Color format for Rotation should be redefined to fit to HW implemenation:
+N     *  modify color format 0-->1 and 1-->0 
+N     *  */
+N    pu64Curr[4] = ROT_LOAD_COLORFMT((1 - (uint8_t)(pstParam->eDstColFmt)), (1 - (uint8_t)(pstParam->eSrcColFmt)));
+X    pu64Curr[4] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((11)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)(((1 - (uint8_t)(pstParam->eDstColFmt)))) & (0x1u)) << (1)) | (((uint64_t)(((1 - (uint8_t)(pstParam->eSrcColFmt)))) & (0x1u)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Transformation Matrix Config. */
+N    pu64Curr[5] = ROT_LOAD_A11(pstMatrix->u32A11);
+X    pu64Curr[5] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((12)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A11) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[6] = ROT_LOAD_A12(pstMatrix->u32A12);
+X    pu64Curr[6] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((15)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A12) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[7] = ROT_LOAD_A21(pstMatrix->u32A21);
+X    pu64Curr[7] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((13)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A21) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[8] = ROT_LOAD_A22(pstMatrix->u32A22);
+X    pu64Curr[8] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((14)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A22) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Load W0, W1, W2: */
+N    pu64Curr[9]  = ROT_LOAD_A31(pstMatrix->u32A31);
+X    pu64Curr[9]  = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((21)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A31) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[10] = ROT_LOAD_A32(pstMatrix->u32A32);
+X    pu64Curr[10] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((22)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A32) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[11] = ROT_LOAD_A33(pstMatrix->u32A33);
+X    pu64Curr[11] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((23)) & (0x1fu)) << (32)) | (((uint64_t)((((pstMatrix->u32A33) & 0x3fffffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    
+N    /* write forward rotated corner coordinates */
+N    pu64Curr[12] = ROT_LOAD_COORD1(pstCoord->u16X1, pstCoord->u16Y1);
+X    pu64Curr[12] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((16)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X1)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y1)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[13] = ROT_LOAD_COORD2(pstCoord->u16X2, pstCoord->u16Y2);
+X    pu64Curr[13] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((17)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X2)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y2)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[14] = ROT_LOAD_COORD3(pstCoord->u16X3, pstCoord->u16Y3);
+X    pu64Curr[14] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((18)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X3)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y3)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N    pu64Curr[15] = ROT_LOAD_COORD4(pstCoord->u16X4, pstCoord->u16Y4);
+X    pu64Curr[15] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((19)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstCoord->u16X4)) & (0xffffu)) << (16)) | (((uint64_t)((pstCoord->u16Y4)) & (0xffffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[16] = ROT_LOAD_SRCADDRPOS(pstCoord->u8ScrAddrPos);
+X    pu64Curr[16] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((20)) & (0x1fu)) << (32)) | (((uint64_t)((((pstCoord->u8ScrAddrPos) & 0x3u))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[17] = ROT_LOAD_FADEFACT(pstParam->u8FadingFctr);
+X    pu64Curr[17] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((26)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8FadingFctr) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[18] = ROT_LOAD_SRCALPHAVAL(pstParam->u8SrcAlphaVal);
+X    pu64Curr[18] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((27)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8SrcAlphaVal) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    pu64Curr[19] = ROT_LOAD_DSTALPHAVAL(pstParam->u8DstAlphaVal);
+X    pu64Curr[19] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((28)) & (0x1fu)) << (32)) | (((uint64_t)((((pstParam->u8DstAlphaVal) & 0xffu))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N
+N    /* Clipping Window */
+N    if(pstParam->eClipWndEn == GA_EN)
+N    {
+N        pu64Curr[u8Curr] = ROT_LOAD_CLIPWNDUL(pstParam->tClipWnd.u16UlX, pstParam->tClipWnd.u16UlY);
+X        pu64Curr[u8Curr] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((1)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstParam->tClipWnd . u16UlX)) & (0xfffu)) << (16)) | (((uint64_t)((pstParam->tClipWnd . u16UlY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N        u8Curr++;
+N
+N        pu64Curr[u8Curr] = ROT_LOAD_CLIPWNDLR(pstParam->tClipWnd.u16LrX, pstParam->tClipWnd.u16LrY);
+X        pu64Curr[u8Curr] = ((((uint64_t)0x0ull | ((((uint64_t)(((0x0u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x1u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((2)) & (0x1fu)) << (32)) | (((uint64_t)(((((uint64_t)((pstParam->tClipWnd . u16LrX)) & (0xfffu)) << (16)) | (((uint64_t)((pstParam->tClipWnd . u16LrY)) & (0xfffu)) << (0)))) & (0xffffffffu)) << (0))))) & ((0xffffffffffffull))) << (0))))));
+N        u8Curr++;
+N    }
+N
+N    /* Rotation Command */
+N    pu64Curr[u8Curr] = ROT_ROTATEB(pstParam->eDstRedProt,
+N                                   pstParam->eDstGreenProt,
+N                                   pstParam->eDstBlueProt,
+N                                   pstParam->eDstAlphaProt,
+N                                   pstParam->eSrcRedFad,
+N                                   pstParam->eSrcGreenFad,
+N                                   pstParam->eSrcBlueFad,
+N                                   pstParam->eSrcAlphaFad,
+N                                   pstParam->eBldOrd,
+N                                   pstParam->eClipWndEn,
+N                                   pstParam->eFilterEn);
+X    pu64Curr[u8Curr] = (((uint64_t)0x0ull | ((((uint64_t)(((0x3u))) & ((0x7u))) << (60))) | ((((uint64_t)(((1))) & ((0xfu))) << (56))) | ((((uint64_t)(((0x00u))) & ((0xffu))) << (48))) | ((((uint64_t)((((((uint64_t)((pstParam->eDstRedProt)) & (0x1u)) << (15)) | (((uint64_t)((pstParam->eDstGreenProt)) & (0x1u)) << (14)) | (((uint64_t)((pstParam->eDstBlueProt)) & (0x1u)) << (13)) | (((uint64_t)((pstParam->eDstAlphaProt)) & (0x1u)) << (12)) | (((uint64_t)((pstParam->eSrcRedFad)) & (0x1u)) << (11)) | (((uint64_t)((pstParam->eSrcGreenFad)) & (0x1u)) << (10)) | (((uint64_t)((pstParam->eSrcBlueFad)) & (0x1u)) << (9)) | (((uint64_t)((pstParam->eSrcAlphaFad)) & (0x1u)) << (8)) | (((uint64_t)((pstParam->eBldOrd)) & (0x1u)) << (3)) | (((uint64_t)((pstParam->eClipWndEn)) & (0x1u)) << (1)) | (((uint64_t)((pstParam->eFilterEn)) & (0x1u)) << (0))))) & ((0xffffffffffffull))) << (0)))));
+N
+N    u8Curr++;
+N
+N    pstCmdList->pu64Current = &pu64Curr[u8Curr];
+N
+N    pstCmdList->u32UsedDoubleWords = u8Curr;
+N}
+N/****************************************************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs endnowarning
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: rotation_matrix.c
+N**  $Revision: 1.12 $
+N**  $Date: 2015/05/04 09:07:15 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1858 /17.4  - subscript operator may only be applied to objects 
+N** |                        declared as an array type
+N** | CONS.  : allow
+N** | REASON : to handle array of data by usage of pointer 
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1865 /10.1  -  implicit conversion from underlying type, "type", 
+N** |                         to same width underlying type, "type", not allowed
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1866 /10.1  -  implicit conversion from underlying type, "type",  
+N** |                         to underlying type, "type", changes signedness
+N** | CONS.  : allow
+N** | REASON : for usage of macros from io header files or assign parameters
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1878 /10.3  -   cast of complex integer expression with underlying 
+N** |                          type "type" to wider type "type" not allowed
+N** | CONS.  : allow
+N** | REASON : to assign parameters which may be defined as variables in io 
+N** |          header file or to allow shift operation
+N** |
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 1879 /10.3  - 	 cast of complex integer expression with underlying
+N** |                           type "type" to same width type "type" not allowed
+N** | CONS.  : allow
+N** | REASON : to assign parameters which may be defined as macros in io header file
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N****************************************************************************/
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

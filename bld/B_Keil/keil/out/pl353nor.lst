@@ -1,0 +1,1863 @@
+L 1 "..\..\..\..\lldd\src\pl353nor.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : NOR LLDD
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IPL
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N#include "captypes.h"                   /* Cap-Bt Data types header */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\pl353nor.c" 2
+N#include "pl353memctrl.h"               /* Board specific defines */
+L 1 "..\..\..\..\lldd\inc\pl353memctrl.h" 1
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : Memory Controller LLD for NOR and NAND Flash devices header
+N*                 file.
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : SMC (Static Memory Controller)
+N*   LIBRARIES   :
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N#ifndef MEMCTRL_H
+N#define MEMCTRL_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                   /* Cap-Bt Data types header */
+N
+N/* Function results */
+Ntypedef enum tag_MemCtrlResult_e
+N{
+N   MEMCTRL_RESULT_OK = 0
+N} MemCtrlResult_e;                          /* definition of enum type */
+N
+N/* *** MEMCTRL BASE ADDRESS and REGISTERS ****/
+N#define MEMCTRL_BASE                (0xC0200000U)
+N#define NORFLASH_BASE_ADDRESS       (0x20000000U)
+N#define MEMCTRL_NAND_CHIP_ADDRESS   (0x24000000U)
+N
+N/* Read-Only memc_status REGISTER */
+N#define MEMCTRL_MEMC_STATUS   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x000U))))
+N
+N/* Write-Only mem_cfg_set REGISTER */
+N#define MEMCTRL_MEM_CFG_SET   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x008U))))
+N
+N/* ReGISTER and "BUSY ENABLE" value for NAND Ready/!Busy line signalling */
+N#define MEMCTRL_BUSY_CFG_SET   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x204U))))
+N#define MEMCTRL_BUSY_ENABLE   (0x20U)
+N
+N/* Write-Only mem_cfg_set REGISTER */
+N#define MEMCTRL_MEM_CFG_CLR   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x00CU))))
+N/* INT_CLR_1 register bit-shift */
+N#define MEMCTRL_INT_CLR_1_SFT   (4)         /* I/F 1 (NAND) IRQ clear */
+N#define MEMCTRL_INT_CLR_1_BIT    ((0x1U)<<(MEMCTRL_INT_CLR_1_SFT))
+N
+N/* Write-Only direct_cmd REGISTER */
+N#define MEMCTRL_DIRECT_CMD   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x010U))))
+N/* Write-Only set_cycles REGISTER */
+N#define MEMCTRL_SET_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x014U))))
+N
+N/* Write-Only set_opmode REGISTER */
+N#define MEMCTRL_SET_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x018U))))
+N/* Read-Only periph_id_x [x:= 0..3] REGISTER */
+N#define MEMCTRL_PERIPH_ID(x) (*(TYPES_REG8 ((MEMCTRL_BASE)+((0xFE0U)+((x)*(4U))))))
+N
+N/* memc_status register bit-shifts */
+N#define MEMCTRL_RAW_INT_STATUS0_SFT   (5)   /* SRAM / NOR I/F status */
+N#define MEMCTRL_RAW_INT_STATUS1_SFT   (6)   /* NAND I/F status */
+N/* memc_status register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_RAW_INT_STATUS0_BIT    ((0x1U)<<(MEMCTRL_RAW_INT_STATUS0_SFT))
+N#define MEMCTRL_RAW_INT_STATUS1_BIT    ((0x1U)<<(MEMCTRL_RAW_INT_STATUS1_SFT))
+N
+N/* direct_cmd register bit-shifts */
+N#define MEMCTRL_ADDR_SFT   (0)
+N#define MEMCTRL_SET_CRE_SFT   (20)
+N#define MEMCTRL_CMD_TYPE_SFT   (21)
+N#define MEMCTRL_CHIP_SEL_SFT   (23)
+N/* direct_cmd register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ADDR_MSK   ((0xFFFFFU)<<(MEMCTRL_ADDR_SFT))
+N#define MEMCTRL_SET_CRE_MSK   ((0x1U)<<(MEMCTRL_SET_CRE_SFT))
+N/* direct_cmd chip_select values */
+N#define MEMCTRL_NOR_CHIP_SEL_MSK    ((0x0U)<<(MEMCTRL_CHIP_SEL_SFT))
+N#define MEMCTRL_NAND_CHIP_SEL_MSK   ((0x4U)<<(MEMCTRL_CHIP_SEL_SFT))
+N/* direct_cmd cmd_type values */
+N#define MEMCTRL_CMD_TYPE_UPD_REGS_AXI_MSK   ((0x0U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_MODE_REGS_MSK      ((0x1U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_UPD_REGS_MSK       ((0x2U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_MODE_UP_REGS_MSK   ((0x3U)<<(MEMCTRL_CMD_TYPE_SFT))
+N/* direct_cmd set_cre values */
+N#define MEMCTRL_NOR_SET_CRE_LOW_MSK     ((0x0U)<<(MEMCTRL_SET_CRE_SFT))
+N#define MEMCTRL_NOR_SET_CRE_HIGH_MSK    ((0x1U)<<(MEMCTRL_SET_CRE_SFT))
+N
+N/* set_cycles register bit-shifts */
+N#define MEMCTRL_SET_T0_SFT   (0)
+N#define MEMCTRL_SET_T1_SFT   (4)
+N#define MEMCTRL_SET_T2_SFT   (8)
+N#define MEMCTRL_SET_T3_SFT   (11)
+N#define MEMCTRL_SET_T4_SFT   (14)
+N#define MEMCTRL_SET_T5_SFT   (17)
+N#define MEMCTRL_SET_T6_SFT   (20)
+N/* set_cycles register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_SET_T0_MSK   ((0xFU)<<(MEMCTRL_SET_T0_SFT))
+N#define MEMCTRL_SET_T1_MSK   ((0xFU)<<(MEMCTRL_SET_T1_SFT))
+N#define MEMCTRL_SET_T2_MSK   ((0x7U)<<(MEMCTRL_SET_T2_SFT))
+N#define MEMCTRL_SET_T3_MSK   ((0x7U)<<(MEMCTRL_SET_T3_SFT))
+N#define MEMCTRL_SET_T4_MSK   ((0x7U)<<(MEMCTRL_SET_T4_SFT))
+N#define MEMCTRL_SET_T5_MSK   ((0x7U)<<(MEMCTRL_SET_T5_SFT))
+N#define MEMCTRL_SET_NAND_T6_MSK   ((0xFU)<<(MEMCTRL_SET_T6_SFT)) /* NAND only */
+N#define MEMCTRL_SET_SRAM_T6_MSK   ((0x1U)<<(MEMCTRL_SET_T6_SFT)) /* SRAM/NOR
+N                                                                    only */
+N
+N/* set_opmode register bit-shifts */
+N#define MEMCTRL_SET_MW_SFT       (0)
+N#define MEMCTRL_SET_RD_SYNC_SFT  (2)
+N#define MEMCTRL_SET_RD_BL_SFT    (3)
+N#define MEMCTRL_SET_WR_SYNC_SFT  (6)
+N#define MEMCTRL_SET_WR_BL_SFT    (7)
+N#define MEMCTRL_SET_BAA_SFT      (10)
+N#define MEMCTRL_SET_ADV_SFT      (11)
+N#define MEMCTRL_SET_BLS_SFT      (12)
+N#define MEMCTRL_SET_BURST_ALIGN_SFT (13)
+N/* set_opmode register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_SET_MW_MSK       ((0x3U)<<(MEMCTRL_SET_MW_SFT))
+N#define MEMCTRL_SET_MW_8_BITS    ((0x0U)<<(MEMCTRL_SET_MW_SFT))
+N#define MEMCTRL_SET_MW_16_BITS   ((0x1U)<<(MEMCTRL_SET_MW_SFT))
+N
+N#define MEMCTRL_SET_RD_SYNC_MSK  ((0x1U)<<(MEMCTRL_SET_RD_SYNC_SFT))
+N/* ! rd_bl field must NOT be set greater than the read data FIFO depth */
+N#define MEMCTRL_SET_RD_BL_MSK    ((0x7U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_1_BITS     ((0x0U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_4_BITS     ((0x1U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_8_BITS     ((0x2U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_16_BITS    ((0x3U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_32_BITS    ((0x4U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_CNTS_BITS  ((0x5U)<<(MEMCTRL_SET_RD_BL_SFT))
+N
+N#define MEMCTRL_SET_WR_SYNC_MSK  ((0x1U)<<(MEMCTRL_SET_WR_SYNC_SFT))
+N
+N#define MEMCTRL_SET_WR_BL_MSK    ((0x7U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_1_BITS      ((0x0U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_4_BITS      ((0x1U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_8_BITS      ((0x2U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_16_BITS     ((0x3U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_32_BITS     ((0x4U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_CNTS_BITS   ((0x5U)<<(MEMCTRL_SET_WR_BL_SFT))
+N
+N#define MEMCTRL_SET_BAA_MSK      ((0x1U)<<(MEMCTRL_SET_BAA_SFT))
+N#define MEMCTRL_SET_ADV_MSK      ((0x1U)<<(MEMCTRL_SET_ADV_SFT))
+N#define MEMCTRL_SET_BLS_MSK      ((0x1U)<<(MEMCTRL_SET_BLS_SFT))
+N#define MEMCTRL_SET_BRST_ALIGN_MSK   ((0x7U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_ANY_BITS  ((0x0U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_32_BITS   ((0x1U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_64_BITS   ((0x2U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_128_BITS  ((0x3U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_256_BITS  ((0x4U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N
+N/* Mask used to extract NAND Base Address from a combined address information */
+N#define MEMCTRL_AXI_BASE_ADDR_MASK     (0xFF000000U)
+N/* Bit-shifts used, for the Cmd Phase sending to NAND device (AXI write) */
+N#define MEMCTRL_AXI_CHIP_ADDRESS_SFT     (24)
+N#define MEMCTRL_AXI_ADDRES_CYCLES_SFT   (21)
+N#define MEMCTRL_AXI_END_CMD_VALID_SFT   (20)
+N#define MEMCTRL_AXI_CMD_DATA_SELECT_SFT (19)
+N#define MEMCTRL_AXI_END_COMMAND_SFT     (11)
+N#define MEMCTRL_AXI_START_COMMAND_SFT   (3)
+N
+N/* Bit-shifts used, for the Data Phase sending to NAND device (AXI write) */
+N#define MEMCTRL_AXI_CLEAR_CS_SFT     (21)
+N
+N#define MEMCTRL_AXI_ECC_LAST_SFT     (10)
+N
+N/* *** NOR OFFSET and REGISTERS ****/
+N
+N/* !!! NOR I/F Chip Select address offset !!! */
+N#define MEMCTRL_NOR    (0x00000100U)
+N/* Read-Only NOR CYCLES REGISTER */
+N#define MEMCTRL_SRAM_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NOR)+(0x000U))))
+N/* Read-Only NOR OPMODE REGISTER */
+N#define MEMCTRL_SRAM_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NOR)+(0x004U))))
+N
+N/* *** NAND OFFSET and REGISTERS ****/
+N
+N/* !!! NAND I/F Chip Select address offset !!! */
+N#define MEMCTRL_NAND   (0x00000180U)
+N/* Read-Only NAND CYCLES REGISTER */
+N#define MEMCTRL_NAND_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NAND)+(0x000U))))
+N/* Read-Only NAND OPMODE REGISTER */
+N#define MEMCTRL_NAND_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NAND)+(0x004U))))
+N
+N/* *** ECC OFFSET and REGISTERS ****/
+N
+N/* !!! ECC Chip Select address offset !!! */
+N#define MEMCTRL_ECC   (0x00000400U)
+N/* Read-Only ecc_status REGISTER */
+N#define MEMCTRL_ECC_STATUS   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x000U))))
+N/* Read-Write ecc_memcfg REGISTER */
+N#define MEMCTRL_ECC_MEMCFG   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x004U))))
+N/* Read-Write ecc_memcommand1 REGISTER */
+N#define MEMCTRL_ECC_MEMCMD1  (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x008U))))
+N/* Read-Write ecc_memcommand2 REGISTER */
+N#define MEMCTRL_ECC_MEMCMD2  (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x00CU))))
+N/* Read-Only ecc_addr0 REGISTER */
+N#define MEMCTRL_ECC_ADDR0    (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x010U))))
+N/* Read-Only ecc_addr1 REGISTER */
+N#define MEMCTRL_ECC_ADDR1    (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x014U))))
+N/* Read-Only ecc_value0 REGISTER */
+N#define MEMCTRL_ECC_VALUE0   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x018U))))
+N/* Read-Only ecc_value1 REGISTER */
+N#define MEMCTRL_ECC_VALUE1   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x01CU))))
+N/* Read-Only ecc_value2 REGISTER */
+N#define MEMCTRL_ECC_VALUE2   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x020U))))
+N/* Read-Only ecc_value3 REGISTER */
+N#define MEMCTRL_ECC_VALUE3   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x024U))))
+N/* !BUG in the spec. page 3-5 Table 3-1! Read-Only ecc_value4 REGISTER */
+N#define MEMCTRL_ECC_VALUE4   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x028U))))
+N/* ECC register address calculation */
+N#define MEMCTRL_ECC_VALUE_ADR(X)   (((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x018U)+((4U)*((uint32_t)(X)))))
+N
+N/* ecc_status register bit-shifts */
+N#define MEMCTRL_ECC_READ_SFT           (25)
+N#define MEMCTRL_ECC_CAN_CORRECT_SFT    (20)
+N#define MEMCTRL_ECC_ECC_FAIL_SFT       (15)
+N#define MEMCTRL_ECC_VALUE_VALID_SFT    (10)
+N#define MEMCTRL_ECC_RD_NOT_WR_SFT      (9)
+N#define MEMCTRL_ECC_LAST_STATUS_SFT    (7)
+N#define MEMCTRL_ECC_STATUS_SFT         (6)
+N#define MEMCTRL_ECC_RAW_INT_ABORT_SFT   (5)
+N#define MEMCTRL_ECC_RAW_INT_EXTRA_SFT   (4)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK3_SFT  (3)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK2_SFT  (2)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK1_SFT  (1)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK0_SFT  (0)
+N/* ecc_status register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_READ_MSK          ((0x1FU)<<(MEMCTRL_ECC_READ_SFT))
+N#define MEMCTRL_ECC_CAN_CORRECT_MSK   ((0x1FU)<<(MEMCTRL_ECC_CAN_CORRECT_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_MSK      ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK0_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK1_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+1U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK2_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+2U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK3_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+3U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK4_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+4U))
+N
+N#define MEMCTRL_ECC_VALUE_VALID_MSK   ((0x1FU)<<(MEMCTRL_ECC_VALUE_VALID_SFT))
+N#define MEMCTRL_ECC_RD_NOT_WR_MSK     ((0x1U)<<(MEMCTRL_ECC_RD_NOT_WR_SFT))
+N#define MEMCTRL_ECC_LAST_STATUS_MSK   ((0x3U)<<(MEMCTRL_ECC_LAST_STATUS_SFT))
+N#define MEMCTRL_ECC_LAST_STATUS_SUCCESS_BITS   ((0x0U)<<(MEMCTRL_ECC_LAST_STATUS_SFT))
+N#define MEMCTRL_ECC_BUSY_MSK          ((0x1U)<<(MEMCTRL_ECC_STATUS_SFT))
+N#define MEMCTRL_ECC_RAW_INT_ABORT_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_ABORT_SFT))
+N#define MEMCTRL_ECC_RAW_INT_EXTRA_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_EXTRA_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK3_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK3_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK2_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK2_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK1_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK1_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK0_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK0_SFT))
+N/* this mask is for a convenient clearing of ALL ECC_RAW_INT_... interrupts */
+N#define MEMCTRL_ECC_RAW_ALL_INTS_MSK   (0x3FU)
+N
+N/* ecc_memcfg register bit-shifts */
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT  (11)
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SFT       (10)
+N#define MEMCTRL_ECC_INT_ABORT_SFT     (9)
+N#define MEMCTRL_ECC_INT_PASS_SFT      (8)
+N#define MEMCTRL_ECC_IGNORE_ADD_8_SFT  (7)
+N#define MEMCTRL_ECC_JUMP_SFT        (5)
+N#define MEMCTRL_ECC_READ_END_SFT    (4)
+N#define MEMCTRL_ECC_MODE_SFT        (2)
+N#define MEMCTRL_ECC_PAGE_SIZE_SFT   (0)
+N/* ecc_memcfg register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_MSK   ((0x3U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_4B_BITS   ((0x0U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_8B_BITS   ((0x1U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_16B_BITS  ((0x2U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_32B_BITS  ((0x3U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N
+N#define MEMCTRL_ECC_EXTRA_BLOCK_MSK       ((0x1U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SFT))
+N#define MEMCTRL_ECC_INT_ABORT_MSK         ((0x1U)<<(MEMCTRL_ECC_INT_ABORT_SFT))
+N#define MEMCTRL_ECC_INT_PASS_MSK          ((0x1U)<<(MEMCTRL_ECC_INT_PASS_SFT))
+N#define MEMCTRL_ECC_A8_OUTPUT_MSK         ((0x0U)<<(MEMCTRL_ECC_IGNORE_ADD_8_SFT))
+N#define MEMCTRL_ECC_IGNORE_ADD_8_MSK      ((0x1U)<<(MEMCTRL_ECC_IGNORE_ADD_8_SFT))
+N#define MEMCTRL_ECC_JUMP_MSK              ((0x3U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_NO_BITS          ((0x00U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_COL_CHNG_BITS    ((0x1U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_FULL_CMD_BITS    ((0x2U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_READ_END_MSK          ((0x1U)<<(MEMCTRL_ECC_READ_END_SFT))
+N#define MEMCTRL_ECC_MODE_MSK              ((0x3U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_BYPASS_BITS      ((0x0U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_CALC_BITS        ((0x1U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_CALC_RD_WR_BITS  ((0x2U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_MSK         ((0x3U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_NOANY_BITS  ((0x0U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_1X512_BITS  ((0x1U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_2X512_BITS  ((0x2U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_4X512_BITS  ((0x3U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N
+N/* ecc_memcommand1 register bit-shifts */
+N#define MEMCTRL_ECC_RD_CMD_END_VALID_SFT  (24)
+N#define MEMCTRL_ECC_RD_CMD_END_SFT        (16)
+N#define MEMCTRL_ECC_RD_CMD_SFT   (8)
+N#define MEMCTRL_ECC_WR_CMD_SFT   (0)
+N/* ecc_memcommand1 register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_RD_CMD_END_VALID_MSK  ((0x1U)<<(MEMCTRL_ECC_RD_CMD_END_VALID_SFT))
+N#define MEMCTRL_ECC_RD_CMD_END_MSK  ((0xFFU)<<(MEMCTRL_ECC_RD_CMD_END_SFT))
+N#define MEMCTRL_ECC_RD_CMD_MSK  ((0xFFU)<<(MEMCTRL_ECC_RD_CMD_SFT))
+N#define MEMCTRL_ECC_WR_CMD_MSK  ((0xFFU)<<(MEMCTRL_ECC_WR_CMD_SFT))
+N
+N/* ecc_memcommand2 register bit-shifts */
+N/*#define MEMCTRL_ECC_RD_CL_CH_END_VALID_SFT  (24)*/
+N#define MEMCTRL_ECC_RD_CL_CH_END_SFT  (16)
+N#define MEMCTRL_ECC_RD_CL_CH_SFT  (8)
+N#define MEMCTRL_ECC_WR_COL_CHANGE_SFT  (0)
+N/* ecc_memcommand2 register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_RD_CL_CH_END_VALID_MSK  ((0x1U)<<(24))
+N#define MEMCTRL_ECC_RD_CL_CH_END_MSK        ((0xFFU)<<(MEMCTRL_ECC_RD_CL_CH_END_SFT))
+N#define MEMCTRL_ECC_RD_CL_CH_MSK    ((0xFFU)<<(MEMCTRL_ECC_RD_CL_CH_SFT))
+N#define MEMCTRL_ECC_WR_COL_CHANGE_MSK    ((0xFFU)<<(MEMCTRL_ECC_WR_COL_CHANGE_SFT))
+N
+N/* ecc_addr0 register bit-mask for address bits [31 : 0] */
+N#define MEMCTRL_ECC_ADDR0_MSK  (0xFFFFFFFFU)
+N/* ecc_addr1 register bit-mask for address bits [55 : 32] */
+N#define MEMCTRL_ECC_ADDR1_MSK  (0x00FFFFFFU)
+N
+N/* ecc_value x register bit-shifts */
+N#define MEMCTRL_ECC_VAL_INT_SFT     (31)
+N#define MEMCTRL_ECC_VAL_VALID_SFT   (30)
+N#define MEMCTRL_ECC_VAL_READ_SFT    (29)
+N#define MEMCTRL_ECC_VAL_FAIL_SFT    (28)
+N#define MEMCTRL_ECC_VAL_CORRECT_SFT (27)
+N#define MEMCTRL_ECC_VAL_VALUE_SFT   (0)
+N/* ecc_value x register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_VAL_INT_MSK      ((0x1U)<<(MEMCTRL_ECC_VAL_INT_SFT))
+N#define MEMCTRL_ECC_VAL_VALID_MSK    ((0x1U)<<(MEMCTRL_ECC_VAL_VALID_SFT))
+N#define MEMCTRL_ECC_VAL_READ_MSK     ((0x1U)<<(MEMCTRL_ECC_VAL_READ_SFT))
+N#define MEMCTRL_ECC_VAL_FAIL_MSK     ((0x1U)<<(MEMCTRL_ECC_VAL_FAIL_SFT))
+N#define MEMCTRL_ECC_VAL_CORRECT_MSK  ((0x1U)<<(MEMCTRL_ECC_VAL_CORRECT_SFT))
+N#define MEMCTRL_ECC_VAL_VALUE_MSK    ((0x00FFFFFFU)<<(MEMCTRL_ECC_VAL_VALUE_SFT))
+N
+N/* ************ SMC Memory Controller API Functions Definitions ************ */
+N
+N/*****************************************************************************
+N* Function is empty so far.
+N*****************************************************************************/
+NMemCtrlResult_e eMemCtrl_Initialize (void);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* MEMCTRL_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\src\pl353nor.c" 2
+N#include "pl353nor.h"                   /* Driver's API header file */
+L 1 "..\..\..\..\lldd\inc\pl353nor.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : NOR LLDD
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IPL
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef NORFLASH_H
+N#define NORFLASH_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                   /* Cap-Bt Data types header */
+N
+N/* Configurable device Busy Timeout in CPU cycles  */
+N#define NORFLASH_BUSY_TIMEOUT_MAX_CFG   (2000U)
+N
+N/* Configurable Erase All Chip Timeout in CPU cycles  */
+N#define NORFLASH_ERASE_CHIP_TIMEOUT_CFG   (0xFFFFFFFFU)
+N
+N/* Configurable Erase Single Block Timeout in CPU cycles  */
+N#define NORFLASH_ERASE_BLK_TIMEOUT_CFG   (0xFFFFFFFFU)
+N
+N/* Configurable Block Program Timeout in CPU cycles  */
+N#define NORFLASH_PROGRAM_TIMEOUT_CFG   (0xFFFFFFFFU)
+N
+N/* Macros for accessing NOR device in byte or 16 bit word */
+N
+N/*
+N#define NORFLASH_BYTE_ACCESS(base,address)   *(TYPES_REG8((uint32_t)((base)+(address))))
+N*/
+N#define NORFLASH_BYTE_ACCESS(base,address)    *(TYPES_REG8((uint32_t)((base)+(address))))
+N#define NORFLASH_WORD_ACCESS(base,address)   *(TYPES_REG16((uint32_t)((base)+(address))))
+N
+N/* *** NAND Flash device common COMMANDS *** */
+N#define NORFLASH_CMD_RESET     (0xF0U)
+N#define NORFLASH_CMD_ERASE_SETUP    (0x80U)
+N#define NORFLASH_CMD_ERASE_CHIP     (0x10U)
+N#define NORFLASH_CMD_ERASE_BLOCK    (0x30U)
+N#define NORFLASH_CMD_PROGRAM        (0xA0U)
+N
+N/* Drivers functions' results / status / error codes */
+Ntypedef enum tag_NorFlashStatus_e
+N{
+N   NORFLASH_STATUS_OK = 0,                  /* operation was successful */
+N   NORFLASH_STATUS_UNKNOWN,                 /* initial result value */
+N   NORFLASH_STATUS_PTR_ERR,                 /* pointer was invalid */
+N   NORFLASH_STATUS_CFG_ERR,                 /* provided configuration invalid */
+N   NORFLASH_STATUS_OPERATION_ERR,           /* PROGRAM / ERASE BLOCK / ERASE */
+N   NORFLASH_STATUS_BUSY_ERR,                /* busy-timeout occurred */
+N   NORFLASH_STATUS_RD_ID_ERR                /* reading of the device failed */
+N} NorFlashStatus_e;
+N
+N/* NOR device's data bus width definitions */
+Ntypedef enum tag_NorFlashBusWidth_e
+N{
+N   NORFLASH_BUS_WIDTH_16 = 0x01             /* 16-bits bus only supported */
+N} NorFlashBusWidth_e;
+N
+N/* NOR device's burst length definitions */
+Ntypedef enum tag_NorFlashBurstLength_e
+N{
+N   NORFLASH_BURST_LEN_1 = 0x00,             /* 1 beat burst */
+N   NORFLASH_BURST_LEN_4,                    /* 4 beats burst */
+N   NORFLASH_BURST_LEN_8,                    /* 8 beats burst */
+N   NORFLASH_BURST_LEN_16,                   /* 16 beats burst */
+N   NORFLASH_BURST_LEN_32,                   /* 32 beats burst */
+N   NORFLASH_BURST_LEN_CNTS                  /* Continuous operation */
+N} NorFlashBurstLength_e;
+N
+N/* NOR device's Read / Write mode definitions */
+Ntypedef enum tag_NorFlashRdWrMode_e
+N{
+N   NORFLASH_NOSYNC_MODE = 0x00,             /* Memory Asynchronous mode */
+N   NORFLASH_SYNC_MODE                       /* Memory Synchronous mode */
+N} NorFlashRdWrMode_e;
+N
+N/* NOR device's Burst alignment definitions */
+Ntypedef enum tag_NorFlashBurstAlign_e
+N{
+N   NORFLASH_BURST_ALGN_CROSS_ANY = 0x00,    /* Burst can cross any address
+N                                               boundary. */
+N   NORFLASH_BURST_ALGN_CROSS_32,            /* splits on boundary that is 32
+N                                               beats for continuous. */
+N   NORFLASH_BURST_ALGN_CROSS_64,            /* ... 64 beats */
+N   NORFLASH_BURST_ALGN_CROSS_128,           /* ... 128 beats */
+N   NORFLASH_BURST_ALGN_CROSS_256            /* ... 256 beats */
+N} NorFlashBurstAlign_e;
+N
+N/* NOR device's WE Time configuration definitions */
+Ntypedef enum tag_NorFlashWeTimeCfg_e
+N{
+N   NORFLASH_WE_TIME_CFG_WEN_AFTER = 0x00,   /* we_n asserts 2 cyc. after CS_n */
+N   NORFLASH_WE_TIME_CFG_WEN_TOGETHER        /* we_n asserts together with CS_n */
+N} NorFlashWeTimeCfg_e;
+N
+N/* NOR device's Byte Lane configuration definitions */
+Ntypedef enum tag_NorFlashByteLane_e
+N{
+N   NORFLASH_BYTE_LANE_AS_CS = 0x00,         /* BLS timing == Chip Sel tim. */
+N   NORFLASH_BYTE_LANE_AS_WEN                /* 8-bit memories only: REMOVE? */
+N} NorFlashByteLane_e;
+N
+N/* NOR device's Advance Signal configuration definitions */
+Ntypedef enum tag_NorFlashAdvanceSignal_e
+N{
+N   NORFLASH_NO_ADV_SIG = 0x00,              /* NO use of advance signal(s) */
+N   NORFLASH_USE_ADV_SIG                     /* Use advance signal(s) */
+N} NorFlashAdvanceSignal_e;
+N
+N/* NAND Flash main configuration structure data-type */
+Ntypedef struct tag_NorFlashCfg_st
+N{
+N   uint32_t u32NorChipAdr;                  /* refer to FPGA or Cap-Bt spec. */
+N   NorFlashBurstLength_e eWrBursLen;
+N   NorFlashBurstLength_e eRdBursLen;
+N   NorFlashBusWidth_e eBusWidth;            /* number of bit for device's bus */
+N   uint32_t u32TurnaroundTime;
+N   uint32_t u32PageCycleTime;
+N   uint32_t u32WriteCycleTime;
+N   uint32_t u32ReadCycleTime;
+N   NorFlashRdWrMode_e eWrMode;
+N   NorFlashRdWrMode_e eRdMode;
+N   NorFlashBurstAlign_e eBurstAlign;
+N   NorFlashWeTimeCfg_e eWeTime;
+N   uint32_t u32AssertDelayWeN;
+N   uint32_t u32AssertDelayOeN;
+N   NorFlashByteLane_e eByteLane;
+N   NorFlashAdvanceSignal_e eAdrAdvSig;
+N   NorFlashAdvanceSignal_e eBurstAdrAdvSig;
+N   uint32_t u32set_cycles;                  /* store value of set_cycles reg */
+N   uint32_t u32set_opmode;                  /* store value of set_opmode reg */
+N} NorFlashCfg_st;                           /* definition of struct type */
+N
+N/*****************************************************************************
+N* These function loads configuration parameters (which have been set during the
+N* HW reset or with the use of the “Set” functions) from the Memory Controller
+N* registers to the respective member variables within the NorFlashCfg_st data
+N* structure. It is recommended to call this function, before any other NOR
+N* driver function is called.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_GetHwConfig (NorFlashCfg_st * pstNorCfg);
+N
+N/*****************************************************************************
+N* This function executes the sequence of events required to initialise the SMC
+N* Memory Controller and a Flash memory device to ensure the configuration of
+N* both is synchronized. The content of the NorFlashCfg_st data structure will
+N* be used to perform the required operations.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_Initialize (NorFlashCfg_st * pstNorCfg);
+N
+N/*****************************************************************************
+N* This function sets the memory blocks size, read and write bursts lengths
+N* inside the NorFlashCfg_st structure.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_SetBurstLength (NorFlashCfg_st * pstNorCfg,
+N                                           NorFlashBurstLength_e eWrBrstLen,
+N                                           NorFlashBurstLength_e eRdBrstLen);
+N
+N/*****************************************************************************
+N* This function sets the u8TurnaroundTime, u8PageCycleTime, u8WriteCycleTime
+N* and u8ReadCycleTime for SRAM chip configuration (refer to t_tr, t_pc, t_wc
+N* and t_rc bits in SMC Memory controller.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_SetBusTiming (NorFlashCfg_st * pstNorCfg,
+N                                         uint32_t u32TurnaroundTime,
+N                                         uint32_t u32PageCycleTime,
+N                                         uint32_t u32WriteCycleTime,
+N                                         uint32_t u32ReadCycleTime);
+N
+N/*****************************************************************************
+N* This function sets the configuration of the memory. It affects the memory
+N* burst splitting method across different burst boundaries, write and read
+N* synchronous mode settings inside the NorFlashCfg_st structure. This memory
+N* burst splitting is valid, when the SMC is configured to perform synchronous
+N* transfers.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_SetReadWriteSyncMode (NorFlashCfg_st * pstNorCfg,
+N                                                 NorFlashRdWrMode_e eWrMode,
+N                                                 NorFlashRdWrMode_e eRdMode,
+N                                                 NorFlashBurstAlign_e
+N                                                 eBurstAlign);
+N
+N/*****************************************************************************
+N* This function sets eWeTime cycles (this parameter is valid only for
+N* asynchronous multiplexed transfers), u8AssertDelayWeN assertion delay and
+N* u8AssertDelayOeN assertion delay, configuration inside the NorFlashCfg_st
+N* configuration structure.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_SetSignalsAssertDelays (NorFlashCfg_st * pstNorCfg,
+N                                                   NorFlashWeTimeCfg_e eWeTime,
+N                                                   uint32_t u32AssertDelayWeN,
+N                                                   uint32_t u32AssertDelayOeN);
+N
+N/*****************************************************************************
+N* This function sets the configuration of the byte-lane strobe outputs (bls_n),
+N* address advance (adv_n) and burst address advance (baa_n) signals inside the
+N* NorFlashCfg_st structure.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_SetSignalsConfig (NorFlashCfg_st * pstNorCfg,
+N                                             NorFlashByteLane_e eByteLane,
+N                                             NorFlashAdvanceSignal_e eAdrAdvSig,
+N                                             NorFlashAdvanceSignal_e
+N                                             eBurstAdrAdvSig);
+N
+N/*****************************************************************************
+N* This function resets NOR Flash memory device. After this command the NOR
+N* Flash memory device should return to the read mode.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_Reset (const NorFlashCfg_st * const pstNorCfg);
+N
+N/*****************************************************************************
+N* This function reads the specified number of consecutive 16-bit words starting
+N* at the source address from the NOR flash memory device and stores the data
+N* into the destination buffer (e.g. to the RAM memory)..
+N* u32BufferLen contains a number of 16-bit words.
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_Read16bitWords (const NorFlashCfg_st *
+N                                           const pstNorCfg, uint32_t u32SrcAdr,
+N                                           uint16_t pu16DstBuf[],
+N                                           uint32_t u32BufferLen);
+N
+N/*****************************************************************************
+N* This function reads the specified number of consecutive 32-bit words starting
+N* at the source address from the NOR flash memory device and stores the data
+N* into the destination buffer (e.g. to the RAM memory).
+N* u32BufferLen contains a number of 32-bit words
+N*****************************************************************************/
+NNorFlashStatus_e eNorFlash_Read32bitWords (const NorFlashCfg_st *
+N                                           const pstNorCfg, uint32_t u32SrcAdr,
+N                                           uint32_t pu32DstBuf[],
+N                                           uint32_t u32BufferLen);
+N
+N
+N#endif /* NORFLASH_H */
+N
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\lldd\src\pl353nor.c" 2
+N
+N/* Public-scope objects ---------------------------------------------------*/
+N
+N/* Package-scope objects ---------------------------------------------------*/
+N
+N/* Local-scope objects -----------------------------------------------------*/
+N
+N/* *** NOR Flash device related RANGES for MemCtrl settings *** */
+N#define NORFLASH_RD_CYCLE_MIN   (2U)
+N#define NORFLASH_RD_CYCLE_MAX   (15U)
+N
+N#define NORFLASH_WR_CYCLE_MIN   (2U)
+N#define NORFLASH_WR_CYCLE_MAX   (15U)
+N
+N#define NORFLASH_ASSERT_OEN_MIN    (1U)
+N#define NORFLASH_ASSERT_OEN_MAX    (7U)
+N
+N#define NORFLASH_ASSERT_WEN_MIN  (1U)
+N#define NORFLASH_ASSERT_WEN_MAX  (7U)
+N
+N#define NORFLASH_PAGE_CYCLE_MIN     (1U)
+N#define NORFLASH_PAGE_CYCLE_MAX     (7U)
+N
+N#define NORFLASH_TURNAROUND_MIN     (1U)
+N#define NORFLASH_TURNAROUND_MAX     (7U)
+N
+N/* **************** NOR Flash Local Functions Declarations **************** */
+N
+N/*****************************************************************************
+N* Checks, if values in the configuration structure are valid and can be written
+N* to the Memory Controller and/or NOR device.
+N*****************************************************************************/
+Nstatic NorFlashStatus_e eNorF_ConfigVerify (const NorFlashCfg_st *
+N                                            const pstNorCfg);
+N
+N/*****************************************************************************
+N* Function copies configuration parameters from the configuration structure
+N* to the Memory Controller and/or NOR device registers.
+N*****************************************************************************/
+Nstatic void vNorF_CopyConfigToRegs (NorFlashCfg_st * const pstNorCfg);
+N
+N/*..........................................................................*/
+N
+N/* ***************** NOR Flash Local Functions Definitions **************** */
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic NorFlashStatus_e eNorF_ConfigVerify (const NorFlashCfg_st *
+N                                            const pstNorCfg)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   /* check cycles settings */
+N   if ((pstNorCfg->u32ReadCycleTime < (NORFLASH_RD_CYCLE_MIN)) ||
+X   if ((pstNorCfg->u32ReadCycleTime < ((2U))) ||
+N       (pstNorCfg->u32ReadCycleTime > (NORFLASH_RD_CYCLE_MAX)) ||
+X       (pstNorCfg->u32ReadCycleTime > ((15U))) ||
+N       (pstNorCfg->u32WriteCycleTime < (NORFLASH_WR_CYCLE_MIN)) ||
+X       (pstNorCfg->u32WriteCycleTime < ((2U))) ||
+N       (pstNorCfg->u32WriteCycleTime > (NORFLASH_WR_CYCLE_MAX)) ||
+X       (pstNorCfg->u32WriteCycleTime > ((15U))) ||
+N       (pstNorCfg->u32AssertDelayOeN < (NORFLASH_ASSERT_OEN_MIN)) ||
+X       (pstNorCfg->u32AssertDelayOeN < ((1U))) ||
+N       (pstNorCfg->u32AssertDelayOeN > (NORFLASH_ASSERT_OEN_MAX)) ||
+X       (pstNorCfg->u32AssertDelayOeN > ((7U))) ||
+N       (pstNorCfg->u32AssertDelayWeN < (NORFLASH_ASSERT_WEN_MIN)) ||
+X       (pstNorCfg->u32AssertDelayWeN < ((1U))) ||
+N       (pstNorCfg->u32AssertDelayWeN > (NORFLASH_ASSERT_WEN_MAX)) ||
+X       (pstNorCfg->u32AssertDelayWeN > ((7U))) ||
+N       (pstNorCfg->u32PageCycleTime < (NORFLASH_PAGE_CYCLE_MIN)) ||
+X       (pstNorCfg->u32PageCycleTime < ((1U))) ||
+N       (pstNorCfg->u32PageCycleTime > (NORFLASH_PAGE_CYCLE_MAX)) ||
+X       (pstNorCfg->u32PageCycleTime > ((7U))) ||
+N       (pstNorCfg->u32TurnaroundTime < (NORFLASH_TURNAROUND_MIN)) ||
+X       (pstNorCfg->u32TurnaroundTime < ((1U))) ||
+N       (pstNorCfg->u32TurnaroundTime > (NORFLASH_TURNAROUND_MAX)))
+X       (pstNorCfg->u32TurnaroundTime > ((7U))))
+N   {
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 14.1 This statement is unreachable.
+N
+N* DESC   : Not applicable: In case of wrong run-time value (see comment above)
+N*          it could happen that some of values above are out-of-range.
+N****/
+N      eResult = NORFLASH_STATUS_CFG_ERR;    /* Invalid Parameter(s)! */
+N   }
+N   else
+N   {
+N      /*
+N         Verify also (to be done after PL353 HW config is fixed): For read
+N         transfers, the maximum memory burst length on the memory interface is
+N         the depth of the read data FIFO. For writes, the maximum burst length
+N         is dependent on: - the beat size of the AXI transfer, asize - the
+N         memory data bus width, mw - the depth of the write data FIFO depth,
+N         wfifo_depth. The formula to determine the maximum memory write burst
+N         length is: Memory write burst length = ((1<<asize) x wfifo_depth) /
+N         (1<<mw) */
+N      /* check opmode settings */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 13.7 The result of this logical operation is always
+N*          'false'.
+N*
+N* DESC   : The check below is required for enum types since structure members
+N*          might contain values (after C cast operation) specified at the
+N*          "run-time", whicjh could be by out-of-range of the respective
+N*          enumeration type.
+N****/
+N      if ((pstNorCfg->eBusWidth != (NORFLASH_BUS_WIDTH_16)) ||           /* PRQA S 3356 */
+N          (pstNorCfg->eRdBursLen >= (NORFLASH_BURST_LEN_CNTS)) ||        /* PRQA S 3356 */
+N          (pstNorCfg->eWrBursLen >= (NORFLASH_BURST_LEN_CNTS)) ||        /* PRQA S 3356 */ /* PRQA S 3359 */
+N          (pstNorCfg->eBurstAlign > (NORFLASH_BURST_ALGN_CROSS_256)))    /* PRQA S 3356 */
+N      {    /* PRQA S 3201 */
+N         eResult = NORFLASH_STATUS_CFG_ERR; /* Invalid Parameter(s)! */
+N      }
+N      else
+N      {
+N         eResult = NORFLASH_STATUS_OK;      /* All Parameters OK */
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic void vNorF_CopyConfigToRegs (NorFlashCfg_st * const pstNorCfg)
+N{
+N   uint32_t u32Cfg;
+N
+N   /* copy cycles/opmode data from the configuration structure to registers */
+N   u32Cfg = 0U;
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32ReadCycleTime) << (MEMCTRL_SET_T0_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32ReadCycleTime) << ((0)));
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32WriteCycleTime) << (MEMCTRL_SET_T1_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32WriteCycleTime) << ((4)));
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32AssertDelayOeN) << (MEMCTRL_SET_T2_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32AssertDelayOeN) << ((8)));
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32AssertDelayWeN) << (MEMCTRL_SET_T3_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32AssertDelayWeN) << ((11)));
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32PageCycleTime) << (MEMCTRL_SET_T4_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32PageCycleTime) << ((14)));
+N   u32Cfg = u32Cfg | ((pstNorCfg->u32TurnaroundTime) << (MEMCTRL_SET_T5_SFT));
+X   u32Cfg = u32Cfg | ((pstNorCfg->u32TurnaroundTime) << ((17)));
+N   /*
+N      we_time */
+N   if (pstNorCfg->eWeTime == NORFLASH_WE_TIME_CFG_WEN_TOGETHER)
+N   {
+N      u32Cfg = u32Cfg | (MEMCTRL_SET_SRAM_T6_MSK);
+X      u32Cfg = u32Cfg | (((0x1U)<<((20))));
+N   }
+N   /*
+N      Update register */
+N   MEMCTRL_SET_CYCLES = u32Cfg;
+X   (*((volatile uint32_t*) (((0xC0200000U))+(0x014U)))) = u32Cfg;
+N   pstNorCfg->u32set_cycles = u32Cfg;       /* store content of set_cycles */
+N
+N   u32Cfg = 0U;
+N   /* u32Cfg value must be "0", otherwise settings below will be incorrect */
+N   /*
+N      Bus Width is always the same */
+N   u32Cfg = (u32Cfg | (MEMCTRL_SET_MW_16_BITS));
+X   u32Cfg = (u32Cfg | (((0x1U)<<((0)))));
+N
+N   /*
+N      Read Mode */
+N   if (pstNorCfg->eRdMode == NORFLASH_SYNC_MODE)
+N   {
+N      u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_SYNC_MSK));
+X      u32Cfg = (u32Cfg | (((0x1U)<<((2)))));
+N   }
+N   /*
+N      Read Burst Length */
+N   switch (pstNorCfg->eRdBursLen)
+N   {
+N      case NORFLASH_BURST_LEN_1:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_1_BITS));
+X         u32Cfg = (u32Cfg | (((0x0U)<<((3)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_4:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_4_BITS));
+X         u32Cfg = (u32Cfg | (((0x1U)<<((3)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_8:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_8_BITS));
+X         u32Cfg = (u32Cfg | (((0x2U)<<((3)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_16:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_16_BITS));
+X         u32Cfg = (u32Cfg | (((0x3U)<<((3)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_32:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_32_BITS));
+X         u32Cfg = (u32Cfg | (((0x4U)<<((3)))));
+N      }
+N         break;
+N      default:                             /* NORFLASH_BURST_LEN_CNTS */
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_RD_BL_CNTS_BITS));
+X         u32Cfg = (u32Cfg | (((0x5U)<<((3)))));
+N      }
+N         break;
+N   }
+N   /*
+N      Write Mode */
+N   if (pstNorCfg->eWrMode == NORFLASH_SYNC_MODE)
+N   {
+N      u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_SYNC_MSK));
+X      u32Cfg = (u32Cfg | (((0x1U)<<((6)))));
+N   }
+N   /*
+N      Write Burst Length */
+N   switch (pstNorCfg->eWrBursLen)
+N   {
+N      case NORFLASH_BURST_LEN_1:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_1_BITS));
+X         u32Cfg = (u32Cfg | (((0x0U)<<((7)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_4:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_4_BITS));
+X         u32Cfg = (u32Cfg | (((0x1U)<<((7)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_8:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_8_BITS));
+X         u32Cfg = (u32Cfg | (((0x2U)<<((7)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_16:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_16_BITS));
+X         u32Cfg = (u32Cfg | (((0x3U)<<((7)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_LEN_32:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_32_BITS));
+X         u32Cfg = (u32Cfg | (((0x4U)<<((7)))));
+N      }
+N         break;
+N      default:                             /* NORFLASH_BURST_LEN_CNTS */
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_WR_BL_CNTS_BITS));
+X         u32Cfg = (u32Cfg | (((0x5U)<<((7)))));
+N      }
+N         break;
+N   }
+N   /*
+N      Burst Address Advance Signal */
+N   if (pstNorCfg->eBurstAdrAdvSig == NORFLASH_USE_ADV_SIG)
+N   {
+N      u32Cfg = (u32Cfg | (MEMCTRL_SET_BAA_MSK));
+X      u32Cfg = (u32Cfg | (((0x1U)<<((10)))));
+N   }
+N   /*
+N      Address Advance Signal */
+N   if (pstNorCfg->eAdrAdvSig == NORFLASH_USE_ADV_SIG)
+N   {
+N      u32Cfg = (u32Cfg | (MEMCTRL_SET_ADV_MSK));
+X      u32Cfg = (u32Cfg | (((0x1U)<<((11)))));
+N   }
+N   /*
+N      Byte Lane Strobe */
+N   if (pstNorCfg->eByteLane == NORFLASH_BYTE_LANE_AS_WEN)
+N   {
+N      u32Cfg = (u32Cfg | (MEMCTRL_SET_BLS_MSK));
+X      u32Cfg = (u32Cfg | (((0x1U)<<((12)))));
+N   }
+N   /*
+N      Burst Align */
+N   switch (pstNorCfg->eBurstAlign)
+N   {
+N      case NORFLASH_BURST_ALGN_CROSS_ANY:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_BRST_CR_ANY_BITS));
+X         u32Cfg = (u32Cfg | (((0x0U)<<((13)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_ALGN_CROSS_32:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_BRST_CR_32_BITS));
+X         u32Cfg = (u32Cfg | (((0x1U)<<((13)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_ALGN_CROSS_64:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_BRST_CR_64_BITS));
+X         u32Cfg = (u32Cfg | (((0x2U)<<((13)))));
+N      }
+N         break;
+N      case NORFLASH_BURST_ALGN_CROSS_128:
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_BRST_CR_128_BITS));
+X         u32Cfg = (u32Cfg | (((0x3U)<<((13)))));
+N      }
+N         break;
+N      default:                             /* NORFLASH_BURST_ALGN_CROSS_256 */
+N      {
+N         u32Cfg = (u32Cfg | (MEMCTRL_SET_BRST_CR_256_BITS));
+X         u32Cfg = (u32Cfg | (((0x4U)<<((13)))));
+N      }
+N         break;
+N   }
+N   /*
+N      Update register */
+N   MEMCTRL_SET_OPMODE = u32Cfg;
+X   (*((volatile uint32_t*) (((0xC0200000U))+(0x018U)))) = u32Cfg;
+N   pstNorCfg->u32set_opmode = u32Cfg;       /* store content of set_opmode */
+N}
+N
+N/*..........................................................................*/
+N
+N/* ***************** NOR Flash API Functions Definitions ***************** */
+N
+N/*..........................................................................*/
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_GetHwConfig (NorFlashCfg_st * pstNorCfg)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   /* Initialize the NOR memory region Base Address */
+N   pstNorCfg->u32NorChipAdr = NORFLASH_BASE_ADDRESS;
+X   pstNorCfg->u32NorChipAdr = (0x20000000U);
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      uint32_t u32RdCfg;
+N
+N      /* copy cycles data from SRAM register to the configuration structure */
+N      u32RdCfg = MEMCTRL_SRAM_CYCLES;
+X      u32RdCfg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000100U))+(0x000U))));
+N      pstNorCfg->u32ReadCycleTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T0_MSK)) >> (MEMCTRL_SET_T0_SFT));
+X         ((u32RdCfg & (((0xFU)<<((0))))) >> ((0)));
+N      pstNorCfg->u32WriteCycleTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T1_MSK)) >> (MEMCTRL_SET_T1_SFT));
+X         ((u32RdCfg & (((0xFU)<<((4))))) >> ((4)));
+N      pstNorCfg->u32AssertDelayOeN =
+N         ((u32RdCfg & (MEMCTRL_SET_T2_MSK)) >> (MEMCTRL_SET_T2_SFT));
+X         ((u32RdCfg & (((0x7U)<<((8))))) >> ((8)));
+N      pstNorCfg->u32AssertDelayWeN =
+N         ((u32RdCfg & (MEMCTRL_SET_T3_MSK)) >> (MEMCTRL_SET_T3_SFT));
+X         ((u32RdCfg & (((0x7U)<<((11))))) >> ((11)));
+N      pstNorCfg->u32PageCycleTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T4_MSK)) >> (MEMCTRL_SET_T4_SFT));
+X         ((u32RdCfg & (((0x7U)<<((14))))) >> ((14)));
+N      pstNorCfg->u32TurnaroundTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T5_MSK)) >> (MEMCTRL_SET_T5_SFT));
+X         ((u32RdCfg & (((0x7U)<<((17))))) >> ((17)));
+N
+N      if (((u32RdCfg & (MEMCTRL_SET_SRAM_T6_MSK)) == (MEMCTRL_SET_SRAM_T6_MSK)))
+X      if (((u32RdCfg & (((0x1U)<<((20))))) == (((0x1U)<<((20))))))
+N      {
+N         /* bit is 1: we_n and cs_n assert together */
+N         pstNorCfg->eWeTime = NORFLASH_WE_TIME_CFG_WEN_TOGETHER;
+N      }
+N      else
+N      {
+N         /* bit is 0: we_n 2 mclk cycles after cs_n */
+N         pstNorCfg->eWeTime = NORFLASH_WE_TIME_CFG_WEN_AFTER;
+N      }
+N
+N      /* copy operation mode data from register to the configuration structure */
+N      u32RdCfg = (0x0000FFFFU & MEMCTRL_SRAM_OPMODE);
+X      u32RdCfg = (0x0000FFFFU & (*((volatile uint32_t*) (((0xC0200000U))+((0x00000100U))+(0x004U)))));
+N      /*
+N         mw bits: BUS WIDTH is fixed to 16-bits always! */
+N      pstNorCfg->eBusWidth = NORFLASH_BUS_WIDTH_16;
+N      /*
+N         rd_sync bit */
+N      if ((u32RdCfg & (MEMCTRL_SET_RD_SYNC_MSK)) == (MEMCTRL_SET_RD_SYNC_MSK))
+X      if ((u32RdCfg & (((0x1U)<<((2))))) == (((0x1U)<<((2)))))
+N      {
+N         pstNorCfg->eRdMode = NORFLASH_SYNC_MODE;
+N      }
+N      else
+N      {
+N         pstNorCfg->eRdMode = NORFLASH_NOSYNC_MODE;
+N      }
+N      /*
+N         rd_bl bit */
+N      switch ((u32RdCfg & (MEMCTRL_SET_RD_BL_MSK)))
+X      switch ((u32RdCfg & (((0x7U)<<((3))))))
+N      {
+N         case MEMCTRL_SET_RD_BL_1_BITS:
+X         case ((0x0U)<<((3))):
+N         {
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_1;
+N         }
+N            break;
+N         case MEMCTRL_SET_RD_BL_4_BITS:
+X         case ((0x1U)<<((3))):
+N         {
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_4;
+N         }
+N            break;
+N         case MEMCTRL_SET_RD_BL_8_BITS:
+X         case ((0x2U)<<((3))):
+N         {
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_8;
+N         }
+N            break;
+N         case MEMCTRL_SET_RD_BL_16_BITS:
+X         case ((0x3U)<<((3))):
+N         {
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_16;
+N         }
+N            break;
+N         case MEMCTRL_SET_RD_BL_32_BITS:
+X         case ((0x4U)<<((3))):
+N         {
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_32;
+N         }
+N            break;
+N         default:
+N         {
+N            /* for all other values use "continuous" */
+N            pstNorCfg->eRdBursLen = NORFLASH_BURST_LEN_CNTS;
+N         }
+N            break;
+N      }
+N      /*
+N         wr_sync bit */
+N      if ((u32RdCfg & (MEMCTRL_SET_WR_SYNC_MSK)) == (MEMCTRL_SET_WR_SYNC_MSK))
+X      if ((u32RdCfg & (((0x1U)<<((6))))) == (((0x1U)<<((6)))))
+N      {
+N         pstNorCfg->eWrMode = NORFLASH_SYNC_MODE;
+N      }
+N      else
+N      {
+N         pstNorCfg->eWrMode = NORFLASH_NOSYNC_MODE;
+N      }
+N      /*
+N         wr_bl bit */
+N      switch ((u32RdCfg & (MEMCTRL_SET_WR_BL_MSK)))
+X      switch ((u32RdCfg & (((0x7U)<<((7))))))
+N      {
+N         case MEMCTRL_SET_WR_BL_1_BITS:
+X         case ((0x0U)<<((7))):
+N         {
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_1;
+N         }
+N            break;
+N         case MEMCTRL_SET_WR_BL_4_BITS:
+X         case ((0x1U)<<((7))):
+N         {
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_4;
+N         }
+N            break;
+N         case MEMCTRL_SET_WR_BL_8_BITS:
+X         case ((0x2U)<<((7))):
+N         {
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_8;
+N         }
+N            break;
+N         case MEMCTRL_SET_WR_BL_16_BITS:
+X         case ((0x3U)<<((7))):
+N         {
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_16;
+N         }
+N            break;
+N         case MEMCTRL_SET_WR_BL_32_BITS:
+X         case ((0x4U)<<((7))):
+N         {
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_32;
+N         }
+N            break;
+N         default:
+N         {
+N            /* for all other values use "continuous" */
+N            pstNorCfg->eWrBursLen = NORFLASH_BURST_LEN_CNTS;
+N         }
+N            break;
+N      }
+N      /*
+N         adv bit */
+N      if ((u32RdCfg & (MEMCTRL_SET_ADV_MSK)) == (MEMCTRL_SET_ADV_MSK))
+X      if ((u32RdCfg & (((0x1U)<<((11))))) == (((0x1U)<<((11)))))
+N      {
+N         pstNorCfg->eAdrAdvSig = NORFLASH_USE_ADV_SIG;
+N      }
+N      else
+N      {
+N         pstNorCfg->eAdrAdvSig = NORFLASH_NO_ADV_SIG;
+N      }
+N      /*
+N         bls bit */
+N      if ((u32RdCfg & (MEMCTRL_SET_BLS_MSK)) == (MEMCTRL_SET_BLS_MSK))
+X      if ((u32RdCfg & (((0x1U)<<((12))))) == (((0x1U)<<((12)))))
+N      {
+N         pstNorCfg->eByteLane = NORFLASH_BYTE_LANE_AS_WEN;
+N      }
+N      else
+N      {
+N         pstNorCfg->eByteLane = NORFLASH_BYTE_LANE_AS_CS;
+N      }
+N      /*
+N         burst_allign bits */
+N      switch ((u32RdCfg & (MEMCTRL_SET_BRST_ALIGN_MSK)))
+X      switch ((u32RdCfg & (((0x7U)<<((13))))))
+N      {
+N         case MEMCTRL_SET_BRST_CR_ANY_BITS:
+X         case ((0x0U)<<((13))):
+N         {
+N            pstNorCfg->eBurstAlign = NORFLASH_BURST_ALGN_CROSS_ANY;
+N         }
+N            break;
+N         case MEMCTRL_SET_BRST_CR_32_BITS:
+X         case ((0x1U)<<((13))):
+N         {
+N            pstNorCfg->eBurstAlign = NORFLASH_BURST_ALGN_CROSS_32;
+N         }
+N            break;
+N         case MEMCTRL_SET_BRST_CR_64_BITS:
+X         case ((0x2U)<<((13))):
+N         {
+N            pstNorCfg->eBurstAlign = NORFLASH_BURST_ALGN_CROSS_64;
+N         }
+N            break;
+N         case MEMCTRL_SET_BRST_CR_128_BITS:
+X         case ((0x3U)<<((13))):
+N         {
+N            pstNorCfg->eBurstAlign = NORFLASH_BURST_ALGN_CROSS_128;
+N         }
+N            break;
+N         default:
+N         {
+N            /* other including reserved set to MEMCTRL_SET_BRST_CR_256_BITS */
+N            pstNorCfg->eBurstAlign = NORFLASH_BURST_ALGN_CROSS_256;
+N         }
+N            break;
+N      }
+N      /* Check all settings */
+N      eResult = eNorF_ConfigVerify (pstNorCfg);
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_Initialize (NorFlashCfg_st * pstNorCfg)
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NorFlashStatus_e eResult = NORFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N   uint32_t u32TryCnt = 0;                  /* Register-update retry counter */
+N
+N   /*
+N      Initialize the NOR memory region Base Address. This init is done already
+N      in eNorFlash_GetHwConfig() function, but is repeated here in case, if the
+N      mentioned function would never be called. */
+N   pstNorCfg->u32NorChipAdr = NORFLASH_BASE_ADDRESS;
+X   pstNorCfg->u32NorChipAdr = (0x20000000U);
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      eResult = eNorF_ConfigVerify (pstNorCfg); /* Settings correct? */
+N
+N      if (eResult == NORFLASH_STATUS_OK)
+N      {
+N         uint32_t u32DirCmdVal = 0U;        /* to construct a direct_cmd
+N                                               register value */
+N         uint32_t u32MatchData = 0U;        /* Match data Value ? */
+N
+N         /*
+N            Bus Width should be fixed to 16-bit for NOR flash always. */
+N         pstNorCfg->eBusWidth = NORFLASH_BUS_WIDTH_16;
+N
+N         vNorF_CopyConfigToRegs (pstNorCfg);
+N         /*
+N            The configuration is now within set_cycles and set_opmode
+N            registers. To update the timing within the SMC for a NOR device it
+N            is required to specify: an UpdateRegs and AXI cmd_type within the
+N            direct_cmd register. */
+N         /* Set Match Data Value for UpdateRegs and AXI command */
+N         /*
+N            Perform the required sequence of memory accesses, the Last Access
+N            Containing the Match Data Value. This is memory device specific
+N            area. Currently nothing to be written -so use:
+N            MEMCTRL_CMD_TYPE_UPD_REGS_MSK instead of
+N            MEMCTRL_CMD_TYPE_UPD_REGS_AXI_MSK. */
+N         u32DirCmdVal = u32DirCmdVal | MEMCTRL_NOR_CHIP_SEL_MSK;
+X         u32DirCmdVal = u32DirCmdVal | ((0x0U)<<((23)));
+N         u32DirCmdVal = u32DirCmdVal | MEMCTRL_CMD_TYPE_UPD_REGS_MSK;
+X         u32DirCmdVal = u32DirCmdVal | ((0x2U)<<((21)));
+N         u32DirCmdVal = u32DirCmdVal | u32MatchData;
+N         MEMCTRL_DIRECT_CMD = u32DirCmdVal; /* Update registers */
+X         (*((volatile uint32_t*) (((0xC0200000U))+(0x010U)))) = u32DirCmdVal;  
+N         /*
+N            Verify the new timings and operation mode: - check for correct
+N            sram_cycles register - check for correct opmode register. Try to
+N            Update Cyclec and Opmode registers upto 4 times */
+N         eResult = NORFLASH_STATUS_UNKNOWN; /* reuse eResult for this loop */
+N         do
+N         {
+N            uint32_t u32Cyc = MEMCTRL_SRAM_CYCLES;
+X            uint32_t u32Cyc = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000100U))+(0x000U))));
+N
+N            uint32_t u32Mod = (0x0000FFFFU & MEMCTRL_SRAM_OPMODE);
+X            uint32_t u32Mod = (0x0000FFFFU & (*((volatile uint32_t*) (((0xC0200000U))+((0x00000100U))+(0x004U)))));
+N
+N            if ((u32Cyc == pstNorCfg->u32set_cycles) &&
+N                (u32Mod == pstNorCfg->u32set_opmode))
+N            {
+N               eResult = NORFLASH_STATUS_OK;
+N            }
+N            else
+N            {
+N               if (u32TryCnt < 4U)
+N               {
+N                  MEMCTRL_DIRECT_CMD = u32DirCmdVal;
+X                  (*((volatile uint32_t*) (((0xC0200000U))+(0x010U)))) = u32DirCmdVal;
+N                  u32TryCnt++;
+N               }
+N               else
+N               {
+N                  eResult = NORFLASH_STATUS_OPERATION_ERR; /* update failed */
+N               }
+N            }
+N         }
+N         while (!
+N                ((eResult == (NORFLASH_STATUS_OK)) ||
+N                 (eResult == (NORFLASH_STATUS_OPERATION_ERR))));
+N      }
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_SetBurstLength (NorFlashCfg_st * pstNorCfg,
+N                                           NorFlashBurstLength_e eWrBrstLen,
+N                                           NorFlashBurstLength_e eRdBrstLen)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      pstNorCfg->eWrBursLen = eWrBrstLen;
+N      pstNorCfg->eRdBursLen = eRdBrstLen;
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_SetBusTiming (NorFlashCfg_st * pstNorCfg,
+N                                         uint32_t u32TurnaroundTime,
+N                                         uint32_t u32PageCycleTime,
+N                                         uint32_t u32WriteCycleTime,
+N                                         uint32_t u32ReadCycleTime)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      if ((pstNorCfg->u32ReadCycleTime < (NORFLASH_RD_CYCLE_MIN)) ||
+X      if ((pstNorCfg->u32ReadCycleTime < ((2U))) ||
+N          (pstNorCfg->u32ReadCycleTime > (NORFLASH_RD_CYCLE_MAX)) ||
+X          (pstNorCfg->u32ReadCycleTime > ((15U))) ||
+N          (pstNorCfg->u32WriteCycleTime < (NORFLASH_WR_CYCLE_MIN)) ||
+X          (pstNorCfg->u32WriteCycleTime < ((2U))) ||
+N          (pstNorCfg->u32WriteCycleTime > (NORFLASH_WR_CYCLE_MAX)) ||
+X          (pstNorCfg->u32WriteCycleTime > ((15U))) ||
+N          (pstNorCfg->u32PageCycleTime < (NORFLASH_PAGE_CYCLE_MIN)) ||
+X          (pstNorCfg->u32PageCycleTime < ((1U))) ||
+N          (pstNorCfg->u32PageCycleTime > (NORFLASH_PAGE_CYCLE_MAX)) ||
+X          (pstNorCfg->u32PageCycleTime > ((7U))) ||
+N          (pstNorCfg->u32TurnaroundTime < (NORFLASH_TURNAROUND_MIN)) ||
+X          (pstNorCfg->u32TurnaroundTime < ((1U))) ||
+N          (pstNorCfg->u32TurnaroundTime > (NORFLASH_TURNAROUND_MAX)))
+X          (pstNorCfg->u32TurnaroundTime > ((7U))))
+N      {
+N         eResult = NORFLASH_STATUS_CFG_ERR;
+N      }
+N      else
+N      {
+N         pstNorCfg->u32TurnaroundTime = u32TurnaroundTime;
+N         pstNorCfg->u32PageCycleTime = u32PageCycleTime;
+N         pstNorCfg->u32WriteCycleTime = u32WriteCycleTime;
+N         pstNorCfg->u32ReadCycleTime = u32ReadCycleTime;
+N         eResult = NORFLASH_STATUS_OK;
+N      }
+N
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_SetReadWriteSyncMode (NorFlashCfg_st * pstNorCfg,
+N                                                 NorFlashRdWrMode_e eWrMode,
+N                                                 NorFlashRdWrMode_e eRdMode,
+N                                                 NorFlashBurstAlign_e
+N                                                 eBurstAlign)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      pstNorCfg->eWrMode = eWrMode;
+N      pstNorCfg->eRdMode = eRdMode;
+N      pstNorCfg->eBurstAlign = eBurstAlign;
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_SetSignalsAssertDelays (NorFlashCfg_st * pstNorCfg,
+N                                                   NorFlashWeTimeCfg_e eWeTime,
+N                                                   uint32_t u32AssertDelayWeN,
+N                                                   uint32_t u32AssertDelayOeN)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      if ((pstNorCfg->u32AssertDelayOeN < (NORFLASH_ASSERT_OEN_MIN)) ||
+X      if ((pstNorCfg->u32AssertDelayOeN < ((1U))) ||
+N          (pstNorCfg->u32AssertDelayOeN > (NORFLASH_ASSERT_OEN_MAX)) ||
+X          (pstNorCfg->u32AssertDelayOeN > ((7U))) ||
+N          (pstNorCfg->u32AssertDelayWeN < (NORFLASH_ASSERT_WEN_MIN)) ||
+X          (pstNorCfg->u32AssertDelayWeN < ((1U))) ||
+N          (pstNorCfg->u32AssertDelayWeN > (NORFLASH_ASSERT_WEN_MAX)))
+X          (pstNorCfg->u32AssertDelayWeN > ((7U))))
+N      {
+N         eResult = NORFLASH_STATUS_CFG_ERR;
+N      }
+N      else
+N      {
+N         pstNorCfg->eWeTime = eWeTime;
+N         pstNorCfg->u32AssertDelayWeN = u32AssertDelayWeN;
+N         pstNorCfg->u32AssertDelayOeN = u32AssertDelayOeN;
+N         eResult = NORFLASH_STATUS_OK;
+N      }
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_SetSignalsConfig (NorFlashCfg_st * pstNorCfg,
+N                                             NorFlashByteLane_e eByteLane,
+N                                             NorFlashAdvanceSignal_e eAdrAdvSig,
+N                                             NorFlashAdvanceSignal_e
+N                                             eBurstAdrAdvSig)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      pstNorCfg->eByteLane = eByteLane;
+N      pstNorCfg->eAdrAdvSig = eAdrAdvSig;
+N      pstNorCfg->eBurstAdrAdvSig = eBurstAdrAdvSig;
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_Reset (const NorFlashCfg_st * const pstNorCfg)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      uint32_t u32NorBase = pstNorCfg->u32NorChipAdr;
+N
+N      /* NORFLASH_BUS_WIDTH_16 */
+N      NORFLASH_WORD_ACCESS (u32NorBase, 0x00UL) = (uint16_t)NORFLASH_CMD_RESET;
+X      *((volatile uint16_t*)((uint32_t)((u32NorBase)+(0x00UL)))) = (uint16_t)(0xF0U);
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_Read16bitWords (const NorFlashCfg_st *
+N                                           const pstNorCfg, uint32_t u32SrcAdr,
+N                                           uint16_t pu16DstBuf[],
+N                                           uint32_t u32BufferLen)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      uint32_t u32Idx;
+N
+N      uint16_t *pu16Address;
+N
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : Thes message is undestood, but the pointer cast is required
+N*          to maintian properly the position within the 16-bit buffer.
+N****/
+N      /* Modify a source pointer */
+N      pu16Address = (uint16_t *)u32SrcAdr;    /* PRQA S 0306 */
+N      for (u32Idx = 0U; u32Idx < u32BufferLen; u32Idx++)
+N      {
+N         pu16DstBuf[u32Idx] = pu16Address[u32Idx]; /* Destination <- Source */
+N      }
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNorFlashStatus_e eNorFlash_Read32bitWords (const NorFlashCfg_st *
+N                                           const pstNorCfg, uint32_t u32SrcAdr,
+N                                           uint32_t pu32DstBuf[],
+N                                           uint32_t u32BufferLen)
+N{
+N   NorFlashStatus_e eResult;
+N
+N   /*
+N      Assume the MemCtrl is converting a 32-bit access to the appropriate
+N      number of bus accesses for 8-bit and 16-bit devices? The reading is very
+N      simple operation: copy a content from the location indicated by the
+N      source pointer and store it at the destination. */
+N   if (pstNorCfg != TYPES_NULL_PTR)
+X   if (pstNorCfg != ((void *)0UL))
+N   {
+N      uint32_t u32Idx;
+N
+N      uint32_t *pu32Address;
+N
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : Thes message is undestood, but the pointer cast is required
+N*          to maintian properly the position within the buffer.
+N****/
+N      /* Modify a source pointer */
+N      pu32Address = (uint32_t *)u32SrcAdr;    /* PRQA S 0306 */
+N      for (u32Idx = 0U; u32Idx < u32BufferLen; u32Idx++)
+N      {
+N         pu32DstBuf[u32Idx] = pu32Address[u32Idx]; /* Destination <- Source */
+N      }
+N      eResult = NORFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NORFLASH_STATUS_PTR_ERR;
+N   }
+N   return eResult;
+N}
+N
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

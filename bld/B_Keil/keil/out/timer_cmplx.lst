@@ -1,0 +1,1952 @@
+L 1 "..\..\..\..\lldd\src\timer_cmplx.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : TIMER_CMPLX low level driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_CMPLX
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "timer_cmplx.h"                    /* Timer cmplx LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\timer_cmplx.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : TIMER_CMPLX low level driver header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_CMPLX
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef TIMER_CMPLX_H
+N#define TIMER_CMPLX_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\inc\timer_cmplx.h" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_TIMER_CMPLX_H_REVISION     "$Revision: 1.8 $"
+N#define LLDD_TIMER_CMPLX_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/****************************************************************************
+N*                          CONTROLER SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+N 
+Ntypedef enum tag_timer_cmplx_ch_e
+N{
+N  TIMER_CMPLX_PM_0 =0,
+N  TIMER_CMPLX_PM_1 =0x1000,  
+N  TIMER_CMPLX_PM_2 =0x2000,  
+N  TIMER_CMPLX_PM_3 =0x3000,  
+N  TIMER_CMPLX_PM_4 =0x4000,  
+N  TIMER_CMPLX_PM_5 =0x5000 
+N} timer_cmplx_ch_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/* *** */
+N
+N/*
+N *  TBRUN parameter values
+N */
+N
+N/* TBRUN.DBE / TBRUN.SYNC / TBRUN.OFI - double buffer/synchronous reset/overflow interrupt selection */
+Ntypedef enum tag_timer_cmplx_en_e
+N{
+N    TIMER_CMPLX_DISABLE = 0x0,                    /* Double buffer disabled */
+N    TIMER_CMPLX_ENABLE  = 0x1                     /* Double buffering enabled */
+N} timer_cmplx_en_e;
+N
+N/* TBRUN.IDL - idle state */
+Ntypedef enum tag_timer_cmplx_idl_e
+N{
+N    TIMER_CMPLX_IDLE   = 0x0,                     /* Timer stops and goes to idle state */
+N    TIMER_CMPLX_NORMAL = 0x1                      /* Normal operation */
+N} timer_cmplx_idl_e;
+N
+N/* TBRUN.PRUN / TBRUN.TRUN / PWMCR.TRUN / HSPWMCR.TRUN / GPWMCR.TRUN - prescaler/timer start/stop */
+Ntypedef enum tag_timer_cmplx_run_e
+N{
+N    TIMER_CMPLX_STOP  = 0x0,                      /* Timer stop */
+N    TIMER_CMPLX_START = 0x1                       /* Timer start */
+N} timer_cmplx_run_e;
+N
+N/* *** */
+N
+N/*
+N *  TBMOD parameter values
+N */
+N
+N/* TBMOD.CP0 - software capture control */
+Ntypedef enum tag_timer_cmplx_cp0_e
+N{
+N    TIMER_CMPLX_LATCH    = 0x0,                   /* Latch the counter value into TB0CP0 */
+N    TIMER_CMPLX_NO_LATCH = 0x1                    /* Do not care */
+N} timer_cmplx_cp0_e;
+N
+N/* TBMOD.CLE - up-counter control */
+Ntypedef enum tag_timer_cmplx_cle_e
+N{
+N    TIMER_CMPLX_FREE_RUN = 0x0,                   /* On match of compare value 1 do count */
+N    TIMER_CMPLX_ONE_SHOT = 0x1                    /* On match of compare value 1 reset the counter */
+N} timer_cmplx_cle_e;
+N
+N/* TBMOD.CPM - capture timing */
+Ntypedef enum tag_timer_cmplx_cpm_e
+N{
+N    TIMER_CMPLX_CPM_DIS    = 0x0,                 /* Latch disabled */
+N    TIMER_CMPLX_TBIN01_RR  = 0x1,                 /* Latch at rise of TBIN0 [TBxCAP0] and rise of TBIN1 [TBxCAP1] */
+N    TIMER_CMPLX_TBIN00_RF  = 0x2,                 /* Latch at rise of TBIN0 [TBxCAP0] and fall of TBIN0 [TBxCAP1] */
+N    TIMER_CMPLX_TBOUTIN_RF = 0x3                  /* Latch at rise of TB0UTIN [TBxCAP0] and rise of TB0UTIN [TBxCAP1] */
+N} timer_cmplx_cpm_e;
+N
+N/* Source Clock Selection (TBMOD.CLK) */
+Ntypedef enum tag_timer_cmplx_clk_e
+N{
+N    TIMER_CMPLX_CLK_EXT   = 0x0,                  /* External input (TBIN0) */
+N    TIMER_CMPLX_CLK_DIV1  = 0x1,                  /* Peripheral clock frequency [35MHz] */
+N    TIMER_CMPLX_CLK_DIV2  = 0x2,                  /* Peripheral clock frequency / 2 */
+N    TIMER_CMPLX_CLK_DIV4  = 0x3,                  /* Peripheral clock frequency / 4 */
+N    TIMER_CMPLX_CLK_DIV8  = 0x4,                  /* Peripheral clock frequency / 8 */
+N    TIMER_CMPLX_CLK_DIV16 = 0x5,                  /* Peripheral clock frequency / 16 */
+N    TIMER_CMPLX_CLK_DIV32 = 0x6,                  /* Peripheral clock frequency / 32 */
+N    TIMER_CMPLX_CLK_DIV64 = 0x7                   /* Peripheral clock frequency / 64 */
+N} timer_cmplx_clk_e;
+N
+N/* *** */
+N
+N/*
+N *  TBFF parameter values
+N */
+N
+N/* TBFF.INVL0 / TBFF.INVL1 / TBFF.INVC0 / TBFF.INVC1 - TBOUT inversion */
+Ntypedef enum tag_timer_cmplx_ffinv_e
+N{
+N    TIMER_CMPLX_FF_NOINV = 0x0,                   /* Do not invert */
+N    TIMER_CMPLX_FF_INV   = 0x1                    /* Inversion enabled */
+N} timer_cmplx_ffinv_e;
+N
+N/* TBFF.MOD - output flip-flop mode */
+Ntypedef enum tag_timer_cmplx_mod_e
+N{
+N    TIMER_CMPLX_TBFF_INV      = 0x0,              /* Invert TBFF value */
+N    TIMER_CMPLX_TBFF_SET      = 0x1,              /* Set TBFF value */
+N    TIMER_CMPLX_TBFF_CLR      = 0x2,              /* Clear TBFF value */
+N    TIMER_CMPLX_TBFF_DONTCARE = 0x3               /* Do not care */
+N} timer_cmplx_mod_e;
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/* 16-bit timer_cmplx configuration */
+Ntypedef struct tag_timer_cmplx_genCfg_st
+N{
+N    timer_cmplx_en_e  eDblBuffEn;                 /* Double-buffer on/off */
+N    timer_cmplx_en_e  eSyncRstEn;                 /* Synchronous reset acceptance */
+N    timer_cmplx_idl_e eIdle;                      /* Idle state */
+N    timer_cmplx_run_e ePresclStart;               /* Prescaler start/stop */
+N    timer_cmplx_en_e  eOvrflwIrqEn;               /* Overflow interrupt on/off */
+N    timer_cmplx_clk_e eClkSource;                 /* Clock source selection */
+N    timer_cmplx_cle_e eCountCtrl;                 /* Mode selection [free-run or one-shot] */
+N    timer_cmplx_run_e eTimerStart;                /* Timer start/stop */
+N} timer_cmplx_genCfg_st;
+N
+N/* 16-bit timer_cmplx Flip-Flop configuration */
+Ntypedef struct tag_timer_cmplx_ffCfg_st
+N{
+N    timer_cmplx_ffinv_e eInvl1;                   /* Invert when counter value is latched in TB0CP1 */
+N    timer_cmplx_ffinv_e eInvl0;                   /* Invert when counter value is latched in TB0CP0 */
+N    timer_cmplx_ffinv_e eInvc1;                   /* Invert when up-counter value is equal to TB1REG */
+N    timer_cmplx_ffinv_e eInvc0;                   /* Invert when up-counter value is equal to TB0REG */
+N    timer_cmplx_mod_e   eFfMode;                  /* Flip-Flop mode */
+N} timer_cmplx_ffCfg_st;
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                       uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                       uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_Config
+N *
+N * Purpose:       Configure the 16-bit complex timer
+N *
+N * Inputs:        eCh    Timer channel
+N *                stCfg  Target configuration
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_Config(timer_cmplx_ch_e eCh, timer_cmplx_genCfg_st stCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetCountCtrl
+N *
+N * Purpose:       Set up-counter behavior on match with TB1REG value
+N *
+N * Inputs:        eCh         Timer channel
+N *                eCountCtrl  Control request
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetCountCtrl(timer_cmplx_ch_e eCh, timer_cmplx_cle_e eCountCtrl);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetCaptureTiming
+N *
+N * Purpose:       Set capture event selection
+N *
+N * Inputs:        eCh         Timer channel
+N *                eCapTiming  Capture timing 
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetCaptureTiming(timer_cmplx_ch_e eCh, timer_cmplx_cpm_e eCapTiming);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_FlipFlopConfig
+N *
+N * Purpose:       Timer 16-bit Flip-Flop configuration
+N *
+N * Inputs:        eCh      Timer channel
+N *                stFfCfg  Flip-flop configuration
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_FlipFlopConfig(timer_cmplx_ch_e eCh, timer_cmplx_ffCfg_st stFfCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetStateIdle
+N *
+N * Purpose:       Change to IDLE state mode
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetStateIdle(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetStateNormal
+N *
+N * Purpose:       Change to NORMAL state mode.
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetStateNormal(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_Start
+N *
+N * Purpose:       Start the 16-bit timer/up-counter
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_Start(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_Stop
+N *
+N * Purpose:       Stop the 16-bit timer/up-counter
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_Stop(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetOvflowIrqEnable
+N *
+N * Purpose:       Enable/disable the overflow interrupt
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetOvflowIrqEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eIrqEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetSyncRstEnable
+N *
+N * Purpose:       Enable/disable the synchronous reset
+N *
+N * Inputs:        eCh          Timer channel
+N *                eSyncRstEn   Sync Reset Enable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetSyncRstEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eSyncRstEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_StartPrescaler
+N *
+N * Purpose:       Start the prescaler
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_StartPrescaler(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_StopPrescaler
+N *
+N * Purpose:       Stops the prescaler
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_StopPrescaler(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetDblBuffEnable
+N *
+N * Purpose:       Enable/disable double buffering
+N *
+N * Inputs:        eCh      Timer channel
+N *                eBuffEn  Double buffer enable parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetDblBuffEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eBuffEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_LatchCounter
+N *
+N * Purpose:       Latch the current counter value into TB0CP0 register
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_LatchCounter(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetFfInvl1
+N *
+N * Purpose:       Set the inversion mode for TBOUT flip-flop upon up-counter 
+N *                latch into TB0CP1
+N *
+N * Inputs:        eCh      Timer channel
+N *                eInvert  Inversion parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetFfInvl1(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetFfInvl0
+N *
+N * Purpose:       Set the inversion mode for TBOUT flip-flop upon up-counter 
+N *                latch into TB0CP0
+N *
+N * Inputs:        eCh      Timer channel
+N *                eInvert  Inversion parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetFfInvl0(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetFfInvc1
+N *
+N * Purpose:       Set the inversion mode for TBOUT flip-flop upon up-counter 
+N *                match with TB1REG
+N *
+N * Inputs:        eCh  Timer channel
+N *                eInvert - Inversion parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetFfInvc1(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetFfInvc0
+N *
+N * Purpose:       Set the inversion mode for TBOUT flip-flop upon up-counter 
+N *                match with TB0REG
+N *
+N * Inputs:        eCh      Timer channel
+N *                eInvert  Inversion parameter
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetFfInvc0(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetCompareVal0
+N *
+N * Purpose:       Set first compare value
+N *
+N * Inputs:        eCh        Timer channel
+N *                usCompVal  First compare value
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetCompareVal0(timer_cmplx_ch_e eCh, uint16_t u16CompVal);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_CMPLX_GetCompareVal0
+N *
+N * Purpose:       Retrieve the value of TB0REG register
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: first compare value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_CMPLX_GetCompareVal0(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vTIMER_CMPLX_SetCompareVal1
+N *
+N * Purpose:       Set second compare value 
+N *
+N * Inputs:        eCh        Timer channel
+N *                usCompVal  Second compare calue
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vTIMER_CMPLX_SetCompareVal1(timer_cmplx_ch_e eCh, uint16_t u16CompVal);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_CMPLX_GetCompareVal1
+N *
+N * Purpose:       Retrieve the value of TB1REG register
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: second compare value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_CMPLX_GetCompareVal1(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_CMPLX_GetCapturedVal0
+N *
+N * Purpose:       Retrieve the value captured in TB0CP0 register
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: value captured in TB0CP0 register 
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_CMPLX_GetCapturedVal0(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_CMPLX_GetCapturedVal1
+N *
+N * Purpose:       Retrieve the value captured in TB0CP1 register
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: value captured in TB0CP1 register 
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_CMPLX_GetCapturedVal1(timer_cmplx_ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16TIMER_CMPLX_GetCounterVal
+N *
+N * Purpose:       Retrieve the current up-counter value
+N *
+N * Inputs:        eCh  Timer channel
+N *
+N * Outputs:       none
+N *
+N * Return Values: current counter value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint16_t u16TIMER_CMPLX_GetCounterVal(timer_cmplx_ch_e eCh);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* TIMER_CMPLX_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\timer_cmplx.c" 2
+N#include "timer_cmplx_io.h"                 /* 16-bit Complex timer registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\timer_cmplx_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : TIMERS_CMPLX_PM 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  18:02:28.023+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.10 $ 
+N/  Excel Sheet ver.             : vv1.1
+N/  Excel Sheet date             : 2013-Jun-21
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : TIMER_CMPLX low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TIMER_CMPLX
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.10 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef TIMERS_CMPLX_PMIO_H
+N#define TIMERS_CMPLX_PMIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"                      /* Core specific primitive type definitions */ 
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_TIMER_CMPLX_IO_H_REVISION     "$Revision: 1.10 $"
+N#define LLDD_TIMER_CMPLX_IO_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/****************************************************************************
+N*                          CONTROLER SELECTION MACROS
+N*             (Please use these macros to select module instances)
+N*****************************************************************************/
+N 
+Ntypedef enum tag_timer_cmplx_ch_def_e
+N{
+N  TIMER_CMPLX_PM_0__ =0,
+N  TIMER_CMPLX_PM_1__ =0x1000,  
+N  TIMER_CMPLX_PM_2__ =0x2000,  
+N  TIMER_CMPLX_PM_3__ =0x3000,  
+N  TIMER_CMPLX_PM_4__ =0x4000,  
+N  TIMER_CMPLX_PM_5__ =0x5000 
+N} timer_cmplx_ch_def_e;
+N  
+N         
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TBRUN                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C000                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TBRUN_REG__       0xC031C000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   TRUN	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   OFI	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   PRUN	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   IDL	:1; 	 /* 3..3  bit(s) R/W */
+N  uint8_t   	:2; 	 /* 4..5  bit(s) R */
+N  uint8_t   SYNC	:1; 	 /* 6..6  bit(s) R/W */
+N  uint8_t   DBE	:1; 	 /* 7..7  bit(s) R/W */                    
+N} TBRUN_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8TBRUN_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTBRUN(ctrlr)     ((volatile TBRUN_bit_view_st *)\
+N(TBRUN_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTBRUN(ctrlr)     ((volatile TBRUN_bit_view_st *)(TBRUN_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE  */
+N#define pu8TBRUN(ctrlr)     ((volatile u8TBRUN_byte_view *)\
+N(TBRUN_REG__  + ((int32_t)(ctrlr))))
+X#define pu8TBRUN(ctrlr)     ((volatile u8TBRUN_byte_view *)(TBRUN_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetTBRUN_TRUN(ctrlr) (pst_bitTBRUN(ctrlr) -> TRUN)
+N#define vSetTBRUN_TRUN(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> TRUN=(ParValue))
+N#define biGetTBRUN_OFI(ctrlr) (pst_bitTBRUN(ctrlr) -> OFI)
+N#define vSetTBRUN_OFI(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> OFI=(ParValue))
+N#define biGetTBRUN_PRUN(ctrlr) (pst_bitTBRUN(ctrlr) -> PRUN)
+N#define vSetTBRUN_PRUN(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> PRUN=(ParValue))
+N#define biGetTBRUN_IDL(ctrlr) (pst_bitTBRUN(ctrlr) -> IDL)
+N#define vSetTBRUN_IDL(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> IDL=(ParValue))
+N#define biGetTBRUN_SYNC(ctrlr) (pst_bitTBRUN(ctrlr) -> SYNC)
+N#define vSetTBRUN_SYNC(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> SYNC=(ParValue))
+N#define biGetTBRUN_DBE(ctrlr) (pst_bitTBRUN(ctrlr) -> DBE)
+N#define vSetTBRUN_DBE(ctrlr,ParValue)  (pst_bitTBRUN(ctrlr) -> DBE=(ParValue))
+N            
+N/* byte access */
+N#define vSetTBRUN(ctrlr,ParValue) (*pu8TBRUN(ctrlr) = (ParValue))
+N#define u8GetTBRUN(ctrlr) (*pu8TBRUN(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TBMOD                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C004                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TBMOD_REG__       0xC031C004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CLK	:3; 	 /* 0..2  bit(s) R/W */
+N  uint16_t   CLE	:1; 	 /* 3..3  bit(s) R/W */
+N  uint16_t   CPM	:2; 	 /* 4..5  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 6..7  bit(s) R */
+N  uint16_t   CP0	:1; 	 /* 8..8  bit(s) W */
+N  uint16_t   RSRVD9	:1; 	 /* 9..9  bit(s) R/W */ 
+N  uint16_t   	:6; 	 /* 10..31  bit(s) R */                    
+N} TBMOD_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TBMOD_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TBMOD_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTBMOD(ctrlr)     ((volatile TBMOD_bit_view_st *)\
+N(TBMOD_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTBMOD(ctrlr)     ((volatile TBMOD_bit_view_st *)(TBMOD_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TBMOD(ctrlr)     ((volatile TBMOD_byte_view_st *)\
+N(TBMOD_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TBMOD(ctrlr)     ((volatile TBMOD_byte_view_st *)(TBMOD_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TBMOD(ctrlr)     ((volatile u16TBMOD_halfword_view *)\
+N(TBMOD_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TBMOD(ctrlr)     ((volatile u16TBMOD_halfword_view *)(TBMOD_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetTBMOD_CLK(ctrlr) (pst_bitTBMOD(ctrlr) -> CLK)
+N#define vSetTBMOD_CLK(ctrlr,ParValue)  (pst_bitTBMOD(ctrlr) -> CLK=(ParValue))
+N#define biGetTBMOD_CLE(ctrlr) (pst_bitTBMOD(ctrlr) -> CLE)
+N#define vSetTBMOD_CLE(ctrlr,ParValue)  (pst_bitTBMOD(ctrlr) -> CLE=(ParValue))
+N#define biGetTBMOD_CPM(ctrlr) (pst_bitTBMOD(ctrlr) -> CPM)
+N#define vSetTBMOD_CPM(ctrlr,ParValue)  (pst_bitTBMOD(ctrlr) -> CPM=(ParValue)) 
+N#define vSetTBMOD_CP0(ctrlr,ParValue) (pst_bitTBMOD(ctrlr) -> CP0=(ParValue))
+N#define biGetTBMOD_RSRVD9(ctrlr) (pst_bitTBMOD(ctrlr) -> RSRVD9)
+N#define vSetTBMOD_RSRVD9(ctrlr,ParValue)  (pst_bitTBMOD(ctrlr) -> RSRVD9=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetTBMODL(ctrlr,ParValue) (pst_u8TBMOD(ctrlr) -> u8L = (ParValue))
+N#define u8GetTBMODL(ctrlr) (pst_u8TBMOD(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetTBMODH(ctrlr,ParValue) (pst_u8TBMOD(ctrlr) -> u8H = (ParValue))
+N#define u8GetTBMODH(ctrlr) (pst_u8TBMOD(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetTBMOD(ctrlr,ParValue) (*pu16TBMOD(ctrlr)  = (ParValue))
+N#define u16GetTBMOD(ctrlr) (*pu16TBMOD(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TBFF                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C008                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TBFF_REG__       0xC031C008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   MOD	:2; 	 /* 0..1  bit(s) W */
+N  uint8_t   INVC0	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   INVC1	:1; 	 /* 3..3  bit(s) R/W */
+N  uint8_t   INVL0	:1; 	 /* 4..4  bit(s) R/W */
+N  uint8_t   INVL1	:1; 	 /* 5..5  bit(s) R/W */ 
+N  uint8_t   	:2; 	 /* 6..31  bit(s) R */                    
+N} TBFF_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8TBFF_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTBFF(ctrlr)     ((volatile TBFF_bit_view_st *)\
+N(TBFF_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTBFF(ctrlr)     ((volatile TBFF_bit_view_st *)(TBFF_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE  */
+N#define pu8TBFF(ctrlr)     ((volatile u8TBFF_byte_view *)\
+N(TBFF_REG__  + ((int32_t)(ctrlr))))
+X#define pu8TBFF(ctrlr)     ((volatile u8TBFF_byte_view *)(TBFF_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetTBFF_MOD(ctrlr,ParValue) (pst_bitTBFF(ctrlr) -> MOD=(ParValue))
+N#define biGetTBFF_INVC0(ctrlr) (pst_bitTBFF(ctrlr) -> INVC0)
+N#define vSetTBFF_INVC0(ctrlr,ParValue)  (pst_bitTBFF(ctrlr) -> INVC0=(ParValue))
+N#define biGetTBFF_INVC1(ctrlr) (pst_bitTBFF(ctrlr) -> INVC1)
+N#define vSetTBFF_INVC1(ctrlr,ParValue)  (pst_bitTBFF(ctrlr) -> INVC1=(ParValue))
+N#define biGetTBFF_INVL0(ctrlr) (pst_bitTBFF(ctrlr) -> INVL0)
+N#define vSetTBFF_INVL0(ctrlr,ParValue)  (pst_bitTBFF(ctrlr) -> INVL0=(ParValue))
+N#define biGetTBFF_INVL1(ctrlr) (pst_bitTBFF(ctrlr) -> INVL1)
+N#define vSetTBFF_INVL1(ctrlr,ParValue)  (pst_bitTBFF(ctrlr) -> INVL1=(ParValue))
+N            
+N/* byte access */
+N#define vSetTBFF(ctrlr,ParValue) (*pu8TBFF(ctrlr) = (ParValue))
+N#define u8GetTBFF(ctrlr) (*pu8TBFF(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TB0REG                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C00C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TB0REG_REG__       0xC031C00CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CMP0	:16; 	 /* 0..15  bit(s) R/W */                    
+N} TB0REG_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TB0REG_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TB0REG_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTB0REG(ctrlr)     ((volatile TB0REG_bit_view_st *)\
+N(TB0REG_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTB0REG(ctrlr)     ((volatile TB0REG_bit_view_st *)(TB0REG_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TB0REG(ctrlr)     ((volatile TB0REG_byte_view_st *)\
+N(TB0REG_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TB0REG(ctrlr)     ((volatile TB0REG_byte_view_st *)(TB0REG_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TB0REG(ctrlr)     ((volatile u16TB0REG_halfword_view *)\
+N(TB0REG_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TB0REG(ctrlr)     ((volatile u16TB0REG_halfword_view *)(TB0REG_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetTB0REG_CMP0(ctrlr) (pst_bitTB0REG(ctrlr) -> CMP0)
+N#define vSetTB0REG_CMP0(ctrlr,ParValue)  (pst_bitTB0REG(ctrlr) -> CMP0=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetTB0REGL(ctrlr,ParValue) (pst_u8TB0REG(ctrlr) -> u8L = (ParValue))
+N#define u8GetTB0REGL(ctrlr) (pst_u8TB0REG(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetTB0REGH(ctrlr,ParValue) (pst_u8TB0REG(ctrlr) -> u8H = (ParValue))
+N#define u8GetTB0REGH(ctrlr) (pst_u8TB0REG(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetTB0REG(ctrlr,ParValue) (*pu16TB0REG(ctrlr)  = (ParValue))
+N#define u16GetTB0REG(ctrlr) (*pu16TB0REG(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TB1REG                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C010                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TB1REG_REG__       0xC031C010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CMP1	:16; 	 /* 0..15  bit(s) R/W */                    
+N} TB1REG_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TB1REG_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TB1REG_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTB1REG(ctrlr)     ((volatile TB1REG_bit_view_st *)\
+N(TB1REG_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTB1REG(ctrlr)     ((volatile TB1REG_bit_view_st *)(TB1REG_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TB1REG(ctrlr)     ((volatile TB1REG_byte_view_st *)\
+N(TB1REG_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TB1REG(ctrlr)     ((volatile TB1REG_byte_view_st *)(TB1REG_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TB1REG(ctrlr)     ((volatile u16TB1REG_halfword_view *)\
+N(TB1REG_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TB1REG(ctrlr)     ((volatile u16TB1REG_halfword_view *)(TB1REG_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetTB1REG_CMP1(ctrlr) (pst_bitTB1REG(ctrlr) -> CMP1)
+N#define vSetTB1REG_CMP1(ctrlr,ParValue)  (pst_bitTB1REG(ctrlr) -> CMP1=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetTB1REGL(ctrlr,ParValue) (pst_u8TB1REG(ctrlr) -> u8L = (ParValue))
+N#define u8GetTB1REGL(ctrlr) (pst_u8TB1REG(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetTB1REGH(ctrlr,ParValue) (pst_u8TB1REG(ctrlr) -> u8H = (ParValue))
+N#define u8GetTB1REGH(ctrlr) (pst_u8TB1REG(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetTB1REG(ctrlr,ParValue) (*pu16TB1REG(ctrlr)  = (ParValue))
+N#define u16GetTB1REG(ctrlr) (*pu16TB1REG(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TB0CP0                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C014                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TB0CP0_REG__       0xC031C014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CP0	:16; 	 /* 0..15  bit(s) R */                    
+N} TB0CP0_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TB0CP0_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TB0CP0_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTB0CP0(ctrlr)     ((volatile TB0CP0_bit_view_st *)\
+N(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTB0CP0(ctrlr)     ((volatile TB0CP0_bit_view_st *)(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TB0CP0(ctrlr)     ((volatile TB0CP0_byte_view_st *)\
+N(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TB0CP0(ctrlr)     ((volatile TB0CP0_byte_view_st *)(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TB0CP0(ctrlr)     ((volatile u16TB0CP0_halfword_view *)\
+N(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TB0CP0(ctrlr)     ((volatile u16TB0CP0_halfword_view *)(TB0CP0_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetTB0CP0_CP0(ctrlr) (pst_bitTB0CP0(ctrlr) -> CP0)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetTB0CP0L(ctrlr) (pst_u8TB0CP0(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetTB0CP0H(ctrlr) (pst_u8TB0CP0(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetTB0CP0(ctrlr) (*pu16TB0CP0(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TB0CP1                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C018                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TB0CP1_REG__       0xC031C018U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CP1	:16; 	 /* 0..15  bit(s) R */                    
+N} TB0CP1_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TB0CP1_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TB0CP1_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTB0CP1(ctrlr)     ((volatile TB0CP1_bit_view_st *)\
+N(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTB0CP1(ctrlr)     ((volatile TB0CP1_bit_view_st *)(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TB0CP1(ctrlr)     ((volatile TB0CP1_byte_view_st *)\
+N(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TB0CP1(ctrlr)     ((volatile TB0CP1_byte_view_st *)(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TB0CP1(ctrlr)     ((volatile u16TB0CP1_halfword_view *)\
+N(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TB0CP1(ctrlr)     ((volatile u16TB0CP1_halfword_view *)(TB0CP1_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetTB0CP1_CP1(ctrlr) (pst_bitTB0CP1(ctrlr) -> CP1)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetTB0CP1L(ctrlr) (pst_u8TB0CP1(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetTB0CP1H(ctrlr) (pst_u8TB0CP1(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetTB0CP1(ctrlr) (*pu16TB0CP1(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: TB0CNT                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC031C01C                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define TB0CNT_REG__       0xC031C01CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   CNT	:16; 	 /* 0..15  bit(s) R */                    
+N} TB0CNT_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} TB0CNT_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16TB0CNT_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS     ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitTB0CNT(ctrlr)     ((volatile TB0CNT_bit_view_st *)\
+N(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+X#define pst_bitTB0CNT(ctrlr)     ((volatile TB0CNT_bit_view_st *)(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8TB0CNT(ctrlr)     ((volatile TB0CNT_byte_view_st *)\
+N(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+X#define pst_u8TB0CNT(ctrlr)     ((volatile TB0CNT_byte_view_st *)(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16TB0CNT(ctrlr)     ((volatile u16TB0CNT_halfword_view *)\
+N(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+X#define pu16TB0CNT(ctrlr)     ((volatile u16TB0CNT_halfword_view *)(TB0CNT_REG__  + ((int32_t)(ctrlr))))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetTB0CNT_CNT(ctrlr) (pst_bitTB0CNT(ctrlr) -> CNT)
+N            
+N/* L-struct byte access */
+N
+N#define u8GetTB0CNTL(ctrlr) (pst_u8TB0CNT(ctrlr) -> u8L)
+N/* H-struct byte access */
+N
+N#define u8GetTB0CNTH(ctrlr) (pst_u8TB0CNT(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N
+N#define u16GetTB0CNT(ctrlr) (*pu16TB0CNT(ctrlr) )
+N
+N
+N
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/ 
+N
+N    
+N
+N#endif /* TIMERS_CMPLX_PMIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 24 "..\..\..\..\lldd\src\timer_cmplx.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_TIMER_CMPLX_C_REVISION     "$Revision: 1.7 $"
+N#define LLDD_TIMER_CMPLX_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_C_REVISION[]    = LLDD_TIMER_CMPLX_C_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_C_REVISION[]    = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_C_TAG[]         = LLDD_TIMER_CMPLX_C_TAG;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_H_REVISION[]    = LLDD_TIMER_CMPLX_H_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_H_REVISION[]    = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_H_TAG[]         = LLDD_TIMER_CMPLX_H_TAG;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_IO_H_REVISION[] = LLDD_TIMER_CMPLX_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_IO_H_REVISION[] = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_TIMER_CMPLX_IO_H_TAG[]      = LLDD_TIMER_CMPLX_IO_H_TAG;
+Xstatic uint8_t au8LLDD_TIMER_CMPLX_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+Nvoid vTIMER_CMPLX_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                             uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                             uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_TIMER_CMPLX_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_TIMER_CMPLX_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_TIMER_CMPLX_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_TIMER_CMPLX_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_TIMER_CMPLX_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_TIMER_CMPLX_IO_H_TAG[0];
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_Config(timer_cmplx_ch_e eCh, timer_cmplx_genCfg_st stCfg)
+N{
+N    vSetTBMOD_CLK(eCh, stCfg.eClkSource);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CLK=(stCfg . eClkSource));
+N    vSetTBMOD_CLE(eCh, stCfg.eCountCtrl);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CLE=(stCfg . eCountCtrl));
+N    vSetTBRUN_DBE(eCh, stCfg.eDblBuffEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> DBE=(stCfg . eDblBuffEn));
+N    vSetTBRUN_SYNC(eCh, stCfg.eSyncRstEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> SYNC=(stCfg . eSyncRstEn));
+N    vSetTBRUN_IDL(eCh, stCfg.eIdle);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> IDL=(stCfg . eIdle));
+N    vSetTBRUN_PRUN(eCh, stCfg.ePresclStart);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> PRUN=(stCfg . ePresclStart));
+N    vSetTBRUN_OFI(eCh, stCfg.eOvrflwIrqEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> OFI=(stCfg . eOvrflwIrqEn));
+N    vSetTBRUN_TRUN(eCh, stCfg.eTimerStart);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> TRUN=(stCfg . eTimerStart));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetCountCtrl(timer_cmplx_ch_e eCh, timer_cmplx_cle_e eCountCtrl)
+N{
+N    vSetTBMOD_CLE(eCh, eCountCtrl);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CLE=(eCountCtrl));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetCaptureTiming(timer_cmplx_ch_e eCh, timer_cmplx_cpm_e eCapTiming)
+N{
+N    vSetTBMOD_CPM(eCh, eCapTiming);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CPM=(eCapTiming));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_FlipFlopConfig(timer_cmplx_ch_e eCh, timer_cmplx_ffCfg_st stFfCfg)
+N{
+N    vSetTBFF_INVL1(eCh, stFfCfg.eInvl1);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVL1=(stFfCfg . eInvl1));
+N    vSetTBFF_INVL0(eCh, stFfCfg.eInvl0);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVL0=(stFfCfg . eInvl0));
+N    vSetTBFF_INVC1(eCh, stFfCfg.eInvc1);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVC1=(stFfCfg . eInvc1));
+N    vSetTBFF_INVC0(eCh, stFfCfg.eInvc0);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVC0=(stFfCfg . eInvc0));
+N    vSetTBFF_MOD(eCh, stFfCfg.eFfMode);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> MOD=(stFfCfg . eFfMode));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetStateIdle(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_IDL(eCh, TIMER_CMPLX_IDLE);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> IDL=(TIMER_CMPLX_IDLE));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetStateNormal(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_IDL(eCh, TIMER_CMPLX_NORMAL);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> IDL=(TIMER_CMPLX_NORMAL));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_Start(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_TRUN(eCh, TIMER_CMPLX_START);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> TRUN=(TIMER_CMPLX_START));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_Stop(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_TRUN(eCh, TIMER_CMPLX_STOP);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> TRUN=(TIMER_CMPLX_STOP));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetOvflowIrqEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eIrqEn)
+N{
+N    vSetTBRUN_OFI(eCh, eIrqEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> OFI=(eIrqEn));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetSyncRstEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eSyncRstEn)
+N{
+N    vSetTBRUN_SYNC(eCh, eSyncRstEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> SYNC=(eSyncRstEn));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_StartPrescaler(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_PRUN(eCh, TIMER_CMPLX_START);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> PRUN=(TIMER_CMPLX_START));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_StopPrescaler(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBRUN_PRUN(eCh, TIMER_CMPLX_STOP);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> PRUN=(TIMER_CMPLX_STOP));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetDblBuffEnable(timer_cmplx_ch_e eCh, timer_cmplx_en_e eBuffEn)
+N{
+N    vSetTBRUN_DBE(eCh, eBuffEn);
+X    (((volatile TBRUN_bit_view_st *)(0xC031C000U + ((int32_t)(eCh)))) -> DBE=(eBuffEn));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_LatchCounter(timer_cmplx_ch_e eCh)
+N{
+N    vSetTBMOD_CP0(eCh, TIMER_CMPLX_LATCH);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CP0=(TIMER_CMPLX_LATCH));
+N    vSetTBMOD_CP0(eCh, TIMER_CMPLX_NO_LATCH);
+X    (((volatile TBMOD_bit_view_st *)(0xC031C004U + ((int32_t)(eCh)))) -> CP0=(TIMER_CMPLX_NO_LATCH));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetFfInvl1(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert)
+N{
+N    vSetTBFF_INVL1(eCh, eInvert);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVL1=(eInvert));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetFfInvl0(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert)
+N{
+N    vSetTBFF_INVL0(eCh, eInvert);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVL0=(eInvert));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetFfInvc1(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert)
+N{
+N    vSetTBFF_INVC1(eCh, eInvert);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVC1=(eInvert));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetFfInvc0(timer_cmplx_ch_e eCh, timer_cmplx_ffinv_e eInvert)
+N{
+N    vSetTBFF_INVC0(eCh, eInvert);
+X    (((volatile TBFF_bit_view_st *)(0xC031C008U + ((int32_t)(eCh)))) -> INVC0=(eInvert));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetCompareVal0(timer_cmplx_ch_e eCh, uint16_t u16CompVal)
+N{
+N    vSetTB0REG_CMP0(eCh, u16CompVal);
+X    (((volatile TB0REG_bit_view_st *)(0xC031C00CU + ((int32_t)(eCh)))) -> CMP0=(u16CompVal));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_CMPLX_GetCompareVal0(timer_cmplx_ch_e eCh)
+N{
+N    return (uint16_t) biGetTB0REG_CMP0(eCh);
+X    return (uint16_t) (((volatile TB0REG_bit_view_st *)(0xC031C00CU + ((int32_t)(eCh)))) -> CMP0);
+N}
+N
+N/****************************************************************************/
+N
+N
+Nvoid vTIMER_CMPLX_SetCompareVal1(timer_cmplx_ch_e eCh, uint16_t u16CompVal)
+N{
+N    vSetTB1REG_CMP1(eCh, u16CompVal);
+X    (((volatile TB1REG_bit_view_st *)(0xC031C010U + ((int32_t)(eCh)))) -> CMP1=(u16CompVal));
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_CMPLX_GetCompareVal1(timer_cmplx_ch_e eCh)
+N{
+N    return (uint16_t) biGetTB1REG_CMP1(eCh);
+X    return (uint16_t) (((volatile TB1REG_bit_view_st *)(0xC031C010U + ((int32_t)(eCh)))) -> CMP1);
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_CMPLX_GetCapturedVal0(timer_cmplx_ch_e eCh)
+N{
+N    return (uint16_t) biGetTB0CP0_CP0(eCh);
+X    return (uint16_t) (((volatile TB0CP0_bit_view_st *)(0xC031C014U + ((int32_t)(eCh)))) -> CP0);
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_CMPLX_GetCapturedVal1(timer_cmplx_ch_e eCh)
+N{
+N    return (uint16_t) biGetTB0CP1_CP1(eCh);
+X    return (uint16_t) (((volatile TB0CP1_bit_view_st *)(0xC031C018U + ((int32_t)(eCh)))) -> CP1);
+N}
+N
+N/****************************************************************************/
+N
+N
+Nuint16_t u16TIMER_CMPLX_GetCounterVal(timer_cmplx_ch_e eCh)
+N{
+N    return (uint16_t) biGetTB0CNT_CNT(eCh);
+X    return (uint16_t) (((volatile TB0CNT_bit_view_st *)(0xC031C01CU + ((int32_t)(eCh)))) -> CNT);
+N}
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

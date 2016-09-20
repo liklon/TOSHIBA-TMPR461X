@@ -1,0 +1,4334 @@
+L 1 "..\..\..\..\lldd\src\pl353nand.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : NAND LLDD
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IPL
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/08 08:55:03 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Cap-Bt Data types header */
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\pl353nand.c" 2
+N#include "core.h"                           /* Generic Cortex utilities */ 
+L 1 "..\..\..\..\common\inc\core.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core access utilities definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Core
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CORE_H
+N#define CORE_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                     /* Core specific primitive type definitions */
+N#include "cr4_pmu.h"
+L 1 "..\..\..\..\cortex_r4_keil\inc\cr4_pmu.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Performance monitor unit routines based on ARM's V7 sample code
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TSM-SHE Firmware System Longrun Test (Cortex-R4)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef _CR4_PMU_H
+N#define _CR4_PMU_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_GetPMN
+N *
+N * Purpose:       Returns the number of progammable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Programmable counters count
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_GetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_PMNConfig
+N *
+N * Purpose:       Sets the event for a programmable counter to record
+N *
+N * Inputs:        u32Counter: Which counter to program  (e.g. 0 for PMN0, 1 for PMN1)
+N *                u32Even:    The event code (ARM Architecture Reference Manual)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMNConfig(uint32_t u32Counter, uint32_t u32Event);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_SetCntDivider
+N *
+N * Purpose:       Enables/disables the divider (1/64) on CCNT
+N *
+N * Inputs:        u32Divider: 0 - disable, all others enable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_SetCntDivider(uint32_t u32Divider);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMU
+N *
+N * Purpose:       Global PMU enable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMU(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMU
+N *
+N * Purpose:       Global PMU disable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMU(void);
+N
+N
+N /****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNT
+N *
+N * Purpose:       Enable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNT
+N *
+N * Purpose:       Disable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMN
+N *
+N * Purpose:       Enable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to enable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMN
+N *
+N * Purpose:       Disable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to disable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      uCR4_32ReadCCNT
+N *
+N * Purpose:       Returns the value of CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Cycle counter value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadPMN
+N *
+N * Purpose:       Returns the value of PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to read (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       PMNn counter
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadPMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadFlags
+N *
+N * Purpose:       Returns the value of the overflow flags
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Overflow flags
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadFlags(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_WriteFlags
+N *
+N * Purpose:       Writes the overflow flags
+N *
+N * Inputs:        u32Flags: flags to write
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_WriteFlags(uint32_t u32Flags);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNTIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNTIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePmnIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to enable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePmnIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMNIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to disable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMNIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the programmable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Writes to software increment register
+N *
+N * Inputs:        u32Counter: The counter to increment (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMUSoftwareIncrement(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMUUserAccess
+N *
+N * Purpose:       Enables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMUUserAccess(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMUUserAccess
+N *
+N * Purpose:       Disables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMUUserAccess(void);
+N
+N
+N#endif /* _CR4_PMU_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\common\inc\core.h" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1862  /* Rule 19.7 : disable function-like macro not allowed */
+N#endif
+N/**********************************************/
+N
+N/* Physical translation in un-cached area */
+N#define PHYSICAL_ADDR_MASK                  0xFFFFFFFFU
+N#define PHYSICAL(addr)                      (((uint32_t)(addr) & PHYSICAL_ADDR_MASK))
+N
+N/* copy function */
+N#define asm_copyfunction                    (asm_copy_word)
+N#define asm_copyfunction_hword              (asm_copy_hword)
+N#define asm_copyfunction_byte               (asm_copy_byte)
+N
+N/* PMU enable */
+N#define PMU_ENABLE()                        (vCR4_EnablePMU())
+N
+N/* Timer Enable */
+N#define TIMER_ENABLE()                      (vCR4_EnableCCNT())
+N
+N/* Timer Reset */
+N#define TIMER_RESET()                       (vCR4_ResetCCNT())
+N
+N/* Timer Get */
+N#define TIMER_GET()                         (u32CR4_ReadCCNT())
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Enumerations                *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      __DSB
+N *
+N * Purpose:       Data barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __DSB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      __ISB
+N *
+N * Purpose:       Instruction barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __ISB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_int
+N *
+N * Purpose:       Enable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_int
+N *
+N * Purpose:       Disable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_fast_int
+N *
+N * Purpose:       Enable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_fast_int
+N *
+N * Purpose:       Disable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_vic_port
+N *
+N * Purpose:       Enable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_vic_port(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_vic_port
+N *
+N * Purpose:       Disable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_vic_port(void);
+N
+N
+N#endif /* CORE_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\pl353nand.c" 2
+N#include "pl353memctrl.h"                   /* Board specific defines */
+L 1 "..\..\..\..\lldd\inc\pl353memctrl.h" 1
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : Memory Controller LLD for NOR and NAND Flash devices header
+N*                 file.
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : SMC (Static Memory Controller)
+N*   LIBRARIES   :
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N#ifndef MEMCTRL_H
+N#define MEMCTRL_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                   /* Cap-Bt Data types header */
+N
+N/* Function results */
+Ntypedef enum tag_MemCtrlResult_e
+N{
+N   MEMCTRL_RESULT_OK = 0
+N} MemCtrlResult_e;                          /* definition of enum type */
+N
+N/* *** MEMCTRL BASE ADDRESS and REGISTERS ****/
+N#define MEMCTRL_BASE                (0xC0200000U)
+N#define NORFLASH_BASE_ADDRESS       (0x20000000U)
+N#define MEMCTRL_NAND_CHIP_ADDRESS   (0x24000000U)
+N
+N/* Read-Only memc_status REGISTER */
+N#define MEMCTRL_MEMC_STATUS   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x000U))))
+N
+N/* Write-Only mem_cfg_set REGISTER */
+N#define MEMCTRL_MEM_CFG_SET   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x008U))))
+N
+N/* ReGISTER and "BUSY ENABLE" value for NAND Ready/!Busy line signalling */
+N#define MEMCTRL_BUSY_CFG_SET   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x204U))))
+N#define MEMCTRL_BUSY_ENABLE   (0x20U)
+N
+N/* Write-Only mem_cfg_set REGISTER */
+N#define MEMCTRL_MEM_CFG_CLR   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x00CU))))
+N/* INT_CLR_1 register bit-shift */
+N#define MEMCTRL_INT_CLR_1_SFT   (4)         /* I/F 1 (NAND) IRQ clear */
+N#define MEMCTRL_INT_CLR_1_BIT    ((0x1U)<<(MEMCTRL_INT_CLR_1_SFT))
+N
+N/* Write-Only direct_cmd REGISTER */
+N#define MEMCTRL_DIRECT_CMD   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x010U))))
+N/* Write-Only set_cycles REGISTER */
+N#define MEMCTRL_SET_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x014U))))
+N
+N/* Write-Only set_opmode REGISTER */
+N#define MEMCTRL_SET_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(0x018U))))
+N/* Read-Only periph_id_x [x:= 0..3] REGISTER */
+N#define MEMCTRL_PERIPH_ID(x) (*(TYPES_REG8 ((MEMCTRL_BASE)+((0xFE0U)+((x)*(4U))))))
+N
+N/* memc_status register bit-shifts */
+N#define MEMCTRL_RAW_INT_STATUS0_SFT   (5)   /* SRAM / NOR I/F status */
+N#define MEMCTRL_RAW_INT_STATUS1_SFT   (6)   /* NAND I/F status */
+N/* memc_status register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_RAW_INT_STATUS0_BIT    ((0x1U)<<(MEMCTRL_RAW_INT_STATUS0_SFT))
+N#define MEMCTRL_RAW_INT_STATUS1_BIT    ((0x1U)<<(MEMCTRL_RAW_INT_STATUS1_SFT))
+N
+N/* direct_cmd register bit-shifts */
+N#define MEMCTRL_ADDR_SFT   (0)
+N#define MEMCTRL_SET_CRE_SFT   (20)
+N#define MEMCTRL_CMD_TYPE_SFT   (21)
+N#define MEMCTRL_CHIP_SEL_SFT   (23)
+N/* direct_cmd register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ADDR_MSK   ((0xFFFFFU)<<(MEMCTRL_ADDR_SFT))
+N#define MEMCTRL_SET_CRE_MSK   ((0x1U)<<(MEMCTRL_SET_CRE_SFT))
+N/* direct_cmd chip_select values */
+N#define MEMCTRL_NOR_CHIP_SEL_MSK    ((0x0U)<<(MEMCTRL_CHIP_SEL_SFT))
+N#define MEMCTRL_NAND_CHIP_SEL_MSK   ((0x4U)<<(MEMCTRL_CHIP_SEL_SFT))
+N/* direct_cmd cmd_type values */
+N#define MEMCTRL_CMD_TYPE_UPD_REGS_AXI_MSK   ((0x0U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_MODE_REGS_MSK      ((0x1U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_UPD_REGS_MSK       ((0x2U)<<(MEMCTRL_CMD_TYPE_SFT))
+N#define MEMCTRL_CMD_TYPE_MODE_UP_REGS_MSK   ((0x3U)<<(MEMCTRL_CMD_TYPE_SFT))
+N/* direct_cmd set_cre values */
+N#define MEMCTRL_NOR_SET_CRE_LOW_MSK     ((0x0U)<<(MEMCTRL_SET_CRE_SFT))
+N#define MEMCTRL_NOR_SET_CRE_HIGH_MSK    ((0x1U)<<(MEMCTRL_SET_CRE_SFT))
+N
+N/* set_cycles register bit-shifts */
+N#define MEMCTRL_SET_T0_SFT   (0)
+N#define MEMCTRL_SET_T1_SFT   (4)
+N#define MEMCTRL_SET_T2_SFT   (8)
+N#define MEMCTRL_SET_T3_SFT   (11)
+N#define MEMCTRL_SET_T4_SFT   (14)
+N#define MEMCTRL_SET_T5_SFT   (17)
+N#define MEMCTRL_SET_T6_SFT   (20)
+N/* set_cycles register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_SET_T0_MSK   ((0xFU)<<(MEMCTRL_SET_T0_SFT))
+N#define MEMCTRL_SET_T1_MSK   ((0xFU)<<(MEMCTRL_SET_T1_SFT))
+N#define MEMCTRL_SET_T2_MSK   ((0x7U)<<(MEMCTRL_SET_T2_SFT))
+N#define MEMCTRL_SET_T3_MSK   ((0x7U)<<(MEMCTRL_SET_T3_SFT))
+N#define MEMCTRL_SET_T4_MSK   ((0x7U)<<(MEMCTRL_SET_T4_SFT))
+N#define MEMCTRL_SET_T5_MSK   ((0x7U)<<(MEMCTRL_SET_T5_SFT))
+N#define MEMCTRL_SET_NAND_T6_MSK   ((0xFU)<<(MEMCTRL_SET_T6_SFT)) /* NAND only */
+N#define MEMCTRL_SET_SRAM_T6_MSK   ((0x1U)<<(MEMCTRL_SET_T6_SFT)) /* SRAM/NOR
+N                                                                    only */
+N
+N/* set_opmode register bit-shifts */
+N#define MEMCTRL_SET_MW_SFT       (0)
+N#define MEMCTRL_SET_RD_SYNC_SFT  (2)
+N#define MEMCTRL_SET_RD_BL_SFT    (3)
+N#define MEMCTRL_SET_WR_SYNC_SFT  (6)
+N#define MEMCTRL_SET_WR_BL_SFT    (7)
+N#define MEMCTRL_SET_BAA_SFT      (10)
+N#define MEMCTRL_SET_ADV_SFT      (11)
+N#define MEMCTRL_SET_BLS_SFT      (12)
+N#define MEMCTRL_SET_BURST_ALIGN_SFT (13)
+N/* set_opmode register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_SET_MW_MSK       ((0x3U)<<(MEMCTRL_SET_MW_SFT))
+N#define MEMCTRL_SET_MW_8_BITS    ((0x0U)<<(MEMCTRL_SET_MW_SFT))
+N#define MEMCTRL_SET_MW_16_BITS   ((0x1U)<<(MEMCTRL_SET_MW_SFT))
+N
+N#define MEMCTRL_SET_RD_SYNC_MSK  ((0x1U)<<(MEMCTRL_SET_RD_SYNC_SFT))
+N/* ! rd_bl field must NOT be set greater than the read data FIFO depth */
+N#define MEMCTRL_SET_RD_BL_MSK    ((0x7U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_1_BITS     ((0x0U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_4_BITS     ((0x1U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_8_BITS     ((0x2U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_16_BITS    ((0x3U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_32_BITS    ((0x4U)<<(MEMCTRL_SET_RD_BL_SFT))
+N#define MEMCTRL_SET_RD_BL_CNTS_BITS  ((0x5U)<<(MEMCTRL_SET_RD_BL_SFT))
+N
+N#define MEMCTRL_SET_WR_SYNC_MSK  ((0x1U)<<(MEMCTRL_SET_WR_SYNC_SFT))
+N
+N#define MEMCTRL_SET_WR_BL_MSK    ((0x7U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_1_BITS      ((0x0U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_4_BITS      ((0x1U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_8_BITS      ((0x2U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_16_BITS     ((0x3U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_32_BITS     ((0x4U)<<(MEMCTRL_SET_WR_BL_SFT))
+N#define MEMCTRL_SET_WR_BL_CNTS_BITS   ((0x5U)<<(MEMCTRL_SET_WR_BL_SFT))
+N
+N#define MEMCTRL_SET_BAA_MSK      ((0x1U)<<(MEMCTRL_SET_BAA_SFT))
+N#define MEMCTRL_SET_ADV_MSK      ((0x1U)<<(MEMCTRL_SET_ADV_SFT))
+N#define MEMCTRL_SET_BLS_MSK      ((0x1U)<<(MEMCTRL_SET_BLS_SFT))
+N#define MEMCTRL_SET_BRST_ALIGN_MSK   ((0x7U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_ANY_BITS  ((0x0U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_32_BITS   ((0x1U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_64_BITS   ((0x2U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_128_BITS  ((0x3U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N#define MEMCTRL_SET_BRST_CR_256_BITS  ((0x4U)<<(MEMCTRL_SET_BURST_ALIGN_SFT))
+N
+N/* Mask used to extract NAND Base Address from a combined address information */
+N#define MEMCTRL_AXI_BASE_ADDR_MASK     (0xFF000000U)
+N/* Bit-shifts used, for the Cmd Phase sending to NAND device (AXI write) */
+N#define MEMCTRL_AXI_CHIP_ADDRESS_SFT     (24)
+N#define MEMCTRL_AXI_ADDRES_CYCLES_SFT   (21)
+N#define MEMCTRL_AXI_END_CMD_VALID_SFT   (20)
+N#define MEMCTRL_AXI_CMD_DATA_SELECT_SFT (19)
+N#define MEMCTRL_AXI_END_COMMAND_SFT     (11)
+N#define MEMCTRL_AXI_START_COMMAND_SFT   (3)
+N
+N/* Bit-shifts used, for the Data Phase sending to NAND device (AXI write) */
+N#define MEMCTRL_AXI_CLEAR_CS_SFT     (21)
+N
+N#define MEMCTRL_AXI_ECC_LAST_SFT     (10)
+N
+N/* *** NOR OFFSET and REGISTERS ****/
+N
+N/* !!! NOR I/F Chip Select address offset !!! */
+N#define MEMCTRL_NOR    (0x00000100U)
+N/* Read-Only NOR CYCLES REGISTER */
+N#define MEMCTRL_SRAM_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NOR)+(0x000U))))
+N/* Read-Only NOR OPMODE REGISTER */
+N#define MEMCTRL_SRAM_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NOR)+(0x004U))))
+N
+N/* *** NAND OFFSET and REGISTERS ****/
+N
+N/* !!! NAND I/F Chip Select address offset !!! */
+N#define MEMCTRL_NAND   (0x00000180U)
+N/* Read-Only NAND CYCLES REGISTER */
+N#define MEMCTRL_NAND_CYCLES   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NAND)+(0x000U))))
+N/* Read-Only NAND OPMODE REGISTER */
+N#define MEMCTRL_NAND_OPMODE   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_NAND)+(0x004U))))
+N
+N/* *** ECC OFFSET and REGISTERS ****/
+N
+N/* !!! ECC Chip Select address offset !!! */
+N#define MEMCTRL_ECC   (0x00000400U)
+N/* Read-Only ecc_status REGISTER */
+N#define MEMCTRL_ECC_STATUS   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x000U))))
+N/* Read-Write ecc_memcfg REGISTER */
+N#define MEMCTRL_ECC_MEMCFG   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x004U))))
+N/* Read-Write ecc_memcommand1 REGISTER */
+N#define MEMCTRL_ECC_MEMCMD1  (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x008U))))
+N/* Read-Write ecc_memcommand2 REGISTER */
+N#define MEMCTRL_ECC_MEMCMD2  (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x00CU))))
+N/* Read-Only ecc_addr0 REGISTER */
+N#define MEMCTRL_ECC_ADDR0    (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x010U))))
+N/* Read-Only ecc_addr1 REGISTER */
+N#define MEMCTRL_ECC_ADDR1    (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x014U))))
+N/* Read-Only ecc_value0 REGISTER */
+N#define MEMCTRL_ECC_VALUE0   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x018U))))
+N/* Read-Only ecc_value1 REGISTER */
+N#define MEMCTRL_ECC_VALUE1   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x01CU))))
+N/* Read-Only ecc_value2 REGISTER */
+N#define MEMCTRL_ECC_VALUE2   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x020U))))
+N/* Read-Only ecc_value3 REGISTER */
+N#define MEMCTRL_ECC_VALUE3   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x024U))))
+N/* !BUG in the spec. page 3-5 Table 3-1! Read-Only ecc_value4 REGISTER */
+N#define MEMCTRL_ECC_VALUE4   (*((volatile uint32_t*) ((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x028U))))
+N/* ECC register address calculation */
+N#define MEMCTRL_ECC_VALUE_ADR(X)   (((MEMCTRL_BASE)+(MEMCTRL_ECC)+(0x018U)+((4U)*((uint32_t)(X)))))
+N
+N/* ecc_status register bit-shifts */
+N#define MEMCTRL_ECC_READ_SFT           (25)
+N#define MEMCTRL_ECC_CAN_CORRECT_SFT    (20)
+N#define MEMCTRL_ECC_ECC_FAIL_SFT       (15)
+N#define MEMCTRL_ECC_VALUE_VALID_SFT    (10)
+N#define MEMCTRL_ECC_RD_NOT_WR_SFT      (9)
+N#define MEMCTRL_ECC_LAST_STATUS_SFT    (7)
+N#define MEMCTRL_ECC_STATUS_SFT         (6)
+N#define MEMCTRL_ECC_RAW_INT_ABORT_SFT   (5)
+N#define MEMCTRL_ECC_RAW_INT_EXTRA_SFT   (4)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK3_SFT  (3)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK2_SFT  (2)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK1_SFT  (1)
+N#define MEMCTRL_ECC_RAW_INT_BLOCK0_SFT  (0)
+N/* ecc_status register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_READ_MSK          ((0x1FU)<<(MEMCTRL_ECC_READ_SFT))
+N#define MEMCTRL_ECC_CAN_CORRECT_MSK   ((0x1FU)<<(MEMCTRL_ECC_CAN_CORRECT_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_MSK      ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK0_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK1_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+1U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK2_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+2U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK3_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+3U))
+N#define MEMCTRL_ECC_ECC_FAIL_BLOCK4_BIT   ((0x1FU)<<(MEMCTRL_ECC_ECC_FAIL_SFT+4U))
+N
+N#define MEMCTRL_ECC_VALUE_VALID_MSK   ((0x1FU)<<(MEMCTRL_ECC_VALUE_VALID_SFT))
+N#define MEMCTRL_ECC_RD_NOT_WR_MSK     ((0x1U)<<(MEMCTRL_ECC_RD_NOT_WR_SFT))
+N#define MEMCTRL_ECC_LAST_STATUS_MSK   ((0x3U)<<(MEMCTRL_ECC_LAST_STATUS_SFT))
+N#define MEMCTRL_ECC_LAST_STATUS_SUCCESS_BITS   ((0x0U)<<(MEMCTRL_ECC_LAST_STATUS_SFT))
+N#define MEMCTRL_ECC_BUSY_MSK          ((0x1U)<<(MEMCTRL_ECC_STATUS_SFT))
+N#define MEMCTRL_ECC_RAW_INT_ABORT_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_ABORT_SFT))
+N#define MEMCTRL_ECC_RAW_INT_EXTRA_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_EXTRA_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK3_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK3_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK2_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK2_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK1_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK1_SFT))
+N#define MEMCTRL_ECC_RAW_INT_BLOCK0_MSK   ((0x1U)<<(MEMCTRL_ECC_RAW_INT_BLOCK0_SFT))
+N/* this mask is for a convenient clearing of ALL ECC_RAW_INT_... interrupts */
+N#define MEMCTRL_ECC_RAW_ALL_INTS_MSK   (0x3FU)
+N
+N/* ecc_memcfg register bit-shifts */
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT  (11)
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SFT       (10)
+N#define MEMCTRL_ECC_INT_ABORT_SFT     (9)
+N#define MEMCTRL_ECC_INT_PASS_SFT      (8)
+N#define MEMCTRL_ECC_IGNORE_ADD_8_SFT  (7)
+N#define MEMCTRL_ECC_JUMP_SFT        (5)
+N#define MEMCTRL_ECC_READ_END_SFT    (4)
+N#define MEMCTRL_ECC_MODE_SFT        (2)
+N#define MEMCTRL_ECC_PAGE_SIZE_SFT   (0)
+N/* ecc_memcfg register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_MSK   ((0x3U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_4B_BITS   ((0x0U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_8B_BITS   ((0x1U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_16B_BITS  ((0x2U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N#define MEMCTRL_ECC_EXTRA_BLOCK_SIZE_32B_BITS  ((0x3U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SIZE_SFT))
+N
+N#define MEMCTRL_ECC_EXTRA_BLOCK_MSK       ((0x1U)<<(MEMCTRL_ECC_EXTRA_BLOCK_SFT))
+N#define MEMCTRL_ECC_INT_ABORT_MSK         ((0x1U)<<(MEMCTRL_ECC_INT_ABORT_SFT))
+N#define MEMCTRL_ECC_INT_PASS_MSK          ((0x1U)<<(MEMCTRL_ECC_INT_PASS_SFT))
+N#define MEMCTRL_ECC_A8_OUTPUT_MSK         ((0x0U)<<(MEMCTRL_ECC_IGNORE_ADD_8_SFT))
+N#define MEMCTRL_ECC_IGNORE_ADD_8_MSK      ((0x1U)<<(MEMCTRL_ECC_IGNORE_ADD_8_SFT))
+N#define MEMCTRL_ECC_JUMP_MSK              ((0x3U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_NO_BITS          ((0x00U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_COL_CHNG_BITS    ((0x1U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_JUMP_FULL_CMD_BITS    ((0x2U)<<(MEMCTRL_ECC_JUMP_SFT))
+N#define MEMCTRL_ECC_READ_END_MSK          ((0x1U)<<(MEMCTRL_ECC_READ_END_SFT))
+N#define MEMCTRL_ECC_MODE_MSK              ((0x3U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_BYPASS_BITS      ((0x0U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_CALC_BITS        ((0x1U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_MODE_CALC_RD_WR_BITS  ((0x2U)<<(MEMCTRL_ECC_MODE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_MSK         ((0x3U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_NOANY_BITS  ((0x0U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_1X512_BITS  ((0x1U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_2X512_BITS  ((0x2U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N#define MEMCTRL_ECC_PAGE_SIZE_4X512_BITS  ((0x3U)<<(MEMCTRL_ECC_PAGE_SIZE_SFT))
+N
+N/* ecc_memcommand1 register bit-shifts */
+N#define MEMCTRL_ECC_RD_CMD_END_VALID_SFT  (24)
+N#define MEMCTRL_ECC_RD_CMD_END_SFT        (16)
+N#define MEMCTRL_ECC_RD_CMD_SFT   (8)
+N#define MEMCTRL_ECC_WR_CMD_SFT   (0)
+N/* ecc_memcommand1 register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_RD_CMD_END_VALID_MSK  ((0x1U)<<(MEMCTRL_ECC_RD_CMD_END_VALID_SFT))
+N#define MEMCTRL_ECC_RD_CMD_END_MSK  ((0xFFU)<<(MEMCTRL_ECC_RD_CMD_END_SFT))
+N#define MEMCTRL_ECC_RD_CMD_MSK  ((0xFFU)<<(MEMCTRL_ECC_RD_CMD_SFT))
+N#define MEMCTRL_ECC_WR_CMD_MSK  ((0xFFU)<<(MEMCTRL_ECC_WR_CMD_SFT))
+N
+N/* ecc_memcommand2 register bit-shifts */
+N/*#define MEMCTRL_ECC_RD_CL_CH_END_VALID_SFT  (24)*/
+N#define MEMCTRL_ECC_RD_CL_CH_END_SFT  (16)
+N#define MEMCTRL_ECC_RD_CL_CH_SFT  (8)
+N#define MEMCTRL_ECC_WR_COL_CHANGE_SFT  (0)
+N/* ecc_memcommand2 register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_RD_CL_CH_END_VALID_MSK  ((0x1U)<<(24))
+N#define MEMCTRL_ECC_RD_CL_CH_END_MSK        ((0xFFU)<<(MEMCTRL_ECC_RD_CL_CH_END_SFT))
+N#define MEMCTRL_ECC_RD_CL_CH_MSK    ((0xFFU)<<(MEMCTRL_ECC_RD_CL_CH_SFT))
+N#define MEMCTRL_ECC_WR_COL_CHANGE_MSK    ((0xFFU)<<(MEMCTRL_ECC_WR_COL_CHANGE_SFT))
+N
+N/* ecc_addr0 register bit-mask for address bits [31 : 0] */
+N#define MEMCTRL_ECC_ADDR0_MSK  (0xFFFFFFFFU)
+N/* ecc_addr1 register bit-mask for address bits [55 : 32] */
+N#define MEMCTRL_ECC_ADDR1_MSK  (0x00FFFFFFU)
+N
+N/* ecc_value x register bit-shifts */
+N#define MEMCTRL_ECC_VAL_INT_SFT     (31)
+N#define MEMCTRL_ECC_VAL_VALID_SFT   (30)
+N#define MEMCTRL_ECC_VAL_READ_SFT    (29)
+N#define MEMCTRL_ECC_VAL_FAIL_SFT    (28)
+N#define MEMCTRL_ECC_VAL_CORRECT_SFT (27)
+N#define MEMCTRL_ECC_VAL_VALUE_SFT   (0)
+N/* ecc_value x register bit-masks (shifted to the bits-positions) */
+N#define MEMCTRL_ECC_VAL_INT_MSK      ((0x1U)<<(MEMCTRL_ECC_VAL_INT_SFT))
+N#define MEMCTRL_ECC_VAL_VALID_MSK    ((0x1U)<<(MEMCTRL_ECC_VAL_VALID_SFT))
+N#define MEMCTRL_ECC_VAL_READ_MSK     ((0x1U)<<(MEMCTRL_ECC_VAL_READ_SFT))
+N#define MEMCTRL_ECC_VAL_FAIL_MSK     ((0x1U)<<(MEMCTRL_ECC_VAL_FAIL_SFT))
+N#define MEMCTRL_ECC_VAL_CORRECT_MSK  ((0x1U)<<(MEMCTRL_ECC_VAL_CORRECT_SFT))
+N#define MEMCTRL_ECC_VAL_VALUE_MSK    ((0x00FFFFFFU)<<(MEMCTRL_ECC_VAL_VALUE_SFT))
+N
+N/* ************ SMC Memory Controller API Functions Definitions ************ */
+N
+N/*****************************************************************************
+N* Function is empty so far.
+N*****************************************************************************/
+NMemCtrlResult_e eMemCtrl_Initialize (void);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* MEMCTRL_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\src\pl353nand.c" 2
+N#include "pl353nand.h"                      /* Driver's API header file */
+L 1 "..\..\..\..\lldd\inc\pl353nand.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : NAND LLDD
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IPL
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/08 08:54:27 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef NANDFLASH_H
+N#define NANDFLASH_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Cap-Bt Data types header */
+N
+N/* *** Initial value and CRC-16 generator polynomial defines *** */
+N#define CRCGEN_INIT_VALUE  (0x4F4EU)
+N#define CRCGEN_POLYNOMIAL  (0x8005U)
+N
+N/* *** Functions' parameters definitions *** */
+N#define NF_PAR_IGNORE   (0U)                /* parameter not meaningful */
+N#define NF_PAR_NO_END_CMD  (0U)             /* u32EndCmdValid param:
+N                                               u32EndCommand not used */
+N#define NF_PAR_END_VALID   (1U)             /* u32EndCmdValid param: use
+N                                               u32EndCommand */
+N#define NF_PAR_CS_ACTIV   (0U)              /* u32ClearCs param: keep CS LOW
+N                                               (ACTIVE) */
+N#define NF_PAR_CS_CLEAR   (1U)              /* u32ClearCs param: change CS to
+N                                               HIGH */
+N#define NF_PAR_ECC_CALC   (0U)              /* u32EccLast param: ECC calculate
+N                                               (ACTIVE) */
+N#define NF_PAR_ECC_LAST   (1U)              /* u32EccLast param: last value for
+N                                               ECC */
+N#define NF_PAR_CMD_PHASE   (0U)             /* indicates Command Phase address */
+N#define NF_PAR_DATA_PHASE  (1U)             /* indicates Data Phase address */
+N
+N/*
+N Assume 160Mz clock: 1 CPU cycle == 6.25[ns].
+N 1[us] == 160 CPU cycles
+N Since typical SW loop takes 3x CPU cycles - each value for a typical
+N loop should be divded by 3. For other loops (busy check) - CPU executes ~12
+N instructions - so each value should be divided by 12, 10x will be used for safety
+N*/
+N#define NANDFLASH_TIME_1us   (10U)
+N#define NANDFLASH_TIME_1ms   (1000U * (NANDFLASH_TIME_1us))
+N#define NANDFLASH_TIME_1s    (1000U * (NANDFLASH_TIME_1ms))
+N
+N/* Device's Initial Busy Timeout (100us) */
+N#define NANDFLASH_INIT_TIME_MAX_us_CFG   ((100U * NANDFLASH_TIME_1us))
+N
+N/*
+N Device Busy Timeout: 1s. Wait Busy loop takes 25 CPU instructions:
+N Use 24 as divider for SW-loop 1s timeout. */
+N#define NANDFLASH_BUSY_TIMEOUT_MAX_CFG   (NANDFLASH_TIME_1s /24U)
+N
+N/* ECC Busy Timeout: 1s (loop takes 10 CPU cycles) */
+N#define NANDFLASH_ECC_TIMEOUT_MAX_CFG    (NANDFLASH_TIME_1s /10U)
+N/*
+N For ONFI compliant devices there is a parameter page with 2 or more redundant
+N pages. Single Parameter Page read needs 256 bytes SW buffer. */
+N#define NANDFLASH_ONFI_MAX_PARAM   (256U)
+N
+N/* *** NAND Flash device common COMMANDS *** */
+N#define NANDFLASH_CMD_RESET           (0xFFU)
+N#define NANDFLASH_CMD_READ_ID         (0x90U)
+N#define NANDFLASH_CMD_READ_STATUS     (0x70U)
+N#define NANDFLASH_CMD_READ_MODE       (0x00U) /* use after Status check */
+N#define NANDFLASH_CMD_PAGE_RD_START   (0x00U)
+N#define NANDFLASH_CMD_PAGE_RD_END     (0x30U)
+N#define NANDFLASH_CMD_ERASE_START     (0x60U)
+N#define NANDFLASH_CMD_ERASE_END       (0xD0U)
+N#define NANDFLASH_CMD_PROGRAM_START   (0x80U)
+N#define NANDFLASH_CMD_PROGRAM_END     (0x10U)
+N
+N/* *** NAND Flash special access ONFI v1.0 commands *** */
+N#define NANDFLASH_CMD_WR_COL_CHNG     (0x85U)
+N#define NANDFLASH_CMD_RD_COL_CHNG     (0x05U)
+N#define NANDFLASH_CMD_RD_COL_CH_END   (0xE0U)
+N#define NANDFLASH_CMD_RD_COL_CH_E_V   (0x1U)
+N
+N/* *** ONFI only COMMANDS *** */
+N#define NANDFLASH_CMD_ONFI_READ_PARAM   (0xECU)
+N#define NANDFLASH_CMD_ONFI_SET_FEATURE  (0xEFU)
+N#define NANDFLASH_CMD_ONFI_GET_FEATURE  (0xEEU)
+N
+N/* NAND READY interrupt clear macro */
+N#define NANDFLASH_CLEAR_READY_IRQ()   MEMCTRL_MEM_CFG_CLR=MEMCTRL_INT_CLR_1_BIT
+N
+N/* *** NAND device's type selection *** */
+Ntypedef enum tag_NandFlashDeviceType_e
+N{
+N   NANDFLASH_DEVICE_ONFI_HOST_ECC = 0,      /* Device configured according to
+N                                               ONFI */
+N   NANDFLASH_DEVICE_ONFI_VENDOR1_ECC,       /* Device configured according to
+N                                               ONFI w. internal ECC: MICRON */
+N   NANDFLASH_DEVICE_MAX                     /* For max-range use only */
+N} NandFlashDeviceType_e;
+N
+N/* *** Drivers functions' results / status / error codes *** */
+Ntypedef enum tag_NandFlashStatus_e
+N{
+N   NANDFLASH_STATUS_OK = 0,                 /* operation was successful */
+N   NANDFLASH_STATUS_UNKNOWN,                /* initial result value */
+N   NANDFLASH_STATUS_NO_COMPLY_ERR,          /* Access try to parameters for
+N                                               non-compliant device */
+N   NANDFLASH_STATUS_OPERATION_ERR,          /* PROGRAM / ERASE BLOCK / ERASE
+N                                               ALL operation failed */
+N   NANDFLASH_STATUS_PTR_ERR,                /* pointer was invalid */
+N   NANDFLASH_STATUS_CFG_ERR,                /* provided configuration was
+N                                               invalid */
+N   NANDFLASH_STATUS_SIZE_ERR,               /* number of read-bytes greater
+N                                               than memory area */
+N   NANDFLASH_STATUS_BUSY_ERR,               /* busy-timeout occurred */
+N   NANDFLASH_STATUS_USAGE_ERR,              /* function not intended for this
+N                                               type of device or device can not
+N                                               accept such request: e.g. Page
+N                                               does not exists */
+N   NANDFLASH_STATUS_PARAM_ERR,              /* function parameter invalid */
+N   NANDFLASH_STATUS_CRC_ERR,                /* CRC-16 error(s) detected */
+N   NANDFLASH_STATUS_ECC_RD_ERR,             /* ECC/Block-Read Error */
+N   NANDFLASH_STATUS_ECC_ERR                 /* ECC error(s) detected, but not
+N                                               possible to correct */
+N} NandFlashStatus_e;
+N
+N/* *** NAND device's data bus width definitions *** */
+Ntypedef enum tag_NandFlashBusWidth_e
+N{
+N   NANDFLASH_BUS_WIDTH_8 = 0x00,            /* 8-bits bus */
+N   NANDFLASH_BUS_WIDTH_16 = 0x01            /* 16-bits bus */
+N} NandFlashBusWidth_e;
+N
+N/* *** NAND device's Extra Block configuration / size [B] definitions *** */
+Ntypedef enum tag_NandFlashExtraBlock_e
+N{
+N   NANDFLASH_EXTRA_BLOCK_DISABLED = 0,      /* NO extra block */   
+N   NANDFLASH_EXTRA_BLOCK_8_BYTES,           /* Extra block uses 8 bytes */
+N   NANDFLASH_EXTRA_BLOCK_16_BYTES,          /* Extra block uses 16 bytes */
+N   NANDFLASH_EXTRA_BLOCK_32_BYTES           /* Extra block uses 32 bytes */
+N} NandFlashExtraBlock_e;
+N
+N/* *** NAND Flash main configuration structure data-type *** */
+Ntypedef struct tag_NandFlashCfg_st
+N{
+N   uint32_t u32NandChipAddress;             /* refer to FPGA or Cap-Bt spec. */
+N   NandFlashDeviceType_e eDeviceType;       /* ONFI w/o or with ECC support */
+N   NandFlashBusWidth_e eBusWidth;           /* number of data bit for device's
+N                                               bus */
+N   NandFlashExtraBlock_e eExtraBlockCfg;    /* disable or select Extra Block */
+N   uint32_t u32PageAdrCycNo;                /* address cycles to access Page */
+N   uint32_t u32BlkSize;                     /* number of Pages within Block */
+N   uint32_t u32PageSize;                    /* number of Bytes within Page */
+N   uint16_t u16SpareSize;                   /* number of Bytes within Spare
+N                                               Area */
+N   uint32_t u32IdRdTime;
+N   uint32_t u32StatusRdTime;
+N   uint32_t u32WriteCycleTime;
+N   uint32_t u32ReadCycleTime;
+N   uint32_t u32BusyCycleToReN;
+N   uint32_t u32DeAssertDelayWeN;
+N   uint32_t u32AssertDelayReN;
+N   uint32_t u32BusyTimeOut;                 /* used for waiting with busy
+N                                               finite-loops */
+N   uint32_t u32EccTimeOut;                  /* used for waiting with ECC busy
+N                                               finite-loops */
+N   uint8_t u8EccBitsCorr;                   /* number of bits ECC
+N                                               correctability */
+N   uint8_t u8ManufacturerId;
+N   uint8_t u8DeviceId;
+N   uint8_t pu8Param[NANDFLASH_ONFI_MAX_PARAM]; /* Parameters storage area */
+X   uint8_t pu8Param[(256U)];  
+N} NandFlashCfg_st;                          /* definition of struct type */
+N
+N
+N/* Extra Block buffer */
+Nextern uint32_t pu32GlExtraBlockBuf[8];
+N
+N
+N/* ****************** NAND Flash API Functions Definitions ****************** */
+N
+N/*****************************************************************************
+N* DESC   : This Assembler function is needed to write a 2x32-bit burst the data
+N*          into the NAND device. Such operations are not supported in C.
+N*****************************************************************************/
+Nextern void vNF_AddrBrstWr(uint32_t u32CmdPhAddr, uint32_t u32BlkWrd0, uint32_t u32BlkWrd1);
+N
+N/*****************************************************************************
+N* This function is used by most of NAND driver functions for [us] wait
+N* intervals geration.
+N* Assumed CPU clock= 160 MHz: 160 CPU instructions ~= 1[us].
+N* The function's parameter (multiplied by 160) is finally limited to 32-bit.
+N* This implies the max. duration of the interval...
+N* Since each loop in this function requires 3x CPU instructions (SUB, CMP, BNE)
+N* or (MOVS, SUB, BNE) the duration value should be divided by 3. This is done,
+N* while creating values for NANDFLASH_TIME_1us, NANDFLASH_TIME_1ms and
+N* NANDFLASH_TIME_1s defines.
+N*****************************************************************************/
+Nvoid NF_uSecWait (uint32_t u32usTime);
+N
+N/*****************************************************************************
+N* Function loads configuration parameters, which have been set during the HW
+N* reset or with the use of the “Set” functions) from the Memory Controller
+N* registers to the respective member variables within the NandFlashCfg_st data
+N* structure.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_GetHwConfig (NandFlashCfg_st * pstNandCfg);
+N
+N/*****************************************************************************
+N* This function executes the sequence of events required to initialise the SMC
+N* Memory Controller and a NAND Flash memory device to ensure the configuration
+N* of both is synchronized. The content of the NandFlashCfg_st data structure
+N* will be used to perform the required operations. It should be noted, however,
+N* that the PL353 memory controller allows to specify the required timing for
+N* each transfer separately. For this reason most of the timing parameters stored
+N* in NandFlashCfg_st data structure will be provided during a command write,
+N* data read (or similar operation).
+N* Limitation: Cap bt/C doen't support 4byte Extra buffer size. 
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_Initialize (NandFlashCfg_st * pstNandCfg,
+N                                         NandFlashDeviceType_e eDeviceType);
+N
+N/*****************************************************************************
+N* This function sets the Extra block related configuration within the
+N* NandFlashCfg_st structure. The Extra Block can be Disabled or enabled. If the
+N* size is set to non-zero value the Extra block will be Enabled, refer to
+N* NandFlashExtraBlock_e data type.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_SetExtraBlock (NandFlashCfg_st * pstNandCfg,
+N                                            NandFlashExtraBlock_e eExtraBlkCfg);
+N
+N/*****************************************************************************
+N* This function sets the u8IdRdTime, u8StatusRdTime, u8WriteCycleTime and
+N* u8ReadCycleTime for NAND chip configuration inside the NandFlashCfg_st
+N* configuration structure.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_SetBusTiming (NandFlashCfg_st * pstNandCfg,
+N                                           uint32_t u32IdRdTime,
+N                                           uint32_t u32StatusRdTime,
+N                                           uint32_t u32WriteCycleTime,
+N                                           uint32_t u32ReadCycleTime);
+N
+N/*****************************************************************************
+N* This function sets u8BusyCycleToReN cycles, u8DeAssertDelayWeN de-assertion
+N* delay and u8AssertDelayReN assertion delay, configuration inside the
+N* NandFlashCfg_st configuration structure.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_SetCycleAssertDelays (NandFlashCfg_st * pstNandCfg,
+N                                                   uint32_t u32BusyCycleToReN,
+N                                                   uint32_t u32DeAssertDelayWeN,
+N                                                   uint32_t u32AssertDelayReN);
+N
+N/*****************************************************************************
+N* This function reads the NAND Flash device status: busy / ready. If the device
+N* is busy - it waits a predefined time in the finite loop. A number of the loop
+N* cycles is provided as a function parameter.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_WaitDeviceReady (const NandFlashCfg_st *
+N                                              const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function waits with timeout until ECC HW module finishes its work.
+N*****************************************************************************/
+NNandFlashStatus_e eNF_EccWaitIdle (const NandFlashCfg_st * const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function sends a NAND Command over the AXI bus, with most possible parameters
+N* configurable (column number, page number, block number, start / end commands).
+N*****************************************************************************/
+Nvoid vNF_CmdPhaseAxiCplx (const NandFlashCfg_st * const pstNandCfg,
+N                          uint32_t u32ColAdr, uint32_t u32PageNo,
+N                          uint32_t u32BlockNo, uint32_t u32StartCommand,
+N                          uint32_t u32EndCmdValid, uint32_t u32EndCommand);
+N
+N/*****************************************************************************
+N* Function configures ECC HW module for auto-ECC generation for NAND devices
+N* with 2kB Pages.
+N*****************************************************************************/
+NNandFlashStatus_e eNF_EccConfigure (const NandFlashCfg_st * const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function reads the current status from the NAND device.
+N* configuration.
+N*****************************************************************************/
+NNandFlashStatus_e eNF_GetDeviceStatus (const NandFlashCfg_st *
+N                                       const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function gives the Status Register value from the NAND device.
+N*
+N*****************************************************************************/
+NNandFlashStatus_e eNF_ReadDeviceStatus (const NandFlashCfg_st * const pstNandCfg,
+N                                        uint32_t* pu32NandStatus );
+N
+N/*****************************************************************************
+N* This function sends the reset command (reinitialises the device) to the
+N* NAND Flash device.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_ResetDevice (const NandFlashCfg_st * const pstNandCfg);
+N
+N/*****************************************************************************
+N* This function reads a data page from the 8-bit NAND Flash devices. It should
+N* be used for memory devices with 8-bit interface, which are organized as arrays
+N* of bytes. The expected data is addressed by a block number and by a page
+N* number within a block.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_ReadSinglePage (NandFlashCfg_st * pstNandCfg,
+N                                             uint32_t u32BlockNumber,
+N                                             uint32_t u32PageNumber,
+N                                             uint32_t pu32DstBuf[],
+N                                             uint32_t pu32ExtrBuf[]);
+N
+N/*****************************************************************************
+N* This function reads a spare data area for a particular page from the 8-bit
+N* NAND Flash devices. It should be used for memory devices with 8-bit interface,
+N* which are organized as arrays of bytes. The expected data is addressed by a
+N* block number, page number and an offset within a spare area.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_ReadSpareArea (NandFlashCfg_st * pstNandCfg,
+N                                            uint32_t u32BlockNumber,
+N                                            uint32_t u32PageNumber,
+N                                            uint32_t u32SpareOffset,
+N                                            uint32_t u32BufferLen,
+N                                            uint32_t pu32DstBuf[]);
+N
+N/*****************************************************************************
+N* This function reads data from the NAND Flash devices. The readout data is put
+N* starting at the memory pointed by the pointer provided by the application.
+N* The readout starts at the provided block and page number. If the Page number
+N* is outside of the size of the block - the readout will move the source pointer
+N* to the next block, and so on. It is the responsibility of the application to
+N* insure the reading of blocks/pages within the range of the total size of the
+N* NAND device. If any of the blocks will fail its ECC during the readout this
+N* function will return a NANDFLASH_STATUS_ECC_ERR error.
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_ReadPages (NandFlashCfg_st * pstNandCfg,
+N                                        uint32_t u32BlockNumber,
+N                                        uint32_t u32StartPage,
+N                                        uint32_t u32NoOfPages,
+N                                        uint32_t pu32DstBuf[],
+N                                        uint32_t pu32ExtrBuf[]);
+N
+N/*****************************************************************************
+N* This function reads data from the NAND Flash devices. The readout data is put
+N* starting at the memory pointed by the pointer provided by the application.
+N* The readout starts at the provided offset, which should be always NAND Page
+N* alligned (start at a page-beginning address). It is assumed that Page 0 starts
+N* at u32StartAddr equal to 0. Next Page address is dependent on the size of the
+N* page, as can be read from NandFlashCfg_st structure.
+N*
+N* It is the responsibility of the application to insure the reading of data,
+N* as specified by u32BufferLen, within the range of the total size of the NAND
+N* device.
+N* u32BufferLen must greater or equal to the sum of the pages (total) involved in
+N* the data read.
+N* Example:
+N* u32StartAddr= (4096/4) = 1024, PageSize= (2048/4)= 512 words,
+N* if want to read u32BufferLen= 2052 bytes = 513 words - it is needed to provide
+N* a buffer of the size of 2xPagesize == 1024 words.
+N*
+N*****************************************************************************/
+NNandFlashStatus_e eNandFlash_ReadNand (NandFlashCfg_st * pstNandCfg,
+N                                       uint32_t u32StartAddr,
+N                                       uint32_t pu32Data[],
+N                                       uint32_t u32BufferLen);
+N
+N
+N#endif /* NANDFLASH_H */
+N
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\lldd\src\pl353nand.c" 2
+N
+N/* Supporting defines */
+N#define CRCGEN_TOP_BIT   (0x8000U)
+N
+N/* *** NAND Flash device related RANGES for MemCtrl settings *** */
+N#define NANDFLASH_RD_CYCLE_MIN   (2U)
+N#define NANDFLASH_RD_CYCLE_MAX   (15U)
+N#define NANDFLASH_WR_CYCLE_MIN   (2U)
+N#define NANDFLASH_WR_CYCLE_MAX   (15U)
+N
+N#define NANDFLASH_ASSERT_REN_MIN    (1U)
+N#define NANDFLASH_ASSERT_REN_MAX    (7U)
+N#define NANDFLASH_DEASSERT_WEN_MIN  (1U)
+N#define NANDFLASH_DEASSERT_WEN_MAX  (7U)
+N
+N#define NANDFLASH_STATUS_RD_MAX     (7U)
+N#define NANDFLASH_ID_RD_MAX         (7U)
+N
+N#define NANDFLASH_BUSY_TO_REN_MAX   (15U)
+N
+N/* Supporting bit masks */
+N#define NF_MASK_4X_ECC_BLOCKS   (0x0FU)
+N#define NF_MASK_5X_ECC_BLOCKS   (0x1FU)
+N#define NF_INTERN_ECC_FAILED      (0x01U)
+N
+N/* *** Typical Large Page Devices Addressing ***
+N
+N  Mapping Columns/Pages/Blocks to Address-Cycles for a NAND device
+N
+N   Cycle:  I/O7  I/O6  I/O5 I/O4 I/O3  I/O2   I/O1  I/O0
+N
+N   First   CA7   CA6   CA5  CA4   CA3   CA2   CA1   CA0
+N   Second  LOW   LOW   LOW  LOW  CA11  CA10   CA9   CA8
+N   Third   BA7   BA6   PA5  PA4   PA3   PA2   PA1   PA0
+N   Fourth  BA15  BA14  BA13 BA12  BA11  BA10  BA9   BA8
+N   Fifth   LOW   LOW   LOW  LOW   LOW   BA18  BA17  BA16
+N*/
+N
+N/* *** Comment on BLOCK SELECTION for ERASE commands ***
+N  Mapping Pages/Blocks to Address-Cycles for a NAND device.
+N  Page address is ignored for ERASE command.
+N
+N   Cycle  I/O7  I/O6 I/O5 I/O4 I/O3  I/O2 I/O1 I/O0
+N   First   BA7  BA6  PA5  PA4   PA3   PA2  PA1  PA0
+N   Second  BA15 BA14 BA13 BA12  BA11  BA10 BA9  BA8
+N   Third   LOW  LOW  LOW  LOW   LOW   BA18 BA17 BA16
+N*/
+N
+N/**********************************************
+N*  Global variables and forward declarations  *
+N**********************************************/
+N/* Extra Block buffer for Reading. With the current NAND driver implementation
+N this buffer is overwritten with the Extra Block data just after the 2kB Page
+N content is read. So there is no chance to have access  to extra block content
+N when driver function for multi-page-read is used. */
+Nuint32_t pu32GlExtraBlockBuf[8] = { 0x0U, 0x0U, 0x0U, 0x0U,
+N   0x0U, 0x0U, 0x0U, 0x0U
+N};
+N
+N/* **************** NAND Flash Local Functions Declarations **************** */
+N
+N/*****************************************************************************
+N* Function performs the calculation of the CRC-16 checksum. It operates on
+N* bytes from the input buffer. The number of bytes from the buffer precessed
+N* by this function is determined by the 2nd. parameter (u32BufferLength).
+N* After the calculation the function returns the calculated CRC-16 value.
+N*
+N*****************************************************************************/
+Nuint16_t u16CRCGEN_CalculateCrc16 (const uint8_t pu8DataBuf[], uint32_t u32BufferLength);
+N
+N/*****************************************************************************
+N* Checks, if values in the configuration structure are valid and can be written
+N* to the Memory Controller and/or NAND device.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_ConfigVerify (const NandFlashCfg_st *
+N                                           const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function copies configuration parameters from the configuration structure
+N* to the Memory Controller and/or NAND device registers.
+N*****************************************************************************/
+Nstatic void vNF_CopyConfigToRegs (const NandFlashCfg_st * const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function sends a NAND Command over the AXI bus, without any parameter.
+N*****************************************************************************/
+Nstatic void vNF_CmdPhaseAxi (const NandFlashCfg_st * const pstNandCfg,
+N                             uint32_t u32StartCommand);
+N
+N/*****************************************************************************
+N* Function sends a NAND Command over the AXI bus, with a single byte register
+N* address parameter.
+N*****************************************************************************/
+Nstatic void vNF_CmdPhaseAxiRegAddr (const NandFlashCfg_st * const pstNandCfg,
+N                                    uint32_t u32RegAdr,
+N                                    uint32_t u32StartCommand);
+N
+N/*****************************************************************************
+N* Function reads a single data byte over the AXI bus, using AXI Data Phase.
+N*****************************************************************************/
+Nstatic uint32_t u32NF_DataPhaseAxiRead (const NandFlashCfg_st *
+N                                        const pstNandCfg, uint32_t u32ClearCs,
+N                                        uint32_t u32EccLast);
+N
+N/*****************************************************************************
+N* Function reads multiple data over the AXI bus, using AXI Data Phase.
+N*****************************************************************************/
+Nstatic void vNF_DataPhaseAxiRdMulti (const NandFlashCfg_st * const pstNandCfg,
+N                                     uint32_t u32BufferLen,
+N                                     uint32_t pu32DstBuf[], uint32_t u32EccLast,
+N                                     uint32_t pu32ExtrBuf[]);
+N
+N/*****************************************************************************
+N* Function waits with timeout until ECC HW module finishes reading of the ECC
+N* data from NAND memory.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_EccReadReady (const NandFlashCfg_st *
+N                                           const pstNandCfg);
+N
+N/*****************************************************************************
+N* Function fixes a single error detected by ECC HW module.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_EccBitFix (uint32_t u32EccValue, uint8_t pu8Buf[]);
+N
+N/*****************************************************************************
+N* Function scans all ECC status information and deploys a required action e.g.
+N* ECC correction or error return.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_EccCorrectLarge (const NandFlashCfg_st * const pstNandCfg,
+N                                              uint8_t pu8DstBuf[],
+N                                              uint8_t pu8ExtrBuf[]);
+N
+N/*****************************************************************************
+N* Function scans an ONFI compliant device for the Parameter Page information.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_ReadOnfiParamsPage (NandFlashCfg_st * pstNandCfg);
+N
+N/*****************************************************************************
+N* Function sends a SET FEATURE command with the parameters to an ONFI compliant
+N* device.
+N*****************************************************************************/
+Nstatic NandFlashStatus_e eNF_SetFeature (const NandFlashCfg_st * const pstNandCfg,
+N                                         uint32_t u32SubAddress,
+N                                         uint8_t const pu8SubParBuf[]);
+N
+N/* ***************** NAND Flash Local Functions Definitions **************** */
+N
+N/*..........................................................................*/
+Nuint16_t u16CRCGEN_CalculateCrc16 (const uint8_t pu8DataBuf[],
+N                                   uint32_t u32BufferLength)
+N{
+N   const uint16_t u16GenPolynom = CRCGEN_POLYNOMIAL;
+X   const uint16_t u16GenPolynom = (0x8005U);
+N
+N   const uint16_t u16TopBit = CRCGEN_TOP_BIT;
+X   const uint16_t u16TopBit = (0x8000U);
+N
+N   uint16_t u16CRC = CRCGEN_INIT_VALUE;
+X   uint16_t u16CRC = (0x4F4EU);
+N
+N   uint32_t u32BufIdx;
+N
+N   uint32_t u32BitIdx;
+N
+N   /* Loop for each byte in the buffer */
+N   for (u32BufIdx = 0; u32BufIdx < u32BufferLength; u32BufIdx++)
+N   {
+N      uint16_t u16BufValue;
+N
+N      u16BufValue = pu8DataBuf[u32BufIdx];
+N      u16BufValue = (u16BufValue << 8);
+N      u16CRC = (u16CRC ^ u16BufValue);
+N
+N      /* Loop for each bit in the byte */
+N      for (u32BitIdx = 0; u32BitIdx < 8; u32BitIdx++)
+N      {
+N         if ((u16CRC & u16TopBit) != 0x0000U)
+N         {
+N            u16CRC = ((u16CRC << 1) ^ u16GenPolynom);
+N         }
+N         else
+N         {
+N            u16CRC = (u16CRC << 1);
+N         }
+N      }
+N   }
+N
+N   return u16CRC;
+N}
+N
+N/*..........................................................................*/
+Nstatic NandFlashStatus_e eNF_ConfigVerify (const NandFlashCfg_st *
+N                                           const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 13.7 The result of this logical operation is always
+N*          'false'.
+N*
+N* DESC   : The check below is required for enum types since NANDFLASH_BUS_WIDTH_16
+N*          and NANDFLASH_EXTRA_BLOCK_32_BYTES values might contain values
+N*          specified at the "run-time" and by out-of-range of the respective
+N*          enumerations.
+N****/
+N   if ((pstNandCfg->u32ReadCycleTime < (NANDFLASH_RD_CYCLE_MIN)) ||
+X   if ((pstNandCfg->u32ReadCycleTime < ((2U))) ||
+N       (pstNandCfg->u32ReadCycleTime > (NANDFLASH_RD_CYCLE_MAX)) ||
+X       (pstNandCfg->u32ReadCycleTime > ((15U))) ||
+N       (pstNandCfg->u32WriteCycleTime < (NANDFLASH_WR_CYCLE_MIN)) ||
+X       (pstNandCfg->u32WriteCycleTime < ((2U))) ||
+N       (pstNandCfg->u32WriteCycleTime > (NANDFLASH_WR_CYCLE_MAX)) ||
+X       (pstNandCfg->u32WriteCycleTime > ((15U))) ||
+N       (pstNandCfg->u32AssertDelayReN < (NANDFLASH_ASSERT_REN_MIN)) ||
+X       (pstNandCfg->u32AssertDelayReN < ((1U))) ||
+N       (pstNandCfg->u32AssertDelayReN > (NANDFLASH_ASSERT_REN_MAX)) ||
+X       (pstNandCfg->u32AssertDelayReN > ((7U))) ||
+N       (pstNandCfg->u32DeAssertDelayWeN < (NANDFLASH_DEASSERT_WEN_MIN)) ||
+X       (pstNandCfg->u32DeAssertDelayWeN < ((1U))) ||
+N       (pstNandCfg->u32DeAssertDelayWeN > (NANDFLASH_DEASSERT_WEN_MAX)) ||
+X       (pstNandCfg->u32DeAssertDelayWeN > ((7U))) ||
+N       (pstNandCfg->u32StatusRdTime > (NANDFLASH_STATUS_RD_MAX)) ||
+X       (pstNandCfg->u32StatusRdTime > ((7U))) ||
+N       (pstNandCfg->u32IdRdTime > (NANDFLASH_ID_RD_MAX)) ||
+X       (pstNandCfg->u32IdRdTime > ((7U))) ||
+N       (pstNandCfg->u32BusyCycleToReN > (NANDFLASH_BUSY_TO_REN_MAX)) ||
+X       (pstNandCfg->u32BusyCycleToReN > ((15U))) ||
+N       (pstNandCfg->eBusWidth > (NANDFLASH_BUS_WIDTH_16)) ||               /* PRQA S 3356 */
+N       (pstNandCfg->eExtraBlockCfg > (NANDFLASH_EXTRA_BLOCK_32_BYTES)))    /* PRQA S 3356 */
+N   {
+N      eResult = NANDFLASH_STATUS_CFG_ERR;   /* Invalid Parameter(s)! */
+N   }
+N   else
+N   {
+N      eResult = NANDFLASH_STATUS_OK;        /* All Parameters OK */
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic void vNF_CopyConfigToRegs (const NandFlashCfg_st * const pstNandCfg)
+N{
+N   uint32_t u32RegCfg;
+N
+N   uint32_t u32DirCmdVal;
+N
+N
+N   /* copy cycles/opmode data from the configuration structure to registers */
+N   u32RegCfg = 0x00000000U;
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32ReadCycleTime) << (MEMCTRL_SET_T0_SFT));
+X      u32RegCfg | ((pstNandCfg->u32ReadCycleTime) << ((0)));
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32WriteCycleTime) << (MEMCTRL_SET_T1_SFT));
+X      u32RegCfg | ((pstNandCfg->u32WriteCycleTime) << ((4)));
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32AssertDelayReN) << (MEMCTRL_SET_T2_SFT));
+X      u32RegCfg | ((pstNandCfg->u32AssertDelayReN) << ((8)));
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32DeAssertDelayWeN) << (MEMCTRL_SET_T3_SFT));
+X      u32RegCfg | ((pstNandCfg->u32DeAssertDelayWeN) << ((11)));
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32StatusRdTime) << (MEMCTRL_SET_T4_SFT));
+X      u32RegCfg | ((pstNandCfg->u32StatusRdTime) << ((14)));
+N   u32RegCfg = u32RegCfg | ((pstNandCfg->u32IdRdTime) << (MEMCTRL_SET_T5_SFT));
+X   u32RegCfg = u32RegCfg | ((pstNandCfg->u32IdRdTime) << ((17)));
+N   u32RegCfg =
+N      u32RegCfg | ((pstNandCfg->u32BusyCycleToReN) << (MEMCTRL_SET_T6_SFT));
+X      u32RegCfg | ((pstNandCfg->u32BusyCycleToReN) << ((20)));
+N   MEMCTRL_SET_CYCLES = u32RegCfg;
+X   (*((volatile uint32_t*) (((0xC0200000U))+(0x014U)))) = u32RegCfg;
+N   /* Force to 8-bit interface at the begining */
+N   MEMCTRL_SET_OPMODE = MEMCTRL_SET_MW_8_BITS;
+X   (*((volatile uint32_t*) (((0xC0200000U))+(0x018U)))) = ((0x0U)<<((0)));
+N   /*
+N      Update cycles and opmode registers for NAND UpdateRegs (see PL353 spec.,
+N      page 3-12) */
+N   u32DirCmdVal = MEMCTRL_NAND_CHIP_SEL_MSK | MEMCTRL_CMD_TYPE_UPD_REGS_MSK;
+X   u32DirCmdVal = ((0x4U)<<((23))) | ((0x2U)<<((21)));
+N   MEMCTRL_DIRECT_CMD = u32DirCmdVal;
+X   (*((volatile uint32_t*) (((0xC0200000U))+(0x010U)))) = u32DirCmdVal;
+N   /*
+N      Load Ecc Memory Config Register. Change the Extra block configuration
+N      bits Write it back to the register */
+N   u32RegCfg = MEMCTRL_ECC_MEMCFG;
+X   u32RegCfg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U))));
+N   u32RegCfg = u32RegCfg & (~MEMCTRL_ECC_EXTRA_BLOCK_MSK);
+X   u32RegCfg = u32RegCfg & (~((0x1U)<<((10))));
+N   u32RegCfg = u32RegCfg & (~MEMCTRL_ECC_EXTRA_BLOCK_SIZE_MSK);
+X   u32RegCfg = u32RegCfg & (~((0x3U)<<((11))));
+N
+N   switch (pstNandCfg->eExtraBlockCfg)
+N   {
+N      
+N      case NANDFLASH_EXTRA_BLOCK_8_BYTES:
+N      {
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_MSK));
+X         u32RegCfg = (u32RegCfg | (((0x1U)<<((10)))));
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_SIZE_8B_BITS));
+X         u32RegCfg = (u32RegCfg | (((0x1U)<<((11)))));
+N      }
+N         break;
+N      case NANDFLASH_EXTRA_BLOCK_16_BYTES:
+N      {
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_MSK));
+X         u32RegCfg = (u32RegCfg | (((0x1U)<<((10)))));
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_SIZE_16B_BITS));
+X         u32RegCfg = (u32RegCfg | (((0x2U)<<((11)))));
+N      }
+N         break;
+N      case NANDFLASH_EXTRA_BLOCK_32_BYTES:
+N      {
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_MSK));
+X         u32RegCfg = (u32RegCfg | (((0x1U)<<((10)))));
+N         u32RegCfg = (u32RegCfg | (MEMCTRL_ECC_EXTRA_BLOCK_SIZE_32B_BITS));
+X         u32RegCfg = (u32RegCfg | (((0x3U)<<((11)))));
+N      }
+N         break;
+N      default:
+N      {
+N         /* DISABLED for NANDFLASH_EXTRA_BLOCK_DISABLED and invalid values */
+N         u32RegCfg = (u32RegCfg & (~MEMCTRL_ECC_EXTRA_BLOCK_MSK));
+X         u32RegCfg = (u32RegCfg & (~((0x1U)<<((10)))));
+N      }
+N         break;
+N   }
+N   MEMCTRL_ECC_MEMCFG = u32RegCfg;
+X   (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U)))) = u32RegCfg;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic void vNF_CmdPhaseAxi (const NandFlashCfg_st * const pstNandCfg,
+N                             uint32_t u32StartCommand)
+N{
+N   uint32_t u32CmdPh;                       /* Word to be send within a command
+N                                               phase */
+N   uint32_t *pu32CmdPhDest;
+N
+N
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NANDFLASH_CLEAR_READY_IRQ ();
+X      (*((volatile uint32_t*) (((0xC0200000U))+(0x00CU))))=((0x1U)<<((4)));
+N   }
+N
+N   /*
+N      WARNINGS: u32NandChipAddress should be stored in cfg structure shifted
+N      already. */
+N   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N   u32CmdPh = (u32CmdPh | (u32StartCommand << (MEMCTRL_AXI_START_COMMAND_SFT)));
+X   u32CmdPh = (u32CmdPh | (u32StartCommand << ((3))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N   pu32CmdPhDest = (uint32_t *)u32CmdPh;    /* PRQA S 0306 */
+N
+N   /*
+N      No any address cycles are send (only command). According to SMC spec.
+N      When issuing a command phase access with address cycles==0 : at least one
+N      byte lane must be enabled. */
+N   *pu32CmdPhDest = 0U;                     /* wdata don't care according to
+N                                               SMC spec. page 2-23 */
+N   __DSB();
+N
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NF_uSecWait ((3U * NANDFLASH_TIME_1us));
+X      NF_uSecWait ((3U * (10U)));
+N   }
+N}
+N
+N/*..........................................................................*/
+N/* Command with the register access is scheduled. */
+N/* TESTED */
+Nstatic void vNF_CmdPhaseAxiRegAddr (const NandFlashCfg_st * const pstNandCfg,
+N                                    uint32_t u32RegAdr,
+N                                    uint32_t u32StartCommand)
+N{
+N   uint32_t u32CmdPh;                       /* Word to be send within a command
+N                                               phase */
+N   uint32_t *pu32CmdPhDest;
+N
+N
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NANDFLASH_CLEAR_READY_IRQ ();
+X      (*((volatile uint32_t*) (((0xC0200000U))+(0x00CU))))=((0x1U)<<((4)));
+N   }
+N   /*
+N      WARNINGS: u32NandChipAddress should be stored in cfg structure shifted
+N      already... */
+N   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N   u32CmdPh = (u32CmdPh | (0x1U << (MEMCTRL_AXI_ADDRES_CYCLES_SFT)));
+X   u32CmdPh = (u32CmdPh | (0x1U << ((21))));
+N   u32CmdPh =
+N      (u32CmdPh | (NF_PAR_CMD_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X      (u32CmdPh | ((0U) << ((19))));
+N   u32CmdPh = (u32CmdPh | (u32StartCommand << (MEMCTRL_AXI_START_COMMAND_SFT)));
+X   u32CmdPh = (u32CmdPh | (u32StartCommand << ((3))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N   pu32CmdPhDest = (uint32_t *)u32CmdPh;    /* PRQA S 0306 */
+N   /* Send a command with parameter(address) to the device */
+N   *pu32CmdPhDest = u32RegAdr;
+N    __DSB();
+N
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NF_uSecWait ((3U * NANDFLASH_TIME_1us));
+X      NF_uSecWait ((3U * (10U)));
+N   }
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nvoid vNF_CmdPhaseAxiCplx (const NandFlashCfg_st * const pstNandCfg,
+N                          uint32_t u32ColAdr, uint32_t u32PageNo,
+N                          uint32_t u32BlockNo, uint32_t u32StartCommand,
+N                          uint32_t u32EndCmdValid, uint32_t u32EndCommand)
+N{
+N   uint32_t u32CmdPh;                       /* Word to be send within a command
+N                                               phase */
+N   uint32_t u32Data;
+N
+N   uint32_t u32_BA7_6;
+N
+N   uint32_t u32_BA15_8;
+N
+N   uint32_t u32_PA5_0;
+N
+N   uint32_t u32DataNext;
+N
+N   uint32_t *pu32CmdPhDest;
+N
+N
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NANDFLASH_CLEAR_READY_IRQ ();
+X      (*((volatile uint32_t*) (((0xC0200000U))+(0x00CU))))=((0x1U)<<((4)));
+N   }
+N   /* u32NandChipAddress should be stored in cfg structure shifted already */
+N   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X   u32CmdPh = ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N   u32CmdPh =
+N      (u32CmdPh |
+N       (pstNandCfg->u32PageAdrCycNo << (MEMCTRL_AXI_ADDRES_CYCLES_SFT)));
+X       (pstNandCfg->u32PageAdrCycNo << ((21))));
+N   u32CmdPh = (u32CmdPh | (u32EndCmdValid << (MEMCTRL_AXI_END_CMD_VALID_SFT)));
+X   u32CmdPh = (u32CmdPh | (u32EndCmdValid << ((20))));
+N   u32CmdPh =
+N      (u32CmdPh | (NF_PAR_CMD_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X      (u32CmdPh | ((0U) << ((19))));
+N   u32CmdPh = (u32CmdPh | (u32EndCommand << (MEMCTRL_AXI_END_COMMAND_SFT)));
+X   u32CmdPh = (u32CmdPh | (u32EndCommand << ((11))));
+N   u32CmdPh = (u32CmdPh | (u32StartCommand << (MEMCTRL_AXI_START_COMMAND_SFT)));
+X   u32CmdPh = (u32CmdPh | (u32StartCommand << ((3))));
+N
+N   /*
+N      5 or more (max. upto 7) address cycles require 2 32-bit words to be send,
+N      since each word can carry upto 4 bytes (1 cycle == 1 byte). CHECK ORDER:
+N      Data1 or Data2 first? Spec. says that we should 1st. send the data
+N      containg the most significant part of the address (u32Data1) and after
+N      that lower significant part of the address (u32Data2). This MUST be
+N      verified!!! */
+N   /* Construct Command-Phase Data Re-formatted address: WARNING: This code
+N      should be valid for devices with 2kB pages only. consider suppport of
+N      4kB or bigger (or smaller than 2kB pages). See page 13 of MICRON
+N      MT29FG08xxx For 5 or more address cycles the device expects: 1st.
+N      cycle: CA7..CA0 bits 2nd. cycle: CA11..CA0 bits (right aligned) 3rd.
+N      cycle: BA7, BA6, PA5..PA0 bits 4th. cycle: BA15..BA8 bits 5th. cycle:
+N      BA17..BA6 bits (right aligned) */
+N
+N    /* Construct 1st. and 2nd. cycle byte; CA11-0: offset within page */
+N    u32Data = u32ColAdr;
+N    /* Construct 3rd. cycle byte */
+N    u32_PA5_0 = (u32PageNo & 0x3FU);
+N    u32_BA7_6 = (((u32BlockNo << 6) & 0xC0U));
+N    u32Data = (u32Data | ((u32_BA7_6 | u32_PA5_0) << 16));
+N    /* Construct 4th. cycle byte */
+N    u32_BA15_8 = (((u32BlockNo >> 2) & 0xFFU));
+N    u32Data = (u32Data | (u32_BA15_8 << 24));
+N
+N   if (pstNandCfg->u32PageAdrCycNo >= 5U)   /* check if command has 5 or more
+N                                               adress cycles */
+N   {
+N      /* Construct cycle 5th. byte */
+N      u32DataNext = (u32BlockNo >> 10); /* BA ?? ..BA16 bits */
+N      /* Send all address bytes/cycles from u32Dat1 using burst of 2 */
+N      vNF_AddrBrstWr(u32CmdPh, u32Data, u32DataNext);
+N      __DSB();
+N   }
+N   else /* 4 address bytes only */
+N   {
+N      /* Pointer init */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N      pu32CmdPhDest = (uint32_t *)u32CmdPh;    /* PRQA S 0306 */
+N      /* Send 4 address bytes/cycles from u32Dat1 */
+N      *pu32CmdPhDest = u32Data;
+N      __DSB();
+N   }
+N   if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N   {
+N      NF_uSecWait ((3U * NANDFLASH_TIME_1us));
+X      NF_uSecWait ((3U * (10U)));
+N   }
+N}
+N
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic uint32_t u32NF_DataPhaseAxiRead (const NandFlashCfg_st *
+N                                        const pstNandCfg, uint32_t u32ClearCs,
+N                                        uint32_t u32EccLast)
+N{
+N   uint32_t u32DatPh;                       /* to be send within a data phase */
+N
+N   uint32_t *pu32CmdPhDest;
+N
+N   uint32_t u32DataRead;
+N
+N   /*
+N      WARNINGS: u32NandChipAddress should be stored in cfg structure shifted
+N      already... No any END Command send! */
+N   u32DatPh = (((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK))
+X   u32DatPh = (((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)))
+N               | (u32ClearCs << (MEMCTRL_AXI_CLEAR_CS_SFT))
+X               | (u32ClearCs << ((21)))
+N               | (NF_PAR_DATA_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT))
+X               | ((1U) << ((19)))
+N               | (u32EccLast << (MEMCTRL_AXI_ECC_LAST_SFT)));
+X               | (u32EccLast << ((10))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N   pu32CmdPhDest = (uint32_t *)u32DatPh;    /* PRQA S 0306 */
+N   /* Construct Command-Phase Data Re-formatted address */
+N   u32DataRead = *pu32CmdPhDest;            /* read from device */
+N
+N   return u32DataRead;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic void vNF_DataPhaseAxiRdMulti (const NandFlashCfg_st * const pstNandCfg,
+N                                     uint32_t u32BufferLen,
+N                                     uint32_t pu32DstBuf[], uint32_t u32EccLast,
+N                                     uint32_t pu32ExtrBuf[])
+N{
+N   uint32_t u32DatPh;                       /* Word to be send within a command
+N                                               phase */
+N   uint32_t *pu32CmdPhDest;
+N
+N   uint32_t u32Idx;
+N
+N   uint32_t u32ExtrBufLen;               /* Extra Length in 32-bit Words */
+N
+N
+N   /* WARNINGS: u32NandChipAddress should be stored in cfg structure shifted
+N      already. */
+N   u32DatPh = ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X   u32DatPh = ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N   u32DatPh = (u32DatPh | (NF_PAR_CS_ACTIV << (MEMCTRL_AXI_CLEAR_CS_SFT)));
+X   u32DatPh = (u32DatPh | ((0U) << ((21))));
+N   u32DatPh =
+N      (u32DatPh | (NF_PAR_DATA_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X      (u32DatPh | ((1U) << ((19))));
+N   u32DatPh = (u32DatPh | (NF_PAR_ECC_CALC << (MEMCTRL_AXI_ECC_LAST_SFT)));
+X   u32DatPh = (u32DatPh | ((0U) << ((10))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N   pu32CmdPhDest = (uint32_t *)u32DatPh;    /* PRQA S 0306 */
+N
+N   /* Read only 2kB page (without extra block), if Disabled or the destination
+N      buffer is NULL (when function is called for Spare Area read) */
+N   if ((pstNandCfg->eExtraBlockCfg == NANDFLASH_EXTRA_BLOCK_DISABLED) ||
+N       (pu32ExtrBuf == (uint32_t *)0x00U))
+N   {
+N      for (u32Idx = 0U; u32Idx < (u32BufferLen - 1U); u32Idx++)
+N      {
+N         /* destination is always 32-bit (min. 4 bytes are read from NAND) */
+N         pu32DstBuf[u32Idx] = (*pu32CmdPhDest);
+N      }
+N      /*
+N         Chip select must be finished in the last transfer. ECC calculation End
+N         depends on the u32EccLast parameter value. */
+N      u32DatPh =
+N         ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X         ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N      u32DatPh = (u32DatPh | (NF_PAR_CS_CLEAR << (MEMCTRL_AXI_CLEAR_CS_SFT)));
+X      u32DatPh = (u32DatPh | ((1U) << ((21))));
+N      u32DatPh =
+N         (u32DatPh | (NF_PAR_DATA_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X         (u32DatPh | ((1U) << ((19))));
+N      u32DatPh = (u32DatPh | (u32EccLast << (MEMCTRL_AXI_ECC_LAST_SFT)));
+X      u32DatPh = (u32DatPh | (u32EccLast << ((10))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N      pu32CmdPhDest = (uint32_t *)u32DatPh;    /* PRQA S 0306 */
+N      /* LAST 32-bit word from device */
+N      pu32DstBuf[u32Idx] = (*pu32CmdPhDest);
+N   }
+N   else
+N   {
+N      /* Extra block enabled and read was for Main Page Area */
+N      for (u32Idx = 0U; u32Idx < u32BufferLen; u32Idx++)
+N      {
+N         /* destination is always 32-bit (min. 4 bytes are read from NAND) */
+N         pu32DstBuf[u32Idx] = (*pu32CmdPhDest);
+N      }
+N      /* Default Extra Buffer Length: 32 bytes == 8 x 32-bit words */
+N      switch (pstNandCfg->eExtraBlockCfg)
+N      {
+N         case NANDFLASH_EXTRA_BLOCK_32_BYTES:
+N         {
+N            u32ExtrBufLen = (32U >> 2);
+N         }
+N            break;
+N
+N         case NANDFLASH_EXTRA_BLOCK_16_BYTES:
+N         {
+N            u32ExtrBufLen = (16U >> 2);
+N         }
+N            break;
+N
+N         case NANDFLASH_EXTRA_BLOCK_8_BYTES:
+N         {
+N            u32ExtrBufLen = (8U >> 2);
+N         }
+N            break;
+N
+N         default:                          /* 4-bytes */
+N         {
+N            u32ExtrBufLen = (4U >> 2);
+N         }
+N      }
+N
+N      for (u32Idx = 0U; u32Idx < (u32ExtrBufLen - 1); u32Idx++)
+N      {
+N         /* destination is always 32-bit (min. 4 bytes are read from NAND) */
+N         pu32ExtrBuf[u32Idx] = (*pu32CmdPhDest);
+N      }
+N      /*
+N         Chip select must be finished in the last transfer. ECC calculation End
+N         depends on the u32EccLast parameter value. */
+N      u32DatPh =
+N         ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X         ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N      u32DatPh = (u32DatPh | (NF_PAR_CS_CLEAR << (MEMCTRL_AXI_CLEAR_CS_SFT)));
+X      u32DatPh = (u32DatPh | ((1U) << ((21))));
+N      u32DatPh =
+N         (u32DatPh | (NF_PAR_DATA_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X         (u32DatPh | ((1U) << ((19))));
+N      u32DatPh = (u32DatPh | (u32EccLast << (MEMCTRL_AXI_ECC_LAST_SFT)));
+X      u32DatPh = (u32DatPh | (u32EccLast << ((10))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N      pu32CmdPhDest = (uint32_t *)u32DatPh;    /* PRQA S 0306 */
+N      /* LAST 32-bit word from device */
+N      pu32ExtrBuf[u32Idx] = (*pu32CmdPhDest);
+N   }
+N}
+N
+N/*..........................................................................*/
+N/*
+N Indicates that ECC block is IDLE, last operation is successful and ECC
+N values have been read from memory already. Used for NAND READ operations */
+N/* TESTED */
+Nstatic NandFlashStatus_e eNF_EccReadReady (const NandFlashCfg_st *
+N                                           const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint32_t u32TimeCycles;
+N
+N   uint32_t u32Status;
+N
+N   uint32_t u32EccReadMsk;                  /* depending on Extra Block use the
+N                                               mask can varry */
+N
+N   /* Check Last ECC Status */
+N   u32Status = MEMCTRL_ECC_STATUS;
+X   u32Status = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U))));
+N   u32Status = (u32Status & MEMCTRL_ECC_LAST_STATUS_MSK);
+X   u32Status = (u32Status & ((0x3U)<<((7))));
+N   if (u32Status == MEMCTRL_ECC_LAST_STATUS_SUCCESS_BITS)
+X   if (u32Status == ((0x0U)<<((7))))
+N   {
+N      if (pstNandCfg->eExtraBlockCfg == NANDFLASH_EXTRA_BLOCK_DISABLED)
+N      {
+N         /* Extra Block NOT used */
+N         u32EccReadMsk = NF_MASK_4X_ECC_BLOCKS;
+X         u32EccReadMsk = (0x0FU);
+N      }
+N      else
+N      {
+N         /* Check Extra Block also */
+N         u32EccReadMsk = NF_MASK_5X_ECC_BLOCKS;
+X         u32EccReadMsk = (0x1FU);
+N      }
+N      u32EccReadMsk = (u32EccReadMsk << (MEMCTRL_ECC_READ_SFT));
+X      u32EccReadMsk = (u32EccReadMsk << ((25)));
+N
+N      /* Wait with timer until the ECC READ is ready. */
+N      u32TimeCycles = pstNandCfg->u32EccTimeOut;
+N      do
+N      {
+N         /* count down loop with device status check... */
+N         if (u32TimeCycles > 0x0U)
+N         {
+N            u32TimeCycles--;
+N         }
+N         u32Status = MEMCTRL_ECC_STATUS;
+X         u32Status = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U))));
+N         u32Status = (u32Status & u32EccReadMsk);
+N      }
+N      while (!((u32Status == u32EccReadMsk) || (u32TimeCycles == 0U)));
+N      /*
+N         Waiting should be finished, when the ECC read bits are 1 (read
+N         complete) or the loop counter reaches 0. */
+N      if (u32Status == u32EccReadMsk)
+N      {
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_ECC_RD_ERR; /* READ timeout expired */
+N      }
+N   }
+N   else
+N   {
+N      eResult = NANDFLASH_STATUS_ECC_ERR;   /* LAst Status NOT successful */
+N   }
+N
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNF_EccConfigure (const NandFlashCfg_st * const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint32_t u32MemCfgReg;
+N
+N
+N   eResult = eNF_EccWaitIdle (pstNandCfg);
+N
+N   if (eResult == NANDFLASH_STATUS_OK)
+N   {
+N      /* clear ALL interrupts flags */
+N      MEMCTRL_ECC_STATUS = MEMCTRL_ECC_RAW_ALL_INTS_MSK;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U)))) = (0x3FU);
+N      /* clear ecc_int interrupt flags */
+N      MEMCTRL_ECC_VALUE0 = 0x0U;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x018U)))) = 0x0U;
+N      MEMCTRL_ECC_VALUE1 = 0x0U;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x01CU)))) = 0x0U;
+N      MEMCTRL_ECC_VALUE2 = 0x0U;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x020U)))) = 0x0U;
+N      MEMCTRL_ECC_VALUE3 = 0x0U;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x024U)))) = 0x0U;
+N      MEMCTRL_ECC_VALUE4 = 0x0U;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x028U)))) = 0x0U;
+N      /*
+N         Prepare ECC memory config (valid for LARGE PAGE devices only! Select:
+N         MEMCTRL_ECC_JUMP_NO_BITS (reads and writes only occur on the end of
+N         page). MEMCTRL_ECC_READ_END_MSK: ECC read at the end of the page.
+N         MEMCTRL_ECC_MODE_CALC_RD_WR_BITS: ECC calculated and written/read.
+N         to/from memory . MEMCTRL_ECC_PAGE_SIZE_4X512_BITS: Page contains 4 x
+N         512 bytes (2048). */
+N      u32MemCfgReg = MEMCTRL_ECC_MEMCFG;
+X      u32MemCfgReg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U))));
+N      /* Clear ECC related and keep other settings */
+N      u32MemCfgReg = (u32MemCfgReg & (0xFFFFFF00UL));
+N      /* Configure new ECC settings */
+N      u32MemCfgReg = u32MemCfgReg | ((MEMCTRL_ECC_A8_OUTPUT_MSK) | (MEMCTRL_ECC_JUMP_NO_BITS)
+X      u32MemCfgReg = u32MemCfgReg | ((((0x0U)<<((7)))) | (((0x00U)<<((5))))
+N                                     | (MEMCTRL_ECC_READ_END_MSK)
+X                                     | (((0x1U)<<((4))))
+N                                     | (MEMCTRL_ECC_MODE_CALC_RD_WR_BITS) |
+X                                     | (((0x2U)<<((2)))) |
+N                                     (MEMCTRL_ECC_PAGE_SIZE_4X512_BITS));
+X                                     (((0x3U)<<((0)))));
+N      /* Write back new ECC settings */
+N      MEMCTRL_ECC_MEMCFG = u32MemCfgReg;
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U)))) = u32MemCfgReg;
+N      /*
+N         Specify device-specific commands the ECC block uses to DETECT reading:
+N         READ START, READ END, if supported (END VALID) and writing (PROGRAM). */
+N      MEMCTRL_ECC_MEMCMD1 =
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x008U)))) =
+N         ((MEMCTRL_ECC_RD_CMD_END_VALID_MSK) |
+X         ((((0x1U)<<((24)))) |
+N          ((NANDFLASH_CMD_PAGE_RD_END) << (MEMCTRL_ECC_RD_CMD_END_SFT)) |
+X          (((0x30U)) << ((16))) |
+N          ((NANDFLASH_CMD_PAGE_RD_START) << (MEMCTRL_ECC_RD_CMD_SFT)) |
+X          (((0x00U)) << ((8))) |
+N          ((NANDFLASH_CMD_PROGRAM_START) << (MEMCTRL_ECC_WR_CMD_SFT)));
+X          (((0x80U)) << ((0))));
+N      /*
+N         Specify device-specific commands to be used, while accessing different
+N         parts in NAND page. The usage of this configuration is dependent on the
+N         ecc_jump bit in the ecc_memcfg register. MEMCTRL_ECC_JUMP_NO_BITS: NO
+N         support for jumps-> below config is meaningless
+N         MEMCTRL_ECC_JUMP_COL_CHNG_BITS: Jump using random column change
+N         commands, see MEMCTRL_ECC_MEMCMD2 MEMCTRL_ECC_JUMP_FUL_CMD_BITS: Jump
+N         using Full command, see MEMCTRL_ECC_MEMCMD1 above Consider ONFi random
+N         access commands: Change Read Column Command: 0x05 Change Write Column
+N         Command: 0x85 Currently configured for "Jump using Full command" since
+N         this insures the proper operation for most devices, however this counts
+N         against the maximum number of program operations before a NAND page must
+N         be erased. */
+N      MEMCTRL_ECC_MEMCMD2 =
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x00CU)))) =
+N         (((NANDFLASH_CMD_RD_COL_CH_E_V) << 24) |
+X         ((((0x1U)) << 24) |
+N          ((NANDFLASH_CMD_RD_COL_CH_END) << 16) | ((NANDFLASH_CMD_RD_COL_CHNG)
+X          (((0xE0U)) << 16) | (((0x05U))
+N                                                   << 8) |
+N          ((NANDFLASH_CMD_WR_COL_CHNG) << 0));
+X          (((0x85U)) << 0));
+N      eResult = NANDFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      /* could be optimized / removed since eResult is updated already */
+N      eResult = NANDFLASH_STATUS_BUSY_ERR;  /* busy timout expired */
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic NandFlashStatus_e eNF_EccBitFix (uint32_t u32EccValue, uint8_t pu8Buf[])
+N{
+N   uint32_t u32ByteNo;
+N
+N   uint32_t u32BitNo;
+N
+N   uint8_t u8BitMask;
+N
+N
+N   /* Correct the right bit in the right byte: 5 upper bits -> byte number; 3
+N      lower bits -> bit number within a byte */
+N   u32ByteNo = (u32EccValue & (MEMCTRL_ECC_VAL_VALUE_MSK));
+X   u32ByteNo = (u32EccValue & (((0x00FFFFFFU)<<((0)))));
+N   u32BitNo = u32ByteNo;
+N   u32ByteNo = (u32ByteNo >> 3U);           /* get rid of the bit number */
+N   u32BitNo = (u32BitNo & 0x7U);            /* get rid of the byte number */
+N   u8BitMask = (uint8_t)(0x1U << u32BitNo);
+N
+N   if ((pu8Buf[u32ByteNo] & (u8BitMask)) == 0x00U)
+N   {
+N      /* defective bit is 0 -> SET this bit */
+N      pu8Buf[u32ByteNo] = pu8Buf[u32ByteNo] | u8BitMask;
+N   }
+N   else
+N   {
+N      /* defective bit is 1 -> CLEAR this bit */
+N      u8BitMask = (~u8BitMask);
+N      pu8Buf[u32ByteNo] = pu8Buf[u32ByteNo] & u8BitMask;
+N   }
+N   return NANDFLASH_STATUS_OK;
+N}
+N
+N/*..........................................................................*/
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 16.7 The object addressed by the pointer parameter
+N*          'pu8DstBuf' (same for 'pu8ExtrBuf') is not modified and so the
+N*          pointer could be of type 'pointer to const'.
+N*
+N* DESC   : The two warnings are not applicable. the MISRA tool did not recognize
+N*          that this function calls suroutines, which might modify the content
+N*          of both buffers.
+N****/
+Nstatic NandFlashStatus_e eNF_EccCorrectLarge (const NandFlashCfg_st * const pstNandCfg,
+N                                              uint8_t pu8DstBuf[],     /* PRQA S 3673 */
+N                                              uint8_t pu8ExtrBuf[])    /* PRQA S 3673 */
+N{
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N   uint32_t u32EccStatus;
+N
+N   uint32_t u32EccValue;
+N
+N   uint32_t u32EccMsk;
+N
+N   uint32_t u32BlockNo;
+N
+N   uint32_t u32ValRegAdr;
+N
+N   volatile uint32_t *pu32ValueRegister;
+N
+N   uint32_t u32BufAddr;   /* track SW buffer address */
+N
+N   uint32_t u32MaxBlockNo = 3U; /* by default Extra B. disabled */
+N
+N
+N   /* Wait until ECC module is ready */
+N   eResult = eNF_EccWaitIdle (pstNandCfg);
+N
+N   if (eResult == NANDFLASH_STATUS_OK)
+N   {
+N      u32EccStatus = MEMCTRL_ECC_STATUS;
+X      u32EccStatus = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U))));
+N      /*
+N         Other bits are meaningful only, if ecc_last_status == b00: Completed
+N         successfully. */
+N      if ((u32EccStatus & (MEMCTRL_ECC_LAST_STATUS_MSK)) ==
+X      if ((u32EccStatus & (((0x3U)<<((7))))) ==
+N          (MEMCTRL_ECC_LAST_STATUS_SUCCESS_BITS))
+X          (((0x0U)<<((7)))))
+N      {
+N         /* if Extra Block used - take a different bit mask */
+N         if (pstNandCfg->eExtraBlockCfg == NANDFLASH_EXTRA_BLOCK_DISABLED)
+N         {
+N            u32EccMsk = 0x0FU;              /* Extra Block NOT used */
+N         }
+N         else
+N         {
+N            u32EccMsk = 0x1FU;              /* Check also Extra Block */
+N         }
+N         /* Check if ALL ECC VALID (if ALL block of data read correctly?) */
+N         if ((u32EccStatus & (u32EccMsk << (MEMCTRL_ECC_VALUE_VALID_SFT))) ==
+X         if ((u32EccStatus & (u32EccMsk << ((10)))) ==
+N             (u32EccMsk << (MEMCTRL_ECC_VALUE_VALID_SFT)))
+X             (u32EccMsk << ((10))))
+N         {
+N            /*
+N               Check with TIMEOUT, if the ECC codes for ALL blocks of data have
+N               been read correctly. VERIFY, if wait with TIMEOUT is really
+N               needed... */
+N            eResult = eNF_EccReadReady (pstNandCfg);
+N            if (eResult == NANDFLASH_STATUS_OK)
+N            {
+N               /* Check if ALL ECC PASSED (if all ecc_fail flags are zero?) */
+N               u32EccStatus = MEMCTRL_ECC_STATUS;
+X               u32EccStatus = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U))));
+N/***
+N* MESSAGE: Msg(3:3371) Unsigned left shift operation << definitely truncates
+N*          bits from result.
+N*
+N* DESC   : This message is TRUE, however it was the intension to get rid of
+N*          unused bits.
+N****/
+N               if ((u32EccStatus & (u32EccMsk << (MEMCTRL_ECC_ECC_FAIL_SFT))) ==
+X               if ((u32EccStatus & (u32EccMsk << ((15)))) ==
+N                   0x00U)
+N               {
+N                  /*
+N                     ALL ecc_fail bits == 0 -> ECC PASS - correction not
+N                     needed. ** Here the reading is over with ALL ECC correct
+N                     *** */
+N                  eResult = NANDFLASH_STATUS_OK;
+N               }
+N               else                         /* ecc_fail == 1: FAIL */
+N               {
+N                  /*
+N                     With extra block: 0 to 4 registers need to be analyzed and
+N                     without extra block: 0 to 3 registers need to be analyzed */
+N                  if (pstNandCfg->eExtraBlockCfg !=
+N                      NANDFLASH_EXTRA_BLOCK_DISABLED)
+N                  {
+N                     u32MaxBlockNo = 4U;
+N                  }
+N                  u32BlockNo = 0U;          /* start at MEMCTRL_ECC_VALUE0 */
+N                  do
+N                  {
+N                     /*
+N                        Calculate address to be accessed and read from that
+N                        address: */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 10.1 Integral expression implicitly converted to
+N*          wider type.
+N*
+N* DESC   : This message is TRUE, however, in that particular casede there is no
+N*          risk for crossing of the 32-bit type range.
+N****/
+N                     u32ValRegAdr = (uint32_t)(MEMCTRL_ECC_VALUE_ADR (u32BlockNo));     /* PRQA S 3212 */
+X                     u32ValRegAdr = (uint32_t)(((((0xC0200000U))+((0x00000400U))+(0x018U)+((4U)*((uint32_t)(u32BlockNo))))));      
+N                     pu32ValueRegister = (volatile uint32_t *)u32ValRegAdr;
+N                     u32EccValue = (uint32_t)(*pu32ValueRegister);    /* PRQA S 3212 */
+N
+N                     /* check ecc_fail flags, if set to 1: try to correct */
+N                     if ((u32EccValue & (MEMCTRL_ECC_VAL_FAIL_MSK)) != 0x0U)
+X                     if ((u32EccValue & (((0x1U)<<((28))))) != 0x0U)
+N                     {
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 1.1 [L] Nesting of control structures (statements)
+N*          exceeds 15 - program is non-conforming.
+N*          MISRA-C:2004 Rule 1.1; REFERENCE - ISO-5.2.4.1 Translation Limits
+N*
+N* DESC   : This message is TRUE, however, to keep the code readable the source
+N*          code is preserved in its orginal form.
+N****/
+N                        /* check ecc_correct flag, if set: Correct bad-bit */
+N                        if ((u32EccValue & (MEMCTRL_ECC_VAL_CORRECT_MSK)) !=
+X                        if ((u32EccValue & (((0x1U)<<((27))))) !=
+N                            0x0U)
+N                        {    /* PRQA S 0715 */
+N                           /* Calculate offest within the SW buffer depending
+N                              on the ECC block number. Block size is by default
+N                              512 bytes for a 2kB Page NAND device. */
+N                           if (u32BlockNo < u32MaxBlockNo)
+N                           {
+N                              /* for 4x 512 Blocks from 2kB Page */
+N                              u32BufAddr = (u32BlockNo * 512U);
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*          MISRA-C:2004 Rule 1.2; [U] Integral type is not large enough to hold a pointer value.
+N*
+N* DESC   : These messages are undestood, but is is required to manipulate pointers
+N*          using integer calculations. Since within thise system only 32-bit
+N*          pointers are used - there should be no danger to cast as below.
+N****/
+N                              u32BufAddr = (u32BufAddr + (uint32_t)pu8DstBuf);    /* PRQA S 0306 */
+N                           }
+N                           else
+N                           {
+N                              /* Extra Block: bit fix in Extra buffer */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*          MISRA-C:2004 Rule 1.2; [U] Integral type is not large enough to hold a pointer value.
+N*
+N* DESC   : These messages are undestood, but is is required to manipulate pointers
+N*          using integer calculations. Since within thise system only 32-bit
+N*          pointers are used - there should be no danger to cast as below.
+N****/
+N                              u32BufAddr = (uint32_t)pu8ExtrBuf;    /* PRQA S 0306 */
+N                           }
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This message is undestood, but is was required to manipulate (see
+N*          earlier description) pointers using integer calculations.
+N****/
+N                           eResult =
+N                              eNF_EccBitFix (u32EccValue,
+N                                             (uint8_t *)u32BufAddr);    /* PRQA S 0306 */
+N                        }
+N                        else
+N                        {    /* PRQA S 0715 */
+N                           /* Correction NOT possible */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 1.1 [L] Nesting of control structures (statements)
+N*          exceeds 15 - program is non-conforming.
+N*          MISRA-C:2004 Rule 1.1; REFERENCE - ISO-5.2.4.1 Translation Limits
+N*
+N* DESC   : This message is TRUE, however, to keep the code readable the source
+N*          code is preserved in its orginal form.
+N****/
+N                           eResult = NANDFLASH_STATUS_ECC_ERR;
+N                        }
+N                     }
+N                     /* dO it for next ECC block / Value register */
+N                     u32BlockNo++;
+N                     /* Run this loop only, if both below conditions are TRUE */
+N                  }
+N                  while (((u32BlockNo <= u32MaxBlockNo) &&
+N                          (eResult == NANDFLASH_STATUS_OK)));
+N
+N                  /* *** FINAL eResult available *** */
+N               }
+N            }
+N            else
+N            {
+N               /* could be optimized / removed since eResult is updated already
+N                */
+N               eResult = NANDFLASH_STATUS_BUSY_ERR; /* busy timout expired */
+N            }
+N         }
+N         else
+N         {
+N            eResult = NANDFLASH_STATUS_ECC_RD_ERR; /* SW debugging needed */
+N         }
+N      }
+N      else
+N      {
+N         /* Last Status PROBLEM: Error reason should be analyzed */
+N         eResult = NANDFLASH_STATUS_ECC_ERR;
+N      }
+N   }
+N   else
+N   {
+N      /* could be optimized / removed since eResult is updated already */
+N      eResult = NANDFLASH_STATUS_BUSY_ERR;  /* busy timout expired */
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+Nstatic NandFlashStatus_e eNF_ReadOnfiParamsPage (NandFlashCfg_st * pstNandCfg)
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N   uint32_t u32Idx;
+N
+N   uint32_t u32ReadNand;
+N
+N   uint32_t u32tmp;                   /* temporary */
+N
+N   uint32_t u32DevCrc;                /* CRC read from NAND device */
+N
+N   uint32_t u32CalCrc;                /* CRC based on read parameters */
+N
+N   uint32_t u32tmpOffset;
+N
+N   uint32_t u32Tmp;
+N
+N   uint8_t u8RowCyc;
+N
+N   uint8_t u8ColCyc;
+N
+N   uint32_t u32ParOffset = 0x00U;                /* Parameter Page offset */
+N
+N
+N      do
+N      {
+N         /* Read ONFI Parameter Page */
+N         vNF_CmdPhaseAxiRegAddr (pstNandCfg, u32ParOffset,
+N                                 NANDFLASH_CMD_ONFI_READ_PARAM);
+X                                 (0xECU));
+N         /* check with timeout for NAND readyness */
+N         eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N         if(eResult == NANDFLASH_STATUS_OK)
+N         {
+N          /* Return to Read Mode after the Status check (Internal ECC only) */
+N          if(pstNandCfg->eDeviceType != NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N          {
+N            vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_MODE);
+X            vNF_CmdPhaseAxi (pstNandCfg, (0x00U));
+N          }
+N         /*
+N            Read 0-253 parameters with integrity check */
+N         for (u32Idx = 0U; u32Idx < (NANDFLASH_ONFI_MAX_PARAM - 4U);
+X         for (u32Idx = 0U; u32Idx < ((256U) - 4U);
+N              u32Idx = u32Idx + 4)
+N         {
+N
+N            u32ReadNand =
+N               u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_ACTIV,
+X               u32NF_DataPhaseAxiRead (pstNandCfg, (0U),
+N                                       NF_PAR_IGNORE);
+X                                       (0U));
+N            pstNandCfg->pu8Param[u32Idx] = (uint8_t)(u32ReadNand & 0x000000FFU);
+N            pstNandCfg->pu8Param[u32Idx + 1] =
+N               (uint8_t)((u32ReadNand >> 8) & 0x000000FFU);
+N            pstNandCfg->pu8Param[u32Idx + 2] =
+N               (uint8_t)((u32ReadNand >> 16) & 0x000000FFU);
+N            pstNandCfg->pu8Param[u32Idx + 3] =
+N               (uint8_t)((u32ReadNand >> 24) & 0x000000FFU);
+N         }
+N         /* Last read with CS to be disabled */
+N
+N         u32ReadNand =
+N            u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_CLEAR, NF_PAR_IGNORE);
+X            u32NF_DataPhaseAxiRead (pstNandCfg, (1U), (0U));
+N
+N         pstNandCfg->pu8Param[u32Idx] = (uint8_t)(u32ReadNand & 0x000000FFU);
+N         pstNandCfg->pu8Param[u32Idx + 1] = (uint8_t)((u32ReadNand >> 8) & 0x000000FFU);
+N         pstNandCfg->pu8Param[u32Idx + 2] = (uint8_t)((u32ReadNand >> 16) & 0x000000FFU);
+N         pstNandCfg->pu8Param[u32Idx + 3] = (uint8_t)((u32ReadNand >> 24) & 0x000000FFU);
+N
+N         /* Build CRC-16 word from last 2 bytes */
+N         u32tmp = pstNandCfg->pu8Param[(NANDFLASH_ONFI_MAX_PARAM - 1U)];
+X         u32tmp = pstNandCfg->pu8Param[((256U) - 1U)];
+N         u32DevCrc = (u32tmp << 8);         /* upper CRC-16 byte */
+N         u32tmp = pstNandCfg->pu8Param[(NANDFLASH_ONFI_MAX_PARAM - 2U)];
+X         u32tmp = pstNandCfg->pu8Param[((256U) - 2U)];
+N         u32DevCrc = u32DevCrc | u32tmp;    /* lower CRC-16 byte */
+N         /*
+N            CRC-16 calculation for all, but last 2 values */
+N         u32CalCrc =
+N            u16CRCGEN_CalculateCrc16 (&(pstNandCfg->pu8Param[0]),
+N                                      (NANDFLASH_ONFI_MAX_PARAM - 2U));
+X                                      ((256U) - 2U));
+N         if (u32CalCrc == u32DevCrc)
+N         {
+N            eResult = NANDFLASH_STATUS_OK;
+N         }
+N         else                               /* CRC-16 error - try 1st/2nd
+N                                               Redundant Parameter Page */
+N         {
+N            u32tmpOffset = (2 * NANDFLASH_ONFI_MAX_PARAM);
+X            u32tmpOffset = (2 * (256U));
+N
+N            if (u32ParOffset < u32tmpOffset)
+N            {
+N               u32ParOffset = (u32ParOffset + NANDFLASH_ONFI_MAX_PARAM);
+X               u32ParOffset = (u32ParOffset + (256U));
+N            }
+N            else
+N            {
+N               eResult = NANDFLASH_STATUS_CRC_ERR; /* Exit loop with error */
+N            }
+N          }
+N         }
+N      }
+N      while (eResult == NANDFLASH_STATUS_UNKNOWN);
+N
+N      if (eResult == NANDFLASH_STATUS_OK)   /* CRC was OK */
+N      {
+N
+N         /* Compare readout to ONFI signature: ASCI codes */
+N         if ((pstNandCfg->pu8Param[0] == 0x4FU) &&
+N             (pstNandCfg->pu8Param[1] == 0x4EU) &&
+N             (pstNandCfg->pu8Param[2] == 0x46U) &&
+N             (pstNandCfg->pu8Param[3] == 0x49U))
+N         {
+N            /* Extract Bus Width */
+N            if ((pstNandCfg->pu8Param[6] & 0x01U) == 0x01U)
+N            {
+N               pstNandCfg->eBusWidth = NANDFLASH_BUS_WIDTH_16;
+N            }
+N            else
+N            {
+N               pstNandCfg->eBusWidth = NANDFLASH_BUS_WIDTH_8;
+N            }
+N            /* Extract Page Size */
+N            pstNandCfg->u32PageSize = pstNandCfg->pu8Param[80];
+N            u32Tmp = pstNandCfg->pu8Param[81];
+N            pstNandCfg->u32PageSize = pstNandCfg->u32PageSize | (u32Tmp << 8);
+N            u32Tmp = pstNandCfg->pu8Param[82];
+N            pstNandCfg->u32PageSize = pstNandCfg->u32PageSize | (u32Tmp << 16);
+N            u32Tmp = pstNandCfg->pu8Param[83];
+N            pstNandCfg->u32PageSize = pstNandCfg->u32PageSize | (u32Tmp << 24);
+N            /*
+N               Extract Spare Area Size */
+N            pstNandCfg->u16SpareSize = pstNandCfg->pu8Param[84];
+N            u32Tmp = pstNandCfg->pu8Param[85];
+N            pstNandCfg->u16SpareSize =
+N               pstNandCfg->u16SpareSize | (uint16_t)(u32Tmp << 8);
+N            /*
+N               Extract Block Size (number of Pages) */
+N            pstNandCfg->u32BlkSize = pstNandCfg->pu8Param[92];
+N            u32Tmp = pstNandCfg->pu8Param[93];
+N            pstNandCfg->u32BlkSize = pstNandCfg->u32BlkSize | (u32Tmp << 8);
+N            u32Tmp = pstNandCfg->pu8Param[94];
+N            pstNandCfg->u32BlkSize = pstNandCfg->u32BlkSize | (u32Tmp << 16);
+N            u32Tmp = pstNandCfg->pu8Param[95];
+N            pstNandCfg->u32BlkSize = pstNandCfg->u32BlkSize | (u32Tmp << 24);
+N            /*
+N               Page access Address Cycles number */
+N            u8RowCyc = (pstNandCfg->pu8Param[101] & 0x0FU);
+N            u8ColCyc = ((pstNandCfg->pu8Param[101] & 0xF0U) >> 4);
+N            pstNandCfg->u32PageAdrCycNo =
+N               ((uint32_t)u8RowCyc + (uint32_t)u8ColCyc)+1;
+N            /*
+N               Bits of ECC correctability */
+N            pstNandCfg->u8EccBitsCorr = pstNandCfg->pu8Param[112];
+N         }
+N         else
+N         {
+N            /* device is not compliant with ONFI standard */
+N            eResult = NANDFLASH_STATUS_NO_COMPLY_ERR;
+N         }
+N      }
+N      else
+N      {
+N         /* CRC ERROR: Error code updated already: can be optimized */
+N      }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+Nstatic NandFlashStatus_e eNF_SetFeature (const NandFlashCfg_st * const pstNandCfg,
+N                                         uint32_t u32SubAddress,
+N                                         uint8_t const pu8SubParBuf[])
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint32_t u32DatPh;                       /* Word to be send within a command
+N                                               phase */
+N   uint32_t *pu32CmdPhDest;
+N
+N   uint32_t u32WrData;
+N
+N   uint32_t u32Tmp;
+N
+N
+N   /* ONFI SET FEATURE command with address == 0x90 == ECC ctrl */
+N   vNF_CmdPhaseAxiRegAddr (pstNandCfg, u32SubAddress,
+N                           NANDFLASH_CMD_ONFI_SET_FEATURE);
+X                           (0xEFU));
+N   /*
+N      WAIT ALE to data start tADL == 70ns Timing for tADL begins in the address
+N      cycle, on the final rising edge of WE#, and ends with the first rising
+N      edge of WE# for data input. On FPGA target it takes ~2u to send 8-bytes
+N      using 4 x !WE cycles - so total min. time is: 2.1 [us] + 70 [ns] */
+N   /*
+N      4 bytes are written per single access, so create a word to be written */
+N   u32WrData = pu8SubParBuf[0];
+N   u32Tmp = pu8SubParBuf[1];
+N   u32WrData = u32WrData | (u32Tmp << 8);
+N   u32Tmp = pu8SubParBuf[2];
+N   u32WrData = u32WrData | (u32Tmp << 16);
+N   u32Tmp = pu8SubParBuf[3];
+N   u32WrData = u32WrData | (u32Tmp << 24);
+N   /*
+N      Chip select must be finished in the last transfer. ECC calculation End
+N      depends on the u32EccLast parameter value. */
+N   u32DatPh = ((pstNandCfg->u32NandChipAddress) & (MEMCTRL_AXI_BASE_ADDR_MASK));
+X   u32DatPh = ((pstNandCfg->u32NandChipAddress) & ((0xFF000000U)));
+N   u32DatPh = (u32DatPh | (NF_PAR_CS_CLEAR << (MEMCTRL_AXI_CLEAR_CS_SFT)));
+X   u32DatPh = (u32DatPh | ((1U) << ((21))));
+N   u32DatPh = (u32DatPh | (NF_PAR_IGNORE << (MEMCTRL_AXI_END_CMD_VALID_SFT)));
+X   u32DatPh = (u32DatPh | ((0U) << ((20))));
+N   u32DatPh =
+N      (u32DatPh | (NF_PAR_DATA_PHASE << (MEMCTRL_AXI_CMD_DATA_SELECT_SFT)));
+X      (u32DatPh | ((1U) << ((19))));
+N   u32DatPh =
+N      (u32DatPh | (NANDFLASH_CMD_PROGRAM_END << (MEMCTRL_AXI_END_COMMAND_SFT)));
+X      (u32DatPh | ((0x10U) << ((11))));
+N   u32DatPh = (u32DatPh | (NF_PAR_IGNORE << (MEMCTRL_AXI_ECC_LAST_SFT)));
+X   u32DatPh = (u32DatPh | ((0U) << ((10))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : This warning cannot be avoided, since the PL353 MemCtrl requires a
+N*          specific pointer/access based on the integer value built upon the
+N*          combination of integer parameters.
+N****/
+N   pu32CmdPhDest = (uint32_t *)u32DatPh;    /* PRQA S 0306 */
+N   *pu32CmdPhDest = u32WrData;              /* 4 x 8-bit Write to device */
+N
+N   __DSB();
+N
+N   /* Wait until the ECC Feature is really setup */
+N   eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* NOT_TESTED */
+NNandFlashStatus_e eNF_GetDeviceStatus (const NandFlashCfg_st * const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint8_t u8DevStat;
+N
+N/*
+N ONFI:
+N In the case of non-interleaved operations, the Read Status function retrieves
+N a status value for the last operation issued. If multiple interleaved operations
+N are in progress on a single LUN, then Read Status returns the composite status
+N value for status register bits that are independent per interleaved address.
+N Specifically, Read Status shall return the combined status value of the
+N independent status register bits according to Table 18. See section 5.10 for
+N status register bit definitions. */
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_STATUS);
+X      vNF_CmdPhaseAxi (pstNandCfg, (0x70U));
+N      /* read ... */
+N      u8DevStat =
+N         (uint8_t)u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_CLEAR,
+X         (uint8_t)u32NF_DataPhaseAxiRead (pstNandCfg, (1U),
+N                                          NF_PAR_IGNORE);
+X                                          (0U));
+N      /* check only bit0: for non-interleaved operations */
+N      if ((u8DevStat & NF_INTERN_ECC_FAILED) == NF_INTERN_ECC_FAILED)
+X      if ((u8DevStat & (0x01U)) == (0x01U))
+N      {
+N         eResult = NANDFLASH_STATUS_OPERATION_ERR;
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+NNandFlashStatus_e eNF_ReadDeviceStatus (const NandFlashCfg_st * const pstNandCfg,
+N                                        uint32_t* pu32NandStatus )
+N{
+N   NandFlashStatus_e eResult;
+N   eResult = NANDFLASH_STATUS_OK;
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_STATUS);
+X      vNF_CmdPhaseAxi (pstNandCfg, (0x70U));
+N      /* read ... */
+N      *pu32NandStatus =
+N         (uint8_t)u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_CLEAR,
+X         (uint8_t)u32NF_DataPhaseAxiRead (pstNandCfg, (1U),
+N                                          NF_PAR_IGNORE);
+X                                          (0U));
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N
+N/* ***************** NAND Flash API Functions Definitions ***************** */
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_GetHwConfig (NandFlashCfg_st * pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint32_t u32RdCfg;
+N
+N   uint32_t u32Tmp;
+N
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      /* copy cycles data from register to the configuration structure */
+N      u32RdCfg = MEMCTRL_NAND_CYCLES;
+X      u32RdCfg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000180U))+(0x000U))));
+N
+N      pstNandCfg->u32ReadCycleTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T0_MSK)) >> (MEMCTRL_SET_T0_SFT));
+X         ((u32RdCfg & (((0xFU)<<((0))))) >> ((0)));
+N      pstNandCfg->u32WriteCycleTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T1_MSK)) >> (MEMCTRL_SET_T1_SFT));
+X         ((u32RdCfg & (((0xFU)<<((4))))) >> ((4)));
+N      pstNandCfg->u32AssertDelayReN =
+N         ((u32RdCfg & (MEMCTRL_SET_T2_MSK)) >> (MEMCTRL_SET_T2_SFT));
+X         ((u32RdCfg & (((0x7U)<<((8))))) >> ((8)));
+N      pstNandCfg->u32DeAssertDelayWeN =
+N         ((u32RdCfg & (MEMCTRL_SET_T3_MSK)) >> (MEMCTRL_SET_T3_SFT));
+X         ((u32RdCfg & (((0x7U)<<((11))))) >> ((11)));
+N      pstNandCfg->u32StatusRdTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T4_MSK)) >> (MEMCTRL_SET_T4_SFT));
+X         ((u32RdCfg & (((0x7U)<<((14))))) >> ((14)));
+N      pstNandCfg->u32IdRdTime =
+N         ((u32RdCfg & (MEMCTRL_SET_T5_MSK)) >> (MEMCTRL_SET_T5_SFT));
+X         ((u32RdCfg & (((0x7U)<<((17))))) >> ((17)));
+N      pstNandCfg->u32BusyCycleToReN =
+N         ((u32RdCfg & (MEMCTRL_SET_NAND_T6_MSK)) >> (MEMCTRL_SET_T6_SFT));
+X         ((u32RdCfg & (((0xFU)<<((20))))) >> ((20)));
+N      /* copy operation mode data from register to the configuration structure */
+N      u32RdCfg = MEMCTRL_NAND_OPMODE;
+X      u32RdCfg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000180U))+(0x004U))));
+N      /*
+N         Load u32BusWidth */
+N      u32Tmp = ((u32RdCfg & (MEMCTRL_SET_MW_MSK)));
+X      u32Tmp = ((u32RdCfg & (((0x3U)<<((0))))));
+N      if (u32Tmp == (MEMCTRL_SET_MW_16_BITS))
+X      if (u32Tmp == (((0x1U)<<((0)))))
+N      {
+N         pstNandCfg->eBusWidth = NANDFLASH_BUS_WIDTH_16;
+N      }
+N      else
+N      {
+N         /* 0x00 and all other values should result as 8-bit mode */
+N         pstNandCfg->eBusWidth = NANDFLASH_BUS_WIDTH_8;
+N      }
+N      u32RdCfg = MEMCTRL_ECC_MEMCFG;
+X      u32RdCfg = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U))));
+N      u32Tmp = ((u32RdCfg & (MEMCTRL_ECC_EXTRA_BLOCK_MSK)));
+X      u32Tmp = ((u32RdCfg & (((0x1U)<<((10))))));
+N      if (u32Tmp == (MEMCTRL_ECC_EXTRA_BLOCK_MSK))
+X      if (u32Tmp == (((0x1U)<<((10)))))
+N      {
+N         u32Tmp = ((u32RdCfg & (MEMCTRL_ECC_EXTRA_BLOCK_SIZE_MSK)));
+X         u32Tmp = ((u32RdCfg & (((0x3U)<<((11))))));
+N         switch (u32Tmp)
+N         {
+N            case MEMCTRL_ECC_EXTRA_BLOCK_SIZE_32B_BITS:
+X            case ((0x3U)<<((11))):
+N            {
+N               pstNandCfg->eExtraBlockCfg = NANDFLASH_EXTRA_BLOCK_32_BYTES;
+N            }
+N               break;
+N            case MEMCTRL_ECC_EXTRA_BLOCK_SIZE_16B_BITS:
+X            case ((0x2U)<<((11))):
+N            {
+N               pstNandCfg->eExtraBlockCfg = NANDFLASH_EXTRA_BLOCK_16_BYTES;
+N            }
+N               break;
+N            default:
+N            {
+N               pstNandCfg->eExtraBlockCfg = NANDFLASH_EXTRA_BLOCK_8_BYTES;
+N            }
+N            break;            
+N         }
+N      }
+N      else
+N      {
+N         pstNandCfg->eExtraBlockCfg = NANDFLASH_EXTRA_BLOCK_DISABLED;
+N      }
+N
+N      /* Check all settings */
+N      eResult = eNF_ConfigVerify (pstNandCfg);
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_Initialize (NandFlashCfg_st * pstNandCfg,
+N                                         NandFlashDeviceType_e eDeviceType)
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N   uint32_t u32DirCmdVal;    /* for direct_cmd register value */
+N
+N   uint32_t u32Opmode;
+N
+N   uint32_t u32Cycles;
+N
+N   uint32_t u32Cyc;
+N
+N   uint32_t u32Mod;
+N
+N   uint32_t u32TryCnt = 0;   /* Register-update counter */
+N
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      /* First of all Device Initialization requires Power Supply settling
+N         time, which affects the Ready/#Busy line at Power Up. The NAND device
+N         spec. requires to wait min. 100us from PowerUp (if Busy line is not
+N         monitored). Since in PL353 the Ready state is asserting the
+N         edge-sensitive interrupt - the R/#B line cannot be monitored since the
+N         configuration of the signal requires MEMCTRL_BUSY_CFG_SET macro call
+N         (if configuration is done to late the #Busy/Ready edge IRQ will not be
+N         "latched" be PL353). */
+N      NF_uSecWait (NANDFLASH_INIT_TIME_MAX_us_CFG);
+X      NF_uSecWait (((100U * (10U))));
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 12.11 Unsigned multiplication in constant
+N*          expression wraps around past maximum value.
+N*
+N* DESC   : Several warnings generated about the risk to cross the boundary of
+N*          the 32-bit integer type should be taken into account, while changing
+N*          the values/parameters of: NANDFLASH_BUSY_TIMEOUT_MAX_CFG and
+N*          NANDFLASH_ECC_TIMEOUT_MAX_CFG. With current selections the result
+N*          of the macros/calculations is within the range.
+N****/
+N      pstNandCfg->u32BusyTimeOut = NANDFLASH_BUSY_TIMEOUT_MAX_CFG;
+X      pstNandCfg->u32BusyTimeOut = ((1000U * ((1000U * ((10U))))) /24U);
+N      pstNandCfg->u32EccTimeOut = NANDFLASH_ECC_TIMEOUT_MAX_CFG;
+X      pstNandCfg->u32EccTimeOut = ((1000U * ((1000U * ((10U))))) /10U);
+N      /* Enable Interrupts: INT_ENABLE0 and INT_ENABLE1 bits */
+N      /* MEMCTRL_MEM_CFG_SET = 0x00000003U; */
+N
+N      if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N      {
+N         /* ENABLE Busy signal for NAND with HOST ECC */
+N         MEMCTRL_BUSY_CFG_SET = MEMCTRL_BUSY_ENABLE;
+X         (*((volatile uint32_t*) (((0xC0200000U))+(0x204U)))) = (0x20U);
+N         NANDFLASH_CLEAR_READY_IRQ ();         /* Clear after BUSY line cfg */
+X         (*((volatile uint32_t*) (((0xC0200000U))+(0x00CU))))=((0x1U)<<((4)));          
+N      }
+N
+N      /* Warning: specify u32NandChipAddress according to LSI/FPGA spec. */
+N      pstNandCfg->u32NandChipAddress = MEMCTRL_NAND_CHIP_ADDRESS;
+X      pstNandCfg->u32NandChipAddress = (0x24000000U);
+N
+N      eResult = eNF_ConfigVerify (pstNandCfg);
+N
+N      if (eResult == NANDFLASH_STATUS_OK)
+N      {
+N         /* Initial copy should be done here to be able to access the device... */
+N         vNF_CopyConfigToRegs (pstNandCfg);
+N
+N         /* !!! NEW: RESET the NAND device !!! */
+N         eResult = eNandFlash_ResetDevice (pstNandCfg);
+N         if (eResult == NANDFLASH_STATUS_OK)
+N         {
+N            /*
+N               This function should configure some parameters according to
+N               settings taken from the NAND devices configuration registers.
+N               Those settings are differently stored for ONFI compliant devices
+N               than for Samsung devices. */
+N            if (eDeviceType == (NANDFLASH_DEVICE_ONFI_HOST_ECC)) /* ONFI device */
+N            {
+N               pstNandCfg->eDeviceType = eDeviceType;
+N               eResult = eNF_ReadOnfiParamsPage (pstNandCfg);
+N            }
+N            else if (eDeviceType == (NANDFLASH_DEVICE_ONFI_VENDOR1_ECC))
+N            {
+N               pstNandCfg->eDeviceType = eDeviceType;
+N               /* MICRON/ONFI device with internal ECC */
+N               eResult = eNF_ReadOnfiParamsPage (pstNandCfg);
+N
+N               if (eResult == NANDFLASH_STATUS_OK)
+N               {
+N                  /* Enable Internal device's ECC sequence */
+N                  uint8_t u8SubParBuf[] = { 0x08U, 0x00U, 0x00U, 0x00U };
+N                  /* SET INTERNAL ECC feature */
+N                  eResult = eNF_SetFeature (pstNandCfg, 0x90U, u8SubParBuf);
+N               }
+N            }
+N            else
+N            {
+N               eResult = NANDFLASH_STATUS_NO_COMPLY_ERR;
+N            }
+N
+N            if (eResult == NANDFLASH_STATUS_OK)
+N            {
+N               /*
+N                  Check, if settings are correct */
+N               eResult = eNF_ConfigVerify (pstNandCfg);
+N               if (eResult == NANDFLASH_STATUS_OK)
+N               {
+N                  if (pstNandCfg->eBusWidth == NANDFLASH_BUS_WIDTH_16)
+N                  {
+N                     u32Opmode = MEMCTRL_SET_MW_16_BITS;
+X                     u32Opmode = ((0x1U)<<((0)));
+N                  }
+N                  else                      /* 8-bit */
+N                  {
+N                     u32Opmode = MEMCTRL_SET_MW_8_BITS;
+X                     u32Opmode = ((0x0U)<<((0)));
+N                  }
+N                  /* Update NAND OPMODE Register */
+N                  MEMCTRL_SET_OPMODE = u32Opmode;
+X                  (*((volatile uint32_t*) (((0xC0200000U))+(0x018U)))) = u32Opmode;
+N
+N                  u32Cycles = MEMCTRL_NAND_CYCLES;
+X                  u32Cycles = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000180U))+(0x000U))));
+N                  MEMCTRL_SET_CYCLES = u32Cycles;
+X                  (*((volatile uint32_t*) (((0xC0200000U))+(0x014U)))) = u32Cycles;
+N                  /*
+N                     Configuration is now within set_cycles and set_opmode
+N                     registers. To update the timing within the SMC for a NAND
+N                     device it is required to specify an UpdateRegs cmd_type
+N                     within the direct_cmd register. */
+N                  u32DirCmdVal =
+N                     ((MEMCTRL_NAND_CHIP_SEL_MSK) |
+X                     ((((0x4U)<<((23)))) |
+N                      (MEMCTRL_CMD_TYPE_UPD_REGS_MSK));
+X                      (((0x2U)<<((21)))));
+N                  MEMCTRL_DIRECT_CMD = u32DirCmdVal; /* Update registers for
+X                  (*((volatile uint32_t*) (((0xC0200000U))+(0x010U)))) = u32DirCmdVal; 
+N                                                        NAND */
+N
+N                  /* reuse eResult for this loop, assume unknown result */
+N                  eResult = NANDFLASH_STATUS_UNKNOWN;
+N                  do
+N                  {
+N                     u32Cyc = MEMCTRL_NAND_CYCLES;
+X                     u32Cyc = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000180U))+(0x000U))));
+N
+N                     u32Mod = (MEMCTRL_NAND_OPMODE & (MEMCTRL_SET_MW_MSK));
+X                     u32Mod = ((*((volatile uint32_t*) (((0xC0200000U))+((0x00000180U))+(0x004U)))) & (((0x3U)<<((0)))));
+N
+N                     if ((u32Cyc == u32Cycles) && (u32Mod == u32Opmode))
+N                     {
+N                        eResult = NANDFLASH_STATUS_OK;
+N                     }
+N                     else
+N                     {
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 1.1 [L] Nesting of control structures (statements)
+N*          exceeds 15 - program is non-conforming.
+N*          MISRA-C:2004 Rule 1.1; REFERENCE - ISO-5.2.4.1 Translation Limits
+N*
+N* DESC   : Two messages for below conditions are TRUE, however, to keep the
+N*          code readable the source code is preserved in its orginal form.
+N****/
+N                        if (u32TryCnt < 4U)
+N                        {    /* PRQA S 0715 */
+N                           MEMCTRL_DIRECT_CMD = u32DirCmdVal;
+X                           (*((volatile uint32_t*) (((0xC0200000U))+(0x010U)))) = u32DirCmdVal;
+N                           u32TryCnt++;
+N                        }
+N                        else
+N                        {    /* PRQA S 0715 */
+N                           eResult = NANDFLASH_STATUS_OPERATION_ERR; /* update
+N                                                                        failed */
+N                        }
+N                     }
+N                  }
+N                  while (!((eResult == (NANDFLASH_STATUS_OK)) ||
+N                          (eResult == (NANDFLASH_STATUS_OPERATION_ERR))));
+N
+N                  eResult = NANDFLASH_STATUS_OK;
+N               }
+N            }
+N            else
+N            {
+N               /* eResult updated already - optimize it */
+N            }
+N         }
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+Nvoid NF_uSecWait (uint32_t u32usTime)
+N{
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 13.2 Value of control expression is not derived
+N*          from an explicit logical operation.
+N*
+N* DESC   : The message for below condition is TRUE, however, to keep the
+N*          execution time unchanged (SW wait-loop) the source code will remain
+N*          unchanged.
+N****/
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 21.1 Unsigned arithmetic definitely results in
+N*          wraparound past zero.
+N*
+N* DESC   : The wraparound even, if would happen should not be dangerous, since
+N*          the value of '0' should end the counting process, and the u32usTime
+N*          variable is not used later within the function.
+N****/
+N
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 12.13 Result of ++ or -- operator used in expression.
+N*
+N* DESC   : This very simple count-own loop has been verfied to generate time
+N*          intervals based on instruction execution. Thus the implementation
+N*          will remain.
+N****/
+N
+N    while( u32usTime-- )    /* PRQA S 3372 */  /* PRQA S 3344 */
+N    {
+N       ;
+N    }
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_SetExtraBlock (NandFlashCfg_st * pstNandCfg,
+N                                            NandFlashExtraBlock_e eExtraBlkCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      pstNandCfg->eExtraBlockCfg = eExtraBlkCfg;
+N      eResult = NANDFLASH_STATUS_OK;
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_SetBusTiming (NandFlashCfg_st * pstNandCfg,
+N                                           uint32_t u32IdRdTime,
+N                                           uint32_t u32StatusRdTime,
+N                                           uint32_t u32WriteCycleTime,
+N                                           uint32_t u32ReadCycleTime)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      if ((u32IdRdTime > (NANDFLASH_ID_RD_MAX)) ||
+X      if ((u32IdRdTime > ((7U))) ||
+N          (u32StatusRdTime > (NANDFLASH_STATUS_RD_MAX)) ||
+X          (u32StatusRdTime > ((7U))) ||
+N          (u32WriteCycleTime < (NANDFLASH_WR_CYCLE_MIN)) ||
+X          (u32WriteCycleTime < ((2U))) ||
+N          (u32WriteCycleTime > (NANDFLASH_WR_CYCLE_MAX)) ||
+X          (u32WriteCycleTime > ((15U))) ||
+N          (u32ReadCycleTime < (NANDFLASH_RD_CYCLE_MIN)) ||
+X          (u32ReadCycleTime < ((2U))) ||
+N          (u32ReadCycleTime > (NANDFLASH_RD_CYCLE_MAX)))
+X          (u32ReadCycleTime > ((15U))))
+N      {
+N         eResult = NANDFLASH_STATUS_CFG_ERR;
+N      }
+N      else
+N      {
+N         pstNandCfg->u32IdRdTime = u32IdRdTime;
+N         pstNandCfg->u32StatusRdTime = u32StatusRdTime;
+N         pstNandCfg->u32WriteCycleTime = u32WriteCycleTime;
+N         pstNandCfg->u32ReadCycleTime = u32ReadCycleTime;
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_SetCycleAssertDelays (NandFlashCfg_st * pstNandCfg,
+N                                                   uint32_t u32BusyCycleToReN,
+N                                                   uint32_t u32DeAssertDelayWeN,
+N                                                   uint32_t u32AssertDelayReN)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      if ((u32AssertDelayReN < (NANDFLASH_ASSERT_REN_MIN)) ||
+X      if ((u32AssertDelayReN < ((1U))) ||
+N          (u32AssertDelayReN > (NANDFLASH_ASSERT_REN_MAX)) ||
+X          (u32AssertDelayReN > ((7U))) ||
+N          (u32DeAssertDelayWeN < (NANDFLASH_DEASSERT_WEN_MIN)) ||
+X          (u32DeAssertDelayWeN < ((1U))) ||
+N          (u32DeAssertDelayWeN > (NANDFLASH_DEASSERT_WEN_MAX)) ||
+X          (u32DeAssertDelayWeN > ((7U))) ||
+N          (u32BusyCycleToReN > (NANDFLASH_BUSY_TO_REN_MAX)))
+X          (u32BusyCycleToReN > ((15U))))
+N      {
+N         eResult = NANDFLASH_STATUS_CFG_ERR;
+N      }
+N      else
+N      {
+N         pstNandCfg->u32AssertDelayReN = u32AssertDelayReN;
+N         pstNandCfg->u32DeAssertDelayWeN = u32DeAssertDelayWeN;
+N         pstNandCfg->u32BusyCycleToReN = u32BusyCycleToReN;
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/*  Note from device's Data Sheet:
+N  While monitoring the status register to determine when a data transfer from
+N the Flash array to the data register (tR) is complete, the host must issue the
+N READ MODE (00h) command to disable the status register and enable data output
+N (see Read Operations). */
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_WaitDeviceReady (const NandFlashCfg_st *
+N                                              const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      uint32_t u32BusyReady;
+N
+N      uint32_t u32TimeCycles = pstNandCfg->u32BusyTimeOut;
+N
+N     /* Devices with HOST ECC will be handled with BUSY signal
+N     Edge-sensitive interrupts, while devices with Internal ECC
+N     will be handled with Status Register Busy check */
+N     if(pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N     {
+N        /* 100ns wait for settling of the BUSY line state... */
+N        NF_uSecWait (NANDFLASH_TIME_1us);
+X        NF_uSecWait ((10U));
+N
+N        /* Single Loop below executes 12 instructions - each dealy could be 12x
+N         shorter (set to 10x to be ion the safe side) than initially assumed
+N         the required values are set directly within the defines in NandFlash.h */
+N        do
+N        {
+N         u32BusyReady = (MEMCTRL_MEMC_STATUS);
+X         u32BusyReady = ((*((volatile uint32_t*) (((0xC0200000U))+(0x000U)))));
+N         u32BusyReady = u32BusyReady & (MEMCTRL_RAW_INT_STATUS1_BIT);
+X         u32BusyReady = u32BusyReady & (((0x1U)<<((6))));
+N         if (u32BusyReady == 0)
+N         {
+N            /* count down loop with device status check... */
+N            if (u32TimeCycles > 0x0U)
+N            {
+N               u32TimeCycles--;
+N            }
+N         }
+N        }
+N        while (!((u32BusyReady == (MEMCTRL_RAW_INT_STATUS1_BIT)) ||
+X        while (!((u32BusyReady == (((0x1U)<<((6))))) ||
+N                (u32TimeCycles == 0U)));
+N      /*
+N         Waiting should be finished, when the raw_int_status1 bit is HIGH or
+N         the loop counter reaches 0. */
+N      if (u32BusyReady == (MEMCTRL_RAW_INT_STATUS1_BIT))
+X      if (u32BusyReady == (((0x1U)<<((6)))))
+N      {
+N         /* Clear generated IRQ and return OK */
+N         NANDFLASH_CLEAR_READY_IRQ ();
+X         (*((volatile uint32_t*) (((0xC0200000U))+(0x00CU))))=((0x1U)<<((4)));
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_BUSY_ERR; /* busy timout expired */
+N      }
+N     }
+N     else
+N     {
+N      /* Single Loop below executes 12 instructions So each delay could be 12x
+N         shorter (set to 10x to be ion the safe side) than initially assumed
+N         the required values are set directly within the defines in NandFlash.h
+N      */
+N      vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_STATUS);
+X      vNF_CmdPhaseAxi (pstNandCfg, (0x70U));
+N      do
+N      {
+N         u32BusyReady = u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_ACTIV,
+X         u32BusyReady = u32NF_DataPhaseAxiRead (pstNandCfg, (0U),
+N                                                NF_PAR_IGNORE);
+X                                                (0U));
+N         /* extract #Busy/Ready bit */
+N         u32BusyReady = (u32BusyReady & 0x40U);
+N         if (u32BusyReady == 0x00U)
+N         {
+N            /* NAND device BUSY: count down loop with another status check */
+N            if (u32TimeCycles > 0x0U)
+N            {
+N               u32TimeCycles--;
+N            }
+N         }
+N      }
+N      while (!((u32BusyReady == (0x40U)) || (u32TimeCycles == 0U)));
+N      /* Read it one more time and disable CS */
+N      u32BusyReady = u32NF_DataPhaseAxiRead (pstNandCfg, NF_PAR_CS_CLEAR,
+X      u32BusyReady = u32NF_DataPhaseAxiRead (pstNandCfg, (1U),
+N                                             NF_PAR_IGNORE);
+X                                             (0U));
+N      /* extract #Busy/Ready bit */
+N      u32BusyReady = (u32BusyReady & 0x40U);
+N
+N      /* Waiting should be finished, when the #Busy/Ready bit is HIGH or
+N         the loop counter reaches 0. */
+N      if (u32BusyReady == 0x40U)
+N      {
+N         /* consider return to Read mode... */
+N         eResult = NANDFLASH_STATUS_OK;
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_BUSY_ERR; /* busy timout expired */
+N      }
+N     }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNF_EccWaitIdle (const NandFlashCfg_st * const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N   uint32_t u32TimeCycles = pstNandCfg->u32EccTimeOut;
+N
+N   uint32_t u32EccStatus;
+N
+N
+N   /* Wait with timer until the ECC block is IDLE */
+N   do
+N   {
+N      /* count down loop with device status check... */
+N      if (u32TimeCycles > 0x0U)
+N      {
+N         u32TimeCycles--;
+N      }
+N      u32EccStatus = (MEMCTRL_ECC_STATUS);
+X      u32EccStatus = ((*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x000U)))));
+N      u32EccStatus = u32EccStatus & (MEMCTRL_ECC_BUSY_MSK);
+X      u32EccStatus = u32EccStatus & (((0x1U)<<((6))));
+N   }
+N   while (!((u32EccStatus != (MEMCTRL_ECC_BUSY_MSK)) || (u32TimeCycles == 0U)));
+X   while (!((u32EccStatus != (((0x1U)<<((6))))) || (u32TimeCycles == 0U)));
+N   /*
+N      Waiting should be finished, when the ECC status bit is 0 (IDLE) or the
+N      loop counter reaches 0. */
+N   if (u32EccStatus != (MEMCTRL_ECC_BUSY_MSK))
+X   if (u32EccStatus != (((0x1U)<<((6)))))
+N   {
+N      eResult = NANDFLASH_STATUS_OK;
+N   }
+N   else
+N   {
+N      eResult = NANDFLASH_STATUS_BUSY_ERR;  /* busy timout expired */
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_ResetDevice (const NandFlashCfg_st * const pstNandCfg)
+N{
+N   NandFlashStatus_e eResult;
+N
+N
+N   if (pstNandCfg == TYPES_NULL_PTR)
+X   if (pstNandCfg == ((void *)0UL))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_RESET);
+X      vNF_CmdPhaseAxi (pstNandCfg, (0xFFU));
+N      eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED */
+NNandFlashStatus_e eNandFlash_ReadSinglePage (NandFlashCfg_st * pstNandCfg,    /* PRQA S 3673 */
+N                                             uint32_t u32BlockNumber,
+N                                             uint32_t u32PageNumber,
+N                                             uint32_t pu32DstBuf[],
+N                                             uint32_t pu32ExtrBuf[])
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N
+N   if ((pstNandCfg == TYPES_NULL_PTR))
+X   if ((pstNandCfg == ((void *)0UL)))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      if (u32PageNumber < (pstNandCfg->u32BlkSize))
+N      {
+N         uint32_t u32BufferLen = ((pstNandCfg->u32PageSize) >> 2);
+N
+N         /* ECC handled differently for devices with internal ECC */
+N         if (pstNandCfg->eDeviceType == NANDFLASH_DEVICE_ONFI_VENDOR1_ECC)
+N         {
+N            vNF_CmdPhaseAxiCplx (pstNandCfg, 0x0U, u32PageNumber,
+N                                 u32BlockNumber, NANDFLASH_CMD_PAGE_RD_START,
+X                                 u32BlockNumber, (0x00U),
+N                                 NF_PAR_END_VALID, NANDFLASH_CMD_PAGE_RD_END);
+X                                 (1U), (0x30U));
+N            /* Wait until ready: Take into account: tWB tR tRR tR_ECC */
+N            eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N            /* Return to Read Mode after the Status check (Internal ECC only) */
+N            if(pstNandCfg->eDeviceType != NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N            {
+N              vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_MODE);
+X              vNF_CmdPhaseAxi (pstNandCfg, (0x00U));
+N            }
+N
+N            if (eResult == NANDFLASH_STATUS_OK)
+N            {
+N               vNF_DataPhaseAxiRdMulti (pstNandCfg, u32BufferLen, pu32DstBuf,
+N                                        NF_PAR_IGNORE, pu32ExtrBuf);
+X                                        (0U), pu32ExtrBuf);
+N
+N               /* Check devices status: SR bit0 = 0: READ successful SR bit 1 =
+N                  0 READ error */
+N               eResult = eNF_GetDeviceStatus (pstNandCfg);
+N               /* ****** FINAL eResult should be available here ****** */
+N            }
+N         }
+N         else                               /* 1-bit ECC: ONFI devices */
+N         {
+N            /* Prepare ECC HW before reading data */
+N            eResult = eNF_EccConfigure (pstNandCfg);
+N
+N            if (eResult == NANDFLASH_STATUS_OK)
+N            {
+N               vNF_CmdPhaseAxiCplx (pstNandCfg, 0U, u32PageNumber,
+N                                    u32BlockNumber, NANDFLASH_CMD_PAGE_RD_START,
+X                                    u32BlockNumber, (0x00U),
+N                                    NF_PAR_END_VALID,
+X                                    (1U),
+N                                    NANDFLASH_CMD_PAGE_RD_END);
+X                                    (0x30U));
+N               eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N            /* Return to Read Mode after the Status check (Internal ECC only) */
+N               if(pstNandCfg->eDeviceType != NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N               {
+N                 vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_MODE);
+X                 vNF_CmdPhaseAxi (pstNandCfg, (0x00U));
+N               }
+N
+N               if (eResult == NANDFLASH_STATUS_OK)
+N               {
+N                  vNF_DataPhaseAxiRdMulti (pstNandCfg, u32BufferLen, pu32DstBuf,
+N                                           NF_PAR_ECC_LAST, pu32ExtrBuf);
+X                                           (1U), pu32ExtrBuf);
+N                  /* Wait until ECC is IDLE */
+N                  eResult = eNF_EccWaitIdle (pstNandCfg);
+N                  if (eResult == NANDFLASH_STATUS_OK)
+N                  {
+N                     /*
+N                      *** Now apply ECC Correction, based on ECC values ***
+N                      */
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.4; Casting to different object pointer type.
+N*
+N* DESC   : Due to a different nature of the reading (32-bit accesses) and error
+N*          correction (based on byte-addressing) it is required to cast
+N*          pointers. It should be safe since 32-bit buffer is used as being an
+N*          8-bit buffer.
+N*
+N****/
+N                     eResult =
+N                        eNF_EccCorrectLarge (pstNandCfg, (uint8_t *)pu32DstBuf,     /* PRQA S 0310 */
+N                                             (uint8_t *)pu32ExtrBuf);               /* PRQA S 0310 */
+N                  }
+N               }
+N               /* ****** FINAL eResult should be available here ****** */
+N            }
+N            else
+N            {
+N               eResult = eResult;           /* to be optimized / removed ... */
+N            }
+N         }
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_USAGE_ERR;
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED
+N u32SpareOffset: offset within spare Area is always counted in 32-bit words */
+NNandFlashStatus_e eNandFlash_ReadSpareArea (NandFlashCfg_st * pstNandCfg,    /* PRQA S 3673 */
+N                                            uint32_t u32BlockNumber,
+N                                            uint32_t u32PageNumber,
+N                                            uint32_t u32SpareOffset,
+N                                            uint32_t u32BufferLen,
+N                                            uint32_t pu32DstBuf[])
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;    /* PRQA S 3197 */
+N
+N   uint32_t u32EccSetOld;
+N
+N   uint32_t u32EccSetNew;
+N
+N   uint32_t u32SpareAdr;
+N
+N
+N   if ((pstNandCfg == TYPES_NULL_PTR))
+X   if ((pstNandCfg == ((void *)0UL)))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      /*
+N         Spare area read requires to temporary disable Host's ECC engine. */
+N      u32EccSetOld = MEMCTRL_ECC_MEMCFG;    /* remember orig. settings */
+X      u32EccSetOld = (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U))));     
+N      u32EccSetNew = u32EccSetOld & ~(MEMCTRL_ECC_MODE_MSK); /* Disable ECC */
+X      u32EccSetNew = u32EccSetOld & ~(((0x3U)<<((2))));  
+N      MEMCTRL_ECC_MEMCFG = u32EccSetNew;    /* Write it back to MemCtrl */
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U)))) = u32EccSetNew;     
+N
+N      if ((u32SpareOffset + u32BufferLen) <= ((pstNandCfg->u16SpareSize) >> 2))
+N      {
+N         if (u32PageNumber < (pstNandCfg->u32BlkSize))
+N         {
+N            /*
+N               Spare Area: address just after the Page. The address differs for
+N               8-bit and 16-bit devices. */
+N            if (pstNandCfg->eBusWidth == NANDFLASH_BUS_WIDTH_8)
+N            {
+N               /* 2kB Page + 64 bytes Spare */
+N               u32SpareAdr = (pstNandCfg->u32PageSize + u32SpareOffset);
+N            }
+N            else
+N            {
+N               /* 1k 16-bit Words Page + 32x 16-bit Words Spare */
+N               u32SpareAdr =
+N                  (((pstNandCfg->u32PageSize) >> 1) + u32SpareOffset);
+N            }
+N
+N            vNF_CmdPhaseAxiCplx (pstNandCfg, u32SpareAdr, u32PageNumber,
+N                                 u32BlockNumber, NANDFLASH_CMD_PAGE_RD_START,
+X                                 u32BlockNumber, (0x00U),
+N                                 NF_PAR_END_VALID, NANDFLASH_CMD_PAGE_RD_END);
+X                                 (1U), (0x30U));
+N
+N            eResult = eNandFlash_WaitDeviceReady (pstNandCfg);
+N            /* Return to Read Mode after the Status check (Internal ECC only) */
+N            if(pstNandCfg->eDeviceType != NANDFLASH_DEVICE_ONFI_HOST_ECC)
+N            {
+N              vNF_CmdPhaseAxi (pstNandCfg, NANDFLASH_CMD_READ_MODE);
+X              vNF_CmdPhaseAxi (pstNandCfg, (0x00U));
+N            }
+N
+N            if (eResult == NANDFLASH_STATUS_OK)
+N            {
+N               /*
+N                  Read of the spare area (typically ECC related) does not
+N                  invlove the ECC calculation itself - that's why use:
+N                  NF_PAR_IGNORE. */
+N               vNF_DataPhaseAxiRdMulti (pstNandCfg, u32BufferLen, pu32DstBuf,
+N                                        NF_PAR_IGNORE, (uint32_t *)0x00U);
+X                                        (0U), (uint32_t *)0x00U);
+N               eResult = eNF_GetDeviceStatus (pstNandCfg);
+N               /* ****** FINAL eResult should be available here ****** */
+N            }
+N            else
+N            {
+N               eResult = eResult;           /* to be optimized / removed ... */
+N            }
+N         }
+N         else
+N         {
+N            eResult = NANDFLASH_STATUS_USAGE_ERR;
+N         }
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_SIZE_ERR; /* too many data to be read! */
+N      }
+N      MEMCTRL_ECC_MEMCFG = u32EccSetOld;    /* Write old settings to MemCtrl */
+X      (*((volatile uint32_t*) (((0xC0200000U))+((0x00000400U))+(0x004U)))) = u32EccSetOld;     
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/*..........................................................................*/
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 16.7 The object addressed by the pointer parameter
+N*          'pu32DstBuf' (same for 'pu8ExtrBuf') is not modified and so the
+N*          pointer could be of type 'pointer to const'.
+N*
+N* DESC   : The two warnings are not applicable. the MISRA tool did not recognize
+N*          that this function calls suroutines, which might modify the content
+N*          of both buffers.
+N****/
+NNandFlashStatus_e eNandFlash_ReadPages (NandFlashCfg_st * pstNandCfg,
+N                                        uint32_t u32BlockNumber,
+N                                        uint32_t u32StartPage,
+N                                        uint32_t u32NoOfPages,
+N                                        uint32_t pu32DstBuf[],    /* PRQA S 3673 */
+N                                        uint32_t pu32ExtrBuf[])
+N{
+N/***
+N* MESSAGE: Msg(3:3197) The initialiser for 'eResult' is always modified before
+N*          being used.
+N*
+N* DESC   : To detect that eResult is updated every time within this complex
+N*          function the initial value NANDFLASH_STATUS_UNKNOWN is used.
+N****/
+N   NandFlashStatus_e eResult = NANDFLASH_STATUS_UNKNOWN;     /* PRQA S 3197 */
+N
+N   uint32_t u32Idx;
+N
+N   uint32_t u32DstAddr ;
+N
+N
+N   if ((pstNandCfg == TYPES_NULL_PTR))
+X   if ((pstNandCfg == ((void *)0UL)))
+N   {
+N      eResult = NANDFLASH_STATUS_PTR_ERR;
+N   }
+N   else
+N   {
+N      /*
+N         Check, if all Pages belong to the current block. */
+N      if (u32NoOfPages > 0U)                /* is anything to read */
+N      {
+N         u32Idx = u32StartPage;
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N*          MISRA-C:2004 Rule 1.2; [U] Integral type is not large enough to hold
+N*          a pointer value.
+N*
+N* DESC   : These messages are undestood, but the pointer manipulation was
+N*          required to maintian the position within the buffer. As unsigned int
+N*          type is 32-bit on ARM, which is same as pointer - there should be no
+N*          danger with such cast.
+N****/
+N         /* Source location to read from */
+N         u32DstAddr = (uint32_t)pu32DstBuf;     /* PRQA S 0306 */
+N         do
+N         {
+N            if (u32Idx >= pstNandCfg->u32BlkSize) /* check range/condition! */
+N            {
+N               /* This function might cross the total size / number of blocks
+N                  of the NAND device. DO NOT reset StartPage since it is used
+N                  in the loop exit condition. */
+N               u32BlockNumber++;
+N               u32NoOfPages = (u32NoOfPages - (u32Idx - u32StartPage));
+N               /* Read should continue at the beginning of the next block */
+N               u32Idx = 0U;
+N               u32StartPage = 0U;
+N            }
+N/***
+N* MESSAGE: MISRA-C:2004 Rule 11.3 [I] Cast between a pointer to object and an
+N*          integral type.
+N*
+N* DESC   : These message is undestood, but the pointer manipulation was
+N*          required to maintian the position within the buffer. Here the reverse
+N*          cast is required (see upper listed MISRA warnings).
+N****/
+N            eResult =
+N               eNandFlash_ReadSinglePage (pstNandCfg, u32BlockNumber, u32Idx,      /* PRQA S 0306 */
+N                                          (uint32_t *)u32DstAddr, pu32ExtrBuf);    /* PRQA S 0306 */
+N            u32Idx++;
+N            u32DstAddr = (u32DstAddr + pstNandCfg->u32PageSize);
+N         }
+N         while (((u32Idx < (u32NoOfPages + u32StartPage)) &&
+N                 (eResult == NANDFLASH_STATUS_OK)));
+N
+N         /* ****** FINAL eResult should be available here ****** */
+N      }
+N      else
+N      {
+N         eResult = NANDFLASH_STATUS_PARAM_ERR; /* */
+N      }
+N   }
+N   return eResult;
+N}
+N
+N/*..........................................................................*/
+N/* TESTED: */
+NNandFlashStatus_e eNandFlash_ReadNand (NandFlashCfg_st * pstNandCfg,
+N                                       uint32_t u32StartAddr,
+N                                       uint32_t pu32Data[],
+N                                       uint32_t u32BufferLen)
+N{
+N   NandFlashStatus_e eNandStatus;
+N
+N   uint32_t u32BlockBytes;
+N
+N   uint32_t u32BlockNumber;
+N
+N   uint32_t u32ByteBlkOffset;
+N
+N   uint32_t u32StartPage;
+N
+N   uint32_t u32NoOfPages;
+N
+N
+N   /* Calculate Block and Page number */
+N   u32BlockBytes = (pstNandCfg->u32BlkSize) * (pstNandCfg->u32PageSize);
+N   /* Block number where the addr is pointing to */
+N   u32BlockNumber = (u32StartAddr / u32BlockBytes);
+N   /* Address offset from the beginning of the block */
+N   u32ByteBlkOffset = (u32StartAddr % u32BlockBytes);
+N   /* Page number, in which the addr is pointing to */
+N   u32StartPage = (u32ByteBlkOffset / (pstNandCfg->u32PageSize));
+N   /* Convert no of 32-bit Words to no of Bytes */
+N   u32BufferLen = (u32BufferLen << 2);
+N
+N   /* Calculate how many pages should be read */
+N   u32NoOfPages = ((u32BufferLen) / pstNandCfg->u32PageSize);
+N   /*
+N      Check, if one additional page needs to be read */
+N   if (((u32BufferLen) % (pstNandCfg->u32PageSize)) != 0)
+N   {
+N      u32NoOfPages++;                       /* Another page must be read */
+N   }
+N   /* Perform NAND data-read */
+N   eNandStatus =
+N      eNandFlash_ReadPages (pstNandCfg, u32BlockNumber, u32StartPage,
+N                            u32NoOfPages, pu32Data, pu32GlExtraBlockBuf);
+N   return eNandStatus;
+N}
+N
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

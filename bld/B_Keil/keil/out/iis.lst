@@ -1,0 +1,2630 @@
+L 1 "..\..\..\..\lldd\src\iis.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Reference IIS Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IIS Controller
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/08 08:57:22 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "iis_io.h"                         /* IIS registers, bits and access macros defintion */
+L 1 "..\..\..\..\lldd\hdr\iis_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : I2S 
+N/  Date of creation (y-m-d:time): 2013-06-26+02:00  :  17:56:16.578+02:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.9 $ 
+N/  Excel Sheet ver.             : vv1.1
+N/  Excel Sheet date             : 2013-Jun-21
+N/  Excel Sheet author           : ZUL
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : IIS low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IIS
+N*   LIBRARIES   : None
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.9 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef I2SIO_H
+N#define I2SIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */ 
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 40 "..\..\..\..\lldd\hdr\iis_io.h" 2
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N     
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_IIS_IO_H_REVISION     "$Revision: 1.9 $"
+N#define LLDD_IIS_IO_H_TAG          "$Name: LLDD_1_6 $"
+N     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SCTRL                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406000                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SCTRL_REG__       0xC0406000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   TXRXEN	:1; 	 /* 0..0  bit(s) R/W */
+N  uint16_t   TXRXSEL	:1; 	 /* 1..1  bit(s) R/W */
+N  uint16_t   MSSLV	:1; 	 /* 2..2  bit(s) R/W */
+N  uint16_t   	:1; 	 /* 3..3  bit(s) R */
+N  uint16_t   EmptyRes	:1; 	 /* 4..4  bit(s) R/W */
+N  uint16_t   FullRes	:1; 	 /* 5..5  bit(s) R/W */
+N  uint16_t   	:2; 	 /* 6..7  bit(s) R */
+N  uint16_t   POL	:1; 	 /* 8..8  bit(s) R/W */
+N  uint16_t   WSPol	:1; 	 /* 9..9  bit(s) R/W */ 
+N  uint16_t   	:6; 	 /* 10..31  bit(s) R */                    
+N} I2SCTRL_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} I2SCTRL_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16I2SCTRL_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SCTRL(ctrlr)     ((volatile I2SCTRL_bit_view_st *)\
+N(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SCTRL(ctrlr)     ((volatile I2SCTRL_bit_view_st *)(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2SCTRL(ctrlr)     ((volatile I2SCTRL_byte_view_st *)\
+N(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2SCTRL(ctrlr)     ((volatile I2SCTRL_byte_view_st *)(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16I2SCTRL(ctrlr)     ((volatile u16I2SCTRL_halfword_view *)\
+N(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16I2SCTRL(ctrlr)     ((volatile u16I2SCTRL_halfword_view *)(I2SCTRL_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetI2SCTRL_TXRXEN(ctrlr) (pst_bitI2SCTRL(ctrlr) -> TXRXEN)
+N#define vSetI2SCTRL_TXRXEN(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> TXRXEN=(ParValue))
+N#define biGetI2SCTRL_TXRXSEL(ctrlr) (pst_bitI2SCTRL(ctrlr) -> TXRXSEL)
+N#define vSetI2SCTRL_TXRXSEL(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> TXRXSEL=(ParValue))
+N#define biGetI2SCTRL_MSSLV(ctrlr) (pst_bitI2SCTRL(ctrlr) -> MSSLV)
+N#define vSetI2SCTRL_MSSLV(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> MSSLV=(ParValue))
+N#define biGetI2SCTRL_EmptyRes(ctrlr) (pst_bitI2SCTRL(ctrlr) -> EmptyRes)
+N#define vSetI2SCTRL_EmptyRes(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> EmptyRes=(ParValue))
+N#define biGetI2SCTRL_FullRes(ctrlr) (pst_bitI2SCTRL(ctrlr) -> FullRes)
+N#define vSetI2SCTRL_FullRes(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> FullRes=(ParValue))
+N#define biGetI2SCTRL_POL(ctrlr) (pst_bitI2SCTRL(ctrlr) -> POL)
+N#define vSetI2SCTRL_POL(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> POL=(ParValue))
+N#define biGetI2SCTRL_WSPol(ctrlr) (pst_bitI2SCTRL(ctrlr) -> WSPol)
+N#define vSetI2SCTRL_WSPol(ctrlr,ParValue)  (pst_bitI2SCTRL(ctrlr) -> WSPol=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetI2SCTRLL(ctrlr,ParValue) (pst_u8I2SCTRL(ctrlr) -> u8L = (ParValue))
+N#define u8GetI2SCTRLL(ctrlr) (pst_u8I2SCTRL(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetI2SCTRLH(ctrlr,ParValue) (pst_u8I2SCTRL(ctrlr) -> u8H = (ParValue))
+N#define u8GetI2SCTRLH(ctrlr) (pst_u8I2SCTRL(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetI2SCTRL(ctrlr,ParValue) (*pu16I2SCTRL(ctrlr)  = (ParValue))
+N#define u16GetI2SCTRL(ctrlr) (*pu16I2SCTRL(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SLENGTH                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406004                             
+N*       ACCESS  : 8, 16, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SLENGTH_REG__       0xC0406004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint16_t   WSLength	:5; 	 /* 0..4  bit(s) R/W */
+N  uint16_t   	:3; 	 /* 5..7  bit(s) R */
+N  uint16_t   DataWidth	:5; 	 /* 8..12  bit(s) R/W */ 
+N  uint16_t   	:3; 	 /* 13..31  bit(s) R */                    
+N} I2SLENGTH_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8L;       
+N  uint8_t u8H;       
+N} I2SLENGTH_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef uint16_t u16I2SLENGTH_halfword_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SLENGTH(ctrlr)     ((volatile I2SLENGTH_bit_view_st *)\
+N(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SLENGTH(ctrlr)     ((volatile I2SLENGTH_bit_view_st *)(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2SLENGTH(ctrlr)     ((volatile I2SLENGTH_byte_view_st *)\
+N(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2SLENGTH(ctrlr)     ((volatile I2SLENGTH_byte_view_st *)(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD */
+N#define pu16I2SLENGTH(ctrlr)     ((volatile u16I2SLENGTH_halfword_view *)\
+N(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu16I2SLENGTH(ctrlr)     ((volatile u16I2SLENGTH_halfword_view *)(I2SLENGTH_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetI2SLENGTH_WSLength(ctrlr) (pst_bitI2SLENGTH(ctrlr) -> WSLength)
+N#define vSetI2SLENGTH_WSLength(ctrlr,ParValue)  (pst_bitI2SLENGTH(ctrlr) -> WSLength=(ParValue))
+N#define biGetI2SLENGTH_DataWidth(ctrlr) (pst_bitI2SLENGTH(ctrlr) -> DataWidth)
+N#define vSetI2SLENGTH_DataWidth(ctrlr,ParValue)  (pst_bitI2SLENGTH(ctrlr) -> DataWidth=(ParValue))
+N            
+N/* L-struct byte access */
+N#define vSetI2SLENGTHL(ctrlr,ParValue) (pst_u8I2SLENGTH(ctrlr) -> u8L = (ParValue))
+N#define u8GetI2SLENGTHL(ctrlr) (pst_u8I2SLENGTH(ctrlr) -> u8L)
+N/* H-struct byte access */
+N#define vSetI2SLENGTHH(ctrlr,ParValue) (pst_u8I2SLENGTH(ctrlr) -> u8H = (ParValue))
+N#define u8GetI2SLENGTHH(ctrlr) (pst_u8I2SLENGTH(ctrlr) -> u8H)
+N            
+N/* Half-word access */ 
+N#define vSetI2SLENGTH(ctrlr,ParValue) (*pu16I2SLENGTH(ctrlr)  = (ParValue))
+N#define u16GetI2SLENGTH(ctrlr) (*pu16I2SLENGTH(ctrlr) )     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SCLKCONF                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406008                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SCLKCONF_REG__       0xC0406008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   BCLKDIV	:2; 	 /* 0..1  bit(s) R/W */
+N  uint32_t   LTM	:5; 	 /* 2..6  bit(s) R/W */
+N  uint32_t   	:1; 	 /* 7..7  bit(s) R */
+N  uint32_t   MCLKDIV	:10; 	 /* 8..17  bit(s) R/W */
+N  uint32_t   	:2; 	 /* 18..19  bit(s) R */
+N  uint32_t   MCLKSRCSEL	:1; 	 /* 20..20  bit(s) R/W */
+N  uint32_t   MCLKOUTEN	:1; 	 /* 21..21  bit(s) R/W */
+N  uint32_t   	:1; 	 /* 22..22  bit(s) R */
+N  uint32_t   MCLKEN	:1; 	 /* 23..23  bit(s) R/W */ 
+N  uint32_t   	:8; 	 /* 24..31  bit(s) R */                    
+N} I2SCLKCONF_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} I2SCLKCONF_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} I2SCLKCONF_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32I2SCLKCONF_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_bit_view_st *)\
+N(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_bit_view_st *)(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_byte_view_st *)\
+N(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_byte_view_st *)(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16I2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_halfword_view_st *)\
+N(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u16I2SCLKCONF(ctrlr)     ((volatile I2SCLKCONF_halfword_view_st *)(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32I2SCLKCONF(ctrlr)     ((volatile u32I2SCLKCONF_word_view *)\
+N(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32I2SCLKCONF(ctrlr)     ((volatile u32I2SCLKCONF_word_view *)(I2SCLKCONF_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetI2SCLKCONF_BCLKDIV(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> BCLKDIV)
+N#define vSetI2SCLKCONF_BCLKDIV(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> BCLKDIV=(ParValue))
+N#define biGetI2SCLKCONF_LTM(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> LTM)
+N#define vSetI2SCLKCONF_LTM(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> LTM=(ParValue))
+N#define biGetI2SCLKCONF_MCLKDIV(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> MCLKDIV)
+N#define vSetI2SCLKCONF_MCLKDIV(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> MCLKDIV=(ParValue))
+N#define biGetI2SCLKCONF_MCLKSRCSEL(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> MCLKSRCSEL)
+N#define vSetI2SCLKCONF_MCLKSRCSEL(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> MCLKSRCSEL=(ParValue))
+N#define biGetI2SCLKCONF_MCLKOUTEN(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> MCLKOUTEN)
+N#define vSetI2SCLKCONF_MCLKOUTEN(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> MCLKOUTEN=(ParValue))
+N#define biGetI2SCLKCONF_MCLKEN(ctrlr) (pst_bitI2SCLKCONF(ctrlr) -> MCLKEN)
+N#define vSetI2SCLKCONF_MCLKEN(ctrlr,ParValue)  (pst_bitI2SCLKCONF(ctrlr) -> MCLKEN=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetI2SCLKCONFLL(ctrlr,ParValue) (pst_u8I2SCLKCONF(ctrlr) -> u8LL = (ParValue))
+N#define u8GetI2SCLKCONFLL(ctrlr) (pst_u8I2SCLKCONF(ctrlr) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetI2SCLKCONFLH(ctrlr,ParValue) (pst_u8I2SCLKCONF(ctrlr) -> u8LH = (ParValue))
+N#define u8GetI2SCLKCONFLH(ctrlr) (pst_u8I2SCLKCONF(ctrlr) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetI2SCLKCONFHL(ctrlr,ParValue) (pst_u8I2SCLKCONF(ctrlr) -> u8HL = (ParValue))
+N#define u8GetI2SCLKCONFHL(ctrlr) (pst_u8I2SCLKCONF(ctrlr) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetI2SCLKCONFHH(ctrlr,ParValue) (pst_u8I2SCLKCONF(ctrlr) -> u8HH = (ParValue))
+N#define u8GetI2SCLKCONFHH(ctrlr) (pst_u8I2SCLKCONF(ctrlr) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetI2SCLKCONFL(ctrlr,ParValue) (pst_u16I2SCLKCONF(ctrlr) -> u16L = (ParValue))
+N#define u16GetI2SCLKCONFL(ctrlr) (pst_u16I2SCLKCONF(ctrlr) -> u16L)
+N#define vSetI2SCLKCONFH(ctrlr,ParValue) (pst_u16I2SCLKCONF(ctrlr) -> u16H = (ParValue))
+N#define u16GetI2SCLKCONFH(ctrlr) (pst_u16I2SCLKCONF(ctrlr) -> u16H)
+N            
+N/* Word access */
+N#define vSetI2SCLKCONF(ctrlr,ParValue)  (*pu32I2SCLKCONF(ctrlr) = (ParValue))
+N#define u32GetI2SCLKCONF(ctrlr)  (*pu32I2SCLKCONF(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SIRSTAT                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC040600C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SIRSTAT_REG__       0xC040600CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   TxAEINT	:1; 	 /* 0..0  bit(s) R */
+N  uint8_t   TxERROR	:1; 	 /* 1..1  bit(s) R */
+N  uint8_t   TxNFINT	:1; 	 /* 2..2  bit(s) R */
+N  uint8_t   RxAFINT	:1; 	 /* 3..3  bit(s) R */
+N  uint8_t   RxHFINT	:1; 	 /* 4..4  bit(s) R */
+N  uint8_t   RxERROR	:1; 	 /* 5..5  bit(s) R */ 
+N  uint8_t   	:2; 	 /* 6..31  bit(s) R */                    
+N} I2SIRSTAT_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8I2SIRSTAT_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SIRSTAT(ctrlr)     ((volatile I2SIRSTAT_bit_view_st *)\
+N(I2SIRSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SIRSTAT(ctrlr)     ((volatile I2SIRSTAT_bit_view_st *)(I2SIRSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8I2SIRSTAT(ctrlr)     ((volatile u8I2SIRSTAT_byte_view *)\
+N(I2SIRSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8I2SIRSTAT(ctrlr)     ((volatile u8I2SIRSTAT_byte_view *)(I2SIRSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetI2SIRSTAT_TxAEINT(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> TxAEINT)            
+N#define biGetI2SIRSTAT_TxERROR(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> TxERROR)            
+N#define biGetI2SIRSTAT_TxNFINT(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> TxNFINT)            
+N#define biGetI2SIRSTAT_RxAFINT(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> RxAFINT)            
+N#define biGetI2SIRSTAT_RxHFINT(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> RxHFINT)            
+N#define biGetI2SIRSTAT_RxERROR(ctrlr) (pst_bitI2SIRSTAT(ctrlr) -> RxERROR)
+N            
+N/* byte access */
+N
+N#define u8GetI2SIRSTAT(ctrlr) (*pu8I2SIRSTAT(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SIRCLR                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406010                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SIRCLR_REG__       0xC0406010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   	:1; 	 /* 0..0  bit(s) W */
+N  uint8_t   TxERRORCLR	:1; 	 /* 1..1  bit(s) W */
+N  uint8_t   	:3; 	 /* 2..4  bit(s) W */
+N  uint8_t   RxERRORCLR	:1; 	 /* 5..5  bit(s) W */ 
+N  uint8_t   	:2; 	 /* 6..31  bit(s) W */                    
+N} I2SIRCLR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8I2SIRCLR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SIRCLR(ctrlr)     ((volatile I2SIRCLR_bit_view_st *)\
+N(I2SIRCLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SIRCLR(ctrlr)     ((volatile I2SIRCLR_bit_view_st *)(I2SIRCLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8I2SIRCLR(ctrlr)     ((volatile u8I2SIRCLR_byte_view *)\
+N(I2SIRCLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8I2SIRCLR(ctrlr)     ((volatile u8I2SIRCLR_byte_view *)(I2SIRCLR_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetI2SIRCLR_TxERRORCLR(ctrlr,ParValue) (pst_bitI2SIRCLR(ctrlr) -> TxERRORCLR=(ParValue)) 
+N#define vSetI2SIRCLR_RxERRORCLR(ctrlr,ParValue) (pst_bitI2SIRCLR(ctrlr) -> RxERRORCLR=(ParValue))
+N            
+N/* byte access */
+N#define vSetI2SIRCLR(ctrlr,ParValue) (*pu8I2SIRCLR(ctrlr) = (ParValue))
+N#define u8GetI2SIRCLR(ctrlr) (*pu8I2SIRCLR(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SIRMASK                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406014                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SIRMASK_REG__       0xC0406014U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   TxAEMSK	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   TxERRORMSK	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   TxNFMSK	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   RxAFMSK	:1; 	 /* 3..3  bit(s) R/W */
+N  uint8_t   RxHFMSK	:1; 	 /* 4..4  bit(s) R/W */
+N  uint8_t   RxERRORMSK	:1; 	 /* 5..5  bit(s) R/W */
+N  uint8_t   I2SINTMSK	:1; 	 /* 6..6  bit(s) R/W */ 
+N  uint8_t   	:1; 	 /* 7..31  bit(s) R */                    
+N} I2SIRMASK_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8I2SIRMASK_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SIRMASK(ctrlr)     ((volatile I2SIRMASK_bit_view_st *)\
+N(I2SIRMASK_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SIRMASK(ctrlr)     ((volatile I2SIRMASK_bit_view_st *)(I2SIRMASK_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8I2SIRMASK(ctrlr)     ((volatile u8I2SIRMASK_byte_view *)\
+N(I2SIRMASK_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu8I2SIRMASK(ctrlr)     ((volatile u8I2SIRMASK_byte_view *)(I2SIRMASK_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetI2SIRMASK_TxAEMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> TxAEMSK)
+N#define vSetI2SIRMASK_TxAEMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> TxAEMSK=(ParValue))
+N#define biGetI2SIRMASK_TxERRORMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> TxERRORMSK)
+N#define vSetI2SIRMASK_TxERRORMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> TxERRORMSK=(ParValue))
+N#define biGetI2SIRMASK_TxNFMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> TxNFMSK)
+N#define vSetI2SIRMASK_TxNFMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> TxNFMSK=(ParValue))
+N#define biGetI2SIRMASK_RxAFMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> RxAFMSK)
+N#define vSetI2SIRMASK_RxAFMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> RxAFMSK=(ParValue))
+N#define biGetI2SIRMASK_RxHFMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> RxHFMSK)
+N#define vSetI2SIRMASK_RxHFMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> RxHFMSK=(ParValue))
+N#define biGetI2SIRMASK_RxERRORMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> RxERRORMSK)
+N#define vSetI2SIRMASK_RxERRORMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> RxERRORMSK=(ParValue))
+N#define biGetI2SIRMASK_I2SINTMSK(ctrlr) (pst_bitI2SIRMASK(ctrlr) -> I2SINTMSK)
+N#define vSetI2SIRMASK_I2SINTMSK(ctrlr,ParValue)  (pst_bitI2SIRMASK(ctrlr) -> I2SINTMSK=(ParValue))
+N            
+N/* byte access */
+N#define vSetI2SIRMASK(ctrlr,ParValue) (*pu8I2SIRMASK(ctrlr) = (ParValue))
+N#define u8GetI2SIRMASK(ctrlr) (*pu8I2SIRMASK(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2STXDATA                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC0406018                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2STXDATA_REG__       0xC0406018U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   TxDATA	:32; 	 /* 0..31  bit(s) W */                    
+N} I2STXDATA_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} I2STXDATA_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} I2STXDATA_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32I2STXDATA_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2STXDATA(ctrlr)     ((volatile I2STXDATA_bit_view_st *)\
+N(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2STXDATA(ctrlr)     ((volatile I2STXDATA_bit_view_st *)(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2STXDATA(ctrlr)     ((volatile I2STXDATA_byte_view_st *)\
+N(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2STXDATA(ctrlr)     ((volatile I2STXDATA_byte_view_st *)(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16I2STXDATA(ctrlr)     ((volatile I2STXDATA_halfword_view_st *)\
+N(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u16I2STXDATA(ctrlr)     ((volatile I2STXDATA_halfword_view_st *)(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32I2STXDATA(ctrlr)     ((volatile u32I2STXDATA_word_view *)\
+N(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32I2STXDATA(ctrlr)     ((volatile u32I2STXDATA_word_view *)(I2STXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */ 
+N#define vSetI2STXDATA_TxDATA(ctrlr,ParValue) (pst_bitI2STXDATA(ctrlr) -> TxDATA=(ParValue))
+N            
+N/* LL-struct byte access */
+N#define vSetI2STXDATALL(ctrlr,ParValue) (pst_u8I2STXDATA(ctrlr) -> u8LL = (ParValue))
+N#define u8GetI2STXDATALL(ctrlr) (pst_u8I2STXDATA(ctrlr) -> u8LL)
+N/* LH-struct byte access */
+N#define vSetI2STXDATALH(ctrlr,ParValue) (pst_u8I2STXDATA(ctrlr) -> u8LH = (ParValue))
+N#define u8GetI2STXDATALH(ctrlr) (pst_u8I2STXDATA(ctrlr) -> u8LH)
+N/* HL-struct byte access */
+N#define vSetI2STXDATAHL(ctrlr,ParValue) (pst_u8I2STXDATA(ctrlr) -> u8HL = (ParValue))
+N#define u8GetI2STXDATAHL(ctrlr) (pst_u8I2STXDATA(ctrlr) -> u8HL)
+N/* HH-struct byte access */
+N#define vSetI2STXDATAHH(ctrlr,ParValue) (pst_u8I2STXDATA(ctrlr) -> u8HH = (ParValue))
+N#define u8GetI2STXDATAHH(ctrlr) (pst_u8I2STXDATA(ctrlr) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N#define vSetI2STXDATAL(ctrlr,ParValue) (pst_u16I2STXDATA(ctrlr) -> u16L = (ParValue))
+N#define u16GetI2STXDATAL(ctrlr) (pst_u16I2STXDATA(ctrlr) -> u16L)
+N#define vSetI2STXDATAH(ctrlr,ParValue) (pst_u16I2STXDATA(ctrlr) -> u16H = (ParValue))
+N#define u16GetI2STXDATAH(ctrlr) (pst_u16I2STXDATA(ctrlr) -> u16H)
+N            
+N/* Word access */
+N#define vSetI2STXDATA(ctrlr,ParValue)  (*pu32I2STXDATA(ctrlr) = (ParValue))
+N#define u32GetI2STXDATA(ctrlr)  (*pu32I2STXDATA(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SRXDATA                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC040601C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SRXDATA_REG__       0xC040601CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint32_t   RxDATA	:32; 	 /* 0..31  bit(s) R */                    
+N} I2SRXDATA_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} I2SRXDATA_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} I2SRXDATA_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32I2SRXDATA_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SRXDATA(ctrlr)     ((volatile I2SRXDATA_bit_view_st *)\
+N(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SRXDATA(ctrlr)     ((volatile I2SRXDATA_bit_view_st *)(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2SRXDATA(ctrlr)     ((volatile I2SRXDATA_byte_view_st *)\
+N(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2SRXDATA(ctrlr)     ((volatile I2SRXDATA_byte_view_st *)(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16I2SRXDATA(ctrlr)     ((volatile I2SRXDATA_halfword_view_st *)\
+N(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u16I2SRXDATA(ctrlr)     ((volatile I2SRXDATA_halfword_view_st *)(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32I2SRXDATA(ctrlr)     ((volatile u32I2SRXDATA_word_view *)\
+N(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32I2SRXDATA(ctrlr)     ((volatile u32I2SRXDATA_word_view *)(I2SRXDATA_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetI2SRXDATA_RxDATA(ctrlr) (pst_bitI2SRXDATA(ctrlr) -> RxDATA)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetI2SRXDATALL(ctrlr) (pst_u8I2SRXDATA(ctrlr) -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetI2SRXDATALH(ctrlr) (pst_u8I2SRXDATA(ctrlr) -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetI2SRXDATAHL(ctrlr) (pst_u8I2SRXDATA(ctrlr) -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetI2SRXDATAHH(ctrlr) (pst_u8I2SRXDATA(ctrlr) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetI2SRXDATAL(ctrlr) (pst_u16I2SRXDATA(ctrlr) -> u16L)
+N
+N#define u16GetI2SRXDATAH(ctrlr) (pst_u16I2SRXDATA(ctrlr) -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetI2SRXDATA(ctrlr)  (*pu32I2SRXDATA(ctrlr) )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: I2SFIFOSTAT                                
+N*       SIZE    : 32-bits                        
+N*       ADDRESS : 0xC040603C                             
+N*       ACCESS  : 8, 16, 32, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define I2SFIFOSTAT_REG__       0xC040603CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint32_t   RxFull	:1; 	 /* 0..0  bit(s) R */
+N  uint32_t   RxAF	:1; 	 /* 1..1  bit(s) R */
+N  uint32_t   RxHF	:1; 	 /* 2..2  bit(s) R */
+N  uint32_t   RxAE	:1; 	 /* 3..3  bit(s) R */
+N  uint32_t   RxEmpty	:1; 	 /* 4..4  bit(s) R */
+N  uint32_t   	:11; 	 /* 5..15  bit(s) R */
+N  uint32_t   TxFull	:1; 	 /* 16..16  bit(s) R */
+N  uint32_t   TxAF	:1; 	 /* 17..17  bit(s) R */
+N  uint32_t   TxHF	:1; 	 /* 18..18  bit(s) R */
+N  uint32_t   TxAE	:1; 	 /* 19..19  bit(s) R */
+N  uint32_t   TxEmpty	:1; 	 /* 20..20  bit(s) R */ 
+N  uint32_t   	:11; 	 /* 21..31  bit(s) R */                    
+N} I2SFIFOSTAT_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef struct{      
+N  uint8_t u8LL;      
+N  uint8_t u8LH;      
+N  uint8_t u8HL;      
+N  uint8_t u8HH;      
+N} I2SFIFOSTAT_byte_view_st;
+N            
+N/* HALFWORD View */
+Ntypedef struct{      
+N  uint16_t u16L;     
+N  uint16_t u16H;     
+N} I2SFIFOSTAT_halfword_view_st;
+N            
+N/* WORD View */
+Ntypedef uint32_t u32I2SFIFOSTAT_word_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitI2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_bit_view_st *)\
+N(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_bitI2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_bit_view_st *)(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N        
+N/* Pointer to BYTE-struct  */
+N#define pst_u8I2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_byte_view_st *)\
+N(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u8I2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_byte_view_st *)(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to HALFWORD-struct */
+N#define pst_u16I2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_halfword_view_st *)\
+N(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pst_u16I2SFIFOSTAT(ctrlr)     ((volatile I2SFIFOSTAT_halfword_view_st *)(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N            
+N/* Pointer to WORD  */ 
+N#define pu32I2SFIFOSTAT(ctrlr)     ((volatile u32I2SFIFOSTAT_word_view *)\
+N(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+X#define pu32I2SFIFOSTAT(ctrlr)     ((volatile u32I2SFIFOSTAT_word_view *)(I2SFIFOSTAT_REG__  + ((uint8_t)(ctrlr) * 0x1000U) ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */            
+N#define biGetI2SFIFOSTAT_RxFull(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> RxFull)            
+N#define biGetI2SFIFOSTAT_RxAF(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> RxAF)            
+N#define biGetI2SFIFOSTAT_RxHF(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> RxHF)            
+N#define biGetI2SFIFOSTAT_RxAE(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> RxAE)            
+N#define biGetI2SFIFOSTAT_RxEmpty(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> RxEmpty)            
+N#define biGetI2SFIFOSTAT_TxFull(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> TxFull)            
+N#define biGetI2SFIFOSTAT_TxAF(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> TxAF)            
+N#define biGetI2SFIFOSTAT_TxHF(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> TxHF)            
+N#define biGetI2SFIFOSTAT_TxAE(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> TxAE)            
+N#define biGetI2SFIFOSTAT_TxEmpty(ctrlr) (pst_bitI2SFIFOSTAT(ctrlr) -> TxEmpty)
+N            
+N/* LL-struct byte access */
+N
+N#define u8GetI2SFIFOSTATLL(ctrlr) (pst_u8I2SFIFOSTAT(ctrlr) -> u8LL)
+N/* LH-struct byte access */
+N
+N#define u8GetI2SFIFOSTATLH(ctrlr) (pst_u8I2SFIFOSTAT(ctrlr) -> u8LH)
+N/* HL-struct byte access */
+N
+N#define u8GetI2SFIFOSTATHL(ctrlr) (pst_u8I2SFIFOSTAT(ctrlr) -> u8HL)
+N/* HH-struct byte access */
+N
+N#define u8GetI2SFIFOSTATHH(ctrlr) (pst_u8I2SFIFOSTAT(ctrlr) -> u8HH)
+N            
+N            
+N/* Half-word struct access */ 
+N
+N#define u16GetI2SFIFOSTATL(ctrlr) (pst_u16I2SFIFOSTAT(ctrlr) -> u16L)
+N
+N#define u16GetI2SFIFOSTATH(ctrlr) (pst_u16I2SFIFOSTAT(ctrlr) -> u16H)
+N            
+N/* Word access */
+N
+N#define u32GetI2SFIFOSTAT(ctrlr)  (*pu32I2SFIFOSTAT(ctrlr) )
+N            
+N
+N
+N/****************************************************************************/
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/ 
+N
+N    
+N
+N#endif /* I2SIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 23 "..\..\..\..\lldd\src\iis.c" 2
+N#include "iis.h"                            /* IIS LLDD definitions */
+L 1 "..\..\..\..\lldd\inc\iis.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : IIS Low Level Device Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : IIS
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.8 $
+N*   DATE        : $Date: 2015/05/08 08:56:32 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef IIS_H
+N#define IIS_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                      /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_IIS_H_REVISION     "$Revision: 1.8 $"
+N#define LLDD_IIS_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/*
+N *  Register bit masks 
+N */
+N
+N/* Rx FIFO underflow interrupt */
+N#define IIS_INT_RX_ERR                      (0x01 << 5) 
+N/* More than 16 words in the RX FIFO */
+N#define IIS_INT_RX_HF_INT                   (0x01 << 4) 
+N/* more than 24 words in Rx FIFO */
+N#define IIS_INT_RX_AF_INT                   (0x01 << 3) 
+N/* less than 24 words in Tx FIFO */
+N#define IIS_INT_TX_NF_INT                   (0x01 << 2) 
+N/* Tx FIFO overflow */
+N#define IIS_INT_TX_ERR                      (0x01 << 1) 
+N/* less than 8 words in Tx FIFO */
+N#define IIS_INT_TX_AE_INT                   (0x01 << 0) 
+N/* Mask all interrupt sources */
+N#define IIS_INT_GLOBAL_MASK                 (0x01 << 6) 
+N
+N/* TX FIFO size */
+N#define IIS_FIFO_TX_SIZE                    32 
+N/* RX FIFO size */
+N#define IIS_FIFO_RX_SIZE                    32 
+N/* TX FIFO all status bits */                                           
+N#define IIS_FIFO_TX_MASKS                   (0x1F << 16) 
+N/* TX FIFO empty */                                           
+N#define IIS_FIFO_TX_EMPTY                   (0x01 << 20) 
+N/* TX FIFO almost empty (8 or less data) */
+N#define IIS_FIFO_TX_AE                      (0x01 << 19) 
+N/* TX FIFO half full */
+N#define IIS_FIFO_TX_HF                      (0x01 << 18) 
+N/* TX FIFO almost full */
+N#define IIS_FIFO_TX_AF                      (0x01 << 17) 
+N/* TX FIFO full */
+N#define IIS_FIFO_TX_FULL                    (0x01 << 16) 
+N/* RX FIFO all status bits */                                           
+N#define IIS_FIFO_RX_MASKS                   (0x1F << 0) 
+N/* RX FIFO empty */                                           
+N#define IIS_FIFO_RX_EMPTY                   (0x01 << 4) 
+N/* RX FIFO almost empty (8 or less data) */
+N#define IIS_FIFO_RX_AE                      (0x01 << 3) 
+N/* RX FIFO half full */
+N#define IIS_FIFO_RX_HF                      (0x01 << 2) 
+N/* RX FIFO almost full */
+N#define IIS_FIFO_RX_AF                      (0x01 << 1) 
+N/* RX FIFO full */
+N#define IIS_FIFO_RX_FULL                    (0x01 << 0) 
+N
+N/*********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/* IIS Controller initialization error codes */
+Ntypedef enum tag_iis_ErrCode_e
+N{
+N    IIS_OK   = 0,                           /* Operation completed correctly */
+N    IIS_FAIL = 1                            /* Operation not completed */
+N} iis_ErrCode_e;
+N
+N/* IIS channel */
+Ntypedef enum tag_iis_Ch_e
+N{
+N    IIS_CH0 = 0x0,                          /* Interface channel 0 */
+N    IIS_CH1 = 0x1                           /* Interface channel 1 */  
+N} iis_Ch_e;
+N
+N/* IIS Word select polarities */
+Ntypedef enum tag_iis_WrdSelPol_e
+N{
+N    IIS_WRDSEL_START_LOW  = 0x0,            /* Start as low */
+N    IIS_WRDSEL_START_HIGH = 0x1             /* Start as high */  
+N} iis_WrdSelPol_e;
+N
+N/* IIS transmit polarities */
+Ntypedef enum tag_iis_TxPol_e
+N{
+N    IIS_TXPOL_FALL_EDGE = 0x0,              /* Falling edge */
+N    IIS_TXPOL_RISE_EDGE = 0x1               /* Rising edge */  
+N} iis_TxPol_e;
+N
+N/* IIS overflow error reaction */
+Ntypedef enum tag_iis_ErrOvrRes_e
+N{
+N    IIS_ERR_OVR_DISCARD = 0x0,              /* Discard data */
+N    IIS_ERR_OVR_STOP_WS = 0x1               /* Stop word select generation */  
+N} iis_ErrOvrRes_e;
+N
+N/* IIS underflow error reaction */
+Ntypedef enum tag_iis_ErrUdrRes_e
+N{
+N    IIS_ERR_UDR_SND_ZEROS = 0x0,            /* Send zeros */
+N    IIS_ERR_UDR_STOP_WS   = 0x1             /* Send stop word select generation */  
+N} iis_ErrUdrRes_e;
+N
+N/* IIS mode of operation */
+Ntypedef enum tag_iis_Mode_e
+N{
+N    IIS_MODE_SLAVE  = 0x0,                  /* Operate in Slave mode */
+N    IIS_MODE_MASTER = 0x1                   /* Operate in Master mode */  
+N} iis_Mode_e;
+N
+N/* IIS direction */
+Ntypedef enum tag_iis_Dir_e
+N{
+N    IIS_DIR_RX = 0x0,                       /* Receive */
+N    IIS_DIR_TX = 0x1                        /* Transmit */  
+N} iis_Dir_e;
+N
+N/* IIS TX/RX activity  */
+Ntypedef enum tag_iis_TrsfOper_e
+N{
+N    IIS_TRSF_OPER_DISABLE = 0x0,            /* Disable TX/RX operation */
+N    IIS_TRSF_OPER_ENABLE  = 0x1             /* Enable TX/RX operation */  
+N} iis_TrsfOper_e;
+N
+N/* IIS valid data width selection (number of bits) */
+Ntypedef enum tag_iis_DataWid_e
+N{
+N    IIS_DATAWID_1  = (0 << 8),              /* 1 valid data bit */
+N    IIS_DATAWID_2  = (1 << 8),              /* 2 valid data bits */
+N    IIS_DATAWID_3  = (2 << 8),              /* 3 valid data bits */
+N    IIS_DATAWID_4  = (3 << 8),              /* 4 valid data bits */
+N    IIS_DATAWID_5  = (4 << 8),              /* 5 valid data bits */
+N    IIS_DATAWID_6  = (5 << 8),              /* 6 valid data bits */
+N    IIS_DATAWID_7  = (6 << 8),              /* 7 valid data bits */
+N    IIS_DATAWID_8  = (7 << 8),              /* 8 valid data bits */
+N    IIS_DATAWID_9  = (8 << 8),              /* 9 valid data bits */
+N    IIS_DATAWID_10 = (9 << 8),              /* 10 valid data bits */
+N    IIS_DATAWID_11 = (10 << 8),             /* 11 valid data bits */
+N    IIS_DATAWID_12 = (11 << 8),             /* 12 valid data bits */
+N    IIS_DATAWID_13 = (12 << 8),             /* 13 valid data bits */
+N    IIS_DATAWID_14 = (13 << 8),             /* 14 valid data bits */
+N    IIS_DATAWID_15 = (14 << 8),             /* 15 valid data bits */
+N    IIS_DATAWID_16 = (15 << 8),             /* 16 valid data bits */
+N    IIS_DATAWID_17 = (16 << 8),             /* 17 valid data bits */
+N    IIS_DATAWID_18 = (17 << 8),             /* 18 valid data bits */
+N    IIS_DATAWID_19 = (18 << 8),             /* 19 valid data bits */
+N    IIS_DATAWID_20 = (19 << 8),             /* 20 valid data bits */
+N    IIS_DATAWID_21 = (20 << 8),             /* 21 valid data bits */
+N    IIS_DATAWID_22 = (21 << 8),             /* 22 valid data bits */
+N    IIS_DATAWID_23 = (22 << 8),             /* 23 valid data bits */
+N    IIS_DATAWID_24 = (23 << 8),             /* 24 valid data bits */
+N    IIS_DATAWID_25 = (24 << 8),             /* 25 valid data bits */
+N    IIS_DATAWID_26 = (25 << 8),             /* 26 valid data bits */
+N    IIS_DATAWID_27 = (26 << 8),             /* 27 valid data bits */
+N    IIS_DATAWID_28 = (27 << 8),             /* 28 valid data bits */
+N    IIS_DATAWID_29 = (28 << 8),             /* 29 valid data bits */
+N    IIS_DATAWID_30 = (29 << 8),             /* 30 valid data bits */
+N    IIS_DATAWID_31 = (30 << 8),             /* 31 valid data bits */
+N    IIS_DATAWID_32 = (31 << 8)              /* 32 valid data bits */  
+N} iis_DataWid_e;
+N
+N/* IIS WS length selection (number of clock cycles) */
+Ntypedef enum tag_iis_WsLen_e
+N{
+N    IIS_WSLEN_RESERVED = 0, /* reserved value */
+N    IIS_WSLEN_2  = 1,                       /* 2 clock cycles */
+N    IIS_WSLEN_3  = 2,                       /* 3 clock cycles */
+N    IIS_WSLEN_4  = 3,                       /* 4 clock cycles */
+N    IIS_WSLEN_5  = 4,                       /* 5 clock cycles */
+N    IIS_WSLEN_6  = 5,                       /* 6 clock cycles */
+N    IIS_WSLEN_7  = 6,                       /* 7 clock cycles */
+N    IIS_WSLEN_8  = 7,                       /* 8 clock cycles */
+N    IIS_WSLEN_9  = 8,                       /* 9 clock cycles */
+N    IIS_WSLEN_10 = 9,                       /* 10 clock cycles */
+N    IIS_WSLEN_11 = 10,                      /* 11 clock cycles */
+N    IIS_WSLEN_12 = 11,                      /* 12 clock cycles */
+N    IIS_WSLEN_13 = 12,                      /* 13 clock cycles */
+N    IIS_WSLEN_14 = 13,                      /* 14 clock cycles */
+N    IIS_WSLEN_15 = 14,                      /* 15 clock cycles */
+N    IIS_WSLEN_16 = 15,                      /* 16 clock cycles */
+N    IIS_WSLEN_17 = 16,                      /* 17 clock cycles */
+N    IIS_WSLEN_18 = 17,                      /* 18 clock cycles */
+N    IIS_WSLEN_19 = 18,                      /* 19 clock cycles */
+N    IIS_WSLEN_20 = 19,                      /* 20 clock cycles */
+N    IIS_WSLEN_21 = 20,                      /* 21 clock cycles */
+N    IIS_WSLEN_22 = 21,                      /* 22 clock cycles */
+N    IIS_WSLEN_23 = 22,                      /* 23 clock cycles */
+N    IIS_WSLEN_24 = 23,                      /* 24 clock cycles */
+N    IIS_WSLEN_25 = 24,                      /* 25 clock cycles */
+N    IIS_WSLEN_26 = 25,                      /* 26 clock cycles */
+N    IIS_WSLEN_27 = 26,                      /* 27 clock cycles */
+N    IIS_WSLEN_28 = 27,                      /* 28 clock cycles */
+N    IIS_WSLEN_29 = 28,                      /* 29 clock cycles */
+N    IIS_WSLEN_30 = 29,                      /* 30 clock cycles */
+N    IIS_WSLEN_31 = 30,                      /* 31 clock cycles */
+N    IIS_WSLEN_32 = 31                       /* 32 clock cycles */  
+N} iis_WsLen_e;
+N
+N/* IIS MCLK activity */
+Ntypedef enum tag_iis_MClkOper_e
+N{
+N    IIS_MCLKOPER_DISABLE = (0x0 << 21),     /* MCLK disabled */
+N    IIS_MCLKOPER_ENABLE = (0x1 << 21)       /* MCLK enabled */  
+N} iis_MClkOper_e;
+N
+N/* IIS MCLK source */
+Ntypedef enum tag_iis_MClkSrc_e
+N{
+N    IIS_MCLKSRC_INTERNAL = (0x0 << 20),     /* Internal MCLK 480MHz */
+N    IIS_MCLKSRC_EXTERNAL = (0x1 << 20)      /* External MCLK source */    
+N} iis_MClkSrc_e;
+N
+N/* IIS divider value */
+Ntypedef enum tag_iis_MClkDiv_e
+N{
+N    IIS_MCLKDIV_RESERVED = (0 << 8),        /* Reserved value */
+N    IIS_MCLKDIV_1        = (1 << 8),        /* No division */
+N    IIS_MCLKDIV_2        = (2 << 8),        /* Division by 2 */
+N    IIS_MCLKDIV_3        = (3 << 8),        /* Division by 3 */
+N    IIS_MCLKDIV_4        = (4 << 8),        /* Division by 4 */
+N    IIS_MCLKDIV_11       = (11 << 8),       /* Division by 11 (default) */    
+N    IIS_MCLKDIV_39       = (39 << 8),       /* Division by 39 */
+N    /*
+N     *  Values from 5 up to 1022, should be defined if necessary
+N     */
+N    IIS_MCLKDIV_1023     = (1023 << 8)      /* Division by 2 */    
+N} iis_MClkDiv_e;
+N
+N/* IIS output activity selection */
+Ntypedef enum tag_iis_MClkOut_e
+N{
+N    IIS_MCLKOUT_DISABLE = (0x0 << 21),      /* MCLK outpu disabled */
+N    IIS_MCLKOUT_ENABLE  = (0x1 << 21)       /* MCLK outpu enabled */    
+N} iis_MClkOut_e;
+N
+N/* IIS latch time selection (MCLK's positive edged number)*/
+Ntypedef enum tag_iis_LatchTime_e
+N{
+N    IIS_LTIME_RESERVED = (0 << 2),          /* Reserved value */
+N    IIS_LTIME_2        = (0x01 << 2),       /* 2 positive positive edge */
+N    IIS_LTIME_3        = (0x02 << 2),       /* 3 positive edge */
+N    IIS_LTIME_4        = (0x03 << 2),       /* 4 positive edge */
+N    IIS_LTIME_5        = (0x04 << 2),       /* 5 positive edge */
+N    IIS_LTIME_6        = (0x05 << 2),       /* 6 positive edge */
+N    IIS_LTIME_7        = (0x06 << 2),       /* 7 positive edge */
+N    IIS_LTIME_8        = (0x07 << 2),       /* 8 positive edge */
+N    IIS_LTIME_9        = (0x08 << 2),       /* 9 positive edge */
+N    IIS_LTIME_10       = (0x09 << 2),       /* 10 positive edge */
+N    IIS_LTIME_11       = (0x0A << 2),       /* 11 positive edge */
+N    IIS_LTIME_12       = (0x0B << 2),       /* 12 positive edge */
+N    IIS_LTIME_13       = (0x0C << 2),       /* 13 positive edge */
+N    IIS_LTIME_14       = (0x0D << 2),       /* 14 positive edge */
+N    IIS_LTIME_15       = (0x0E << 2),       /* 15 positive edge */
+N    IIS_LTIME_16       = (0x0F << 2),       /* 16 positive edge */
+N    IIS_LTIME_17       = (0x10 << 2),       /* 17 positive edge */
+N    IIS_LTIME_18       = (0x11 << 2),       /* 18 positive edge */
+N    IIS_LTIME_19       = (0x12 << 2),       /* 19 positive edge */
+N    IIS_LTIME_20       = (0x13 << 2),       /* 20 positive edge */
+N    IIS_LTIME_21       = (0x14 << 2),       /* 21 positive edge */
+N    IIS_LTIME_22       = (0x15 << 2),       /* 22 positive edge */
+N    IIS_LTIME_23       = (0x16 << 2),       /* 23 positive edge */
+N    IIS_LTIME_24       = (0x17 << 2),       /* 24 positive edge */
+N    IIS_LTIME_25       = (0x18 << 2),       /* 25 positive edge */
+N    IIS_LTIME_26       = (0x19 << 2),       /* 26 positive edge */
+N    IIS_LTIME_27       = (0x1A << 2),       /* 27 positive edge */
+N    IIS_LTIME_28       = (0x1B << 2),       /* 28 positive edge */
+N    IIS_LTIME_29       = (0x1C << 2),       /* 29 positive edge */
+N    IIS_LTIME_30       = (0x1D << 2),       /* 30 positive edge */
+N    IIS_LTIME_31       = (0x1E << 2),       /* 31 positive edge */
+N    IIS_LTIME_32       = (0x1F << 2)        /* 32 positive edge */   
+N} iis_LatchTime_e;
+N
+N/*
+N** IIS Bit Clock divider selection
+N*/
+Ntypedef enum tag_iis_BClkDiv_e
+N{
+N  IIS_BCLKDIV_8        = 0x0,               /* Dividy by 8 */
+N  IIS_BCLKDIV_16       = 0x1,               /* Dividy by 16 */
+N  IIS_BCLKDIV_32       = 0x2,               /* Dividy by 32 */
+N  IIS_BCLKDIV_RESERVED = 0x3                /* Reserved */  
+N} iis_BClkDiv_e;
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vIIS_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIS_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_InitAsADC
+N *                
+N * Purpose:       Initialize the IIS controllers as ADC (input)
+N *
+N * Inputs:        eCh  IIS channel (interface) selection
+N *                
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   This function is an example set of configurations necessary
+N *                to be performed for IIS controller. It should be noted
+N *                that several other settings are required (board setup)
+N *                to be able to utilize the IIS interface correctly as an input.
+N *                Be aware the the sub-functions return-errors checking - any
+N *                sub-function error will cause this function to fail, however
+N *                some settings might be already written to the IIS controller.
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_InitAsADC(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_InitAsDAC
+N *                
+N * Purpose:       Initialize the IIS controllers as DAC (input)
+N *                
+N * Inputs:        eCh  IIS channel (interface)
+N *                
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   This function is an example set of configurations necessary
+N *                to be performed for the IIS controller. It should be noted
+N *                that several other settings are required (board setup) to 
+N *                be able to utilize the IIS interface correctly as an output.
+N *                Be aware the the sub-functions return-errors checking - any
+N *                sub-function error will cause this function to fail, however
+N *                some settings might be already written to the IIS controller
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_InitAsDAC(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetWrdSelTxPol
+N *
+N * Purpose:       Configure the WS signal start and the transmit mode
+N *                polarities on the IIS bus
+N *
+N * Inputs:        eCh         IIS channel (interface)
+N *                eWrdSelPol  Start level 
+N *                eTxPol      Transmit polarity
+N *
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetWrdSelTxPol(iis_Ch_e eCh, iis_WrdSelPol_e eWrdSelPol,
+N                                  iis_TxPol_e eTxPol);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetErrResolve
+N *
+N * Purpose:       Configure (available in master mode) the IIS bus controller
+N *                behavior in case of data reception under the FIFO full (overflow)
+N *                and in case of data transmission under the FIFO empty (underflow)
+N *                conditions.
+N *
+N * Inputs:        eCh         IIS channel (interface)
+N *                eErrOvrRes  Overflow error handling 
+N *                eErrUdrRes  Underflow error handling 
+N *
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetErrResolve (iis_Ch_e eCh, iis_ErrOvrRes_e eErrOvrRes,
+N                                  iis_ErrUdrRes_e eErrUdrRes);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetModeDir
+N *
+N * Purpose:       Configure the IIS bus controller Master/Slave mode as well as
+N *                the transmission direction. The transmission or reception will 
+N *                be disabled after the mode change and should be separately 
+N *                enabled by another driver API function
+N *
+N * Inputs:        eCh    IIS channel (interface)
+N *                eMode  Master / Slave operating mode 
+N *                eDir   TX / RX direction 
+N *
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetModeDir(iis_Ch_e eCh, iis_Mode_e eMode, iis_Dir_e eDir);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetTxRxOper
+N *
+N * Purpose:       Enable/disable the IIS bus controller transmission or reception
+N *                (depending on the current direction)
+N *
+N * Inputs:        eCh        IIS channel (interface)
+N *                eTrsfOper  Enable / Disable transfer (RX/TX) operation
+N *
+N * Outputs: none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetTxRxOper (iis_Ch_e eCh, iis_TrsfOper_e eTrsfOper);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetWidthLength
+N *
+N * Purpose:       Set the number of valid bits to be transmitted during one
+N *                word-select period and the length of the WS signal by 
+N *                defining the number of clock cycles
+N *
+N * Inputs:        eCh         IIS channel (interface)
+N *                eDataWidth  Number of valid bits to be transmitted (during one
+N *                            word select period)
+N *                eWsLen      Number of clock cycles per word-select interval
+N *
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetWidthLength(iis_Ch_e eCh, iis_DataWid_e eDataWidth,
+N                                  iis_WsLen_e eWsLen);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetMClkOper
+N *
+N * Purpose:       Enable/disable the IIS controller module clock. It should
+N *                be disabled while configuring the MCLK settings
+N *                
+N * Inputs:        eCh        IIS channel (interface)
+N *                eMClkOper  MCLK Enable / disable 
+N *                
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetMClkOper(iis_Ch_e eCh, iis_MClkOper_e eMClkOper);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_GetMClkOper
+N *
+N * Purpose:       Retrieve the current MCLK enable/disable bit state
+N *                                
+N * Inputs:        eCh  IIS channel (interface)
+N *                                
+N * Outputs:       none
+N *
+N * Return Values: MCLKEN bit status (iis_MClkOper_e enumeration type)
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_MClkOper_e eIIS_GetMClkOper(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_SetClkAttr
+N *
+N * Purpose:       Configures clock/bit-clock attributes (source, dividers, 
+N *                output and latch-time) of a IIS controller channel
+N *
+N * Inputs:        eCh         IIS channel (interface)
+N *                eMClkOut    Module clock (MCLK) output enable / disable
+N *                eLatchTime  Latch time
+N *                eBClkDiv    Bit clock (BCLK) divider
+N *                
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_SetClkAttr(iis_Ch_e eCh,iis_MClkOut_e eMClkOut,
+N                              iis_LatchTime_e eLatchTime, iis_BClkDiv_e eBClkDiv);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIS_DisableInt
+N *
+N * Purpose:       Mask (disable) selected interrupts. Only interrupt sources
+N *                explicitly given as an "OR-ed" combination will be affected
+N *
+N * Inputs:        eCh     IIS channel (interface)
+N *                u8Mask  Combination of interrupt sources to be masked
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIS_DisableInt(iis_Ch_e eCh, uint8_t u8Mask);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIS_EnableInt
+N *
+N * Purpose:       Unmask (enable) selected interrupts. Only interrupt sources
+N *                explicitly given as an "OR-ed" combination will be affected
+N *
+N * Inputs:        eCh     IIS channel (interface)
+N *                u8Mask  Combination of interrupt sources to be unmasked
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIS_EnableInt(iis_Ch_e eCh, uint8_t u8Mask);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIS_ClearIrq
+N *
+N * Purpose:       Clear selected interrupts. Only interrupt sources explicitly
+N *                given as an "OR-ed" combination will be affected by this 
+N *                function (affects only RX and TX error interrupts). Other 
+N *                interrupt sources cannot be cleared by this function i.e. 
+N *                the real reason for the interrupt must be eliminated instead
+N *
+N * Inputs:        eCh      IIS channel (interface)
+N *                u32Mask  Combination of interrupt sources to be cleared
+N *
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vIIS_ClearIrq(iis_Ch_e eCh, uint32_t u32Mask);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u8IIS_GetIrqStatus
+N *
+N * Purpose:       Retrieve the current interrupt status of the IIS controller
+N *
+N * Inputs:        eCh  IIS channel (interface) selection
+N *
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the active interrupt sources
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint8_t u8IIS_GetIrqStatus(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32IIS_GetFifoStatus
+N *
+N * Purpose:       Retrieve the current status of the RX and TX FIFOs
+N *
+N * Inputs:        eCh  IIS channel (interface) selection
+N *
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the FIFOs status
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32IIS_GetFifoStatus(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16IIS_GetCtrlReg
+N *
+N * Purpose:       Retriev the current control register value
+N *
+N * Inputs:        eCh  IIS channel (interface)
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the settings in the control
+N *                register
+N *
+N * Limitations:   To be used for debug and driver validation purposes only
+N *
+N ***************************************************************************/
+Nuint16_t u16IIS_GetCtrlReg(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u16IIS_GetLengthReg
+N *                
+N * Purpose:       Retrieve the current data length configuration
+N *                
+N * Inputs:        eCh  IIS channel (interface)
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the settings in the control
+N *                register
+N *
+N * Limitations:   To be used for debug and driver validation purposes only
+N *
+N ***************************************************************************/
+Nuint16_t u16IIS_GetLengthReg(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32IIS_GetClkCfgReg
+N *                
+N * Purpose:       Retrieve the current clock settings of a IIS controller 
+N *                channel
+N *             
+N * Inputs:        eCh  IIS channel (interface)
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the settings in the clock
+N *                configuration register
+N *
+N * Limitations:   To be used for debug and driver validation purposes only
+N *
+N ***************************************************************************/
+Nuint32_t u32IIS_GetClkCfgReg(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u8IIS_GetIntMaskReg
+N *
+N * Purpose:       Retrieve the current settings of the IIS controller interrupt
+N *                mask register 
+N *
+N * Inputs:        eCh  IIS channel (interface)
+N *
+N * Outputs:       none
+N *
+N * Return Values: Bit combination reflecting the settings in the interrupt
+N *                mask register
+N *
+N * Limitations:   To be used for debug and driver validation purposes only
+N *
+N ***************************************************************************/
+Nuint8_t u8IIS_GetIntMaskReg(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vIIS_WriteWord
+N *
+N * Purpose:       Write a single data word (up to 32-bits) to the IIS controller
+N *                Transmit Data Register (TX FIFO), thus transmit it over the IIS
+N *                bus
+N *
+N * Inputs:        eCh      IIS channel (interface)
+N *                u32Data  Data word to be send over the IIS bus
+N *
+N *
+N * Outputs:       none
+N *
+N * Return Values: Initialization error / status code
+N *
+N * Limitations:   The TX FIFO must have at least one entry available for the
+N *                data before this function is called
+N *
+N ***************************************************************************/
+Nvoid vIIS_WriteWord(iis_Ch_e eCh, uint32_t u32Data);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32IIS_ReadWord
+N *
+N * Purpose:       Reads one byte from the IIS controller RX FIFO
+N *
+N * Inputs:        eCh  IIS channel (interface)
+N *
+N * Outputs:       none
+N *
+N * Return Values: The data word retrieved from the IIS RX buffer
+N *
+N * Limitations:   The RX FIFO must have at least one entry available for the
+N *                data before this function is called
+N *
+N ***************************************************************************/
+Nuint32_t u32IIS_ReadWord(iis_Ch_e eCh);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_WriteData
+N *
+N * Purpose:       Trasmit data sample
+N *
+N * Inputs:        eCh         IIS channel (interface)
+N *                u32DataLen  Number of valid data bytes to be transmitted
+N *                u32Data     Transmit data buffer
+N *
+N * Outputs:       none
+N *
+N * Return Values: Status/error code depending on the context
+N *
+N * Limitations:   This function is only an example of the IIS interface,
+N *                implemeting FIFO status polling mechanism. It should be 
+N *                used only as a reference. IIS interrupts together with 
+N *                DMA utilisation shall lbe used for real applications
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_WriteData(iis_Ch_e eCh, uint32_t u32DataLen, 
+N                             const uint32_t u32Data[]);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eIIS_ReadData
+N *
+N * Purpose:       Read data sample
+N *
+N * Inputs:        eCh      IIS channel (interface)
+N *                u32Data  Reception data buffer
+N *
+N * Outputs:       Filled reception data buffer
+N *
+N * Return Values: Status/error code depending on the context
+N *
+N * Limitations:   This function is only an example of the IIS interface,
+N *                implemeting FIFO status polling mechanism. It should be 
+N *                used only as a reference. IIS interrupts together with 
+N *                DMA utilisation shall lbe used for real applications
+N *
+N ***************************************************************************/
+Niis_ErrCode_e eIIS_ReadData(iis_Ch_e eCh, uint32_t *pu32DataLen, uint32_t u32Data[]);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* IIS_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 24 "..\..\..\..\lldd\src\iis.c" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N#define LLDD_IIS_C_REVISION     "$Revision: 1.7 $"
+N#define LLDD_IIS_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_IIS_C_REVISION[]    = LLDD_IIS_C_REVISION;
+Xstatic uint8_t au8LLDD_IIS_C_REVISION[]    = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_IIS_C_TAG[]         = LLDD_IIS_C_TAG;
+Xstatic uint8_t au8LLDD_IIS_C_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_IIS_H_REVISION[]    = LLDD_IIS_H_REVISION;
+Xstatic uint8_t au8LLDD_IIS_H_REVISION[]    = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_IIS_H_TAG[]         = LLDD_IIS_H_TAG;
+Xstatic uint8_t au8LLDD_IIS_H_TAG[]         = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_IIS_IO_H_REVISION[] = LLDD_IIS_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_IIS_IO_H_REVISION[] = "$Revision: 1.9 $";
+Nstatic uint8_t au8LLDD_IIS_IO_H_TAG[]      = LLDD_IIS_IO_H_TAG;
+Xstatic uint8_t au8LLDD_IIS_IO_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function definition         *
+N**********************************************/
+N
+N/****************************************************************************/
+Nvoid vIIS_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_IIS_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_IIS_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_IIS_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_IIS_H_TAG[0];
+N   *pau8IORevision     = &au8LLDD_IIS_IO_H_REVISION[0];
+N   *pau8IOTag          = &au8LLDD_IIS_IO_H_TAG[0];
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_InitAsDAC(iis_Ch_e eCh)
+N{
+N    iis_ErrCode_e eErrCode = IIS_OK;
+N    
+N    /* CTRL register configuration */
+N    eErrCode |= eIIS_SetModeDir(eCh, IIS_MODE_MASTER, IIS_DIR_TX);
+N
+N    /* FIFO-Errors handling configuration */
+N    eErrCode |= eIIS_SetErrResolve(eCh, IIS_ERR_OVR_DISCARD, IIS_ERR_UDR_SND_ZEROS);
+N
+N    /* Signals polarities confgiguration */
+N    eErrCode |= eIIS_SetWrdSelTxPol(eCh, IIS_WRDSEL_START_LOW, IIS_TXPOL_FALL_EDGE);
+N
+N    /* Data with configuration */
+N    eErrCode |= eIIS_SetWidthLength(eCh, IIS_DATAWID_16, IIS_WSLEN_16);
+N
+N    /* Clear any pending interrupts */
+N    vIIS_ClearIrq(eCh, IIS_INT_RX_ERR | IIS_INT_TX_ERR);
+X    vIIS_ClearIrq(eCh, (0x01 << 5) | (0x01 << 1));
+N
+N    /* Interrupt mask register configuration (if interrupts used) */
+N    vIIS_EnableInt(eCh, IIS_INT_TX_AE_INT);
+X    vIIS_EnableInt(eCh, (0x01 << 0));
+N
+N    /* Initialize clocks */
+N    eErrCode |= eIIS_SetClkAttr(eCh,IIS_MCLKOUT_DISABLE, IIS_LTIME_31, IIS_BCLKDIV_8);
+N    /* Activate MCLK for IIS */
+N    eErrCode |= eIIS_SetMClkOper(eCh, IIS_MCLKOPER_ENABLE);
+N
+N    /* Starting first recording/playback: IIS enabled for RX/TX */
+N    eErrCode |= eIIS_SetTxRxOper (eCh, IIS_TRSF_OPER_ENABLE);
+N
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_InitAsADC(iis_Ch_e eCh)
+N{
+N    iis_ErrCode_e eErrCode = IIS_OK;
+N    
+N    /* Configure as master RX */
+N    eErrCode |= eIIS_SetModeDir(eCh, IIS_MODE_MASTER, IIS_DIR_RX);
+N
+N    /* FIFO-Errors handling configuration */
+N    eErrCode |= eIIS_SetErrResolve(eCh, IIS_ERR_OVR_DISCARD, IIS_ERR_UDR_SND_ZEROS);
+N
+N    /* Signals polarities configuration */
+N    eErrCode |= eIIS_SetWrdSelTxPol(eCh, IIS_WRDSEL_START_LOW, IIS_TXPOL_FALL_EDGE);
+N
+N    /* Data with configuration */
+N    eErrCode |= eIIS_SetWidthLength(eCh, IIS_DATAWID_16, IIS_WSLEN_16);
+N
+N    /* Clear any pending interrupts */
+N    vIIS_ClearIrq(eCh, IIS_INT_RX_ERR | IIS_INT_TX_ERR);
+X    vIIS_ClearIrq(eCh, (0x01 << 5) | (0x01 << 1));
+N
+N    /* Interrupt mask register configuration (if interrupts used) */
+N    vIIS_EnableInt(eCh, IIS_INT_RX_AF_INT);
+X    vIIS_EnableInt(eCh, (0x01 << 3));
+N
+N    /* Initialize clocks */
+N    eErrCode |= eIIS_SetClkAttr(eCh,IIS_MCLKOUT_ENABLE, IIS_LTIME_31, IIS_BCLKDIV_8);
+N    /* Activate MCLK for IIS */
+N    eErrCode |= eIIS_SetMClkOper(eCh, IIS_MCLKOPER_ENABLE);
+N
+N    /* Starting first recording/playback: I2S0 enable for RX */
+N    eErrCode |= eIIS_SetTxRxOper(eCh, IIS_TRSF_OPER_ENABLE);
+N
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetWrdSelTxPol(iis_Ch_e eCh, iis_WrdSelPol_e eWrdSelPol,
+N                                  iis_TxPol_e eTxPol)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    
+N    /* Check if the parameters are in range and write them */
+N    if( ((IIS_WRDSEL_START_LOW == eWrdSelPol) || (IIS_WRDSEL_START_HIGH == eWrdSelPol))
+N        && ((IIS_TXPOL_FALL_EDGE == eTxPol) || (IIS_TXPOL_RISE_EDGE == eTxPol)) )
+N    {
+N        vSetI2SCTRL_POL(eCh, eTxPol);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> POL=(eTxPol));
+N        vSetI2SCTRL_WSPol(eCh, eWrdSelPol);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> WSPol=(eWrdSelPol));
+N        eErrCode = IIS_OK;
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetErrResolve(iis_Ch_e eCh, iis_ErrOvrRes_e eErrOvrRes,
+N                                 iis_ErrUdrRes_e eErrUdrRes)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    
+N    /* Check if the parameters are in range and write them  */
+N    if( ((IIS_ERR_OVR_DISCARD == eErrOvrRes) || (IIS_ERR_OVR_STOP_WS == eErrOvrRes))
+N        && ((IIS_ERR_UDR_SND_ZEROS == eErrUdrRes) || (IIS_ERR_UDR_STOP_WS == eErrUdrRes))
+N      )
+N    {
+N        vSetI2SCTRL_FullRes(eCh, eErrOvrRes);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> FullRes=(eErrOvrRes));
+N        vSetI2SCTRL_EmptyRes(eCh, eErrUdrRes);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> EmptyRes=(eErrUdrRes));
+N        eErrCode = IIS_OK;
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetModeDir (iis_Ch_e eCh, iis_Mode_e eMode, iis_Dir_e eDir)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    
+N    /* Check if the parameters are in range and write them */
+N    if( ((IIS_MODE_SLAVE == eMode) || (IIS_MODE_MASTER == eMode))
+N        && ((IIS_DIR_RX == eDir) || (IIS_DIR_TX == eDir)) )
+N    {
+N        vSetI2SCTRL_MSSLV(eCh, eMode);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> MSSLV=(eMode));
+N        vSetI2SCTRL_TXRXSEL(eCh, eDir);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> TXRXSEL=(eDir));
+N        eErrCode = IIS_OK;
+N    }
+N    
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetTxRxOper(iis_Ch_e eCh, iis_TrsfOper_e eTrsfOper)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    
+N    /* Check if the parameters are in range and write them */
+N    if( (IIS_TRSF_OPER_DISABLE == eTrsfOper) || (IIS_TRSF_OPER_ENABLE == eTrsfOper) )
+N    {
+N        vSetI2SCTRL_TXRXEN(eCh, eTrsfOper);
+X        (((volatile I2SCTRL_bit_view_st *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) -> TXRXEN=(eTrsfOper));
+N        eErrCode = IIS_OK;
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetWidthLength(iis_Ch_e eCh, iis_DataWid_e eDataWidth, iis_WsLen_e eWsLen)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    uint32_t u32LenWid = 0;
+N    uint32_t u32DataWidth_1;
+N    uint32_t u32DataWidth_32;
+N
+N    u32DataWidth_1  = IIS_DATAWID_1;
+N    u32DataWidth_32 = IIS_DATAWID_32;
+N    /* 
+N     *  Check if the parameters are in range and write them
+N     *  Combine both params to create one Word to be written
+N     */
+N    if ((eDataWidth >= u32DataWidth_1) && (eDataWidth <= u32DataWidth_32))
+N    {
+N        u32LenWid = (uint32_t)(eDataWidth | eWsLen);
+N        
+N        vSetI2SLENGTH(eCh,u32LenWid);
+X        (*((volatile u16I2SLENGTH_halfword_view *)(0xC0406004U + ((uint8_t)(eCh) * 0x1000U) )) = (u32LenWid));
+N        
+N        eErrCode = IIS_OK;
+N    }
+N
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetMClkOper(iis_Ch_e eCh, iis_MClkOper_e eMClkOper)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    uint32_t u32ClkConfReg = 0;
+N    uint32_t u32MClkOper = 0;
+N    uint32_t u32ClrMask = 0;
+N    
+N    /* Check if the parameters are in range and write them  */
+N    if( (IIS_MCLKOPER_DISABLE == eMClkOper) || (IIS_MCLKOPER_ENABLE == eMClkOper) )
+N    {
+N        u32MClkOper = (uint32_t)eMClkOper;
+N        u32ClrMask = ~((uint32_t)IIS_MCLKOPER_ENABLE);
+N
+N        /* 
+N         *  get the old register value
+N         *  Clear the enable bit and apply ne bit value to 
+N         *  enable or disable MCLK
+N         */
+N        u32ClkConfReg = u32GetI2SCLKCONF(eCh);            
+X        u32ClkConfReg = (*((volatile u32I2SCLKCONF_word_view *)(0xC0406008U + ((uint8_t)(eCh) * 0x1000U) )) );            
+N        u32ClkConfReg = u32ClkConfReg & u32ClrMask;
+N        u32ClkConfReg = u32ClkConfReg | u32MClkOper;            
+N        vSetI2SCLKCONF(eCh, u32ClkConfReg);            
+X        (*((volatile u32I2SCLKCONF_word_view *)(0xC0406008U + ((uint8_t)(eCh) * 0x1000U) )) = (u32ClkConfReg));            
+N        eErrCode = IIS_OK;
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_MClkOper_e eIIS_GetMClkOper(iis_Ch_e eCh)
+N{
+N    iis_MClkOper_e eMClkOper = IIS_MCLKOPER_DISABLE;
+N    
+N    /* Read the current value of the MCLK enable bit */
+N    eMClkOper = (iis_MClkOper_e)(u32GetI2SCLKCONF(eCh) & IIS_MCLKOPER_ENABLE);
+X    eMClkOper = (iis_MClkOper_e)((*((volatile u32I2SCLKCONF_word_view *)(0xC0406008U + ((uint8_t)(eCh) * 0x1000U) )) ) & IIS_MCLKOPER_ENABLE);
+N
+N    /* Return the respective enumeration value according the MCLKEN bit value */
+N    return eMClkOper;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_SetClkAttr(iis_Ch_e eCh,iis_MClkOut_e eMClkOut,
+N                              iis_LatchTime_e eLatchTime, iis_BClkDiv_e eBClkDiv)
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    iis_MClkOper_e eMClkOperOld;            
+N    
+N    /*     
+N     *  MCLK should be disabled during set-up. Preserve the old value
+N     *  and restore it after applying new settings
+N     */
+N    if (((eLatchTime >= IIS_LTIME_2) && (eLatchTime <= IIS_LTIME_32))
+N        && ((IIS_MCLKOUT_DISABLE == eMClkOut) ||
+N            (IIS_MCLKOUT_ENABLE == eMClkOut))
+N        && ((IIS_BCLKDIV_8 == eBClkDiv) || (IIS_BCLKDIV_16 == eBClkDiv) ||
+N            (IIS_BCLKDIV_32 == eBClkDiv)))
+N    {
+N        /* 
+N         *  Prepare the value to be written
+N         *  Choose IIS channel
+N         *  Store the current setting of MCLKEN bit
+N         *  Change clock attributes
+N         *  Restore the original MCLKEN bit setting
+N         */
+N        uint32_t u32Attr = (uint32_t)(eMClkOut | eLatchTime | eBClkDiv);
+N        
+N        eMClkOperOld = eIIS_GetMClkOper(eCh);            
+N        vSetI2SCLKCONF(eCh, u32Attr);            
+X        (*((volatile u32I2SCLKCONF_word_view *)(0xC0406008U + ((uint8_t)(eCh) * 0x1000U) )) = (u32Attr));            
+N        eErrCode = eIIS_SetMClkOper (eCh, eMClkOperOld);
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIS_DisableInt(iis_Ch_e eCh, uint8_t u8Mask)
+N{
+N    uint8_t u8TmpMask = 0x00;
+N    
+N    /* 
+N     *  Get the current mask
+N     *  Set bits to mask out
+N     *  Set the new mask
+N     */
+N    u8TmpMask = u8GetI2SIRMASK(eCh);        
+X    u8TmpMask = (*((volatile u8I2SIRMASK_byte_view *)(0xC0406014U + ((uint8_t)(eCh) * 0x1000U) )) );        
+N    u8TmpMask = u8TmpMask | u8Mask;        
+N    vSetI2SIRMASK(eCh, u8TmpMask);        
+X    (*((volatile u8I2SIRMASK_byte_view *)(0xC0406014U + ((uint8_t)(eCh) * 0x1000U) )) = (u8TmpMask));        
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIS_EnableInt(iis_Ch_e eCh, uint8_t u8Mask)
+N{
+N    uint32_t u8TmpMask = 0x00;
+N    
+N    /* 
+N     *  Get the current mask
+N     *  Clear bits to unmask and set the new mask
+N     */
+N    u8TmpMask = u8GetI2SIRMASK(eCh);        
+X    u8TmpMask = (*((volatile u8I2SIRMASK_byte_view *)(0xC0406014U + ((uint8_t)(eCh) * 0x1000U) )) );        
+N    u8TmpMask = u8TmpMask & ~u8Mask;        
+N    vSetI2SIRMASK(eCh, u8TmpMask);        
+X    (*((volatile u8I2SIRMASK_byte_view *)(0xC0406014U + ((uint8_t)(eCh) * 0x1000U) )) = (u8TmpMask));        
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIS_ClearIrq(iis_Ch_e eCh, uint32_t u32Mask)
+N{
+N    /*  Write the IRQ clear mask bits */          
+N    vSetI2SIRCLR(eCh, u32Mask);        
+X    (*((volatile u8I2SIRCLR_byte_view *)(0xC0406010U + ((uint8_t)(eCh) * 0x1000U) )) = (u32Mask));        
+N}
+N
+N
+N/****************************************************************************/
+Nuint8_t u8IIS_GetIrqStatus(iis_Ch_e eCh)
+N{
+N    uint8_t u8IrqStat = 0;
+N    
+N    /* Get the current IRQ status */       
+N    u8IrqStat = u8GetI2SIRSTAT(eCh);        
+X    u8IrqStat = (*((volatile u8I2SIRSTAT_byte_view *)(0xC040600CU + ((uint8_t)(eCh) * 0x1000U) )) );        
+N
+N    return u8IrqStat;
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32IIS_GetFifoStatus(iis_Ch_e eCh)
+N{
+N    uint32_t u32FifoStat = 0;
+N    
+N    /* Get the current FIFO status */    
+N    u32FifoStat = u32GetI2SFIFOSTAT(eCh);        
+X    u32FifoStat = (*((volatile u32I2SFIFOSTAT_word_view *)(0xC040603CU + ((uint8_t)(eCh) * 0x1000U) )) );        
+N
+N    return u32FifoStat;
+N}
+N
+N
+N/****************************************************************************/
+Nuint16_t u16IIS_GetCtrlReg(iis_Ch_e eCh)
+N{
+N    uint16_t u16CtrlReg = 0;
+N    
+N    /* Get the control register value */
+N    u16CtrlReg = u16GetI2SCTRL(eCh);        
+X    u16CtrlReg = (*((volatile u16I2SCTRL_halfword_view *)(0xC0406000U + ((uint8_t)(eCh) * 0x1000U) )) );        
+N
+N    return u16CtrlReg;
+N}
+N
+N
+N/****************************************************************************/
+Nuint16_t u16IIS_GetLengthReg(iis_Ch_e eCh)
+N{
+N    uint16_t u16LengthReg = 0;
+N    
+N    /* Get the length */
+N    u16LengthReg = u16GetI2SLENGTH(eCh);     
+X    u16LengthReg = (*((volatile u16I2SLENGTH_halfword_view *)(0xC0406004U + ((uint8_t)(eCh) * 0x1000U) )) );     
+N
+N    return u16LengthReg;
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32IIS_GetClkCfgReg(iis_Ch_e eCh)
+N{
+N    uint32_t u32ClkCfgReg = 0;
+N    
+N    /* Get the current clock configuration */
+N    u32ClkCfgReg = u32GetI2SCLKCONF(eCh);    
+X    u32ClkCfgReg = (*((volatile u32I2SCLKCONF_word_view *)(0xC0406008U + ((uint8_t)(eCh) * 0x1000U) )) );    
+N    
+N    return u32ClkCfgReg;
+N}
+N
+N
+N/****************************************************************************/
+Nuint8_t u8IIS_GetIntMaskReg(iis_Ch_e eCh)
+N{
+N    uint8_t u8IntMaskReg = 0;
+N    
+N    /* Get the current IRQ mask */
+N    u8IntMaskReg = u8GetI2SIRMASK(eCh);      
+X    u8IntMaskReg = (*((volatile u8I2SIRMASK_byte_view *)(0xC0406014U + ((uint8_t)(eCh) * 0x1000U) )) );      
+N
+N    return u8IntMaskReg;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vIIS_WriteWord(iis_Ch_e eCh, uint32_t u32Data)
+N{
+N    /* Write the word to the TX FIFO */
+N    vSetI2STXDATA(eCh, u32Data);      
+X    (*((volatile u32I2STXDATA_word_view *)(0xC0406018U + ((uint8_t)(eCh) * 0x1000U) )) = (u32Data));      
+N}
+N
+N
+N/****************************************************************************/
+Nuint32_t u32IIS_ReadWord(iis_Ch_e eCh)
+N{
+N    uint32_t u32RdWord = 0;
+N    
+N    /* Get the word from the RX FIFO */
+N    u32RdWord = u32GetI2SRXDATA(eCh);
+X    u32RdWord = (*((volatile u32I2SRXDATA_word_view *)(0xC040601CU + ((uint8_t)(eCh) * 0x1000U) )) );
+N
+N    return u32RdWord;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_WriteData(iis_Ch_e eCh, uint32_t u32DataLen, const uint32_t u32Data[])
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    uint32_t u32FifoStat = 0;
+N    uint32_t u32DataIdx = 0;
+N    uint32_t u32DataToSnd = u32DataLen;
+N    uint32_t u32CurFifoEmpty = 0;
+N    
+N    /* If FIFO has space write appropriate number of words */
+N    if( u32DataIdx < u32DataLen )
+N    {
+N        eErrCode = eIIS_SetTxRxOper(eCh, IIS_TRSF_OPER_ENABLE);
+N    }
+N    if( IIS_OK == eErrCode )
+N    {
+N        while( u32DataIdx < u32DataLen )
+N        {
+N            u32FifoStat = u32IIS_GetFifoStatus(eCh);
+N            u32FifoStat = (u32FifoStat & IIS_FIFO_TX_MASKS);
+X            u32FifoStat = (u32FifoStat & (0x1F << 16));
+N            
+N            if( IIS_FIFO_TX_AE == (u32FifoStat & IIS_FIFO_TX_AE) )
+X            if( (0x01 << 19) == (u32FifoStat & (0x01 << 19)) )
+N            {
+N                u32CurFifoEmpty = 24;
+N            }
+N            else
+N            {
+N                if( IIS_FIFO_TX_EMPTY == (u32FifoStat & IIS_FIFO_TX_EMPTY) )
+X                if( (0x01 << 20) == (u32FifoStat & (0x01 << 20)) )
+N                {
+N                    u32CurFifoEmpty = IIS_FIFO_TX_SIZE;
+X                    u32CurFifoEmpty = 32;
+N                }
+N                else
+N                {
+N                    u32CurFifoEmpty = 0;
+N                }
+N            }
+N            while( (u32DataToSnd > 0) && (u32CurFifoEmpty > 0) )
+N            {
+N                vIIS_WriteWord(eCh, u32Data[u32DataIdx]);
+N                u32DataIdx++;
+N                u32DataToSnd--;
+N                u32CurFifoEmpty--;
+N            }
+N        }
+N        /* Check if all data has been written */
+N        if( u32DataIdx == u32DataLen )
+N        {
+N          eErrCode = IIS_OK;
+N        }
+N    }
+N    return eErrCode;
+N}
+N
+N
+N/****************************************************************************/
+Niis_ErrCode_e eIIS_ReadData(iis_Ch_e eCh, uint32_t *pu32DataLen, uint32_t u32Data[])
+N{
+N    iis_ErrCode_e eErrCode = IIS_FAIL;
+N    uint32_t u32FifoStat = 0;
+N    uint32_t u32DataIdx = 0;
+N    uint32_t u32CurFifoFull = 0;    
+N    *pu32DataLen = 0;
+N
+N    /* Enable */
+N    eErrCode = eIIS_SetTxRxOper(eCh, IIS_TRSF_OPER_ENABLE);
+N    
+N    if( IIS_OK == eErrCode )
+N    {
+N        u32FifoStat = u32IIS_GetFifoStatus(eCh);
+N        u32FifoStat = (u32FifoStat & IIS_FIFO_RX_MASKS);
+X        u32FifoStat = (u32FifoStat & (0x1F << 0));
+N        
+N        if( IIS_FIFO_RX_AF == (u32FifoStat & IIS_FIFO_RX_AF) )
+X        if( (0x01 << 1) == (u32FifoStat & (0x01 << 1)) )
+N        {
+N            u32CurFifoFull = 24;
+N        }
+N        else
+N        {
+N            if( IIS_FIFO_RX_FULL == (u32FifoStat & IIS_FIFO_RX_FULL) )
+X            if( (0x01 << 0) == (u32FifoStat & (0x01 << 0)) )
+N            {
+N                u32CurFifoFull = IIS_FIFO_RX_SIZE;
+X                u32CurFifoFull = 32;
+N            }
+N            else
+N            {
+N                u32CurFifoFull = 0; /* ??? */
+N            }
+N        }
+N        while( (u32CurFifoFull > 0) && ((*pu32DataLen) < IIS_FIFO_RX_SIZE) )
+X        while( (u32CurFifoFull > 0) && ((*pu32DataLen) < 32) )
+N        {
+N            u32Data[u32DataIdx] = u32IIS_ReadWord(eCh);
+N            u32DataIdx++;
+N            u32CurFifoFull--;
+N            (*pu32DataLen)++;
+N        }
+N        /* Check if all  has been read */
+N        if( ((*pu32DataLen) > 0) && ((*pu32DataLen) < IIS_FIFO_RX_SIZE) )
+X        if( ((*pu32DataLen) > 0) && ((*pu32DataLen) < 32) )
+N        {
+N            eErrCode = IIS_OK;
+N        }
+N    }
+N    return eErrCode;
+N}
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: iis.c
+N**  $Revision: 1.7 $
+N**  $Date: 2015/05/08 08:57:22 $
+N**
+N** **************************************************************************
+N**
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : Msg(3:3197) - The initialiser for 'variable' is always modified
+N** |          before being used.
+N** |
+N** | CONS.  : The initialisation performed when this object is defined appears
+N** |          to be redundant because the value of the object is not used
+N** |          before being modified by assignment.
+N** |
+N** | REASON : Variables get the initalization values at declaration, which are
+N** |          typically overwritten by the content of the function.
+N** |          This is not any error and seems to be better solution than
+N** |          leaving the variables non-initialized.
+N**  ------------------------------------------------------------------------
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : Msg(6:0303) - Cast between a pointer to volatile object and an
+N** |          integral type.
+N** |
+N** | CONS.  : The size of integer required to hold the result of a pointer
+N** |          cast is implementation-defined. This message will identify such
+N** |          operations where the pointer addresses a volatile memory address.
+N** |
+N** | REASON : This type of operation is not uncommon in embedded software
+N** |          applications where memory mapped I/O ports must be addressed.
+N** |
+N**  ------------------------------------------------------------------------
+N*****************************************************************************
+N****************************************************************************/
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

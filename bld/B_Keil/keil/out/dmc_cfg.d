@@ -1,0 +1,10 @@
+..\out\dmc_cfg.o: ..\..\..\..\hldd\src\dmc_cfg.c
+..\out\dmc_cfg.o: ..\..\..\..\hldd\inc\dmc_cfg.h
+..\out\dmc_cfg.o: ..\..\inc\config.h
+..\out\dmc_cfg.o: ..\..\..\..\mw\inc\mw_definitions.h
+..\out\dmc_cfg.o: ..\..\..\..\hldd\inc\qspi.h
+..\out\dmc_cfg.o: ..\..\..\..\common\inc\captypes.h
+..\out\dmc_cfg.o: ..\..\..\..\lldd\inc\qspic.h
+..\out\dmc_cfg.o: ..\..\..\..\lldd\inc\ccr.h
+..\out\dmc_cfg.o: ..\..\..\..\lldd\inc\dmc.h
+..\out\dmc_cfg.o: ..\..\..\..\lldd\hdr\dmc_io.h

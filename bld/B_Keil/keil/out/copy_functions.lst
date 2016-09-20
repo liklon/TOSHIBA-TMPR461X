@@ -1,0 +1,209 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;/******************************************************
+                       **********************
+    2 00000000         ;*   This software is copyright protected. All rights re
+                       served
+    3 00000000         ;*   Toshiba Electronics Europe GmbH,
+    4 00000000         ;*   European LSI Design and Engineering Centre (ELDEC)
+    5 00000000         ;*******************************************************
+                       **********************
+    6 00000000         ;*   DESCRIPTION : functions for copying arrays
+    7 00000000         ;*******************************************************
+                       **********************
+    8 00000000         ;*   PLATFORM    : TMPR46xXBG-300
+    9 00000000         ;*   PROJECT     :
+   10 00000000         ;*   MODULE      : 
+   11 00000000         ;*   LIBRARIES   :
+   12 00000000         ;;******************************************************
+                       ***********************
+   13 00000000         ;*   VERSION     : $Revision: 1.5 $ 
+   14 00000000         ;*   DATE        : $Date: 2015/05/04 09:07:19 $
+   15 00000000         ;*   TAG         : $Name:  $
+   16 00000000         ;*   RELEASE     : Preliminary and Confidential
+   17 00000000         ;*******************************************************
+                       **********************/
+   18 00000000         
+   19 00000000         ;*******************************************************
+                       **********************
+   20 00000000         ; exported function prototypes
+   21 00000000         ;*******************************************************
+                       **********************
+   22 00000000                 EXPORT           asm_copy_word
+   23 00000000                 EXPORT           asm_copy_hword
+   24 00000000                 EXPORT           asm_copy_byte
+   25 00000000         
+   26 00000000                 AREA             copy_function, CODE, READONLY ;
+                                                            READONLY is default
+                                                             for CODE
+   27 00000000         
+   28 00000000         ;*******************************************************
+                       **********************
+   29 00000000         ; asm_copy_word(uint32_t arg1, uint32_t arg2, uint32_t a
+                       rg3)
+   30 00000000         ; copies source block to destination block copying words
+                       
+   31 00000000         ;*******************************************************
+                       **********************
+   32 00000000         ; arg1 = start adresse source
+   33 00000000         ; arg2 = end adresse source
+   34 00000000         ; arg3 = start adresse destination
+   35 00000000         
+   36 00000000         asm_copy_word
+   37 00000000 E92D401E        STMFD            SP!,{r1-r4,lr} ; save return ad
+                                                            dress to stack
+   38 00000004         
+   39 00000004         wordcopy
+   40 00000004 E4903004        LDR              r3,[r0],#4  ; load temp with da
+                                                            ta, increment addre
+                                                            ss
+   41 00000008 E4823004        STR              r3,[r2],#4  ; store data, incre
+                                                            ment address
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   42 0000000C E0514000        SUBS             r4,r1,r0    ; check end address
+                                                            
+   43 00000010 5AFFFFFB        BPL              wordcopy    ; ... copy more
+   44 00000014         
+   45 00000014 E8BD801E        LDMFD            SP!,{r1-r4,pc} ; return
+   46 00000018         
+   47 00000018         ;*******************************************************
+                       **********************
+   48 00000018         ; asm_copy_hword(uint32_t arg1, uint32_t arg2, uint32_t 
+                       arg3)
+   49 00000018         ; copies source block to destination block copying half 
+                       words
+   50 00000018         ;*******************************************************
+                       **********************
+   51 00000018         ; arg1 = start adresse source
+   52 00000018         ; arg2 = end adresse source
+   53 00000018         ; arg3 = start adresse destination
+   54 00000018         
+   55 00000018         asm_copy_hword
+   56 00000018 E92D401E        STMFD            SP!,{r1-r4,lr} ; save return ad
+                                                            dress to stack
+   57 0000001C         
+   58 0000001C         hwordcopy
+   59 0000001C E0D030B2        LDRH             r3,[r0],#2  ; load temp with da
+                                                            ta, increment addre
+                                                            ss
+   60 00000020 E0C230B2        STRH             r3,[r2],#2  ; store data, incre
+                                                            ment address
+   61 00000024 E0514000        SUBS             r4,r1,r0    ; check end address
+                                                            
+   62 00000028 5AFFFFFB        BPL              hwordcopy   ; ... copy more
+   63 0000002C         
+   64 0000002C E8BD801E        LDMFD            SP!,{r1-r4,pc} ; return
+   65 00000030         
+   66 00000030         ;*******************************************************
+                       **********************
+   67 00000030         ; asm_copy_byte(uint32_t arg1, uint32_t arg2, uint32_t a
+                       rg3)
+   68 00000030         ; copies source block to destination block copying bytes
+                       
+   69 00000030         ;*******************************************************
+                       **********************
+   70 00000030         ; arg1 = start adresse source
+   71 00000030         ; arg2 = end adresse source
+   72 00000030         ; arg3 = start adresse destination
+   73 00000030         
+   74 00000030         asm_copy_byte
+   75 00000030 E92D401E        STMFD            SP!,{r1-r4,lr} ; save return ad
+                                                            dress to stack
+   76 00000034         
+   77 00000034         bytecopy
+   78 00000034 E4D03001        LDRB             r3,[r0],#1  ; load temp with da
+                                                            ta, increment addre
+                                                            ss
+   79 00000038 E4C23001        STRB             r3,[r2],#1  ; store data, incre
+                                                            ment address
+   80 0000003C E0514000        SUBS             r4,r1,r0    ; check end address
+                                                            
+   81 00000040 5AFFFFFB        BPL              bytecopy    ; ... copy more
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   82 00000044         
+   83 00000044 E8BD801E        LDMFD            SP!,{r1-r4,pc} ; return
+   84 00000048         
+   85 00000048                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-R4 --apcs=interw
+ork --depend=..\out\copy_functions.d -o..\out\copy_functions.o -I..\..\..\..\co
+rtex_r4_keil\inc -IC:\Keil_v5\ARM\RV31\INC -IC:\Keil_v5\ARM\CMSIS\Include --pre
+define="__UVISION_VERSION SETA 516" --list=..\out\copy_functions.lst ..\..\..\.
+.\common\src\copy_functions.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+asm_copy_byte 00000030
+
+Symbol: asm_copy_byte
+   Definitions
+      At line 74 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 24 in file ..\..\..\..\common\src\copy_functions.s
+Comment: asm_copy_byte used once
+asm_copy_hword 00000018
+
+Symbol: asm_copy_hword
+   Definitions
+      At line 55 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 23 in file ..\..\..\..\common\src\copy_functions.s
+Comment: asm_copy_hword used once
+asm_copy_word 00000000
+
+Symbol: asm_copy_word
+   Definitions
+      At line 36 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 22 in file ..\..\..\..\common\src\copy_functions.s
+Comment: asm_copy_word used once
+bytecopy 00000034
+
+Symbol: bytecopy
+   Definitions
+      At line 77 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 81 in file ..\..\..\..\common\src\copy_functions.s
+Comment: bytecopy used once
+copy_function 00000000
+
+Symbol: copy_function
+   Definitions
+      At line 26 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      None
+Comment: copy_function unused
+hwordcopy 0000001C
+
+Symbol: hwordcopy
+   Definitions
+      At line 58 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 62 in file ..\..\..\..\common\src\copy_functions.s
+Comment: hwordcopy used once
+wordcopy 00000004
+
+Symbol: wordcopy
+   Definitions
+      At line 39 in file ..\..\..\..\common\src\copy_functions.s
+   Uses
+      At line 43 in file ..\..\..\..\common\src\copy_functions.s
+Comment: wordcopy used once
+7 symbols
+338 symbols in table

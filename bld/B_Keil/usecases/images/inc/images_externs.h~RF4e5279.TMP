@@ -1,0 +1,622 @@
+/*****************************************************************************
+*   This software is copyright protected. All rights reserved 
+*   Toshiba Electronics Europe GmbH 
+*   European LSI Design and Engineering Center (ELDEC)
+****************************************************************************** 
+*   File Name   : $RCSfile: $ 
+*   Description : Image file
+****************************************************************************** 
+*   PROJECT     : Capricorn 
+*   MODULE      : Graphics 
+*               : $Name: $ 
+*   LIBRARIES   : None 
+*   AUTHOR      : $Author: $
+****************************************************************************** 
+*   VERSION     : $Revision: $ 
+*   RELEASE     : Preliminary & Confidential 
+*   DATE        : $Date: $ 
+*   SOURCE MOD. : $Source: $ 
+*   LOG:        : please have a look at the end of the file
+*****************************************************************************/
+/************************************************************************
+ * Generated using TEE Capricorn: Image to C Code Generator
+ * Version 2.00
+ * Toshiba Electronics Europe GmbH
+ * This software is copyright protected. All rights reserved
+ ************************************************************************
+ * Converted on: 21.01.2016 @ 10:59
+ ************************************************************************/
+#ifndef IMAGES_EXTERNS_H
+#define IMAGES_EXTERNS_H
+#include "images_defs.h"
+#include "captypes.h"
+#include "gf.h"
+
+/**
+	A__Z
+*/
+extern const uint32_t u32_AA0_RLE[AA0_SIZE];
+extern uint32_t u32_AA0_RLE_RAM[AA0_SIZE];
+
+extern const uint32_t u32_AA1_RLE[AA1_SIZE];
+extern uint32_t u32_AA1_RLE_RAM[AA1_SIZE];
+
+extern const uint32_t u32_AA10_RLE[AA10_SIZE];
+extern uint32_t u32_AA10_RLE_RAM[AA10_SIZE];
+
+extern const uint32_t u32_AA11_RLE[AA11_SIZE];
+extern uint32_t u32_AA11_RLE_RAM[AA11_SIZE];
+
+extern const uint32_t u32_AA12_RLE[AA12_SIZE];
+extern uint32_t u32_AA12_RLE_RAM[AA12_SIZE];
+
+extern const uint32_t u32_AA13_RLE[AA13_SIZE];
+extern uint32_t u32_AA13_RLE_RAM[AA13_SIZE];
+
+extern const uint32_t u32_AA14_RLE[AA14_SIZE];
+extern uint32_t u32_AA14_RLE_RAM[AA14_SIZE];
+
+extern const uint32_t u32_AA15_RLE[AA15_SIZE];
+extern uint32_t u32_AA15_RLE_RAM[AA15_SIZE];
+
+extern const uint32_t u32_AA16_RLE[AA16_SIZE];
+extern uint32_t u32_AA16_RLE_RAM[AA16_SIZE];
+
+extern const uint32_t u32_AA17_RLE[AA17_SIZE];
+extern uint32_t u32_AA17_RLE_RAM[AA17_SIZE];
+
+extern const uint32_t u32_AA18_RLE[AA18_SIZE];
+extern uint32_t u32_AA18_RLE_RAM[AA18_SIZE];
+
+extern const uint32_t u32_AA19_RLE[AA19_SIZE];
+extern uint32_t u32_AA19_RLE_RAM[AA19_SIZE];
+
+extern const uint32_t u32_AA2_RLE[AA2_SIZE];
+extern uint32_t u32_AA2_RLE_RAM[AA2_SIZE];
+
+extern const uint32_t u32_AA20_RLE[AA20_SIZE];
+extern uint32_t u32_AA20_RLE_RAM[AA20_SIZE];
+
+extern const uint32_t u32_AA21_RLE[AA21_SIZE];
+extern uint32_t u32_AA21_RLE_RAM[AA21_SIZE];
+
+extern const uint32_t u32_AA22_RLE[AA22_SIZE];
+extern uint32_t u32_AA22_RLE_RAM[AA22_SIZE];
+
+extern const uint32_t u32_AA23_RLE[AA23_SIZE];
+extern uint32_t u32_AA23_RLE_RAM[AA23_SIZE];
+
+extern const uint32_t u32_AA24_RLE[AA24_SIZE];
+extern uint32_t u32_AA24_RLE_RAM[AA24_SIZE];
+
+extern const uint32_t u32_AA25_RLE[AA25_SIZE];
+extern uint32_t u32_AA25_RLE_RAM[AA25_SIZE];
+
+extern const uint32_t u32_AA3_RLE[AA3_SIZE];
+extern uint32_t u32_AA3_RLE_RAM[AA3_SIZE];
+
+extern const uint32_t u32_AA4_RLE[AA4_SIZE];
+extern uint32_t u32_AA4_RLE_RAM[AA4_SIZE];
+
+extern const uint32_t u32_AA5_RLE[AA5_SIZE];
+extern uint32_t u32_AA5_RLE_RAM[AA5_SIZE];
+
+extern const uint32_t u32_AA6_RLE[AA6_SIZE];
+extern uint32_t u32_AA6_RLE_RAM[AA6_SIZE];
+
+extern const uint32_t u32_AA7_RLE[AA7_SIZE];
+extern uint32_t u32_AA7_RLE_RAM[AA7_SIZE];
+
+extern const uint32_t u32_AA8_RLE[AA8_SIZE];
+extern uint32_t u32_AA8_RLE_RAM[AA8_SIZE];
+
+extern const uint32_t u32_AA9_RLE[AA9_SIZE];
+extern gf_image_st stImage_AA[];
+extern uint32_t u32_AA9_RLE_RAM[AA9_SIZE];
+
+/*************************************************************************END A__Z***/
+
+/**
+	a_z
+*/
+extern const uint32_t u32_a0_RLE[A0_SIZE];
+extern uint32_t u32_a0_RLE_RAM[A0_SIZE];
+
+extern const uint32_t u32_a1_RLE[A1_SIZE];
+extern uint32_t u32_a1_RLE_RAM[A1_SIZE];
+
+extern const uint32_t u32_a10_RLE[A10_SIZE];
+extern uint32_t u32_a10_RLE_RAM[A10_SIZE];
+
+extern const uint32_t u32_a11_RLE[A11_SIZE];
+extern uint32_t u32_a11_RLE_RAM[A11_SIZE];
+
+extern const uint32_t u32_a12_RLE[A12_SIZE];
+extern uint32_t u32_a12_RLE_RAM[A12_SIZE];
+
+extern const uint32_t u32_a13_RLE[A13_SIZE];
+extern uint32_t u32_a13_RLE_RAM[A13_SIZE];
+
+extern const uint32_t u32_a14_RLE[A14_SIZE];
+extern uint32_t u32_a14_RLE_RAM[A14_SIZE];
+
+extern const uint32_t u32_a15_RLE[A15_SIZE];
+extern uint32_t u32_a15_RLE_RAM[A15_SIZE];
+
+extern const uint32_t u32_a16_RLE[A16_SIZE];
+extern uint32_t u32_a16_RLE_RAM[A16_SIZE];
+
+extern const uint32_t u32_a17_RLE[A17_SIZE];
+extern uint32_t u32_a17_RLE_RAM[A17_SIZE];
+
+extern const uint32_t u32_a18_RLE[A18_SIZE];
+extern uint32_t u32_a18_RLE_RAM[A18_SIZE];
+
+extern const uint32_t u32_a19_RLE[A19_SIZE];
+extern uint32_t u32_a19_RLE_RAM[A19_SIZE];
+
+extern const uint32_t u32_a2_RLE[A2_SIZE];
+extern uint32_t u32_a2_RLE_RAM[A2_SIZE];
+
+extern const uint32_t u32_a20_RLE[A20_SIZE];
+extern uint32_t u32_a20_RLE_RAM[A20_SIZE];
+
+extern const uint32_t u32_a21_RLE[A21_SIZE];
+extern uint32_t u32_a21_RLE_RAM[A21_SIZE];
+
+extern const uint32_t u32_a22_RLE[A22_SIZE];
+extern uint32_t u32_a22_RLE_RAM[A22_SIZE];
+
+extern const uint32_t u32_a23_RLE[A23_SIZE];
+extern uint32_t u32_a23_RLE_RAM[A23_SIZE];
+
+extern const uint32_t u32_a24_RLE[A24_SIZE];
+extern uint32_t u32_a24_RLE_RAM[A24_SIZE];
+
+extern const uint32_t u32_a25_RLE[A25_SIZE];
+extern uint32_t u32_a25_RLE_RAM[A25_SIZE];
+
+extern const uint32_t u32_a3_RLE[A3_SIZE];
+extern uint32_t u32_a3_RLE_RAM[A3_SIZE];
+
+extern const uint32_t u32_a4_RLE[A4_SIZE];
+extern uint32_t u32_a4_RLE_RAM[A4_SIZE];
+
+extern const uint32_t u32_a5_RLE[A5_SIZE];
+extern uint32_t u32_a5_RLE_RAM[A5_SIZE];
+
+extern const uint32_t u32_a6_RLE[A6_SIZE];
+extern uint32_t u32_a6_RLE_RAM[A6_SIZE];
+
+extern const uint32_t u32_a7_RLE[A7_SIZE];
+extern uint32_t u32_a7_RLE_RAM[A7_SIZE];
+
+extern const uint32_t u32_a8_RLE[A8_SIZE];
+extern uint32_t u32_a8_RLE_RAM[A8_SIZE];
+
+extern const uint32_t u32_a9_RLE[A9_SIZE];
+extern gf_image_st stImage_a[];
+extern uint32_t u32_a9_RLE_RAM[A9_SIZE];
+
+/*************************************************************************END  a_z****/
+
+/**
+	car_door
+*/
+
+extern const uint32_t u32_door_d1_RLE[DOOR_D1_SIZE];
+extern gf_image_st stImage_door_d[];
+extern uint32_t u32_door_d1_RLE_RAM[DOOR_D1_SIZE];
+
+extern const uint32_t u32_door_d10_RLE[DOOR_D10_SIZE];
+extern uint32_t u32_door_d10_RLE_RAM[DOOR_D10_SIZE];
+
+extern const uint32_t u32_door_d11_RLE[DOOR_D11_SIZE];
+extern uint32_t u32_door_d11_RLE_RAM[DOOR_D11_SIZE];
+
+extern const uint32_t u32_door_d12_RLE[DOOR_D12_SIZE];
+extern uint32_t u32_door_d12_RLE_RAM[DOOR_D12_SIZE];
+
+extern const uint32_t u32_door_d13_RLE[DOOR_D13_SIZE];
+extern uint32_t u32_door_d13_RLE_RAM[DOOR_D13_SIZE];
+
+extern const uint32_t u32_door_d14_RLE[DOOR_D14_SIZE];
+extern uint32_t u32_door_d14_RLE_RAM[DOOR_D14_SIZE];
+
+extern const uint32_t u32_door_d15_RLE[DOOR_D15_SIZE];
+extern uint32_t u32_door_d15_RLE_RAM[DOOR_D15_SIZE];
+
+extern const uint32_t u32_door_d2_RLE[DOOR_D2_SIZE];
+extern uint32_t u32_door_d2_RLE_RAM[DOOR_D2_SIZE];
+
+extern const uint32_t u32_door_d3_RLE[DOOR_D3_SIZE];
+extern uint32_t u32_door_d3_RLE_RAM[DOOR_D3_SIZE];
+
+extern const uint32_t u32_door_d4_RLE[DOOR_D4_SIZE];
+extern uint32_t u32_door_d4_RLE_RAM[DOOR_D4_SIZE];
+
+extern const uint32_t u32_door_d5_RLE[DOOR_D5_SIZE];
+extern uint32_t u32_door_d5_RLE_RAM[DOOR_D5_SIZE];
+
+extern const uint32_t u32_door_d6_RLE[DOOR_D6_SIZE];
+extern uint32_t u32_door_d6_RLE_RAM[DOOR_D6_SIZE];
+
+extern const uint32_t u32_door_d7_RLE[DOOR_D7_SIZE];
+extern uint32_t u32_door_d7_RLE_RAM[DOOR_D7_SIZE];
+
+extern const uint32_t u32_door_d8_RLE[DOOR_D8_SIZE];
+extern uint32_t u32_door_d8_RLE_RAM[DOOR_D8_SIZE];
+
+extern const uint32_t u32_door_d9_RLE[DOOR_D9_SIZE];
+extern uint32_t u32_door_d9_RLE_RAM[DOOR_D9_SIZE];
+
+/******************************************************************END car_door****/
+
+
+/**
+	disfont_14x
+*/
+
+extern const uint32_t u32_disfont0_RLE[DISFONT0_SIZE];
+extern gf_image_st stImage_disfont[];
+extern uint32_t u32_disfont0_RLE_RAM[DISFONT0_SIZE];
+
+extern const uint32_t u32_disfont1_RLE[DISFONT1_SIZE];
+extern uint32_t u32_disfont1_RLE_RAM[DISFONT1_SIZE];
+
+extern const uint32_t u32_disfont10_RLE[DISFONT10_SIZE];
+extern uint32_t u32_disfont10_RLE_RAM[DISFONT10_SIZE];
+
+extern const uint32_t u32_disfont2_RLE[DISFONT2_SIZE];
+extern uint32_t u32_disfont2_RLE_RAM[DISFONT2_SIZE];
+
+extern const uint32_t u32_disfont3_RLE[DISFONT3_SIZE];
+extern uint32_t u32_disfont3_RLE_RAM[DISFONT3_SIZE];
+
+extern const uint32_t u32_disfont4_RLE[DISFONT4_SIZE];
+extern uint32_t u32_disfont4_RLE_RAM[DISFONT4_SIZE];
+
+extern const uint32_t u32_disfont5_RLE[DISFONT5_SIZE];
+extern uint32_t u32_disfont5_RLE_RAM[DISFONT5_SIZE];
+
+extern const uint32_t u32_disfont6_RLE[DISFONT6_SIZE];
+extern uint32_t u32_disfont6_RLE_RAM[DISFONT6_SIZE];
+
+extern const uint32_t u32_disfont7_RLE[DISFONT7_SIZE];
+extern uint32_t u32_disfont7_RLE_RAM[DISFONT7_SIZE];
+
+extern const uint32_t u32_disfont8_RLE[DISFONT8_SIZE];
+extern uint32_t u32_disfont8_RLE_RAM[DISFONT8_SIZE];
+
+extern const uint32_t u32_disfont9_RLE[DISFONT9_SIZE];
+extern uint32_t u32_disfont9_RLE_RAM[DISFONT9_SIZE];
+
+/************************************************************************END disfont*******/
+
+/**
+	err_word
+*/
+
+extern const uint32_t u32_ERR1[ERR1_SIZE];
+extern gf_image_st stImage_ERR[];
+extern uint32_t u32_ERR1_RAM[ERR1_SIZE];
+
+extern const uint32_t u32_ERR10[ERR10_SIZE];
+extern uint32_t u32_ERR10_RAM[ERR10_SIZE];
+
+extern const uint32_t u32_ERR11[ERR11_SIZE];
+extern uint32_t u32_ERR11_RAM[ERR11_SIZE];
+
+extern const uint32_t u32_ERR12[ERR12_SIZE];
+extern uint32_t u32_ERR12_RAM[ERR12_SIZE];
+
+extern const uint32_t u32_ERR13[ERR13_SIZE];
+extern uint32_t u32_ERR13_RAM[ERR13_SIZE];
+
+extern const uint32_t u32_ERR14[ERR14_SIZE];
+extern uint32_t u32_ERR14_RAM[ERR14_SIZE];
+
+extern const uint32_t u32_ERR15[ERR15_SIZE];
+extern uint32_t u32_ERR15_RAM[ERR15_SIZE];
+
+extern const uint32_t u32_ERR16[ERR16_SIZE];
+extern uint32_t u32_ERR16_RAM[ERR16_SIZE];
+
+extern const uint32_t u32_ERR17[ERR17_SIZE];
+extern uint32_t u32_ERR17_RAM[ERR17_SIZE];
+
+extern const uint32_t u32_ERR18[ERR18_SIZE];
+extern uint32_t u32_ERR18_RAM[ERR18_SIZE];
+
+extern const uint32_t u32_ERR19[ERR19_SIZE];
+extern uint32_t u32_ERR19_RAM[ERR19_SIZE];
+
+extern const uint32_t u32_ERR2[ERR2_SIZE];
+extern uint32_t u32_ERR2_RAM[ERR2_SIZE];
+
+extern const uint32_t u32_ERR3[ERR3_SIZE];
+extern uint32_t u32_ERR3_RAM[ERR3_SIZE];
+
+extern const uint32_t u32_ERR4[ERR4_SIZE];
+extern uint32_t u32_ERR4_RAM[ERR4_SIZE];
+
+extern const uint32_t u32_ERR5[ERR5_SIZE];
+extern uint32_t u32_ERR5_RAM[ERR5_SIZE];
+
+extern const uint32_t u32_ERR6[ERR6_SIZE];
+extern uint32_t u32_ERR6_RAM[ERR6_SIZE];
+
+extern const uint32_t u32_ERR7[ERR7_SIZE];
+extern uint32_t u32_ERR7_RAM[ERR7_SIZE];
+
+extern const uint32_t u32_ERR8[ERR8_SIZE];
+extern uint32_t u32_ERR8_RAM[ERR8_SIZE];
+
+extern const uint32_t u32_ERR9[ERR9_SIZE];
+extern uint32_t u32_ERR9_RAM[ERR9_SIZE];
+
+/**********************************************************************************END err_word******/
+
+/**
+	lamp
+*/
+
+extern const uint32_t u32_sspic0[SSPIC0_SIZE];
+extern gf_image_st stImage_sspic0;
+extern uint32_t u32_sspic0_RAM[SSPIC0_SIZE];
+
+extern const uint32_t u32_sspic1[SSPIC1_SIZE];
+extern gf_image_st stImage_sspic1;
+extern uint32_t u32_sspic1_RAM[SSPIC1_SIZE];
+
+extern const uint32_t u32_sspic10[SSPIC10_SIZE];
+extern gf_image_st stImage_sspic10;
+extern uint32_t u32_sspic10_RAM[SSPIC10_SIZE];
+
+extern const uint32_t u32_sspic11[SSPIC11_SIZE];
+extern gf_image_st stImage_sspic11;
+extern uint32_t u32_sspic11_RAM[SSPIC11_SIZE];
+
+extern const uint32_t u32_sspic12[SSPIC12_SIZE];
+extern gf_image_st stImage_sspic12;
+extern uint32_t u32_sspic12_RAM[SSPIC12_SIZE];
+
+extern const uint32_t u32_sspic13[SSPIC13_SIZE];
+extern gf_image_st stImage_sspic13;
+extern uint32_t u32_sspic13_RAM[SSPIC13_SIZE];
+
+extern const uint32_t u32_sspic14[SSPIC14_SIZE];
+extern gf_image_st stImage_sspic14;
+extern uint32_t u32_sspic14_RAM[SSPIC14_SIZE];
+
+extern const uint32_t u32_sspic15[SSPIC15_SIZE];
+extern gf_image_st stImage_sspic15;
+extern uint32_t u32_sspic15_RAM[SSPIC15_SIZE];
+
+extern const uint32_t u32_sspic16[SSPIC16_SIZE];
+extern gf_image_st stImage_sspic16;
+extern uint32_t u32_sspic16_RAM[SSPIC16_SIZE];
+
+extern const uint32_t u32_sspic17[SSPIC17_SIZE];
+extern gf_image_st stImage_sspic17;
+extern uint32_t u32_sspic17_RAM[SSPIC17_SIZE];
+
+extern const uint32_t u32_sspic18[SSPIC18_SIZE];
+extern gf_image_st stImage_sspic18;
+extern uint32_t u32_sspic18_RAM[SSPIC18_SIZE];
+
+extern const uint32_t u32_sspic19[SSPIC19_SIZE];
+extern gf_image_st stImage_sspic19;
+extern uint32_t u32_sspic19_RAM[SSPIC19_SIZE];
+
+extern const uint32_t u32_sspic2[SSPIC2_SIZE];
+extern gf_image_st stImage_sspic2;
+extern uint32_t u32_sspic2_RAM[SSPIC2_SIZE];
+
+extern const uint32_t u32_sspic20[SSPIC20_SIZE];
+extern gf_image_st stImage_sspic20;
+extern uint32_t u32_sspic20_RAM[SSPIC20_SIZE];
+
+extern const uint32_t u32_sspic21[SSPIC21_SIZE];
+extern gf_image_st stImage_sspic21;
+extern uint32_t u32_sspic21_RAM[SSPIC21_SIZE];
+
+extern const uint32_t u32_sspic22[SSPIC22_SIZE];
+extern gf_image_st stImage_sspic22;
+extern uint32_t u32_sspic22_RAM[SSPIC22_SIZE];
+
+extern const uint32_t u32_sspic23[SSPIC23_SIZE];
+extern gf_image_st stImage_sspic23;
+extern uint32_t u32_sspic23_RAM[SSPIC23_SIZE];
+
+extern const uint32_t u32_sspic24[SSPIC24_SIZE];
+extern gf_image_st stImage_sspic24;
+extern uint32_t u32_sspic24_RAM[SSPIC24_SIZE];
+
+extern const uint32_t u32_sspic25[SSPIC25_SIZE];
+extern gf_image_st stImage_sspic25;
+extern uint32_t u32_sspic25_RAM[SSPIC25_SIZE];
+
+extern const uint32_t u32_sspic26[SSPIC26_SIZE];
+extern gf_image_st stImage_sspic26;
+extern uint32_t u32_sspic26_RAM[SSPIC26_SIZE];
+
+extern const uint32_t u32_sspic3[SSPIC3_SIZE];
+extern gf_image_st stImage_sspic3;
+extern uint32_t u32_sspic3_RAM[SSPIC3_SIZE];
+
+extern const uint32_t u32_sspic4[SSPIC4_SIZE];
+extern gf_image_st stImage_sspic4;
+extern uint32_t u32_sspic4_RAM[SSPIC4_SIZE];
+
+extern const uint32_t u32_sspic5[SSPIC5_SIZE];
+extern gf_image_st stImage_sspic5;
+extern uint32_t u32_sspic5_RAM[SSPIC5_SIZE];
+
+extern const uint32_t u32_sspic6[SSPIC6_SIZE];
+extern gf_image_st stImage_sspic6;
+extern uint32_t u32_sspic6_RAM[SSPIC6_SIZE];
+
+extern const uint32_t u32_sspic7[SSPIC7_SIZE];
+extern gf_image_st stImage_sspic7;
+extern uint32_t u32_sspic7_RAM[SSPIC7_SIZE];
+
+extern const uint32_t u32_sspic8[SSPIC8_SIZE];
+extern gf_image_st stImage_sspic8;
+extern uint32_t u32_sspic8_RAM[SSPIC8_SIZE];
+
+extern const uint32_t u32_sspic9[SSPIC9_SIZE];
+extern gf_image_st stImage_sspic9;
+extern uint32_t u32_sspic9_RAM[SSPIC9_SIZE];
+
+/**********************************************************************************END lamp******/
+
+/**
+	prnds
+*/
+
+extern const uint32_t u32_LEV_D[LEV_D_SIZE];
+extern gf_image_st stImage_LEV[];
+extern uint32_t u32_LEV_D_RAM[LEV_D_SIZE];
+
+extern const uint32_t u32_LEV_N[LEV_N_SIZE];
+extern uint32_t u32_LEV_N_RAM[LEV_N_SIZE];
+
+extern const uint32_t u32_LEV_P[LEV_P_SIZE];
+extern uint32_t u32_LEV_P_RAM[LEV_P_SIZE];
+
+extern const uint32_t u32_LEV_R[LEV_R_SIZE];
+extern uint32_t u32_LEV_R_RAM[LEV_R_SIZE];
+
+extern const uint32_t u32_LEV_S[LEV_S_SIZE];
+extern uint32_t u32_LEV_S_RAM[LEV_S_SIZE];
+
+/**********************************************************************************END prnds******/
+
+/**
+	speedfont
+*/
+
+extern const uint32_t u32_speedfont0_RLE[SPEEDFONT0_SIZE];
+extern uint32_t u32_speedfont0_RLE_RAM[SPEEDFONT0_SIZE];
+
+extern const uint32_t u32_speedfont1_RLE[SPEEDFONT1_SIZE];
+extern uint32_t u32_speedfont1_RLE_RAM[SPEEDFONT1_SIZE];
+
+extern const uint32_t u32_speedfont2_RLE[SPEEDFONT2_SIZE];
+extern uint32_t u32_speedfont2_RLE_RAM[SPEEDFONT2_SIZE];
+
+extern const uint32_t u32_speedfont3_RLE[SPEEDFONT3_SIZE];
+extern uint32_t u32_speedfont3_RLE_RAM[SPEEDFONT3_SIZE];
+
+extern const uint32_t u32_speedfont4_RLE[SPEEDFONT4_SIZE];
+extern uint32_t u32_speedfont4_RLE_RAM[SPEEDFONT4_SIZE];
+
+extern const uint32_t u32_speedfont5_RLE[SPEEDFONT5_SIZE];
+extern uint32_t u32_speedfont5_RLE_RAM[SPEEDFONT5_SIZE];
+
+extern const uint32_t u32_speedfont6_RLE[SPEEDFONT6_SIZE];
+extern uint32_t u32_speedfont6_RLE_RAM[SPEEDFONT6_SIZE];
+
+extern const uint32_t u32_speedfont7_RLE[SPEEDFONT7_SIZE];
+extern uint32_t u32_speedfont7_RLE_RAM[SPEEDFONT7_SIZE];
+
+extern const uint32_t u32_speedfont8_RLE[SPEEDFONT8_SIZE];
+extern uint32_t u32_speedfont8_RLE_RAM[SPEEDFONT8_SIZE];
+
+extern const uint32_t u32_speedfont9_RLE[SPEEDFONT9_SIZE];
+extern gf_image_st stImage_speedfont[];
+extern uint32_t u32_speedfont9_RLE_RAM[SPEEDFONT9_SIZE];
+
+/**********************************************************************************END speedfont******/
+
+
+/**
+	instrument
+*/
+
+extern const uint32_t u32_dial_amp[DIAL_AMP_SIZE];
+extern gf_image_st stImage_dial_amp;
+extern uint32_t u32_dial_amp_RAM[DIAL_AMP_SIZE];
+
+extern const uint32_t u32_dial_soc[DIAL_SOC_SIZE];
+extern gf_image_st stImage_dial_soc;
+extern uint32_t u32_dial_soc_RAM[DIAL_SOC_SIZE];
+
+extern const uint32_t u32_dial_speed[DIAL_SPEED_SIZE];
+extern gf_image_st stImage_dial_speed;
+extern uint32_t u32_dial_speed_RAM[DIAL_SPEED_SIZE];
+
+/***************************************************************************************END instrument**********/
+
+
+
+
+void vGfCopyImagesROMtoRAM(void);
+void vGfInitImages(void);
+
+#endif
+/****************************************************************************/
+
+/************************** BEGIN of DISCLAIMER   **************************
+
+- TOSHIBA is continually working to improve the quality and reliability of   
+  its products. Nevertheless, semiconductor devices in general can
+  malfunction or fail due to their inherent electrical sensitivity and 
+  vulnerability to physical stress. It is the responsibility of the buyer, 
+  when utilizing TOSHIBA products, to comply with the standards of safety 
+  in making a safe design for the entire system, and to avoid situations in 
+  which a malfunction or failure of such TOSHIBA products could cause loss of
+  human life, bodily injury or damage to property.
+
+  In developing your designs, please ensure that TOSHIBA products are used 
+  within specified operating ranges as set forth in the most recent TOSHIBA
+  products specifications.
+  Also, please keep in mind the precautions and conditions set forth in the 
+  ï¿½Handling Guide for Semiconductor Devices,ï¿?or 
+  ï¿½TOSHIBA Semiconductor Reliability Handbookï¿?etc..
+
+- The Toshiba products listed in this document are intended for usage in 
+  general electronics applications (computer, personal equipment, office 
+  equipment, measuring equipment, industrial robotics, domestic appliances,
+  etc.). 
+  These Toshiba products are neither intended nor warranted for usage in 
+  equipment that requires extraordinarily high quality and/or reliability or
+  a malfunction or failure of which may cause loss of human life or bodily 
+  injury (ï¿½Unintended Usageï¿?. Unintended Usage include atomic energy control
+  instruments, airplane or spaceship instruments, transportation instruments, 
+  traffic signal instruments, combustion control instruments, medical 
+  instruments, all types of safety devices, etc.. 
+  Unintended Usage of Toshiba products listed in this document shall be 
+  made at the customerï¿½s own risk.
+
+- Toshiba assumes no liability for any damage or losses (including but not
+  limited to, loss of business profit,business interruption, loss of business
+  information,and other pecuniary losses) occurring 
+  from the use of, or inability to use, this product.
+
+- The products described in this document are subject to the foreign exchange
+  and foreign trade laws.
+
+- The products described in this document contain components made in the
+  United States and subject to export control of the U.S. authorities. 
+  Diversion contrary to the U.S. law is prohibited.
+
+- The information contained herein is presented only as a guide for the
+  applications of our products. 
+  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+  of intellectual property or other rights of the third parties which may 
+  result from its use. 
+  No license is granted by implication or otherwise under any intellectual 
+  property or other rights of TOSHIBA CORPORATION or others.
+
+- The information contained herein is subject to change without notice.
+
+****************************  END of DISCLAIMER ****************************/
+
+/********************************* BEGIN OF LOG ******************************
+*
+* $Log: $
+*
+*********************************** END OF LOG ******************************/
+

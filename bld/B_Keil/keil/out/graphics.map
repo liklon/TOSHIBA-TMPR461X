@@ -1,0 +1,898 @@
+Component: ARM Compiler 5.05 update 2 (build 169) Tool: armlink [4d0f33]
+
+==============================================================================
+
+Section Cross References
+
+
+
+==============================================================================
+
+Image Symbol Table
+
+    Local Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    ..\..\Pictures\A__Z\AA0.c                0x00000000   Number         0  aa0.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA1.c                0x00000000   Number         0  aa1.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA10.c               0x00000000   Number         0  aa10.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA11.c               0x00000000   Number         0  aa11.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA12.c               0x00000000   Number         0  aa12.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA13.c               0x00000000   Number         0  aa13.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA14.c               0x00000000   Number         0  aa14.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA15.c               0x00000000   Number         0  aa15.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA16.c               0x00000000   Number         0  aa16.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA17.c               0x00000000   Number         0  aa17.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA18.c               0x00000000   Number         0  aa18.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA19.c               0x00000000   Number         0  aa19.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA2.c                0x00000000   Number         0  aa2.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA20.c               0x00000000   Number         0  aa20.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA21.c               0x00000000   Number         0  aa21.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA22.c               0x00000000   Number         0  aa22.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA23.c               0x00000000   Number         0  aa23.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA24.c               0x00000000   Number         0  aa24.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA25.c               0x00000000   Number         0  aa25.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA3.c                0x00000000   Number         0  aa3.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA4.c                0x00000000   Number         0  aa4.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA5.c                0x00000000   Number         0  aa5.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA6.c                0x00000000   Number         0  aa6.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA7.c                0x00000000   Number         0  aa7.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA8.c                0x00000000   Number         0  aa8.o ABSOLUTE
+    ..\..\Pictures\A__Z\AA9.c                0x00000000   Number         0  aa9.o ABSOLUTE
+    ..\..\Pictures\a_z\a0.c                  0x00000000   Number         0  a0.o ABSOLUTE
+    ..\..\Pictures\a_z\a1.c                  0x00000000   Number         0  a1.o ABSOLUTE
+    ..\..\Pictures\a_z\a10.c                 0x00000000   Number         0  a10.o ABSOLUTE
+    ..\..\Pictures\a_z\a11.c                 0x00000000   Number         0  a11.o ABSOLUTE
+    ..\..\Pictures\a_z\a12.c                 0x00000000   Number         0  a12.o ABSOLUTE
+    ..\..\Pictures\a_z\a13.c                 0x00000000   Number         0  a13.o ABSOLUTE
+    ..\..\Pictures\a_z\a14.c                 0x00000000   Number         0  a14.o ABSOLUTE
+    ..\..\Pictures\a_z\a15.c                 0x00000000   Number         0  a15.o ABSOLUTE
+    ..\..\Pictures\a_z\a16.c                 0x00000000   Number         0  a16.o ABSOLUTE
+    ..\..\Pictures\a_z\a17.c                 0x00000000   Number         0  a17.o ABSOLUTE
+    ..\..\Pictures\a_z\a18.c                 0x00000000   Number         0  a18.o ABSOLUTE
+    ..\..\Pictures\a_z\a19.c                 0x00000000   Number         0  a19.o ABSOLUTE
+    ..\..\Pictures\a_z\a2.c                  0x00000000   Number         0  a2.o ABSOLUTE
+    ..\..\Pictures\a_z\a20.c                 0x00000000   Number         0  a20.o ABSOLUTE
+    ..\..\Pictures\a_z\a21.c                 0x00000000   Number         0  a21.o ABSOLUTE
+    ..\..\Pictures\a_z\a22.c                 0x00000000   Number         0  a22.o ABSOLUTE
+    ..\..\Pictures\a_z\a23.c                 0x00000000   Number         0  a23.o ABSOLUTE
+    ..\..\Pictures\a_z\a24.c                 0x00000000   Number         0  a24.o ABSOLUTE
+    ..\..\Pictures\a_z\a25.c                 0x00000000   Number         0  a25.o ABSOLUTE
+    ..\..\Pictures\a_z\a3.c                  0x00000000   Number         0  a3.o ABSOLUTE
+    ..\..\Pictures\a_z\a4.c                  0x00000000   Number         0  a4.o ABSOLUTE
+    ..\..\Pictures\a_z\a5.c                  0x00000000   Number         0  a5.o ABSOLUTE
+    ..\..\Pictures\a_z\a6.c                  0x00000000   Number         0  a6.o ABSOLUTE
+    ..\..\Pictures\a_z\a7.c                  0x00000000   Number         0  a7.o ABSOLUTE
+    ..\..\Pictures\a_z\a8.c                  0x00000000   Number         0  a8.o ABSOLUTE
+    ..\..\Pictures\a_z\a9.c                  0x00000000   Number         0  a9.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d1.c        0x00000000   Number         0  door_d1.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d10.c       0x00000000   Number         0  door_d10.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d11.c       0x00000000   Number         0  door_d11.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d12.c       0x00000000   Number         0  door_d12.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d13.c       0x00000000   Number         0  door_d13.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d14.c       0x00000000   Number         0  door_d14.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d15.c       0x00000000   Number         0  door_d15.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d2.c        0x00000000   Number         0  door_d2.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d3.c        0x00000000   Number         0  door_d3.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d4.c        0x00000000   Number         0  door_d4.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d5.c        0x00000000   Number         0  door_d5.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d6.c        0x00000000   Number         0  door_d6.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d7.c        0x00000000   Number         0  door_d7.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d8.c        0x00000000   Number         0  door_d8.o ABSOLUTE
+    ..\..\Pictures\car_door\door_d9.c        0x00000000   Number         0  door_d9.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont0.c    0x00000000   Number         0  disfont0.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont1.c    0x00000000   Number         0  disfont1.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont10.c   0x00000000   Number         0  disfont10.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont2.c    0x00000000   Number         0  disfont2.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont3.c    0x00000000   Number         0  disfont3.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont4.c    0x00000000   Number         0  disfont4.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont5.c    0x00000000   Number         0  disfont5.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont6.c    0x00000000   Number         0  disfont6.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont7.c    0x00000000   Number         0  disfont7.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont8.c    0x00000000   Number         0  disfont8.o ABSOLUTE
+    ..\..\Pictures\disfont_14x\disfont9.c    0x00000000   Number         0  disfont9.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR1.c           0x00000000   Number         0  err1.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR10.c          0x00000000   Number         0  err10.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR11.c          0x00000000   Number         0  err11.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR12.c          0x00000000   Number         0  err12.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR13.c          0x00000000   Number         0  err13.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR14.c          0x00000000   Number         0  err14.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR15.c          0x00000000   Number         0  err15.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR16.c          0x00000000   Number         0  err16.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR17.c          0x00000000   Number         0  err17.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR18.c          0x00000000   Number         0  err18.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR19.c          0x00000000   Number         0  err19.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR2.c           0x00000000   Number         0  err2.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR3.c           0x00000000   Number         0  err3.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR4.c           0x00000000   Number         0  err4.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR5.c           0x00000000   Number         0  err5.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR6.c           0x00000000   Number         0  err6.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR7.c           0x00000000   Number         0  err7.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR8.c           0x00000000   Number         0  err8.o ABSOLUTE
+    ..\..\Pictures\err_word\ERR9.c           0x00000000   Number         0  err9.o ABSOLUTE
+    ..\..\Pictures\instrument\dial_amp.c     0x00000000   Number         0  dial_amp.o ABSOLUTE
+    ..\..\Pictures\instrument\dial_soc.c     0x00000000   Number         0  dial_soc.o ABSOLUTE
+    ..\..\Pictures\instrument\dial_speed.c   0x00000000   Number         0  dial_speed.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic0.c             0x00000000   Number         0  sspic0.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic1.c             0x00000000   Number         0  sspic1.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic10.c            0x00000000   Number         0  sspic10.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic11.c            0x00000000   Number         0  sspic11.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic12.c            0x00000000   Number         0  sspic12.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic13.c            0x00000000   Number         0  sspic13.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic14.c            0x00000000   Number         0  sspic14.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic15.c            0x00000000   Number         0  sspic15.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic16.c            0x00000000   Number         0  sspic16.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic17.c            0x00000000   Number         0  sspic17.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic18.c            0x00000000   Number         0  sspic18.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic19.c            0x00000000   Number         0  sspic19.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic2.c             0x00000000   Number         0  sspic2.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic20.c            0x00000000   Number         0  sspic20.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic21.c            0x00000000   Number         0  sspic21.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic22.c            0x00000000   Number         0  sspic22.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic23.c            0x00000000   Number         0  sspic23.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic24.c            0x00000000   Number         0  sspic24.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic25.c            0x00000000   Number         0  sspic25.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic26.c            0x00000000   Number         0  sspic26.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic3.c             0x00000000   Number         0  sspic3.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic4.c             0x00000000   Number         0  sspic4.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic5.c             0x00000000   Number         0  sspic5.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic6.c             0x00000000   Number         0  sspic6.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic7.c             0x00000000   Number         0  sspic7.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic8.c             0x00000000   Number         0  sspic8.o ABSOLUTE
+    ..\..\Pictures\lamp\sspic9.c             0x00000000   Number         0  sspic9.o ABSOLUTE
+    ..\..\Pictures\needle\needle_amp.c       0x00000000   Number         0  needle_amp.o ABSOLUTE
+    ..\..\Pictures\needle\needle_speed.c     0x00000000   Number         0  needle_speed.o ABSOLUTE
+    ..\..\Pictures\prnds\LEV_D.c             0x00000000   Number         0  lev_d.o ABSOLUTE
+    ..\..\Pictures\prnds\LEV_N.c             0x00000000   Number         0  lev_n.o ABSOLUTE
+    ..\..\Pictures\prnds\LEV_P.c             0x00000000   Number         0  lev_p.o ABSOLUTE
+    ..\..\Pictures\prnds\LEV_R.c             0x00000000   Number         0  lev_r.o ABSOLUTE
+    ..\..\Pictures\prnds\LEV_S.c             0x00000000   Number         0  lev_s.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont0.c    0x00000000   Number         0  speedfont0.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont1.c    0x00000000   Number         0  speedfont1.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont2.c    0x00000000   Number         0  speedfont2.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont3.c    0x00000000   Number         0  speedfont3.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont4.c    0x00000000   Number         0  speedfont4.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont5.c    0x00000000   Number         0  speedfont5.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont6.c    0x00000000   Number         0  speedfont6.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont7.c    0x00000000   Number         0  speedfont7.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont8.c    0x00000000   Number         0  speedfont8.o ABSOLUTE
+    ..\..\Pictures\speedfont\speedfont9.c    0x00000000   Number         0  speedfont9.o ABSOLUTE
+    .ROMgraphics                             0x02100000   Section      536  aa0.o(.ROMgraphics)
+    .ROMgraphics                             0x02100218   Section      564  aa1.o(.ROMgraphics)
+    .ROMgraphics                             0x02100450   Section      588  aa2.o(.ROMgraphics)
+    .ROMgraphics                             0x021006a0   Section      592  aa3.o(.ROMgraphics)
+    .ROMgraphics                             0x021008f0   Section      384  aa4.o(.ROMgraphics)
+    .ROMgraphics                             0x02100a70   Section      352  aa5.o(.ROMgraphics)
+    .ROMgraphics                             0x02100bd0   Section      608  aa6.o(.ROMgraphics)
+    .ROMgraphics                             0x02100e30   Section      584  aa7.o(.ROMgraphics)
+    .ROMgraphics                             0x02101078   Section      316  aa8.o(.ROMgraphics)
+    .ROMgraphics                             0x021011b8   Section      480  aa9.o(.ROMgraphics)
+    .ROMgraphics                             0x02101398   Section      596  aa10.o(.ROMgraphics)
+    .ROMgraphics                             0x021015f0   Section      316  aa11.o(.ROMgraphics)
+    .ROMgraphics                             0x02101730   Section      728  aa12.o(.ROMgraphics)
+    .ROMgraphics                             0x02101a08   Section      720  aa13.o(.ROMgraphics)
+    .ROMgraphics                             0x02101cd8   Section      624  aa14.o(.ROMgraphics)
+    .ROMgraphics                             0x02101f48   Section      540  aa15.o(.ROMgraphics)
+    .ROMgraphics                             0x02102168   Section      640  aa16.o(.ROMgraphics)
+    .ROMgraphics                             0x021023e8   Section      580  aa17.o(.ROMgraphics)
+    .ROMgraphics                             0x02102630   Section      588  aa18.o(.ROMgraphics)
+    .ROMgraphics                             0x02102880   Section      316  aa19.o(.ROMgraphics)
+    .ROMgraphics                             0x021029c0   Section      632  aa20.o(.ROMgraphics)
+    .ROMgraphics                             0x02102c38   Section      592  aa21.o(.ROMgraphics)
+    .ROMgraphics                             0x02102e88   Section      736  aa22.o(.ROMgraphics)
+    .ROMgraphics                             0x02103168   Section      584  aa23.o(.ROMgraphics)
+    .ROMgraphics                             0x021033b0   Section      484  aa24.o(.ROMgraphics)
+    .ROMgraphics                             0x02103598   Section      368  aa25.o(.ROMgraphics)
+    .ROMgraphics                             0x02103708   Section      476  a0.o(.ROMgraphics)
+    .ROMgraphics                             0x021038e8   Section      572  a1.o(.ROMgraphics)
+    .ROMgraphics                             0x02103b28   Section      428  a2.o(.ROMgraphics)
+    .ROMgraphics                             0x02103cd8   Section      584  a3.o(.ROMgraphics)
+    .ROMgraphics                             0x02103f20   Section      424  a4.o(.ROMgraphics)
+    .ROMgraphics                             0x021040c8   Section      440  a5.o(.ROMgraphics)
+    .ROMgraphics                             0x02104280   Section      524  a6.o(.ROMgraphics)
+    .ROMgraphics                             0x02104490   Section      560  a7.o(.ROMgraphics)
+    .ROMgraphics                             0x021046c0   Section      280  a8.o(.ROMgraphics)
+    .ROMgraphics                             0x021047d8   Section      340  a9.o(.ROMgraphics)
+    .ROMgraphics                             0x02104930   Section      560  a10.o(.ROMgraphics)
+    .ROMgraphics                             0x02104b60   Section      316  a11.o(.ROMgraphics)
+    .ROMgraphics                             0x02104ca0   Section      556  a12.o(.ROMgraphics)
+    .ROMgraphics                             0x02104ed0   Section      476  a13.o(.ROMgraphics)
+    .ROMgraphics                             0x021050b0   Section      452  a14.o(.ROMgraphics)
+    .ROMgraphics                             0x02105278   Section      520  a15.o(.ROMgraphics)
+    .ROMgraphics                             0x02105480   Section      528  a16.o(.ROMgraphics)
+    .ROMgraphics                             0x02105690   Section      320  a17.o(.ROMgraphics)
+    .ROMgraphics                             0x021057d0   Section      436  a18.o(.ROMgraphics)
+    .ROMgraphics                             0x02105988   Section      392  a19.o(.ROMgraphics)
+    .ROMgraphics                             0x02105b10   Section      468  a20.o(.ROMgraphics)
+    .ROMgraphics                             0x02105ce8   Section      416  a21.o(.ROMgraphics)
+    .ROMgraphics                             0x02105e88   Section      528  a22.o(.ROMgraphics)
+    .ROMgraphics                             0x02106098   Section      436  a23.o(.ROMgraphics)
+    .ROMgraphics                             0x02106250   Section      468  a24.o(.ROMgraphics)
+    .ROMgraphics                             0x02106428   Section      312  a25.o(.ROMgraphics)
+    .ROMgraphics                             0x02106560   Section    33032  door_d1.o(.ROMgraphics)
+    .ROMgraphics                             0x0210e668   Section    33340  door_d2.o(.ROMgraphics)
+    .ROMgraphics                             0x021168a8   Section    34232  door_d3.o(.ROMgraphics)
+    .ROMgraphics                             0x0211ee60   Section    33528  door_d4.o(.ROMgraphics)
+    .ROMgraphics                             0x02127158   Section    34328  door_d5.o(.ROMgraphics)
+    .ROMgraphics                             0x0212f770   Section    34684  door_d6.o(.ROMgraphics)
+    .ROMgraphics                             0x02137ef0   Section    35500  door_d7.o(.ROMgraphics)
+    .ROMgraphics                             0x021409a0   Section    33560  door_d8.o(.ROMgraphics)
+    .ROMgraphics                             0x02148cb8   Section    34444  door_d9.o(.ROMgraphics)
+    .ROMgraphics                             0x02151348   Section    34516  door_d10.o(.ROMgraphics)
+    .ROMgraphics                             0x02159a20   Section    35640  door_d11.o(.ROMgraphics)
+    .ROMgraphics                             0x02162558   Section    34924  door_d12.o(.ROMgraphics)
+    .ROMgraphics                             0x0216adc8   Section    35768  door_d13.o(.ROMgraphics)
+    .ROMgraphics                             0x02173980   Section    36020  door_d14.o(.ROMgraphics)
+    .ROMgraphics                             0x0217c638   Section    37860  door_d15.o(.ROMgraphics)
+    .ROMgraphics                             0x02185a20   Section      636  disfont0.o(.ROMgraphics)
+    .ROMgraphics                             0x02185ca0   Section      368  disfont1.o(.ROMgraphics)
+    .ROMgraphics                             0x02185e10   Section      472  disfont2.o(.ROMgraphics)
+    .ROMgraphics                             0x02185fe8   Section      484  disfont3.o(.ROMgraphics)
+    .ROMgraphics                             0x021861d0   Section      512  disfont4.o(.ROMgraphics)
+    .ROMgraphics                             0x021863d0   Section      432  disfont5.o(.ROMgraphics)
+    .ROMgraphics                             0x02186580   Section      612  disfont6.o(.ROMgraphics)
+    .ROMgraphics                             0x021867e8   Section      376  disfont7.o(.ROMgraphics)
+    .ROMgraphics                             0x02186960   Section      624  disfont8.o(.ROMgraphics)
+    .ROMgraphics                             0x02186bd0   Section      612  disfont9.o(.ROMgraphics)
+    .ROMgraphics                             0x02186e38   Section       68  disfont10.o(.ROMgraphics)
+    .ROMgraphics                             0x02186e80   Section    29088  err1.o(.ROMgraphics)
+    .ROMgraphics                             0x0218e020   Section    26664  err2.o(.ROMgraphics)
+    .ROMgraphics                             0x02194848   Section    27472  err3.o(.ROMgraphics)
+    .ROMgraphics                             0x0219b398   Section    30704  err4.o(.ROMgraphics)
+    .ROMgraphics                             0x021a2b88   Section    59568  err5.o(.ROMgraphics)
+    .ROMgraphics                             0x021b1438   Section    29376  err6.o(.ROMgraphics)
+    .ROMgraphics                             0x021b86f8   Section    26928  err7.o(.ROMgraphics)
+    .ROMgraphics                             0x021bf028   Section    27744  err8.o(.ROMgraphics)
+    .ROMgraphics                             0x021c5c88   Section    31008  err9.o(.ROMgraphics)
+    .ROMgraphics                             0x021cd5a8   Section    28560  err10.o(.ROMgraphics)
+    .ROMgraphics                             0x021d4538   Section    29952  err11.o(.ROMgraphics)
+    .ROMgraphics                             0x021dba38   Section    27456  err12.o(.ROMgraphics)
+    .ROMgraphics                             0x021e2578   Section    28288  err13.o(.ROMgraphics)
+    .ROMgraphics                             0x021e93f8   Section    31616  err14.o(.ROMgraphics)
+    .ROMgraphics                             0x021f0f78   Section    29120  err15.o(.ROMgraphics)
+    .ROMgraphics                             0x021f8138   Section    29232  err16.o(.ROMgraphics)
+    .ROMgraphics                             0x021ff368   Section    26796  err17.o(.ROMgraphics)
+    .ROMgraphics                             0x02205c18   Section    27608  err18.o(.ROMgraphics)
+    .ROMgraphics                             0x0220c7f0   Section    60736  err19.o(.ROMgraphics)
+    .ROMgraphics                             0x0221b530   Section    75392  dial_amp.o(.ROMgraphics)
+    .ROMgraphics                             0x0222dbb0   Section    776136  dial_soc.o(.ROMgraphics)
+    .ROMgraphics                             0x022eb378   Section    781452  dial_speed.o(.ROMgraphics)
+    .ROMgraphics                             0x023aa008   Section     4800  sspic0.o(.ROMgraphics)
+    .ROMgraphics                             0x023ab2c8   Section     4104  sspic1.o(.ROMgraphics)
+    .ROMgraphics                             0x023ac2d0   Section     4408  sspic2.o(.ROMgraphics)
+    .ROMgraphics                             0x023ad408   Section     5032  sspic3.o(.ROMgraphics)
+    .ROMgraphics                             0x023ae7b0   Section     4988  sspic4.o(.ROMgraphics)
+    .ROMgraphics                             0x023afb30   Section     4960  sspic5.o(.ROMgraphics)
+    .ROMgraphics                             0x023b0e90   Section     5600  sspic6.o(.ROMgraphics)
+    .ROMgraphics                             0x023b2470   Section     4960  sspic7.o(.ROMgraphics)
+    .ROMgraphics                             0x023b37d0   Section     4320  sspic8.o(.ROMgraphics)
+    .ROMgraphics                             0x023b48b0   Section     3900  sspic9.o(.ROMgraphics)
+    .ROMgraphics                             0x023b57f0   Section     5676  sspic10.o(.ROMgraphics)
+    .ROMgraphics                             0x023b6e20   Section     4992  sspic11.o(.ROMgraphics)
+    .ROMgraphics                             0x023b81a0   Section     3432  sspic12.o(.ROMgraphics)
+    .ROMgraphics                             0x023b8f08   Section     4524  sspic13.o(.ROMgraphics)
+    .ROMgraphics                             0x023ba0b8   Section     3712  sspic14.o(.ROMgraphics)
+    .ROMgraphics                             0x023baf38   Section     4256  sspic15.o(.ROMgraphics)
+    .ROMgraphics                             0x023bbfd8   Section     4212  sspic16.o(.ROMgraphics)
+    .ROMgraphics                             0x023bd050   Section     3496  sspic17.o(.ROMgraphics)
+    .ROMgraphics                             0x023bddf8   Section     4292  sspic18.o(.ROMgraphics)
+    .ROMgraphics                             0x023beec0   Section     4096  sspic19.o(.ROMgraphics)
+    .ROMgraphics                             0x023bfec0   Section     4592  sspic20.o(.ROMgraphics)
+    .ROMgraphics                             0x023c10b0   Section     3472  sspic21.o(.ROMgraphics)
+    .ROMgraphics                             0x023c1e40   Section     5704  sspic22.o(.ROMgraphics)
+    .ROMgraphics                             0x023c3488   Section     5160  sspic23.o(.ROMgraphics)
+    .ROMgraphics                             0x023c48b0   Section     3072  sspic24.o(.ROMgraphics)
+    .ROMgraphics                             0x023c54b0   Section     4640  sspic25.o(.ROMgraphics)
+    .ROMgraphics                             0x023c66d0   Section     4256  sspic26.o(.ROMgraphics)
+    .ROMgraphics                             0x023c7770   Section     5120  lev_d.o(.ROMgraphics)
+    .ROMgraphics                             0x023c8b70   Section     4800  lev_n.o(.ROMgraphics)
+    .ROMgraphics                             0x023c9e30   Section     4800  lev_p.o(.ROMgraphics)
+    .ROMgraphics                             0x023cb0f0   Section     5440  lev_r.o(.ROMgraphics)
+    .ROMgraphics                             0x023cc630   Section     4800  lev_s.o(.ROMgraphics)
+    .ROMgraphics                             0x023cd8f0   Section     2448  speedfont0.o(.ROMgraphics)
+    .ROMgraphics                             0x023ce280   Section     1460  speedfont1.o(.ROMgraphics)
+    .ROMgraphics                             0x023ce838   Section     1572  speedfont2.o(.ROMgraphics)
+    .ROMgraphics                             0x023cee60   Section     1688  speedfont3.o(.ROMgraphics)
+    .ROMgraphics                             0x023cf4f8   Section     1928  speedfont4.o(.ROMgraphics)
+    .ROMgraphics                             0x023cfc80   Section     1556  speedfont5.o(.ROMgraphics)
+    .ROMgraphics                             0x023d0298   Section     2232  speedfont6.o(.ROMgraphics)
+    .ROMgraphics                             0x023d0b50   Section     1304  speedfont7.o(.ROMgraphics)
+    .ROMgraphics                             0x023d1068   Section     2480  speedfont8.o(.ROMgraphics)
+    .ROMgraphics                             0x023d1a18   Section     2236  speedfont9.o(.ROMgraphics)
+    .ROMgraphics                             0x023d22d8   Section    15128  needle_amp.o(.ROMgraphics)
+    .ROMgraphics                             0x023d5df0   Section    206400  needle_speed.o(.ROMgraphics)
+
+    Global Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THM_ISAv4$ARM_ISAv7$E$P$J$D$K$B$S$PE$A:L22UL41UL21$X:L11$S22US41US21$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$EBA8$STANDARDLIB$THUMB2LIB$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    u32_AA0_RLE                              0x02100000   Data         536  aa0.o(.ROMgraphics)
+    u32_AA1_RLE                              0x02100218   Data         564  aa1.o(.ROMgraphics)
+    u32_AA2_RLE                              0x02100450   Data         588  aa2.o(.ROMgraphics)
+    u32_AA3_RLE                              0x021006a0   Data         592  aa3.o(.ROMgraphics)
+    u32_AA4_RLE                              0x021008f0   Data         384  aa4.o(.ROMgraphics)
+    u32_AA5_RLE                              0x02100a70   Data         352  aa5.o(.ROMgraphics)
+    u32_AA6_RLE                              0x02100bd0   Data         608  aa6.o(.ROMgraphics)
+    u32_AA7_RLE                              0x02100e30   Data         584  aa7.o(.ROMgraphics)
+    u32_AA8_RLE                              0x02101078   Data         316  aa8.o(.ROMgraphics)
+    u32_AA9_RLE                              0x021011b8   Data         480  aa9.o(.ROMgraphics)
+    u32_AA10_RLE                             0x02101398   Data         596  aa10.o(.ROMgraphics)
+    u32_AA11_RLE                             0x021015f0   Data         316  aa11.o(.ROMgraphics)
+    u32_AA12_RLE                             0x02101730   Data         728  aa12.o(.ROMgraphics)
+    u32_AA13_RLE                             0x02101a08   Data         720  aa13.o(.ROMgraphics)
+    u32_AA14_RLE                             0x02101cd8   Data         624  aa14.o(.ROMgraphics)
+    u32_AA15_RLE                             0x02101f48   Data         540  aa15.o(.ROMgraphics)
+    u32_AA16_RLE                             0x02102168   Data         640  aa16.o(.ROMgraphics)
+    u32_AA17_RLE                             0x021023e8   Data         580  aa17.o(.ROMgraphics)
+    u32_AA18_RLE                             0x02102630   Data         588  aa18.o(.ROMgraphics)
+    u32_AA19_RLE                             0x02102880   Data         316  aa19.o(.ROMgraphics)
+    u32_AA20_RLE                             0x021029c0   Data         632  aa20.o(.ROMgraphics)
+    u32_AA21_RLE                             0x02102c38   Data         592  aa21.o(.ROMgraphics)
+    u32_AA22_RLE                             0x02102e88   Data         736  aa22.o(.ROMgraphics)
+    u32_AA23_RLE                             0x02103168   Data         584  aa23.o(.ROMgraphics)
+    u32_AA24_RLE                             0x021033b0   Data         484  aa24.o(.ROMgraphics)
+    u32_AA25_RLE                             0x02103598   Data         368  aa25.o(.ROMgraphics)
+    u32_a0_RLE                               0x02103708   Data         476  a0.o(.ROMgraphics)
+    u32_a1_RLE                               0x021038e8   Data         572  a1.o(.ROMgraphics)
+    u32_a2_RLE                               0x02103b28   Data         428  a2.o(.ROMgraphics)
+    u32_a3_RLE                               0x02103cd8   Data         584  a3.o(.ROMgraphics)
+    u32_a4_RLE                               0x02103f20   Data         424  a4.o(.ROMgraphics)
+    u32_a5_RLE                               0x021040c8   Data         440  a5.o(.ROMgraphics)
+    u32_a6_RLE                               0x02104280   Data         524  a6.o(.ROMgraphics)
+    u32_a7_RLE                               0x02104490   Data         560  a7.o(.ROMgraphics)
+    u32_a8_RLE                               0x021046c0   Data         280  a8.o(.ROMgraphics)
+    u32_a9_RLE                               0x021047d8   Data         340  a9.o(.ROMgraphics)
+    u32_a10_RLE                              0x02104930   Data         560  a10.o(.ROMgraphics)
+    u32_a11_RLE                              0x02104b60   Data         316  a11.o(.ROMgraphics)
+    u32_a12_RLE                              0x02104ca0   Data         556  a12.o(.ROMgraphics)
+    u32_a13_RLE                              0x02104ed0   Data         476  a13.o(.ROMgraphics)
+    u32_a14_RLE                              0x021050b0   Data         452  a14.o(.ROMgraphics)
+    u32_a15_RLE                              0x02105278   Data         520  a15.o(.ROMgraphics)
+    u32_a16_RLE                              0x02105480   Data         528  a16.o(.ROMgraphics)
+    u32_a17_RLE                              0x02105690   Data         320  a17.o(.ROMgraphics)
+    u32_a18_RLE                              0x021057d0   Data         436  a18.o(.ROMgraphics)
+    u32_a19_RLE                              0x02105988   Data         392  a19.o(.ROMgraphics)
+    u32_a20_RLE                              0x02105b10   Data         468  a20.o(.ROMgraphics)
+    u32_a21_RLE                              0x02105ce8   Data         416  a21.o(.ROMgraphics)
+    u32_a22_RLE                              0x02105e88   Data         528  a22.o(.ROMgraphics)
+    u32_a23_RLE                              0x02106098   Data         436  a23.o(.ROMgraphics)
+    u32_a24_RLE                              0x02106250   Data         468  a24.o(.ROMgraphics)
+    u32_a25_RLE                              0x02106428   Data         312  a25.o(.ROMgraphics)
+    u32_door_d1_RLE                          0x02106560   Data       33032  door_d1.o(.ROMgraphics)
+    u32_door_d2_RLE                          0x0210e668   Data       33340  door_d2.o(.ROMgraphics)
+    u32_door_d3_RLE                          0x021168a8   Data       34232  door_d3.o(.ROMgraphics)
+    u32_door_d4_RLE                          0x0211ee60   Data       33528  door_d4.o(.ROMgraphics)
+    u32_door_d5_RLE                          0x02127158   Data       34328  door_d5.o(.ROMgraphics)
+    u32_door_d6_RLE                          0x0212f770   Data       34684  door_d6.o(.ROMgraphics)
+    u32_door_d7_RLE                          0x02137ef0   Data       35500  door_d7.o(.ROMgraphics)
+    u32_door_d8_RLE                          0x021409a0   Data       33560  door_d8.o(.ROMgraphics)
+    u32_door_d9_RLE                          0x02148cb8   Data       34444  door_d9.o(.ROMgraphics)
+    u32_door_d10_RLE                         0x02151348   Data       34516  door_d10.o(.ROMgraphics)
+    u32_door_d11_RLE                         0x02159a20   Data       35640  door_d11.o(.ROMgraphics)
+    u32_door_d12_RLE                         0x02162558   Data       34924  door_d12.o(.ROMgraphics)
+    u32_door_d13_RLE                         0x0216adc8   Data       35768  door_d13.o(.ROMgraphics)
+    u32_door_d14_RLE                         0x02173980   Data       36020  door_d14.o(.ROMgraphics)
+    u32_door_d15_RLE                         0x0217c638   Data       37860  door_d15.o(.ROMgraphics)
+    u32_disfont0_RLE                         0x02185a20   Data         636  disfont0.o(.ROMgraphics)
+    u32_disfont1_RLE                         0x02185ca0   Data         368  disfont1.o(.ROMgraphics)
+    u32_disfont2_RLE                         0x02185e10   Data         472  disfont2.o(.ROMgraphics)
+    u32_disfont3_RLE                         0x02185fe8   Data         484  disfont3.o(.ROMgraphics)
+    u32_disfont4_RLE                         0x021861d0   Data         512  disfont4.o(.ROMgraphics)
+    u32_disfont5_RLE                         0x021863d0   Data         432  disfont5.o(.ROMgraphics)
+    u32_disfont6_RLE                         0x02186580   Data         612  disfont6.o(.ROMgraphics)
+    u32_disfont7_RLE                         0x021867e8   Data         376  disfont7.o(.ROMgraphics)
+    u32_disfont8_RLE                         0x02186960   Data         624  disfont8.o(.ROMgraphics)
+    u32_disfont9_RLE                         0x02186bd0   Data         612  disfont9.o(.ROMgraphics)
+    u32_disfont10_RLE                        0x02186e38   Data          68  disfont10.o(.ROMgraphics)
+    u32_ERR1                                 0x02186e80   Data       29088  err1.o(.ROMgraphics)
+    u32_ERR2                                 0x0218e020   Data       26664  err2.o(.ROMgraphics)
+    u32_ERR3                                 0x02194848   Data       27472  err3.o(.ROMgraphics)
+    u32_ERR4                                 0x0219b398   Data       30704  err4.o(.ROMgraphics)
+    u32_ERR5                                 0x021a2b88   Data       59568  err5.o(.ROMgraphics)
+    u32_ERR6                                 0x021b1438   Data       29376  err6.o(.ROMgraphics)
+    u32_ERR7                                 0x021b86f8   Data       26928  err7.o(.ROMgraphics)
+    u32_ERR8                                 0x021bf028   Data       27744  err8.o(.ROMgraphics)
+    u32_ERR9                                 0x021c5c88   Data       31008  err9.o(.ROMgraphics)
+    u32_ERR10                                0x021cd5a8   Data       28560  err10.o(.ROMgraphics)
+    u32_ERR11                                0x021d4538   Data       29952  err11.o(.ROMgraphics)
+    u32_ERR12                                0x021dba38   Data       27456  err12.o(.ROMgraphics)
+    u32_ERR13                                0x021e2578   Data       28288  err13.o(.ROMgraphics)
+    u32_ERR14                                0x021e93f8   Data       31616  err14.o(.ROMgraphics)
+    u32_ERR15                                0x021f0f78   Data       29120  err15.o(.ROMgraphics)
+    u32_ERR16                                0x021f8138   Data       29232  err16.o(.ROMgraphics)
+    u32_ERR17                                0x021ff368   Data       26796  err17.o(.ROMgraphics)
+    u32_ERR18                                0x02205c18   Data       27608  err18.o(.ROMgraphics)
+    u32_ERR19                                0x0220c7f0   Data       60736  err19.o(.ROMgraphics)
+    u32_dial_amp                             0x0221b530   Data       75392  dial_amp.o(.ROMgraphics)
+    u32_dial_soc                             0x0222dbb0   Data       776136  dial_soc.o(.ROMgraphics)
+    u32_dial_speed                           0x022eb378   Data       781452  dial_speed.o(.ROMgraphics)
+    u32_sspic0                               0x023aa008   Data        4800  sspic0.o(.ROMgraphics)
+    u32_sspic1                               0x023ab2c8   Data        4104  sspic1.o(.ROMgraphics)
+    u32_sspic2                               0x023ac2d0   Data        4408  sspic2.o(.ROMgraphics)
+    u32_sspic3                               0x023ad408   Data        5032  sspic3.o(.ROMgraphics)
+    u32_sspic4                               0x023ae7b0   Data        4988  sspic4.o(.ROMgraphics)
+    u32_sspic5                               0x023afb30   Data        4960  sspic5.o(.ROMgraphics)
+    u32_sspic6                               0x023b0e90   Data        5600  sspic6.o(.ROMgraphics)
+    u32_sspic7                               0x023b2470   Data        4960  sspic7.o(.ROMgraphics)
+    u32_sspic8                               0x023b37d0   Data        4320  sspic8.o(.ROMgraphics)
+    u32_sspic9                               0x023b48b0   Data        3900  sspic9.o(.ROMgraphics)
+    u32_sspic10                              0x023b57f0   Data        5676  sspic10.o(.ROMgraphics)
+    u32_sspic11                              0x023b6e20   Data        4992  sspic11.o(.ROMgraphics)
+    u32_sspic12                              0x023b81a0   Data        3432  sspic12.o(.ROMgraphics)
+    u32_sspic13                              0x023b8f08   Data        4524  sspic13.o(.ROMgraphics)
+    u32_sspic14                              0x023ba0b8   Data        3712  sspic14.o(.ROMgraphics)
+    u32_sspic15                              0x023baf38   Data        4256  sspic15.o(.ROMgraphics)
+    u32_sspic16                              0x023bbfd8   Data        4212  sspic16.o(.ROMgraphics)
+    u32_sspic17                              0x023bd050   Data        3496  sspic17.o(.ROMgraphics)
+    u32_sspic18                              0x023bddf8   Data        4292  sspic18.o(.ROMgraphics)
+    u32_sspic19                              0x023beec0   Data        4096  sspic19.o(.ROMgraphics)
+    u32_sspic20                              0x023bfec0   Data        4592  sspic20.o(.ROMgraphics)
+    u32_sspic21                              0x023c10b0   Data        3472  sspic21.o(.ROMgraphics)
+    u32_sspic22                              0x023c1e40   Data        5704  sspic22.o(.ROMgraphics)
+    u32_sspic23                              0x023c3488   Data        5160  sspic23.o(.ROMgraphics)
+    u32_sspic24                              0x023c48b0   Data        3072  sspic24.o(.ROMgraphics)
+    u32_sspic25                              0x023c54b0   Data        4640  sspic25.o(.ROMgraphics)
+    u32_sspic26                              0x023c66d0   Data        4256  sspic26.o(.ROMgraphics)
+    u32_LEV_D                                0x023c7770   Data        5120  lev_d.o(.ROMgraphics)
+    u32_LEV_N                                0x023c8b70   Data        4800  lev_n.o(.ROMgraphics)
+    u32_LEV_P                                0x023c9e30   Data        4800  lev_p.o(.ROMgraphics)
+    u32_LEV_R                                0x023cb0f0   Data        5440  lev_r.o(.ROMgraphics)
+    u32_LEV_S                                0x023cc630   Data        4800  lev_s.o(.ROMgraphics)
+    u32_speedfont0_RLE                       0x023cd8f0   Data        2448  speedfont0.o(.ROMgraphics)
+    u32_speedfont1_RLE                       0x023ce280   Data        1460  speedfont1.o(.ROMgraphics)
+    u32_speedfont2_RLE                       0x023ce838   Data        1572  speedfont2.o(.ROMgraphics)
+    u32_speedfont3_RLE                       0x023cee60   Data        1688  speedfont3.o(.ROMgraphics)
+    u32_speedfont4_RLE                       0x023cf4f8   Data        1928  speedfont4.o(.ROMgraphics)
+    u32_speedfont5_RLE                       0x023cfc80   Data        1556  speedfont5.o(.ROMgraphics)
+    u32_speedfont6_RLE                       0x023d0298   Data        2232  speedfont6.o(.ROMgraphics)
+    u32_speedfont7_RLE                       0x023d0b50   Data        1304  speedfont7.o(.ROMgraphics)
+    u32_speedfont8_RLE                       0x023d1068   Data        2480  speedfont8.o(.ROMgraphics)
+    u32_speedfont9_RLE                       0x023d1a18   Data        2236  speedfont9.o(.ROMgraphics)
+    u32_needle_amp                           0x023d22d8   Data       15128  needle_amp.o(.ROMgraphics)
+    u32_needle_speed                         0x023d5df0   Data       206400  needle_speed.o(.ROMgraphics)
+
+
+
+==============================================================================
+
+Memory Map of the image
+
+  Image entry point : Not specified.
+
+  Load Region QSPI0_GRAPH (Base: 0x02100000, Size: 0x00308430, Max: 0x00e00000, ABSOLUTE)
+
+    Execution Region GRAPHICS (Base: 0x02100000, Size: 0x00308430, Max: 0x00e00000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x02100000   0x00000218   Data   RO            6    .ROMgraphics        aa0.o
+    0x02100218   0x00000234   Data   RO            7    .ROMgraphics        aa1.o
+    0x0210044c   0x00000004   PAD
+    0x02100450   0x0000024c   Data   RO            8    .ROMgraphics        aa2.o
+    0x0210069c   0x00000004   PAD
+    0x021006a0   0x00000250   Data   RO            9    .ROMgraphics        aa3.o
+    0x021008f0   0x00000180   Data   RO           10    .ROMgraphics        aa4.o
+    0x02100a70   0x00000160   Data   RO           11    .ROMgraphics        aa5.o
+    0x02100bd0   0x00000260   Data   RO           12    .ROMgraphics        aa6.o
+    0x02100e30   0x00000248   Data   RO           13    .ROMgraphics        aa7.o
+    0x02101078   0x0000013c   Data   RO           14    .ROMgraphics        aa8.o
+    0x021011b4   0x00000004   PAD
+    0x021011b8   0x000001e0   Data   RO           15    .ROMgraphics        aa9.o
+    0x02101398   0x00000254   Data   RO           16    .ROMgraphics        aa10.o
+    0x021015ec   0x00000004   PAD
+    0x021015f0   0x0000013c   Data   RO           17    .ROMgraphics        aa11.o
+    0x0210172c   0x00000004   PAD
+    0x02101730   0x000002d8   Data   RO           18    .ROMgraphics        aa12.o
+    0x02101a08   0x000002d0   Data   RO           19    .ROMgraphics        aa13.o
+    0x02101cd8   0x00000270   Data   RO           20    .ROMgraphics        aa14.o
+    0x02101f48   0x0000021c   Data   RO           21    .ROMgraphics        aa15.o
+    0x02102164   0x00000004   PAD
+    0x02102168   0x00000280   Data   RO           22    .ROMgraphics        aa16.o
+    0x021023e8   0x00000244   Data   RO           23    .ROMgraphics        aa17.o
+    0x0210262c   0x00000004   PAD
+    0x02102630   0x0000024c   Data   RO           24    .ROMgraphics        aa18.o
+    0x0210287c   0x00000004   PAD
+    0x02102880   0x0000013c   Data   RO           25    .ROMgraphics        aa19.o
+    0x021029bc   0x00000004   PAD
+    0x021029c0   0x00000278   Data   RO           26    .ROMgraphics        aa20.o
+    0x02102c38   0x00000250   Data   RO           27    .ROMgraphics        aa21.o
+    0x02102e88   0x000002e0   Data   RO           28    .ROMgraphics        aa22.o
+    0x02103168   0x00000248   Data   RO           29    .ROMgraphics        aa23.o
+    0x021033b0   0x000001e4   Data   RO           30    .ROMgraphics        aa24.o
+    0x02103594   0x00000004   PAD
+    0x02103598   0x00000170   Data   RO           31    .ROMgraphics        aa25.o
+    0x02103708   0x000001dc   Data   RO           32    .ROMgraphics        a0.o
+    0x021038e4   0x00000004   PAD
+    0x021038e8   0x0000023c   Data   RO           33    .ROMgraphics        a1.o
+    0x02103b24   0x00000004   PAD
+    0x02103b28   0x000001ac   Data   RO           34    .ROMgraphics        a2.o
+    0x02103cd4   0x00000004   PAD
+    0x02103cd8   0x00000248   Data   RO           35    .ROMgraphics        a3.o
+    0x02103f20   0x000001a8   Data   RO           36    .ROMgraphics        a4.o
+    0x021040c8   0x000001b8   Data   RO           37    .ROMgraphics        a5.o
+    0x02104280   0x0000020c   Data   RO           38    .ROMgraphics        a6.o
+    0x0210448c   0x00000004   PAD
+    0x02104490   0x00000230   Data   RO           39    .ROMgraphics        a7.o
+    0x021046c0   0x00000118   Data   RO           40    .ROMgraphics        a8.o
+    0x021047d8   0x00000154   Data   RO           41    .ROMgraphics        a9.o
+    0x0210492c   0x00000004   PAD
+    0x02104930   0x00000230   Data   RO           42    .ROMgraphics        a10.o
+    0x02104b60   0x0000013c   Data   RO           43    .ROMgraphics        a11.o
+    0x02104c9c   0x00000004   PAD
+    0x02104ca0   0x0000022c   Data   RO           44    .ROMgraphics        a12.o
+    0x02104ecc   0x00000004   PAD
+    0x02104ed0   0x000001dc   Data   RO           45    .ROMgraphics        a13.o
+    0x021050ac   0x00000004   PAD
+    0x021050b0   0x000001c4   Data   RO           46    .ROMgraphics        a14.o
+    0x02105274   0x00000004   PAD
+    0x02105278   0x00000208   Data   RO           47    .ROMgraphics        a15.o
+    0x02105480   0x00000210   Data   RO           48    .ROMgraphics        a16.o
+    0x02105690   0x00000140   Data   RO           49    .ROMgraphics        a17.o
+    0x021057d0   0x000001b4   Data   RO           50    .ROMgraphics        a18.o
+    0x02105984   0x00000004   PAD
+    0x02105988   0x00000188   Data   RO           51    .ROMgraphics        a19.o
+    0x02105b10   0x000001d4   Data   RO           52    .ROMgraphics        a20.o
+    0x02105ce4   0x00000004   PAD
+    0x02105ce8   0x000001a0   Data   RO           53    .ROMgraphics        a21.o
+    0x02105e88   0x00000210   Data   RO           54    .ROMgraphics        a22.o
+    0x02106098   0x000001b4   Data   RO           55    .ROMgraphics        a23.o
+    0x0210624c   0x00000004   PAD
+    0x02106250   0x000001d4   Data   RO           56    .ROMgraphics        a24.o
+    0x02106424   0x00000004   PAD
+    0x02106428   0x00000138   Data   RO           57    .ROMgraphics        a25.o
+    0x02106560   0x00008108   Data   RO           58    .ROMgraphics        door_d1.o
+    0x0210e668   0x0000823c   Data   RO           59    .ROMgraphics        door_d2.o
+    0x021168a4   0x00000004   PAD
+    0x021168a8   0x000085b8   Data   RO           60    .ROMgraphics        door_d3.o
+    0x0211ee60   0x000082f8   Data   RO           61    .ROMgraphics        door_d4.o
+    0x02127158   0x00008618   Data   RO           62    .ROMgraphics        door_d5.o
+    0x0212f770   0x0000877c   Data   RO           63    .ROMgraphics        door_d6.o
+    0x02137eec   0x00000004   PAD
+    0x02137ef0   0x00008aac   Data   RO           64    .ROMgraphics        door_d7.o
+    0x0214099c   0x00000004   PAD
+    0x021409a0   0x00008318   Data   RO           65    .ROMgraphics        door_d8.o
+    0x02148cb8   0x0000868c   Data   RO           66    .ROMgraphics        door_d9.o
+    0x02151344   0x00000004   PAD
+    0x02151348   0x000086d4   Data   RO           67    .ROMgraphics        door_d10.o
+    0x02159a1c   0x00000004   PAD
+    0x02159a20   0x00008b38   Data   RO           68    .ROMgraphics        door_d11.o
+    0x02162558   0x0000886c   Data   RO           69    .ROMgraphics        door_d12.o
+    0x0216adc4   0x00000004   PAD
+    0x0216adc8   0x00008bb8   Data   RO           70    .ROMgraphics        door_d13.o
+    0x02173980   0x00008cb4   Data   RO           71    .ROMgraphics        door_d14.o
+    0x0217c634   0x00000004   PAD
+    0x0217c638   0x000093e4   Data   RO           72    .ROMgraphics        door_d15.o
+    0x02185a1c   0x00000004   PAD
+    0x02185a20   0x0000027c   Data   RO           73    .ROMgraphics        disfont0.o
+    0x02185c9c   0x00000004   PAD
+    0x02185ca0   0x00000170   Data   RO           74    .ROMgraphics        disfont1.o
+    0x02185e10   0x000001d8   Data   RO           75    .ROMgraphics        disfont2.o
+    0x02185fe8   0x000001e4   Data   RO           76    .ROMgraphics        disfont3.o
+    0x021861cc   0x00000004   PAD
+    0x021861d0   0x00000200   Data   RO           77    .ROMgraphics        disfont4.o
+    0x021863d0   0x000001b0   Data   RO           78    .ROMgraphics        disfont5.o
+    0x02186580   0x00000264   Data   RO           79    .ROMgraphics        disfont6.o
+    0x021867e4   0x00000004   PAD
+    0x021867e8   0x00000178   Data   RO           80    .ROMgraphics        disfont7.o
+    0x02186960   0x00000270   Data   RO           81    .ROMgraphics        disfont8.o
+    0x02186bd0   0x00000264   Data   RO           82    .ROMgraphics        disfont9.o
+    0x02186e34   0x00000004   PAD
+    0x02186e38   0x00000044   Data   RO           83    .ROMgraphics        disfont10.o
+    0x02186e7c   0x00000004   PAD
+    0x02186e80   0x000071a0   Data   RO           84    .ROMgraphics        err1.o
+    0x0218e020   0x00006828   Data   RO           85    .ROMgraphics        err2.o
+    0x02194848   0x00006b50   Data   RO           86    .ROMgraphics        err3.o
+    0x0219b398   0x000077f0   Data   RO           87    .ROMgraphics        err4.o
+    0x021a2b88   0x0000e8b0   Data   RO           88    .ROMgraphics        err5.o
+    0x021b1438   0x000072c0   Data   RO           89    .ROMgraphics        err6.o
+    0x021b86f8   0x00006930   Data   RO           90    .ROMgraphics        err7.o
+    0x021bf028   0x00006c60   Data   RO           91    .ROMgraphics        err8.o
+    0x021c5c88   0x00007920   Data   RO           92    .ROMgraphics        err9.o
+    0x021cd5a8   0x00006f90   Data   RO           93    .ROMgraphics        err10.o
+    0x021d4538   0x00007500   Data   RO           94    .ROMgraphics        err11.o
+    0x021dba38   0x00006b40   Data   RO           95    .ROMgraphics        err12.o
+    0x021e2578   0x00006e80   Data   RO           96    .ROMgraphics        err13.o
+    0x021e93f8   0x00007b80   Data   RO           97    .ROMgraphics        err14.o
+    0x021f0f78   0x000071c0   Data   RO           98    .ROMgraphics        err15.o
+    0x021f8138   0x00007230   Data   RO           99    .ROMgraphics        err16.o
+    0x021ff368   0x000068ac   Data   RO          100    .ROMgraphics        err17.o
+    0x02205c14   0x00000004   PAD
+    0x02205c18   0x00006bd8   Data   RO          101    .ROMgraphics        err18.o
+    0x0220c7f0   0x0000ed40   Data   RO          102    .ROMgraphics        err19.o
+    0x0221b530   0x00012680   Data   RO          103    .ROMgraphics        dial_amp.o
+    0x0222dbb0   0x000bd7c8   Data   RO          104    .ROMgraphics        dial_soc.o
+    0x022eb378   0x000bec8c   Data   RO          105    .ROMgraphics        dial_speed.o
+    0x023aa004   0x00000004   PAD
+    0x023aa008   0x000012c0   Data   RO          106    .ROMgraphics        sspic0.o
+    0x023ab2c8   0x00001008   Data   RO          107    .ROMgraphics        sspic1.o
+    0x023ac2d0   0x00001138   Data   RO          108    .ROMgraphics        sspic2.o
+    0x023ad408   0x000013a8   Data   RO          109    .ROMgraphics        sspic3.o
+    0x023ae7b0   0x0000137c   Data   RO          110    .ROMgraphics        sspic4.o
+    0x023afb2c   0x00000004   PAD
+    0x023afb30   0x00001360   Data   RO          111    .ROMgraphics        sspic5.o
+    0x023b0e90   0x000015e0   Data   RO          112    .ROMgraphics        sspic6.o
+    0x023b2470   0x00001360   Data   RO          113    .ROMgraphics        sspic7.o
+    0x023b37d0   0x000010e0   Data   RO          114    .ROMgraphics        sspic8.o
+    0x023b48b0   0x00000f3c   Data   RO          115    .ROMgraphics        sspic9.o
+    0x023b57ec   0x00000004   PAD
+    0x023b57f0   0x0000162c   Data   RO          116    .ROMgraphics        sspic10.o
+    0x023b6e1c   0x00000004   PAD
+    0x023b6e20   0x00001380   Data   RO          117    .ROMgraphics        sspic11.o
+    0x023b81a0   0x00000d68   Data   RO          118    .ROMgraphics        sspic12.o
+    0x023b8f08   0x000011ac   Data   RO          119    .ROMgraphics        sspic13.o
+    0x023ba0b4   0x00000004   PAD
+    0x023ba0b8   0x00000e80   Data   RO          120    .ROMgraphics        sspic14.o
+    0x023baf38   0x000010a0   Data   RO          121    .ROMgraphics        sspic15.o
+    0x023bbfd8   0x00001074   Data   RO          122    .ROMgraphics        sspic16.o
+    0x023bd04c   0x00000004   PAD
+    0x023bd050   0x00000da8   Data   RO          123    .ROMgraphics        sspic17.o
+    0x023bddf8   0x000010c4   Data   RO          124    .ROMgraphics        sspic18.o
+    0x023beebc   0x00000004   PAD
+    0x023beec0   0x00001000   Data   RO          125    .ROMgraphics        sspic19.o
+    0x023bfec0   0x000011f0   Data   RO          126    .ROMgraphics        sspic20.o
+    0x023c10b0   0x00000d90   Data   RO          127    .ROMgraphics        sspic21.o
+    0x023c1e40   0x00001648   Data   RO          128    .ROMgraphics        sspic22.o
+    0x023c3488   0x00001428   Data   RO          129    .ROMgraphics        sspic23.o
+    0x023c48b0   0x00000c00   Data   RO          130    .ROMgraphics        sspic24.o
+    0x023c54b0   0x00001220   Data   RO          131    .ROMgraphics        sspic25.o
+    0x023c66d0   0x000010a0   Data   RO          132    .ROMgraphics        sspic26.o
+    0x023c7770   0x00001400   Data   RO          133    .ROMgraphics        lev_d.o
+    0x023c8b70   0x000012c0   Data   RO          134    .ROMgraphics        lev_n.o
+    0x023c9e30   0x000012c0   Data   RO          135    .ROMgraphics        lev_p.o
+    0x023cb0f0   0x00001540   Data   RO          136    .ROMgraphics        lev_r.o
+    0x023cc630   0x000012c0   Data   RO          137    .ROMgraphics        lev_s.o
+    0x023cd8f0   0x00000990   Data   RO          138    .ROMgraphics        speedfont0.o
+    0x023ce280   0x000005b4   Data   RO          139    .ROMgraphics        speedfont1.o
+    0x023ce834   0x00000004   PAD
+    0x023ce838   0x00000624   Data   RO          140    .ROMgraphics        speedfont2.o
+    0x023cee5c   0x00000004   PAD
+    0x023cee60   0x00000698   Data   RO          141    .ROMgraphics        speedfont3.o
+    0x023cf4f8   0x00000788   Data   RO          142    .ROMgraphics        speedfont4.o
+    0x023cfc80   0x00000614   Data   RO          143    .ROMgraphics        speedfont5.o
+    0x023d0294   0x00000004   PAD
+    0x023d0298   0x000008b8   Data   RO          144    .ROMgraphics        speedfont6.o
+    0x023d0b50   0x00000518   Data   RO          145    .ROMgraphics        speedfont7.o
+    0x023d1068   0x000009b0   Data   RO          146    .ROMgraphics        speedfont8.o
+    0x023d1a18   0x000008bc   Data   RO          147    .ROMgraphics        speedfont9.o
+    0x023d22d4   0x00000004   PAD
+    0x023d22d8   0x00003b18   Data   RO          148    .ROMgraphics        needle_amp.o
+    0x023d5df0   0x00032640   Data   RO          149    .ROMgraphics        needle_speed.o
+
+
+
+  Load Region QSPI0_IGRAPH (Base: 0x02f00000, Size: 0x00000000, Max: 0x00100000, ABSOLUTE)
+
+    Execution Region IGRAPHICS (Base: 0x02f00000, Size: 0x00000000, Max: 0x00100000, ABSOLUTE)
+
+    **** No section assigned to this execution region ****
+
+
+
+  Load Region TCMA (Base: 0x00000040, Size: 0x00000000, Max: 0x00007fc0, ABSOLUTE)
+
+    Execution Region TCMA_EMPTY (Base: 0x00000040, Size: 0x00007fc0, Max: 0x00007fc0, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00000040   0x00007fc0   Zero   RW            1    TCMA_EMPTY.bss      anon$$obj.o
+
+
+
+  Load Region TCMB (Base: 0x00008000, Size: 0x00000000, Max: 0x00008000, ABSOLUTE)
+
+    Execution Region TCMB_EMPTY (Base: 0x00008000, Size: 0x00008000, Max: 0x00008000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00008000   0x00008000   Zero   RW            2    TCMB_EMPTY.bss      anon$$obj.o
+
+
+
+  Load Region GFXSRAM (Base: 0x00800000, Size: 0x00000000, Max: 0x00040000, ABSOLUTE)
+
+    Execution Region ARM_LIB_HEAP (Base: 0x00800000, Size: 0x00020000, Max: 0x00020000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00800000   0x00020000   Zero   RW            3    ARM_LIB_HEAP.bss    anon$$obj.o
+
+
+    Execution Region ARM_LIB_STACK (Base: 0x00820000, Size: 0x00020000, Max: 0x00020000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00820000   0x00020000   Zero   RW            4    ARM_LIB_STACK.bss   anon$$obj.o
+
+
+
+  Load Region HPMSRAM_ECC (Base: 0x00880000, Size: 0x00000000, Max: 0x00040000, ABSOLUTE)
+
+    Execution Region HPMSRAM_ECC_EMPTY (Base: 0x00880000, Size: 0x00040000, Max: 0x00040000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00880000   0x00040000   Zero   RW            5    HPMSRAM_ECC_EMPTY.bss  anon$$obj.o
+
+
+==============================================================================
+
+Image component sizes
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+         0          0        476          0          0          0   a0.o
+         0          0        572          0          0          0   a1.o
+         0          0        560          0          0          0   a10.o
+         0          0        316          0          0          0   a11.o
+         0          0        556          0          0          0   a12.o
+         0          0        476          0          0          0   a13.o
+         0          0        452          0          0          0   a14.o
+         0          0        520          0          0          0   a15.o
+         0          0        528          0          0          0   a16.o
+         0          0        320          0          0          0   a17.o
+         0          0        436          0          0          0   a18.o
+         0          0        392          0          0          0   a19.o
+         0          0        428          0          0          0   a2.o
+         0          0        468          0          0          0   a20.o
+         0          0        416          0          0          0   a21.o
+         0          0        528          0          0          0   a22.o
+         0          0        436          0          0          0   a23.o
+         0          0        468          0          0          0   a24.o
+         0          0        312          0          0          0   a25.o
+         0          0        584          0          0          0   a3.o
+         0          0        424          0          0          0   a4.o
+         0          0        440          0          0          0   a5.o
+         0          0        524          0          0          0   a6.o
+         0          0        560          0          0          0   a7.o
+         0          0        280          0          0          0   a8.o
+         0          0        340          0          0          0   a9.o
+         0          0        536          0          0          0   aa0.o
+         0          0        564          0          0          0   aa1.o
+         0          0        596          0          0          0   aa10.o
+         0          0        316          0          0          0   aa11.o
+         0          0        728          0          0          0   aa12.o
+         0          0        720          0          0          0   aa13.o
+         0          0        624          0          0          0   aa14.o
+         0          0        540          0          0          0   aa15.o
+         0          0        640          0          0          0   aa16.o
+         0          0        580          0          0          0   aa17.o
+         0          0        588          0          0          0   aa18.o
+         0          0        316          0          0          0   aa19.o
+         0          0        588          0          0          0   aa2.o
+         0          0        632          0          0          0   aa20.o
+         0          0        592          0          0          0   aa21.o
+         0          0        736          0          0          0   aa22.o
+         0          0        584          0          0          0   aa23.o
+         0          0        484          0          0          0   aa24.o
+         0          0        368          0          0          0   aa25.o
+         0          0        592          0          0          0   aa3.o
+         0          0        384          0          0          0   aa4.o
+         0          0        352          0          0          0   aa5.o
+         0          0        608          0          0          0   aa6.o
+         0          0        584          0          0          0   aa7.o
+         0          0        316          0          0          0   aa8.o
+         0          0        480          0          0          0   aa9.o
+         0          0      75392          0          0          0   dial_amp.o
+         0          0     776136          0          0          0   dial_soc.o
+         0          0     781452          0          0          0   dial_speed.o
+         0          0        636          0          0          0   disfont0.o
+         0          0        368          0          0          0   disfont1.o
+         0          0         68          0          0          0   disfont10.o
+         0          0        472          0          0          0   disfont2.o
+         0          0        484          0          0          0   disfont3.o
+         0          0        512          0          0          0   disfont4.o
+         0          0        432          0          0          0   disfont5.o
+         0          0        612          0          0          0   disfont6.o
+         0          0        376          0          0          0   disfont7.o
+         0          0        624          0          0          0   disfont8.o
+         0          0        612          0          0          0   disfont9.o
+         0          0      33032          0          0          0   door_d1.o
+         0          0      34516          0          0          0   door_d10.o
+         0          0      35640          0          0          0   door_d11.o
+         0          0      34924          0          0          0   door_d12.o
+         0          0      35768          0          0          0   door_d13.o
+         0          0      36020          0          0          0   door_d14.o
+         0          0      37860          0          0          0   door_d15.o
+         0          0      33340          0          0          0   door_d2.o
+         0          0      34232          0          0          0   door_d3.o
+         0          0      33528          0          0          0   door_d4.o
+         0          0      34328          0          0          0   door_d5.o
+         0          0      34684          0          0          0   door_d6.o
+         0          0      35500          0          0          0   door_d7.o
+         0          0      33560          0          0          0   door_d8.o
+         0          0      34444          0          0          0   door_d9.o
+         0          0      29088          0          0          0   err1.o
+         0          0      28560          0          0          0   err10.o
+         0          0      29952          0          0          0   err11.o
+         0          0      27456          0          0          0   err12.o
+         0          0      28288          0          0          0   err13.o
+         0          0      31616          0          0          0   err14.o
+         0          0      29120          0          0          0   err15.o
+         0          0      29232          0          0          0   err16.o
+         0          0      26796          0          0          0   err17.o
+         0          0      27608          0          0          0   err18.o
+         0          0      60736          0          0          0   err19.o
+         0          0      26664          0          0          0   err2.o
+         0          0      27472          0          0          0   err3.o
+         0          0      30704          0          0          0   err4.o
+         0          0      59568          0          0          0   err5.o
+         0          0      29376          0          0          0   err6.o
+         0          0      26928          0          0          0   err7.o
+         0          0      27744          0          0          0   err8.o
+         0          0      31008          0          0          0   err9.o
+         0          0       5120          0          0          0   lev_d.o
+         0          0       4800          0          0          0   lev_n.o
+         0          0       4800          0          0          0   lev_p.o
+         0          0       5440          0          0          0   lev_r.o
+         0          0       4800          0          0          0   lev_s.o
+         0          0      15128          0          0          0   needle_amp.o
+         0          0     206400          0          0          0   needle_speed.o
+         0          0       2448          0          0          0   speedfont0.o
+         0          0       1460          0          0          0   speedfont1.o
+         0          0       1572          0          0          0   speedfont2.o
+         0          0       1688          0          0          0   speedfont3.o
+         0          0       1928          0          0          0   speedfont4.o
+         0          0       1556          0          0          0   speedfont5.o
+         0          0       2232          0          0          0   speedfont6.o
+         0          0       1304          0          0          0   speedfont7.o
+         0          0       2480          0          0          0   speedfont8.o
+         0          0       2236          0          0          0   speedfont9.o
+         0          0       4800          0          0          0   sspic0.o
+         0          0       4104          0          0          0   sspic1.o
+         0          0       5676          0          0          0   sspic10.o
+         0          0       4992          0          0          0   sspic11.o
+         0          0       3432          0          0          0   sspic12.o
+         0          0       4524          0          0          0   sspic13.o
+         0          0       3712          0          0          0   sspic14.o
+         0          0       4256          0          0          0   sspic15.o
+         0          0       4212          0          0          0   sspic16.o
+         0          0       3496          0          0          0   sspic17.o
+         0          0       4292          0          0          0   sspic18.o
+         0          0       4096          0          0          0   sspic19.o
+         0          0       4408          0          0          0   sspic2.o
+         0          0       4592          0          0          0   sspic20.o
+         0          0       3472          0          0          0   sspic21.o
+         0          0       5704          0          0          0   sspic22.o
+         0          0       5160          0          0          0   sspic23.o
+         0          0       3072          0          0          0   sspic24.o
+         0          0       4640          0          0          0   sspic25.o
+         0          0       4256          0          0          0   sspic26.o
+         0          0       5032          0          0          0   sspic3.o
+         0          0       4988          0          0          0   sspic4.o
+         0          0       4960          0          0          0   sspic5.o
+         0          0       5600          0          0          0   sspic6.o
+         0          0       4960          0          0          0   sspic7.o
+         0          0       4320          0          0          0   sspic8.o
+         0          0       3900          0          0          0   sspic9.o
+
+    ----------------------------------------------------------------------
+         0          0    3179568          0     589760          0   Object Totals
+         0          0          0          0     589760          0   (incl. Generated)
+         0          0        192          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+         0          0          0          0          0          0   Library Totals
+         0          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+         0          0    3179568          0     589760          0   Grand Totals
+         0          0    3179568          0     589760          0   ELF Image Totals
+         0          0    3179568          0          0          0   ROM Totals
+
+==============================================================================
+
+    Total RO  Size (Code + RO Data)              3179568 (3105.05kB)
+    Total RW  Size (RW Data + ZI Data)            589760 ( 575.94kB)
+    Total ROM Size (Code + RO Data + RW Data)    3179568 (3105.05kB)
+
+==============================================================================
+

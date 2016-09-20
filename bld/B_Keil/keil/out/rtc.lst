@@ -1,0 +1,1748 @@
+L 1 "..\..\..\..\lldd\src\rtc.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : RTC Low-level source file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      :
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.10 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "rtc.h"
+L 1 "..\..\..\..\lldd\inc\rtc.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : RTC Low-level header file
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : RTC
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef RTC_LLDD_H
+N#define RTC_LLDD_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 25 "..\..\..\..\lldd\inc\rtc.h" 2
+N
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_RTC_H_REVISION     "$Revision: 1.11 $"
+N#define LLDD_RTC_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                    Macros                   *
+N**********************************************/
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+Ntypedef enum tag_rtc_page_e
+N{
+N  RTC_PAGE_0 = 0,  /* page 0 */
+N  RTC_PAGE_1 = 1   /* page 1 */
+N} rtc_page_e;
+N
+Ntypedef enum tag_rtc_enable_e
+N{
+N  RTC_DISABLE = 0,  /* disable */
+N  RTC_ENABLE  = 1   /* enable  */
+N} rtc_enable_e;
+N
+Ntypedef enum tag_rtc_adjust_set_e
+N{
+N  RTC_ADJUST_DONTCARE = 0,   /* Don’t care */
+N  RTC_ADJUST_REQUEST  = 1    /* Sets ADJUST request */
+N} rtc_adjust_set_e;
+N
+Ntypedef enum tag_rtc_adjust_status_e
+N{
+N  RTC_ADJSTAT_NO_REQUESTED = 0,  /* No ADJUST request */
+N  RTC_ADJSTAT_REQUESTED   = 1     /* ADJUST requested */
+N} rtc_adjust_status_e;
+N
+Ntypedef enum tag_rtc_alarm_reset_e
+N{
+N  RTC_ALARM_RESET_DONTCARE = 0,  /* Don’t care */
+N  RTC_ALARM_RESET_INIT   = 1     /* Initializes alarm registers (Minute Column, Hour Column,
+N                                    Day Column and Day of the week Column) as follows.
+N                                    Minute: 00, Hour: 00, Day: 01, Day of the week: Sunday */
+N} rtc_alarm_reset_e;
+N
+Ntypedef enum tag_rtc_timer_reset_e
+N{
+N  RTC_TIMER_RESET_DONTCARE = 0,  /* Don’t care */
+N  RTC_TIMER_RESET_ACTIVE   = 1   /* Resets sec counter */
+N} rtc_timer_reset_e;
+N
+Ntypedef enum tag_rtc_config_set_e
+N{
+N  RTC_CFG_DONTCARE      = 0,  /* Don’t care   */
+N  RTC_CFG_DATA_UPDATE   = 1   /* Data Update  */
+N} rtc_config_set_e;
+N
+Ntypedef enum tag_rtc_config_status_e
+N{
+N  RTC_CFGSTAT_READY      = 0,  /* HW is ready */
+N  RTC_CFGSTAT_BUSY       = 1   /* HW is busy  */
+N} rtc_config_status_e;
+N
+N
+Ntypedef enum tag_rtc_init_staus_e
+N{
+N  RTC_INITSTAT_NOT_INITIAL     = 0,  /* Not initial status (Never Power down) */
+N  RTC_INITSTAT_INITIAL         = 1   /* Initial status (Power On Status)      */
+N} rtc_init_staus_e;
+N
+Ntypedef enum tag_rtc_clock_source_e
+N{
+N  RTC_CLK_32KHZ      = 0x0,    /* selects 32Khz as clock source, */
+N  RTC_CLK_10MHZ      = 0x1,    /* selects 10Mhz as clock source, */
+N  RTC_CLK_100KHZ     = 0x2     /* selects 100Khz as clock source */
+N} rtc_clock_source_e;
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N/* RTC time & date structure */
+Ntypedef struct tag_rtc_reset_cfg_st
+N{
+N    rtc_enable_e   eEn_1HzOpEn;
+N    rtc_enable_e   eEn_2HzOpEn;
+N    rtc_enable_e   eEn_4HzOpEn;
+N    rtc_enable_e   eEn_8HzOpEn;
+N    rtc_enable_e   eEn_16HzOpEn;
+N} rtc_reset_cfg_st;
+N
+N/* RTC time & date structure */
+Ntypedef struct tag_rtc_time_date_st
+N{
+N    uint8_t  u8Sec;          /* 6 bits */
+N    uint8_t  u8Min;          /* 7 bits */
+N    uint8_t  u8Hour;         /* 6 bits */
+N    
+N    uint8_t  u8DayOfWeek;    /* 3 bits */
+N    uint8_t  u8DateOfMonth;  /* 6 bits */
+N    uint8_t  u8Month;        /* 8 bits */
+N    uint8_t  u8Year;         /* 8 bits */
+N} rtc_time_date_st;
+N
+N
+N/*********************************************/
+N
+N/**********************************************
+N*            Forward declarations             *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *                pau8IORevision     - pointer to IO header revision string
+N *                pau8IOTag          - pointer to IO header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vRTC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_SelectPage
+N *
+N * Purpose:       Select RTC page
+N *
+N * Inputs:        eSelectPage: To be selected page
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_SelectPage(rtc_page_e eSelectPage);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_EnableAlarm
+N *
+N * Purpose:       Alarm enable setting
+N *
+N * Inputs:        eEn: enable/disable Alarm
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_EnableAlarm(rtc_enable_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_EnableClock
+N *
+N * Purpose:       Clock enable settings
+N *
+N * Inputs:        eEn: enable/disable clock
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_EnableClock(rtc_enable_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_SetAdjust
+N *
+N * Purpose:       Adjust setting
+N *
+N * Inputs:        eAdj: setting
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_SetAdjust(rtc_adjust_set_e eAdj);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_EnableInterrupt
+N *
+N * Purpose:       Interrupt enable setting
+N *
+N * Inputs:        eEn: enable interrupt
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_EnableInterrupt(rtc_enable_e eEn);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      eRTC_GetAdjust
+N *
+N * Purpose:       Read Adjust setting
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: adjust setting
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nrtc_adjust_status_e eRTC_GetAdjust(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boRTC_SetTimeAndDate
+N *
+N * Purpose:       Sets time and Date
+N *
+N * Inputs:        pstTimeAndDate: Pointer to Time and Date struct
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE:  Ok
+N *                C_FALSE: NULL pointer
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nbool_t boRTC_SetTimeAndDate(const rtc_time_date_st *pstTimeAndDate);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boRTC_GetTimeAndDate
+N *
+N * Purpose:       Gets time and Date
+N *
+N * Inputs:        pstTimeAndDate: Pointer to Time and Date struct
+N *
+N * Outputs:       pstTimeAndDate: Pointer to Time and Date struct
+N *
+N * Return Values: C_TRUE:  Ok
+N *                C_FALSE: NULL pointer
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nbool_t boRTC_GetTimeAndDate(rtc_time_date_st *pstTimeAndDate);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boRTC_SetConfigReset
+N *
+N * Purpose:       Set configuration of rtc reset registers
+N *
+N * Inputs:        pResetCfg:   pointer to config structure
+N *
+N * Outputs:       none
+N *
+N * Return Values: C_TRUE/C_FALSE if pointer NULL
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nbool_t boRTC_SetConfigReset(const rtc_reset_cfg_st* const pResetCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      boRTC_GetConfigReset
+N *
+N * Purpose:       Get configuration of rtc reset registers
+N *
+N * Inputs:        pResetCfg:   pointer to config structure
+N *
+N * Outputs:       pResetCfg:   pointer to config structure
+N *
+N * Return Values: C_TRUE/C_FALSE if pointer NULL
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nbool_t boRTC_GetConfigReset(rtc_reset_cfg_st* const pResetCfg);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_ResetTimer
+N *
+N * Purpose:       resets Timer
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_ResetTimer(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_ResetAlarm
+N *
+N * Purpose:       resets Alarm:
+N *                  Initializes alarm registers (Minute Column, Hour Column,
+N *                  Day Column and Day of the week Column) as follows.
+N *                  Minute: 00, Hour: 00, Day: 01, Day of the week: Sunday 
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_ResetAlarm(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_SetCalibIntvPeriod
+N *
+N * Purpose:       Set Calibration Interval Period .
+N *
+N * Inputs:        u8CalibIntvPeriod:  Calibration Interval Period
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_SetCalibIntvPeriod(uint8_t u8CalibIntvPeriod);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_SetCalibIntvValue
+N *
+N * Purpose:       Set Calibration Interval Value 
+N *
+N * Inputs:        u8CalibIntvValue:  Calibration Interval Value
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_SetCalibIntvValue(uint8_t u8CalibIntvValue);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_SetClockSource
+N *
+N * Purpose:       RTC clock source selection.  (32 KHZ, 10MHZ, 100MHZ)
+N *
+N * Inputs:        eClkSrc:  clock source
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_SetClockSource(rtc_clock_source_e eClkSrc);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vRTC_EnableCalibration
+N *
+N * Purpose:       Enable Calibration
+N *
+N * Inputs:        eEn: enable/disable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid vRTC_EnableCalibration(rtc_enable_e eEn);
+N
+N
+N#endif /* RTC_LLDD_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\rtc.c" 2
+N#include "rtc_io.h"
+L 1 "..\..\..\..\lldd\hdr\rtc_io.h" 1
+N
+N/*##########################################################################    
+N/  AUTOMATICALLY GENERATED FROM A REG_XML-FILE 
+N/  Module                       : RTC 
+N/  Date of creation (y-m-d:time): 2015-02-20+01:00  :  10:30:26.483+01:00
+N/  Excel2XML Tool ver.          : XLS2XML Converter 2.6.2
+N/  Stylesheet  ver              : $Revision: 1.8 $ 
+N/  Excel Sheet ver.             : vv1.2
+N/  Excel Sheet date             : 2015-Feb-19
+N/  Excel Sheet author           : ALN
+N/##########################################################################*/
+N
+N/****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Centre (ELDEC)
+N*****************************************************************************
+N*   DESCRIPTION : RTC low level driver io-header file
+N*****************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : 
+N*   LIBRARIES   :
+N*****************************************************************************
+N*   VERSION     : $Revision: 1.8 $ 
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary and Confidential
+N*****************************************************************************/
+N
+N
+N#ifndef RTCIO_H
+N#define RTCIO_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N/* Following include file(s) needed for proper operation: */
+N#include "captypes.h"   /* Core specific primitive type definitions */ 
+N     
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 230    /* Rule 6.4 [R] : nonstandard type for a bit field */
+S  #pragma ghs nowarning 1840   /* Rule 5.7 [A] : identifier reused from declaration of entity-kind "entity" */
+N#endif
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N#define LLDD_RTC_IO_H_REVISION     "$Revision: 1.8 $"
+N#define LLDD_RTC_IO_H_TAG          "$Name: LLDD_1_6 $"     
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCSECR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001000                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCSECR_REG__       0xC0001000U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   SEC_DATA	:7; 	 /* 0..6  bit(s) R/W */ 
+N  uint8_t   	:1; 	 /* 7..7  bit(s) R */                    
+N} RTCSECR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCSECR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCSECR()     ((volatile RTCSECR_bit_view_st *)\
+N(RTCSECR_REG__ ))
+X#define pst_bitRTCSECR()     ((volatile RTCSECR_bit_view_st *)(RTCSECR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCSECR()     ((volatile u8RTCSECR_byte_view *)\
+N(RTCSECR_REG__ ))
+X#define pu8RTCSECR()     ((volatile u8RTCSECR_byte_view *)(RTCSECR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCSECR_SEC_DATA() (pst_bitRTCSECR() -> SEC_DATA)
+N#define vSetRTCSECR_SEC_DATA(ParValue)  (pst_bitRTCSECR() -> SEC_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCSECR(ParValue) (*pu8RTCSECR() = (ParValue))
+N#define u8GetRTCSECR() (*pu8RTCSECR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCMINR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001001                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCMINR_REG__       0xC0001001U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   MIN_DATA	:7; 	 /* 0..6  bit(s) R/W */ 
+N  uint8_t   	:1; 	 /* 7..7  bit(s) R */                    
+N} RTCMINR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCMINR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCMINR()     ((volatile RTCMINR_bit_view_st *)\
+N(RTCMINR_REG__ ))
+X#define pst_bitRTCMINR()     ((volatile RTCMINR_bit_view_st *)(RTCMINR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCMINR()     ((volatile u8RTCMINR_byte_view *)\
+N(RTCMINR_REG__ ))
+X#define pu8RTCMINR()     ((volatile u8RTCMINR_byte_view *)(RTCMINR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCMINR_MIN_DATA() (pst_bitRTCMINR() -> MIN_DATA)
+N#define vSetRTCMINR_MIN_DATA(ParValue)  (pst_bitRTCMINR() -> MIN_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCMINR(ParValue) (*pu8RTCMINR() = (ParValue))
+N#define u8GetRTCMINR() (*pu8RTCMINR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCHOURR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001002                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCHOURR_REG__       0xC0001002U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   HOUR_DATA	:6; 	 /* 0..5  bit(s) R/W */ 
+N  uint8_t   	:2; 	 /* 6..7  bit(s) R */                    
+N} RTCHOURR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCHOURR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCHOURR()     ((volatile RTCHOURR_bit_view_st *)\
+N(RTCHOURR_REG__ ))
+X#define pst_bitRTCHOURR()     ((volatile RTCHOURR_bit_view_st *)(RTCHOURR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCHOURR()     ((volatile u8RTCHOURR_byte_view *)\
+N(RTCHOURR_REG__ ))
+X#define pu8RTCHOURR()     ((volatile u8RTCHOURR_byte_view *)(RTCHOURR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCHOURR_HOUR_DATA() (pst_bitRTCHOURR() -> HOUR_DATA)
+N#define vSetRTCHOURR_HOUR_DATA(ParValue)  (pst_bitRTCHOURR() -> HOUR_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCHOURR(ParValue) (*pu8RTCHOURR() = (ParValue))
+N#define u8GetRTCHOURR() (*pu8RTCHOURR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCDAYR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001004                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCDAYR_REG__       0xC0001004U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   DAY_DATA	:3; 	 /* 0..2  bit(s) R/W */ 
+N  uint8_t   	:5; 	 /* 3..7  bit(s) R */                    
+N} RTCDAYR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCDAYR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCDAYR()     ((volatile RTCDAYR_bit_view_st *)\
+N(RTCDAYR_REG__ ))
+X#define pst_bitRTCDAYR()     ((volatile RTCDAYR_bit_view_st *)(RTCDAYR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCDAYR()     ((volatile u8RTCDAYR_byte_view *)\
+N(RTCDAYR_REG__ ))
+X#define pu8RTCDAYR()     ((volatile u8RTCDAYR_byte_view *)(RTCDAYR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCDAYR_DAY_DATA() (pst_bitRTCDAYR() -> DAY_DATA)
+N#define vSetRTCDAYR_DAY_DATA(ParValue)  (pst_bitRTCDAYR() -> DAY_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCDAYR(ParValue) (*pu8RTCDAYR() = (ParValue))
+N#define u8GetRTCDAYR() (*pu8RTCDAYR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCDATER                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001005                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCDATER_REG__       0xC0001005U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   DATE_DATA	:6; 	 /* 0..5  bit(s) R/W */ 
+N  uint8_t   	:2; 	 /* 6..7  bit(s) R */                    
+N} RTCDATER_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCDATER_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCDATER()     ((volatile RTCDATER_bit_view_st *)\
+N(RTCDATER_REG__ ))
+X#define pst_bitRTCDATER()     ((volatile RTCDATER_bit_view_st *)(RTCDATER_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCDATER()     ((volatile u8RTCDATER_byte_view *)\
+N(RTCDATER_REG__ ))
+X#define pu8RTCDATER()     ((volatile u8RTCDATER_byte_view *)(RTCDATER_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCDATER_DATE_DATA() (pst_bitRTCDATER() -> DATE_DATA)
+N#define vSetRTCDATER_DATE_DATA(ParValue)  (pst_bitRTCDATER() -> DATE_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCDATER(ParValue) (*pu8RTCDATER() = (ParValue))
+N#define u8GetRTCDATER() (*pu8RTCDATER() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCMONTHR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001006                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCMONTHR_REG__       0xC0001006U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   MON_DATA	:8; 	 /* 0..7  bit(s) R/W */                    
+N} RTCMONTHR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCMONTHR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCMONTHR()     ((volatile RTCMONTHR_bit_view_st *)\
+N(RTCMONTHR_REG__ ))
+X#define pst_bitRTCMONTHR()     ((volatile RTCMONTHR_bit_view_st *)(RTCMONTHR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCMONTHR()     ((volatile u8RTCMONTHR_byte_view *)\
+N(RTCMONTHR_REG__ ))
+X#define pu8RTCMONTHR()     ((volatile u8RTCMONTHR_byte_view *)(RTCMONTHR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCMONTHR_MON_DATA() (pst_bitRTCMONTHR() -> MON_DATA)
+N#define vSetRTCMONTHR_MON_DATA(ParValue)  (pst_bitRTCMONTHR() -> MON_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCMONTHR(ParValue) (*pu8RTCMONTHR() = (ParValue))
+N#define u8GetRTCMONTHR() (*pu8RTCMONTHR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCYEARR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001007                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCYEARR_REG__       0xC0001007U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   YEAR_DATA	:8; 	 /* 0..7  bit(s) R/W */                    
+N} RTCYEARR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCYEARR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCYEARR()     ((volatile RTCYEARR_bit_view_st *)\
+N(RTCYEARR_REG__ ))
+X#define pst_bitRTCYEARR()     ((volatile RTCYEARR_bit_view_st *)(RTCYEARR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCYEARR()     ((volatile u8RTCYEARR_byte_view *)\
+N(RTCYEARR_REG__ ))
+X#define pu8RTCYEARR()     ((volatile u8RTCYEARR_byte_view *)(RTCYEARR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCYEARR_YEAR_DATA() (pst_bitRTCYEARR() -> YEAR_DATA)
+N#define vSetRTCYEARR_YEAR_DATA(ParValue)  (pst_bitRTCYEARR() -> YEAR_DATA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCYEARR(ParValue) (*pu8RTCYEARR() = (ParValue))
+N#define u8GetRTCYEARR() (*pu8RTCYEARR() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCPAGER                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001008                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCPAGER_REG__       0xC0001008U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   PAGE	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   	:1; 	 /* 1..1  bit(s) R */
+N  uint8_t   ENAALM	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   ENATMR	:1; 	 /* 3..3  bit(s) R/W */
+N  uint8_t   ADJUST	:1; 	 /* 4..4  bit(s) R/W */
+N  uint8_t   	:2; 	 /* 5..6  bit(s) R */ 
+N  uint8_t   INTENA	:1; 	 /* 7..7  bit(s) R/W */                    
+N} RTCPAGER_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCPAGER_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCPAGER()     ((volatile RTCPAGER_bit_view_st *)\
+N(RTCPAGER_REG__ ))
+X#define pst_bitRTCPAGER()     ((volatile RTCPAGER_bit_view_st *)(RTCPAGER_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCPAGER()     ((volatile u8RTCPAGER_byte_view *)\
+N(RTCPAGER_REG__ ))
+X#define pu8RTCPAGER()     ((volatile u8RTCPAGER_byte_view *)(RTCPAGER_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCPAGER_PAGE() (pst_bitRTCPAGER() -> PAGE)
+N#define vSetRTCPAGER_PAGE(ParValue)  (pst_bitRTCPAGER() -> PAGE=(ParValue))
+N#define biGetRTCPAGER_ENAALM() (pst_bitRTCPAGER() -> ENAALM)
+N#define vSetRTCPAGER_ENAALM(ParValue)  (pst_bitRTCPAGER() -> ENAALM=(ParValue))
+N#define biGetRTCPAGER_ENATMR() (pst_bitRTCPAGER() -> ENATMR)
+N#define vSetRTCPAGER_ENATMR(ParValue)  (pst_bitRTCPAGER() -> ENATMR=(ParValue))
+N#define biGetRTCPAGER_ADJUST() (pst_bitRTCPAGER() -> ADJUST)
+N#define vSetRTCPAGER_ADJUST(ParValue)  (pst_bitRTCPAGER() -> ADJUST=(ParValue))
+N#define biGetRTCPAGER_INTENA() (pst_bitRTCPAGER() -> INTENA)
+N#define vSetRTCPAGER_INTENA(ParValue)  (pst_bitRTCPAGER() -> INTENA=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCPAGER(ParValue) (*pu8RTCPAGER() = (ParValue))
+N#define u8GetRTCPAGER() (*pu8RTCPAGER() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCRESTR                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC000100C                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCRESTR_REG__       0xC000100CU
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   DIS8HZ	:1; 	 /* 0..0  bit(s) R/W */
+N  uint8_t   DIS4HZ	:1; 	 /* 1..1  bit(s) R/W */
+N  uint8_t   DIS2HZ	:1; 	 /* 2..2  bit(s) R/W */
+N  uint8_t   	:1; 	 /* 3..3  bit(s) W */
+N  uint8_t   RSTALM	:1; 	 /* 4..4  bit(s) R/W */
+N  uint8_t   RSTTMR	:1; 	 /* 5..5  bit(s) R/W */
+N  uint8_t   DIS16HZ	:1; 	 /* 6..6  bit(s) R/W */ 
+N  uint8_t   DIS1HZ	:1; 	 /* 7..7  bit(s) R/W */                    
+N} RTCRESTR_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCRESTR_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCRESTR()     ((volatile RTCRESTR_bit_view_st *)\
+N(RTCRESTR_REG__ ))
+X#define pst_bitRTCRESTR()     ((volatile RTCRESTR_bit_view_st *)(RTCRESTR_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCRESTR()     ((volatile u8RTCRESTR_byte_view *)\
+N(RTCRESTR_REG__ ))
+X#define pu8RTCRESTR()     ((volatile u8RTCRESTR_byte_view *)(RTCRESTR_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCRESTR_DIS8HZ() (pst_bitRTCRESTR() -> DIS8HZ)
+N#define vSetRTCRESTR_DIS8HZ(ParValue)  (pst_bitRTCRESTR() -> DIS8HZ=(ParValue))
+N#define biGetRTCRESTR_DIS4HZ() (pst_bitRTCRESTR() -> DIS4HZ)
+N#define vSetRTCRESTR_DIS4HZ(ParValue)  (pst_bitRTCRESTR() -> DIS4HZ=(ParValue))
+N#define biGetRTCRESTR_DIS2HZ() (pst_bitRTCRESTR() -> DIS2HZ)
+N#define vSetRTCRESTR_DIS2HZ(ParValue)  (pst_bitRTCRESTR() -> DIS2HZ=(ParValue))
+N#define biGetRTCRESTR_RSTALM() (pst_bitRTCRESTR() -> RSTALM)
+N#define vSetRTCRESTR_RSTALM(ParValue)  (pst_bitRTCRESTR() -> RSTALM=(ParValue))
+N#define biGetRTCRESTR_RSTTMR() (pst_bitRTCRESTR() -> RSTTMR)
+N#define vSetRTCRESTR_RSTTMR(ParValue)  (pst_bitRTCRESTR() -> RSTTMR=(ParValue))
+N#define biGetRTCRESTR_DIS16HZ() (pst_bitRTCRESTR() -> DIS16HZ)
+N#define vSetRTCRESTR_DIS16HZ(ParValue)  (pst_bitRTCRESTR() -> DIS16HZ=(ParValue))
+N#define biGetRTCRESTR_DIS1HZ() (pst_bitRTCRESTR() -> DIS1HZ)
+N#define vSetRTCRESTR_DIS1HZ(ParValue)  (pst_bitRTCRESTR() -> DIS1HZ=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCRESTR(ParValue) (*pu8RTCRESTR() = (ParValue))
+N#define u8GetRTCRESTR() (*pu8RTCRESTR() )
+N    
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCCALIBCTRL0                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001010                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCCALIBCTRL0_REG__       0xC0001010U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{ 
+N  uint8_t   CAL_INTRVL	:8; 	 /* 0..7  bit(s) R/W */                    
+N} RTCCALIBCTRL0_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCCALIBCTRL0_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCCALIBCTRL0()     ((volatile RTCCALIBCTRL0_bit_view_st *)\
+N(RTCCALIBCTRL0_REG__ ))
+X#define pst_bitRTCCALIBCTRL0()     ((volatile RTCCALIBCTRL0_bit_view_st *)(RTCCALIBCTRL0_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCCALIBCTRL0()     ((volatile u8RTCCALIBCTRL0_byte_view *)\
+N(RTCCALIBCTRL0_REG__ ))
+X#define pu8RTCCALIBCTRL0()     ((volatile u8RTCCALIBCTRL0_byte_view *)(RTCCALIBCTRL0_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCCALIBCTRL0_CAL_INTRVL() (pst_bitRTCCALIBCTRL0() -> CAL_INTRVL)
+N#define vSetRTCCALIBCTRL0_CAL_INTRVL(ParValue)  (pst_bitRTCCALIBCTRL0() -> CAL_INTRVL=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCCALIBCTRL0(ParValue) (*pu8RTCCALIBCTRL0() = (ParValue))
+N#define u8GetRTCCALIBCTRL0() (*pu8RTCCALIBCTRL0() )
+N                 
+N    
+N/****************************************************************************   
+N*                                                                               
+N*       REGISTER: RTCCALIBCTRL1                                
+N*       SIZE    : 8-bits                        
+N*       ADDRESS : 0xC0001011                             
+N*       ACCESS  : 8, BIT-level                       
+N*                                                                               
+N*****************************************************************************/
+N/* Assign Register address: */
+N#define RTCCALIBCTRL1_REG__       0xC0001011U
+N     
+N/************************       STRUCTURES        ***************************/
+N         
+N        
+N/* BIT View */
+Ntypedef struct{
+N  uint8_t   CAL_INTRVL	:5; 	 /* 0..4  bit(s) R/W */
+N  uint8_t   CLK_RTC_SEL	:2; 	 /* 5..6  bit(s) R/W */ 
+N  uint8_t   CAL_ENB	:1; 	 /* 7..7  bit(s) R/W */                    
+N} RTCCALIBCTRL1_bit_view_st;
+N        
+N
+N/* BYTE View */
+Ntypedef uint8_t u8RTCCALIBCTRL1_byte_view;
+N                 
+N
+N
+N/************************     ACCESS POINTERS    ****************************/
+N        
+N/* Pointer to BIT-struct */
+N#define pst_bitRTCCALIBCTRL1()     ((volatile RTCCALIBCTRL1_bit_view_st *)\
+N(RTCCALIBCTRL1_REG__ ))
+X#define pst_bitRTCCALIBCTRL1()     ((volatile RTCCALIBCTRL1_bit_view_st *)(RTCCALIBCTRL1_REG__ ))
+N        
+N/* Pointer to BYTE  */
+N#define pu8RTCCALIBCTRL1()     ((volatile u8RTCCALIBCTRL1_byte_view *)\
+N(RTCCALIBCTRL1_REG__ ))
+X#define pu8RTCCALIBCTRL1()     ((volatile u8RTCCALIBCTRL1_byte_view *)(RTCCALIBCTRL1_REG__ ))
+N                 
+N
+N/************************ REGISTER ACCESS MACROS ****************************/
+N            
+N/* ACCESS MACROS - ATTENTION: REGISTER SHADOW TECHNIQUE MIGHT BE APPLIED */
+N/* Bit-struct access */
+N#define biGetRTCCALIBCTRL1_CAL_INTRVL() (pst_bitRTCCALIBCTRL1() -> CAL_INTRVL)
+N#define vSetRTCCALIBCTRL1_CAL_INTRVL(ParValue)  (pst_bitRTCCALIBCTRL1() -> CAL_INTRVL=(ParValue))
+N#define biGetRTCCALIBCTRL1_CLK_RTC_SEL() (pst_bitRTCCALIBCTRL1() -> CLK_RTC_SEL)
+N#define vSetRTCCALIBCTRL1_CLK_RTC_SEL(ParValue)  (pst_bitRTCCALIBCTRL1() -> CLK_RTC_SEL=(ParValue))
+N#define biGetRTCCALIBCTRL1_CAL_ENB() (pst_bitRTCCALIBCTRL1() -> CAL_ENB)
+N#define vSetRTCCALIBCTRL1_CAL_ENB(ParValue)  (pst_bitRTCCALIBCTRL1() -> CAL_ENB=(ParValue))
+N            
+N/* byte access */
+N#define vSetRTCCALIBCTRL1(ParValue) (*pu8RTCCALIBCTRL1() = (ParValue))
+N#define u8GetRTCCALIBCTRL1() (*pu8RTCCALIBCTRL1() )
+N            
+N/*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 230 / 6.4 - bitwise operation may not be performed on signed integer types
+N** | CONS.  : allow
+N** | REASON : to use macros generated by converter tool 
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N    
+N
+N#endif /* RTCIO_H */ 
+N    
+N/************************** BEGIN of DISCLAIMER   ************************* 
+N
+N- TOSHIBA is continually working to improve the quality and reliability of 
+N  its products. Nevertheless, semiconductor devices in general can 
+N  malfunction or fail due to their inherent electrical sensitivity and  
+N  vulnerability to physical stress. It is the responsibility of the buyer, 
+N  when utilizing TOSHIBA products, to comply with the standards of safety 
+N  in making a safe design for the entire system, and to avoid situations in 
+N  which a malfunction or failure of such TOSHIBA products could cause loss of 
+N  human life, bodily injury or damage to property. 
+N  
+N  In developing your designs, please ensure that TOSHIBA products are used 
+N  within specified operating ranges as set forth in the most recent TOSHIBA 
+N  products specifications. 
+N  Also, please keep in mind the precautions and conditions set forth in the 
+N  Handling Guide for Semiconductor Devices, or 
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in 
+N  general electronics applications (computer, personal equipment, office 
+N  equipment, measuring equipment, industrial robotics, domestic appliances,
+N  etc.). 
+N  These Toshiba products are neither intended nor warranted for usage in 
+N  equipment that requires extraordinarily high quality and/or reliability or 
+N  a malfunction or failure of which may cause loss of human life or bodily 
+N  injury (Unintended Usage). Unintended Usage include atomic energy control 
+N  instruments, airplane or spaceship instruments, transportation instruments, 
+N  traffic signal instruments, combustion control instruments, medical 
+N  instruments, all types of safety devices, etc.. 
+N  Unintended Usage of Toshiba products listed in this document shall be 
+N  made at the customers own risk. 
+N
+N- Toshiba assumes no liability for any damage or losses (including but not 
+N  limited to, loss of business profit,business interruption, loss of business 
+N  information,and other pecuniary losses) occurring 
+N  from the use of, or inability to use, this product. 
+N
+N- The products described in this document are subject to the foreign exchange 
+N  and foreign trade laws. 
+N
+N- The products described in this document contain components made in the 
+N  United States and subject to export control of the U.S. authorities. 
+N  Diversion contrary to the U.S. law is prohibited. 
+N
+N- The information contained herein is presented only as a guide for the 
+N  applications of our products. 
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements 
+N  of intellectual property or other rights of the third parties which may 
+N  result from its use.  
+N  No license is granted by implication or otherwise under any intellectual 
+N  property or other rights of TOSHIBA CORPORATION or others. 
+N
+N- The information contained herein is subject to change without notice. 
+N
+N****************************  END of DISCLAIMER ****************************/ 
+N
+L 24 "..\..\..\..\lldd\src\rtc.c" 2
+N/*********************************************/
+N
+N/*********************************************
+N*           Disable Misra Warnings/Rules     *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1834  /* Rule 11.3 [A] : disable casting error (used for result of i/o header amcros) */
+S  #pragma ghs nowarning 1877  /* Rule 11-3 [A] : cast of 0 from type "type" to type "type" not allowed */
+N#endif
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_RTC_C_REVISION     "$Revision: 1.10 $"
+N#define LLDD_RTC_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/
+N
+Nstatic uint8_t au8LLDD_RTC_C_REVISION[]        = LLDD_RTC_C_REVISION;
+Xstatic uint8_t au8LLDD_RTC_C_REVISION[]        = "$Revision: 1.10 $";
+Nstatic uint8_t au8LLDD_RTC_C_TAG[]             = LLDD_RTC_C_TAG;
+Xstatic uint8_t au8LLDD_RTC_C_TAG[]             = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_RTC_H_REVISION[]        = LLDD_RTC_H_REVISION;
+Xstatic uint8_t au8LLDD_RTC_H_REVISION[]        = "$Revision: 1.11 $";
+Nstatic uint8_t au8LLDD_RTC_H_TAG[]             = LLDD_RTC_H_TAG;
+Xstatic uint8_t au8LLDD_RTC_H_TAG[]             = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_RTC_IO_H_REVISION[]     = LLDD_RTC_IO_H_REVISION;
+Xstatic uint8_t au8LLDD_RTC_IO_H_REVISION[]     = "$Revision: 1.8 $";
+Nstatic uint8_t au8LLDD_RTC_IO_H_TAG[]          = LLDD_RTC_IO_H_TAG;
+Xstatic uint8_t au8LLDD_RTC_IO_H_TAG[]          = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Function definition             *
+N*********************************************/
+N
+N/****************************************************************************/
+Nvoid vRTC_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                     uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag,
+N                     uint8_t** pau8IORevision, uint8_t** pau8IOTag)
+N{
+N    *pau8ModuleRevision = &au8LLDD_RTC_C_REVISION[0];
+N    *pau8ModuleTag      = &au8LLDD_RTC_C_TAG[0];
+N    *pau8HeaderRevision = &au8LLDD_RTC_H_REVISION[0];
+N    *pau8HeaderTag      = &au8LLDD_RTC_H_TAG[0];
+N    *pau8IORevision     = &au8LLDD_RTC_IO_H_REVISION[0];
+N    *pau8IOTag          = &au8LLDD_RTC_IO_H_TAG[0];    
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_SelectPage(rtc_page_e eSelectPage)
+N{
+N    vSetRTCPAGER_PAGE((uint8_t)eSelectPage);
+X    (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> PAGE=((uint8_t)eSelectPage));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_EnableAlarm(rtc_enable_e eEn)
+N{
+N    vSetRTCPAGER_ENAALM((uint8_t)eEn);
+X    (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> ENAALM=((uint8_t)eEn));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_EnableClock(rtc_enable_e eEn)
+N{
+N    vSetRTCPAGER_ENATMR((uint8_t)eEn);
+X    (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> ENATMR=((uint8_t)eEn));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_SetAdjust(rtc_adjust_set_e eAdj)
+N{
+N    vSetRTCPAGER_ADJUST((uint8_t)eAdj);
+X    (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> ADJUST=((uint8_t)eAdj));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_EnableInterrupt(rtc_enable_e eEn)
+N{
+N    vSetRTCPAGER_INTENA((uint8_t)eEn);
+X    (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> INTENA=((uint8_t)eEn));
+N}
+N
+N/****************************************************************************/
+Nrtc_adjust_status_e eRTC_GetAdjust(void)
+N{
+N    rtc_adjust_status_e eResult;
+N    
+N    eResult = (rtc_adjust_status_e) biGetRTCPAGER_ADJUST();
+X    eResult = (rtc_adjust_status_e) (((volatile RTCPAGER_bit_view_st *)(0xC0001008U )) -> ADJUST);
+N    return eResult;
+N}
+N
+N/****************************************************************************/
+Nbool_t boRTC_SetTimeAndDate(const rtc_time_date_st *pstTimeAndDate)
+N{
+N    bool_t boResult = C_TRUE;
+X    bool_t boResult = (1);
+N    
+N    if ( 0x00 != pstTimeAndDate)
+N    {
+N        /* Set time: */
+N        vSetRTCSECR_SEC_DATA(pstTimeAndDate->u8Sec);
+X        (((volatile RTCSECR_bit_view_st *)(0xC0001000U )) -> SEC_DATA=(pstTimeAndDate ->u8Sec));
+N        vSetRTCMINR_MIN_DATA(pstTimeAndDate->u8Min);
+X        (((volatile RTCMINR_bit_view_st *)(0xC0001001U )) -> MIN_DATA=(pstTimeAndDate ->u8Min));
+N        vSetRTCHOURR_HOUR_DATA(pstTimeAndDate->u8Hour);
+X        (((volatile RTCHOURR_bit_view_st *)(0xC0001002U )) -> HOUR_DATA=(pstTimeAndDate ->u8Hour));
+N
+N        /* Set date: */
+N        vSetRTCDAYR_DAY_DATA(pstTimeAndDate->u8DayOfWeek);
+X        (((volatile RTCDAYR_bit_view_st *)(0xC0001004U )) -> DAY_DATA=(pstTimeAndDate ->u8DayOfWeek));
+N        vSetRTCDATER_DATE_DATA(pstTimeAndDate->u8DateOfMonth);
+X        (((volatile RTCDATER_bit_view_st *)(0xC0001005U )) -> DATE_DATA=(pstTimeAndDate ->u8DateOfMonth));
+N        vSetRTCMONTHR_MON_DATA(pstTimeAndDate->u8Month);
+X        (((volatile RTCMONTHR_bit_view_st *)(0xC0001006U )) -> MON_DATA=(pstTimeAndDate ->u8Month));
+N        vSetRTCYEARR_YEAR_DATA(pstTimeAndDate->u8Year);
+X        (((volatile RTCYEARR_bit_view_st *)(0xC0001007U )) -> YEAR_DATA=(pstTimeAndDate ->u8Year));
+N    }
+N    else
+N    {
+N        boResult = C_FALSE;
+X        boResult = (0);
+N    }
+N
+N    return boResult;
+N}
+N/****************************************************************************/
+Nbool_t boRTC_GetTimeAndDate(rtc_time_date_st *pstTimeAndDate)
+N{
+N    bool_t boResult = C_TRUE;
+X    bool_t boResult = (1);
+N    
+N    if ( 0x00 != pstTimeAndDate)
+N    {
+N        /* read time: */
+N        pstTimeAndDate->u8Sec  = biGetRTCSECR_SEC_DATA();
+X        pstTimeAndDate->u8Sec  = (((volatile RTCSECR_bit_view_st *)(0xC0001000U )) -> SEC_DATA);
+N        pstTimeAndDate->u8Min  = biGetRTCMINR_MIN_DATA();
+X        pstTimeAndDate->u8Min  = (((volatile RTCMINR_bit_view_st *)(0xC0001001U )) -> MIN_DATA);
+N        pstTimeAndDate->u8Hour = biGetRTCHOURR_HOUR_DATA();
+X        pstTimeAndDate->u8Hour = (((volatile RTCHOURR_bit_view_st *)(0xC0001002U )) -> HOUR_DATA);
+N
+N        /* read date: */
+N        pstTimeAndDate->u8DayOfWeek   = biGetRTCDAYR_DAY_DATA();
+X        pstTimeAndDate->u8DayOfWeek   = (((volatile RTCDAYR_bit_view_st *)(0xC0001004U )) -> DAY_DATA);
+N        pstTimeAndDate->u8DateOfMonth = biGetRTCDATER_DATE_DATA();
+X        pstTimeAndDate->u8DateOfMonth = (((volatile RTCDATER_bit_view_st *)(0xC0001005U )) -> DATE_DATA);
+N        pstTimeAndDate->u8Month       = biGetRTCMONTHR_MON_DATA();
+X        pstTimeAndDate->u8Month       = (((volatile RTCMONTHR_bit_view_st *)(0xC0001006U )) -> MON_DATA);
+N        pstTimeAndDate->u8Year        = biGetRTCYEARR_YEAR_DATA();
+X        pstTimeAndDate->u8Year        = (((volatile RTCYEARR_bit_view_st *)(0xC0001007U )) -> YEAR_DATA);
+N    }
+N    else
+N    {
+N        boResult = C_FALSE;
+X        boResult = (0);
+N    }
+N
+N    return boResult;
+N}
+N
+N/****************************************************************************/
+Nbool_t boRTC_SetConfigReset(const rtc_reset_cfg_st* const pResetCfg)
+N{
+N    bool_t boResult = C_FALSE;
+X    bool_t boResult = (0);
+N
+N    if (C_NULL != pResetCfg)
+X    if (((void*)0) != pResetCfg)
+N    {
+N        vSetRTCRESTR_DIS1HZ ( (uint8_t)(pResetCfg->eEn_1HzOpEn) );
+X        (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS1HZ=((uint8_t)(pResetCfg->eEn_1HzOpEn)));
+N        vSetRTCRESTR_DIS2HZ ( (uint8_t)(pResetCfg->eEn_2HzOpEn) );
+X        (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS2HZ=((uint8_t)(pResetCfg->eEn_2HzOpEn)));
+N        vSetRTCRESTR_DIS4HZ ( (uint8_t)(pResetCfg->eEn_4HzOpEn) );
+X        (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS4HZ=((uint8_t)(pResetCfg->eEn_4HzOpEn)));
+N        vSetRTCRESTR_DIS8HZ ( (uint8_t)(pResetCfg->eEn_8HzOpEn) );
+X        (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS8HZ=((uint8_t)(pResetCfg->eEn_8HzOpEn)));
+N        vSetRTCRESTR_DIS16HZ( (uint8_t)(pResetCfg->eEn_16HzOpEn));
+X        (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS16HZ=((uint8_t)(pResetCfg->eEn_16HzOpEn)));
+N        boResult = C_TRUE;
+X        boResult = (1);
+N    }
+N    return boResult;
+N}
+N
+N/****************************************************************************/
+Nbool_t boRTC_GetConfigReset(rtc_reset_cfg_st* const pResetCfg)
+N{
+N    bool_t boResult = C_FALSE;
+X    bool_t boResult = (0);
+N
+N    if (C_NULL != pResetCfg)
+X    if (((void*)0) != pResetCfg)
+N    {
+N        pResetCfg->eEn_1HzOpEn  = (rtc_enable_e) biGetRTCRESTR_DIS1HZ();
+X        pResetCfg->eEn_1HzOpEn  = (rtc_enable_e) (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS1HZ);
+N        pResetCfg->eEn_2HzOpEn  = (rtc_enable_e) biGetRTCRESTR_DIS2HZ();
+X        pResetCfg->eEn_2HzOpEn  = (rtc_enable_e) (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS2HZ);
+N        pResetCfg->eEn_4HzOpEn  = (rtc_enable_e) biGetRTCRESTR_DIS4HZ();
+X        pResetCfg->eEn_4HzOpEn  = (rtc_enable_e) (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS4HZ);
+N        pResetCfg->eEn_8HzOpEn  = (rtc_enable_e) biGetRTCRESTR_DIS8HZ();
+X        pResetCfg->eEn_8HzOpEn  = (rtc_enable_e) (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS8HZ);
+N        pResetCfg->eEn_16HzOpEn = (rtc_enable_e) biGetRTCRESTR_DIS16HZ();
+X        pResetCfg->eEn_16HzOpEn = (rtc_enable_e) (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> DIS16HZ);
+N        boResult = C_TRUE;
+X        boResult = (1);
+N    }
+N    return boResult;
+N}
+N
+N
+N/****************************************************************************/
+Nvoid vRTC_ResetTimer(void)
+N{
+N    vSetRTCRESTR_RSTTMR((uint8_t)RTC_ENABLE);
+X    (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> RSTTMR=((uint8_t)RTC_ENABLE));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_ResetAlarm(void)
+N{
+N    vSetRTCRESTR_RSTALM((uint8_t)RTC_ENABLE);
+X    (((volatile RTCRESTR_bit_view_st *)(0xC000100CU )) -> RSTALM=((uint8_t)RTC_ENABLE));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_SetCalibIntvPeriod(uint8_t u8CalibIntvPeriod)
+N{
+N    vSetRTCCALIBCTRL0(u8CalibIntvPeriod);
+X    (*((volatile u8RTCCALIBCTRL0_byte_view *)(0xC0001010U )) = (u8CalibIntvPeriod));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_SetCalibIntvValue(uint8_t u8CalibIntvValue)
+N{
+N    vSetRTCCALIBCTRL1_CAL_INTRVL(u8CalibIntvValue);
+X    (((volatile RTCCALIBCTRL1_bit_view_st *)(0xC0001011U )) -> CAL_INTRVL=(u8CalibIntvValue));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_SetClockSource(rtc_clock_source_e eClkSrc)
+N{
+N    vSetRTCCALIBCTRL1_CLK_RTC_SEL((uint8_t)eClkSrc);
+X    (((volatile RTCCALIBCTRL1_bit_view_st *)(0xC0001011U )) -> CLK_RTC_SEL=((uint8_t)eClkSrc));
+N}
+N
+N/****************************************************************************/
+Nvoid vRTC_EnableCalibration(rtc_enable_e eEn)
+N{
+N    vSetRTCCALIBCTRL1_CAL_ENB((uint8_t)eEn);
+X    (((volatile RTCCALIBCTRL1_bit_view_st *)(0xC0001011U )) -> CAL_ENB=((uint8_t)eEn));
+N}
+N/****************************************************************************/
+N
+N
+N/****************************************************************************/
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N

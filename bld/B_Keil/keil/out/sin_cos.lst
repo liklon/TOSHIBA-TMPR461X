@@ -1,0 +1,2978 @@
+L 1 "..\..\..\..\lldd\src\sin_cos.c"
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : sin/cos integer lookuptable implementation (65536 times integeger values)
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : sin/cos integer lookuptable implementation (65536 times integeger values)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/04 09:07:15 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "ga_common.h"
+L 1 "..\..\..\..\lldd\inc\ga_common.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Graphic Accelerator
+N*                 Reference Low-Level Driver
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Graphic Accelerator
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.14 $
+N*   DATE        : $Date: 2015/07/21 12:30:20 $
+N*   TAG         : $Name: LLDD_1_7_GFX $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef GA_COMMON_H
+N#define GA_COMMON_H
+N
+N/*======================================
+N             Include Files
+N=======================================*/
+N#include "captypes.h"
+L 1 "..\..\..\..\common\inc\captypes.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Capricorn standard C types
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CAPTYPES_H
+N#define CAPTYPES_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                Definitions                  *
+N**********************************************/
+N/* Simple error codes */
+N#define C_SUCCESS                           (0)
+N#define C_FAILED                            (-1)
+N
+N/* Simple boolean value */
+N#define C_FALSE                             (0)
+N#define C_TRUE                              (1)
+N
+N/* NULL pointer definition */
+N#define C_NULL                              ((void*)0)
+N
+N/* NULL pointer definition */
+N#define TYPES_NULL_PTR   ((void *)0UL)
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*            Primitive data types             *
+N**********************************************/
+N
+N/*
+N *  MISRA-C & ELDEC MPU/MCU software coding
+N *  guideline compliant type definitions
+N */
+Ntypedef signed char int8_t;                 /* 1 byte,  prefix i8 */
+Ntypedef signed short int16_t;               /* 2 bytes, prefix i16 */
+Ntypedef signed int int32_t;                 /* 4 bytes, prefix i32 */
+Ntypedef signed long long int64_t;           /* 8 bytes, prefix i64 */
+Ntypedef unsigned char uint8_t;              /* 1 byte,  prefix u8 */
+Ntypedef unsigned short uint16_t;            /* 2 bytes, prefix u16 */
+Ntypedef unsigned int uint32_t;              /* 4 bytes, prefix u32 */
+Ntypedef unsigned long long uint64_t;        /* 8 bytes, prefix u64 */
+Ntypedef int bool_t;                         /* 4 bytes, prefix bo */
+Ntypedef float float32_t;                    /* 4 bytes, prefix f32 */
+Ntypedef double float64_t;                   /* 8 bytes, prefix f64 */
+N
+N/*********************************************/
+N/*
+N Definition for Cortex R4 32-bit memory/registers */
+N#define TYPES_REG32 (volatile int32_t*)
+N/*
+N Definition for Cortex R4 16-bit memory/registers */
+N#define TYPES_REG16 (volatile uint16_t*)
+N/*
+N Definition for Cortex R4 8-bit memory/registers */
+N#define TYPES_REG8 (volatile uint8_t*)
+N
+N
+N#endif /* CAPTYPES_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\lldd\inc\ga_common.h" 2
+N
+N#define LLDD_GA_COMMON_H_REVISION     "$Revision: 1.14 $"
+N#define LLDD_GA_COMMON_H_TAG          "$Name: LLDD_1_7_GFX $"
+N
+N/*==========================================================================
+N|                       GA Configuration Parameters                         |
+N ==========================================================================*/
+N/*---------------------------------------
+N|        GA Sub-Module inclusion         |
+N ---------------------------------------*/
+N/* Blitting Engine */
+N#define GA_USE_BLITTING
+N
+N/* Transformation Engine */
+N#define GA_USE_TRANSFORM
+N
+N/* Rotation Engine */
+N#define GA_USE_ROTATION
+N
+N/* Drawing Engine */
+N#define GA_USE_DRAWING
+N
+N/*---------------------------------------
+N|         GA List Configuration          |
+N ---------------------------------------*/
+N/* Maximal Number of commands in one list */
+N#define GA_CMD_MAX    2048
+N
+N/*---------------------------------------
+N|  Enable/Disable boundary check for     |
+N|         GA Command List                |
+N ---------------------------------------*/
+N/* Enable/Disable boundary check in drivers for command buffer: */
+N/* #define GA_CMDSLIST_BOUNDARY_CHECK */
+N
+N
+N/* 1 double word more will be reserved by calculation of needed
+N   buffers for GA-API's. This is necesary to add later an END-Command to 
+N   finalize the command: 
+N*/   
+N#define RESERVED_FOR_END_CMD    1
+N
+N/*======================================
+N                Defs
+N=======================================*/
+N
+N/*--------------------------------------
+N|     GA General Purpose Registers      |
+N --------------------------------------*/
+N#define GA_GPR0   0
+N#define GA_GPR1   1
+N#define GA_GPR2   2
+N#define GA_GPR3   3
+N#define GA_GPR4   4
+N#define GA_GPR5   5
+N#define GA_GPR6   6
+N#define GA_GPR7   7
+N#define GA_GPR8   8
+N#define GA_GPR9   9
+N#define GA_GPR10  10
+N#define GA_GPR11  11
+N#define GA_GPR12  12
+N#define GA_GPR13  13
+N#define GA_GPR14  14
+N#define GA_GPR15  15
+N#define GA_GPR16  16
+N#define GA_GPR17  17
+N#define GA_GPR18  18
+N#define GA_GPR19  19
+N#define GA_GPR20  20
+N#define GA_GPR21  21
+N#define GA_GPR22  22
+N#define GA_GPR23  23
+N#define GA_GPR24  24
+N#define GA_GPR25  25
+N#define GA_GPR26  26
+N#define GA_GPR27  27
+N#define GA_GPR28  28
+N#define GA_GPR29  29
+N#define GA_GPR30  30
+N#define GA_GPR31  31
+N
+N
+N/*--------------------------------------
+N|         GA Command Parameters         |
+N --------------------------------------*/
+N/* Selection of module to wait on */
+Ntypedef enum tag_ga_modul_e
+N{
+N    GA_GDC0        = 0x0u,
+N    GA_FG0         = 0x1u,
+N    GA_GDC1        = 0x2u
+N} ga_modul_e;
+N
+N/* Enables/Disables option */
+Ntypedef enum tag_ga_en_e
+N{
+N    GA_DIS         = 0x0u,     /* Disable/off */
+N    GA_EN          = 0x1u      /* Enable/on */
+N} ga_en_e;
+N
+N/* Blending Order */
+Ntypedef enum tag_blendOrd_e
+N{
+N    GA_ONTO_DEST   = 0x0u,     /* Onto destination */
+N    GA_BEHIND_DEST = 0x1u      /* Behind destination */
+N} ga_blendOrd_e;
+N
+N/* Color format selection */
+Ntypedef enum tag_ga_colFmt_e
+N{
+N    GA_RGB16       = 0x0u,      /* 16-bit RGB format */
+N    GA_RGBA32      = 0x1u       /* 32-bit RGBA format */
+N} ga_colFmt_e;
+N
+N/*--------------------------------------
+N|        GA Command Construction        |
+N --------------------------------------*/
+N/* Command Field Masks */
+N#define GA_MASK1           0x1u
+N#define GA_MASK2           0x3u
+N#define GA_MASK3           0x7u
+N#define GA_MASK4           0xfu
+N#define GA_MASK5           0x1fu
+N#define GA_MASK6           0x3fu
+N#define GA_MASK7           0x7fu
+N#define GA_MASK8           0xffu
+N#define GA_MASK9           0x1ffu
+N#define GA_MASK10          0x3ffu
+N#define GA_MASK12          0xfffu
+N#define GA_MASK14          0x3fffu
+N#define GA_MASK15          0x7fffu
+N#define GA_MASK16          0xffffu
+N#define GA_MASK22          0x3fffffu
+N#define GA_MASK24          0xffffffu
+N#define GA_MASK32          0xffffffffu
+N#define GA_MASK36          0xfffffffffull
+N#define GA_MASK48          0xffffffffffffull
+N#define GA_MASK64          0xffffffffffffffffull
+N
+N/* GA Unit selection */
+N#define GA_SCHED           0x0u
+N#define GA_BLITING         0x1u
+N#define GA_DRAWING         0x2u
+N#define GA_ROTATION        0x3u
+N#define GA_TRANSFORM       0x4u
+N
+N/*** Command Codes ***/
+N#define GA_CMC_LGPR        0x1u
+N#define GA_CMC_CSWVSYNC    0x2u
+N#define GA_CMC_CSUIC	     0x3u
+N#define GA_CMC_CSGDC0CC	   0x4u
+N#define GA_CMC_CSGDC1CC	   0x5u
+N#define GA_CMC_END         0xffu
+N
+N/* Blitting Engine Command Codes */
+N
+N#define GA_CMC_BLTO16      0x02u
+N#define GA_CMC_BLTO32      0x04u
+N#define GA_CMC_BLTORLEI16  0x0au
+N#define GA_CMC_BLTORLEI24  0x06u
+N#define GA_CMC_BLTORLEI24A 0x0Eu
+N#define GA_CMC_BLTORLEI32  0x0cu
+N#define GA_CMC_BLTOP16     0x12u
+N#define GA_CMC_BLTOP32     0x14u
+N#define GA_CMC_BLTB16      0x03u
+N#define GA_CMC_BLTB32      0x07u
+N#define GA_CMC_BLTBRLEI16  0x0bu
+N#define GA_CMC_BLTBRLEI24  0x05u
+N#define GA_CMC_BLTBRLEI24A 0x0fu
+N#define GA_CMC_BLTBRLEI32  0x0du
+N#define GA_CMC_BLTBP16     0x13u
+N#define GA_CMC_BLTBP32     0x17u
+N
+N/* Transformation Engine Command Code */
+N#define GA_CMC_TRANSF      0x01u
+N#define GA_CMC_TRANSFB     0x00u
+N
+N/* Rotation Engine Command Code */
+N#define GA_CMC_ROT         0x01u
+N#define GA_CMC_ROTB        0x00u
+N
+N/* Drawing Engine Command Codes */
+N#define GA_CMC_DE_DLRGBA32 0x03u
+N#define GA_CMC_DE_DLRGB16  0x04u
+N#define GA_CMC_DE_DTRGBA32 0x05u
+N#define GA_CMC_DE_DTRGB16  0x06u
+N
+N/* Command Field Offsets */
+N#define GA_ENG_OFF         60
+N#define GA_LEN_OFF         56
+N#define GA_CMC_OFF         48
+N#define GA_SPC_OFF          0
+N
+N/* Command Field Masks */
+N#define GA_ENG_MSK         (GA_MASK3)
+N#define GA_LEN_MSK         (GA_MASK4)
+N#define GA_CMC_MSK         (GA_MASK8)
+N#define GA_SPC_MSK         (GA_MASK48)
+N
+N/* Macro for command field positioning */
+N#define GA_FP(val, offset, mask) (((uint64_t)(val) & (mask)) << (offset))
+N
+N/* GA Command Fields (Engine, Length, Command code, Cmd Specific Params.)*/
+N#define GA_ENG(Engine) (GA_FP((Engine), GA_ENG_OFF, GA_ENG_MSK))
+N#define GA_LEN(Len)    (GA_FP((Len)   , GA_LEN_OFF, GA_LEN_MSK))
+N#define GA_CMC(Code)   (GA_FP((Code)  , GA_CMC_OFF, GA_CMC_MSK))
+N#define GA_SPC(spec)   (GA_FP((spec)  , GA_SPC_OFF, GA_SPC_MSK))
+N
+N/* GA Command Construction Macro */
+N#define GA_CMN(Engine, Len, CmdCode, CmdSpec) ((uint64_t)0x0ull    | \
+N                                                GA_ENG((Engine))   | \
+N                                                GA_LEN((Len))      | \
+N                                                GA_CMC((CmdCode))  | \
+N                                                GA_SPC((CmdSpec)))
+X#define GA_CMN(Engine, Len, CmdCode, CmdSpec) ((uint64_t)0x0ull    |                                                 GA_ENG((Engine))   |                                                 GA_LEN((Len))      |                                                 GA_CMC((CmdCode))  |                                                 GA_SPC((CmdSpec)))
+N
+N/*=========================================================================
+N|                        SCHEDULER OPERATION COMMANDS                      |
+N ==========================================================================*/
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Load General-Purpose Register Command (LGPR)
+N|
+N|  Descr  :   The Load General-Purpose Register command is used to configure
+N|             one out of the 32 General-Purpose Registers. The command
+N|             specific parameter for this command is the number of the
+N|             register that should be loaded and the value itself.
+N|
+N|  Params:    regNr   - The number of the General-Purpose Register that
+N|                       should be loaded
+N|
+N|             uiVal   - Value that should be stored within the selected
+N|                       register. If the register does not encapsulate
+N|                       32 bits the value within the command has to be right
+N|                       aligned.
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_LOAD(regNr, uiVal) (GA_CMN(GA_SCHED, 1, GA_CMC_LGPR,       \
+N                               GA_FP ((regNr), 32, GA_MASK5)      |   \
+N                               GA_FP ((uiVal),  0,  GA_MASK32)))
+X#define GA_LOAD(regNr, uiVal) (GA_CMN(GA_SCHED, 1, GA_CMC_LGPR,                                      GA_FP ((regNr), 32, GA_MASK5)      |                                  GA_FP ((uiVal),  0,  GA_MASK32)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   END Command (CSEND)
+N|
+N|  Descr  :   The CSEND command must be placed at the end of every command
+N|             list. It signals the Command Scheduler that all commands have
+N|             been executed. When the Command Scheduler is detecting this
+N|             mark, a flag in the status register signals that the command
+N|             list was executed. Optionally an interrupt is generated.
+N|
+N|  Params:    none
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_END() (GA_CMN(GA_SCHED, 0x1u, GA_CMC_END,0x0u))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Wait VSYNC Command (CSWVSYNC)
+N|
+N|  Descr  :   The CSWVSYNC command can be used to synchronize parts of the
+N|             command list with the vertical synchronization signal VSYNC
+N|             from the GDC or the Frame Grabber.
+N|
+N|             When the Command Scheduler is reading the CSWVSYNC command
+N|             it waits until the next vertical synchronization of the
+N|             display/camera input takes place before executing the next
+N|             command.
+N|
+N|  Params:    module   -  VSYNC select:
+N|                         Use: GA_GDC0     - Wait on GDC0
+N|                              GA_FG0      - Wait on FG0
+N|                              GA_GDC1     - Wait on GDC1
+N|                              GA_FG1      - Wait on FG1
+N|
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_WAIT(module) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSWVSYNC,        \
+N                         GA_FP ((module), 0, GA_MASK2)))
+X#define GA_WAIT(module) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSWVSYNC,                                 GA_FP ((module), 0, GA_MASK2)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   User Interrupt Command (CSUIC)
+N|
+N|  Descr  :   The CSUIC command can be used to signal the MCU that a
+N|             certain part of the Command List is already executed or
+N|             will now start execution.
+N|
+N|  Params:    interrupt number:
+N|                          Use: 0 - 23
+N|                               values > 23 will be ignored
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_USERINTERRUPT(number) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSUIC,    \
+N                                  GA_FP ((number), 0, GA_MASK6)))
+X#define GA_USERINTERRUPT(number) (GA_CMN(GA_SCHED, 0x1u, GA_CMC_CSUIC,                                      GA_FP ((number), 0, GA_MASK6)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Command Scheduler GDC0 Configuration Command (CSGDC0CC)
+N|
+N|  Descr  :   The CSGDC0CC command can be used to change the content of GDC0 registers
+N|
+N|  Params:    
+N|             register offset:
+N|                          16-bits GDC0 adress register offest
+N|
+N|             register value:
+N|                          32-bits
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_GDC0CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC0CC,  \
+N                                         GA_FP((regOffset), 32, GA_MASK16)      |   \
+N                                         GA_FP((value),      0, GA_MASK32)))
+X#define GA_GDC0CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC0CC,                                           GA_FP((regOffset), 32, GA_MASK16)      |                                            GA_FP((value),      0, GA_MASK32)))
+N
+N/*--------------------------------------------------------------------------
+N|
+N|  Command:   Command Scheduler GDC1 Configuration Command (CSGDC1CC)
+N|
+N|  Descr  :   The CSGDC1CC command can be used to change the content of GDC1 registers
+N|
+N|  Params:    
+N|             register offset:
+N|                          16-bits GDC1 adress register offest
+N|
+N|             register value:
+N|                          32-bits
+N|
+N -------------------------------------------------------------------------*/
+N#define GA_GDC1CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC1CC,  \
+N                                         GA_FP((regOffset), 32, GA_MASK16)      |   \
+N                                         GA_FP((value),      0, GA_MASK32)))
+X#define GA_GDC1CONFIG(regOffset, value) (GA_CMN(GA_SCHED,   0x1u, GA_CMC_CSGDC1CC,                                           GA_FP((regOffset), 32, GA_MASK16)      |                                            GA_FP((value),      0, GA_MASK32)))
+N
+N
+N/*======================================
+N              Structures
+N=======================================*/
+N/* Command List Structure */
+Ntypedef struct tag_ga_list_st
+N{
+N    uint64_t  ullCommands[GA_CMD_MAX] ;
+X    uint64_t  ullCommands[2048] ;
+N    uint64_t* pu64Current;
+N    uint32_t  u32UsedDoubleWords; /* used or needed double words for an  GA-API */
+N    int32_t   i32FreeSpaceStat;   /* C_SUCCESS: OK no space free error,
+N                                     C_FAILED:  No free space for GA-API */
+N} ga_list_st ;
+N
+N/****************************************************************************/
+N
+N
+N#endif /* GA_COMMON_H */
+N
+N/****************************************************************************/
+N
+N
+N/****************************************************************************
+N*****************************************************************************
+N**             >>>>     MISRA-C 2004 Deviation Report     <<<<
+N**                          (MISRA Rule Violation)
+N**
+N**  File: ga_common.h
+N**  $Revision: 1.14 $
+N**  $Date: 2015/07/21 12:30:20 $
+N**
+N** **************************************************************************
+N**  ------------------------------------------------------------------------
+N** |
+N** | RULE   : 
+N** | CONS.  : 
+N** | REASON :
+N** |
+N**  ------------------------------------------------------------------------
+N**
+N*****************************************************************************
+N****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 23 "..\..\..\..\lldd\src\sin_cos.c" 2
+N
+N#ifndef GA_USE_MATH_LIB
+N#include "copy_function.h"
+L 1 "..\..\..\..\common\inc\copy_function.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH,
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION :
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : config
+N*   LIBRARIES   :
+N******************************************************************************
+N*   VERSION     : $Revision: 1.6 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef COPY_FUNCTION_H
+N#define COPY_FUNCTION_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+N#include "core.h"
+L 1 "..\..\..\..\common\inc\core.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Standard core access utilities definitions
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : Core
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.11 $
+N*   DATE        : $Date: 2015/05/04 09:07:19 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef CORE_H
+N#define CORE_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                     /* Core specific primitive type definitions */
+N#include "cr4_pmu.h"
+L 1 "..\..\..\..\cortex_r4_keil\inc\cr4_pmu.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : Performance monitor unit routines based on ARM's V7 sample code
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : TSM-SHE Firmware System Longrun Test (Cortex-R4)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.5 $
+N*   DATE        : $Date: 2015/05/04 09:07:16 $
+N*   TAG         : $Name:  $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef _CR4_PMU_H
+N#define _CR4_PMU_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"                       /* Core specific primitive type definitions */
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*               Enumerations                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Structures                  *
+N**********************************************/
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_GetPMN
+N *
+N * Purpose:       Returns the number of progammable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Programmable counters count
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_GetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_PMNConfig
+N *
+N * Purpose:       Sets the event for a programmable counter to record
+N *
+N * Inputs:        u32Counter: Which counter to program  (e.g. 0 for PMN0, 1 for PMN1)
+N *                u32Even:    The event code (ARM Architecture Reference Manual)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMNConfig(uint32_t u32Counter, uint32_t u32Event);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_SetCntDivider
+N *
+N * Purpose:       Enables/disables the divider (1/64) on CCNT
+N *
+N * Inputs:        u32Divider: 0 - disable, all others enable
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_SetCntDivider(uint32_t u32Divider);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMU
+N *
+N * Purpose:       Global PMU enable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMU(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMU
+N *
+N * Purpose:       Global PMU disable
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMU(void);
+N
+N
+N /****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNT
+N *
+N * Purpose:       Enable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNT
+N *
+N * Purpose:       Disable the cycle counter (CCNT)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMN
+N *
+N * Purpose:       Enable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to enable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMN
+N *
+N * Purpose:       Disable PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to disable (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      uCR4_32ReadCCNT
+N *
+N * Purpose:       Returns the value of CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Cycle counter value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadPMN
+N *
+N * Purpose:       Returns the value of PMN{n}
+N *
+N * Inputs:        u32Counter: The counter to read (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       PMNn counter
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadPMN(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      u32CR4_ReadFlags
+N *
+N * Purpose:       Returns the value of the overflow flags
+N *
+N * Inputs:        none
+N *
+N * Outputs:       Overflow flags
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nuint32_t u32CR4_ReadFlags(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_WriteFlags
+N *
+N * Purpose:       Writes the overflow flags
+N *
+N * Inputs:        u32Flags: flags to write
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_WriteFlags(uint32_t u32Flags);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnableCCNTIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisableCCNTIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisableCCNTIrq(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePmnIrq
+N *
+N * Purpose:       Enables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to enable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePmnIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMNIrq
+N *
+N * Purpose:       Disables interrupt generation on overflow of PMN{x}
+N *
+N * Inputs:        u32Counter: The counter to disable the interrupt for (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMNIrq(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the programmable counters
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetPMN(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Resets the CCNT
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_ResetCCNT(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_ResetPMN
+N *
+N * Purpose:       Writes to software increment register
+N *
+N * Inputs:        u32Counter: The counter to increment (e.g. 0 for PMN0, 1 for PMN1)
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_PMUSoftwareIncrement(uint32_t u32Counter);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_EnablePMUUserAccess
+N *
+N * Purpose:       Enables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_EnablePMUUserAccess(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      vCR4_DisablePMUUserAccess
+N *
+N * Purpose:       Disables User mode access to the PMU (must be called in a priviledged mode)
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCR4_DisablePMUUserAccess(void);
+N
+N
+N#endif /* _CR4_PMU_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\common\inc\core.h" 2
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S  #pragma ghs nowarning 1862  /* Rule 19.7 : disable function-like macro not allowed */
+N#endif
+N/**********************************************/
+N
+N/* Physical translation in un-cached area */
+N#define PHYSICAL_ADDR_MASK                  0xFFFFFFFFU
+N#define PHYSICAL(addr)                      (((uint32_t)(addr) & PHYSICAL_ADDR_MASK))
+N
+N/* copy function */
+N#define asm_copyfunction                    (asm_copy_word)
+N#define asm_copyfunction_hword              (asm_copy_hword)
+N#define asm_copyfunction_byte               (asm_copy_byte)
+N
+N/* PMU enable */
+N#define PMU_ENABLE()                        (vCR4_EnablePMU())
+N
+N/* Timer Enable */
+N#define TIMER_ENABLE()                      (vCR4_EnableCCNT())
+N
+N/* Timer Reset */
+N#define TIMER_RESET()                       (vCR4_ResetCCNT())
+N
+N/* Timer Get */
+N#define TIMER_GET()                         (u32CR4_ReadCCNT())
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*                 Enumerations                *
+N**********************************************/
+N
+N
+N/*********************************************/
+N
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      __DSB
+N *
+N * Purpose:       Data barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __DSB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      __ISB
+N *
+N * Purpose:       Instruction barrier
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid __ISB(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_int
+N *
+N * Purpose:       Enable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_int
+N *
+N * Purpose:       Disable core interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_fast_int
+N *
+N * Purpose:       Enable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_fast_int
+N *
+N * Purpose:       Disable core fast interrupt
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_fast_int(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_enable_core_vic_port
+N *
+N * Purpose:       Enable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_enable_core_vic_port(void);
+N
+N
+N/****************************************************************************
+N *
+N * Function:      asm_disable_core_vic_port
+N *
+N * Purpose:       Disable VIC port
+N *
+N * Inputs:        none
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid asm_disable_core_vic_port(void);
+N
+N
+N#endif /* CORE_H */
+N
+N/***************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\common\inc\copy_function.h" 2
+N
+N/*********************************************/
+N
+N/**********************************************
+N*             Constants & Macros              *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Enumerations                *
+N**********************************************/
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      asm_copy_word
+N *
+N * Purpose:       Copy array of words
+N *
+N * Inputs:        arg1    start adresse source
+N *                arg2    end adresse source
+N *                arg3    start adresse destination
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid asm_copy_word(uint32_t arg1, uint32_t arg2, uint32_t arg3);
+N
+N/****************************************************************************
+N *
+N * Function:      asm_copy_hword
+N *
+N * Purpose:       Copy array of half words
+N *
+N * Inputs:        arg1    start adresse source
+N *                arg2    end adresse source
+N *                arg3    start adresse destination
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid asm_copy_hword(uint32_t arg1, uint32_t arg2, uint32_t arg3);
+N
+N/****************************************************************************
+N *
+N * Function:      asm_copy_byte
+N *
+N * Purpose:       Copy array of bytes
+N *
+N * Inputs:        arg1    start adresse source
+N *                arg2    end adresse source
+N *                arg3    start adresse destination
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:
+N *
+N ***************************************************************************/
+Nvoid asm_copy_byte(uint32_t arg1, uint32_t arg2, uint32_t arg3);
+N
+N#endif /* COPY_FUNCTION_H */
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 26 "..\..\..\..\lldd\src\sin_cos.c" 2
+N#include "sin_cos.h"
+L 1 "..\..\..\..\lldd\inc\sin_cos.h" 1
+N/*****************************************************************************
+N*   This software is copyright protected. All rights reserved
+N*   Toshiba Electronics Europe GmbH
+N*   European LSI Design and Engineering Center (ELDEC)
+N******************************************************************************
+N*   DESCRIPTION : sin/cos integer lookuptable implementation (65536 times integeger values)
+N******************************************************************************
+N*   PLATFORM    : TMPR46xXBG-300
+N*   PROJECT     :
+N*   MODULE      : sin/cos integer lookuptable implementation (65536 times integeger values)
+N*   LIBRARIES   : None
+N******************************************************************************
+N*   VERSION     : $Revision: 1.7 $
+N*   DATE        : $Date: 2015/05/04 09:07:14 $
+N*   TAG         : $Name: LLDD_1_6 $
+N*   RELEASE     : Preliminary & Confidential
+N*****************************************************************************/
+N#ifndef SINUSCOSINUS_H
+N#define SINUSCOSINUS_H
+N
+N/**********************************************
+N*                Include files                *
+N**********************************************/
+N#include "captypes.h"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_SINUSCOSINUS_H_REVISION     "$Revision: 1.7 $"
+N#define LLDD_SINUSCOSINUS_H_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*        Exported function prototypes         *
+N**********************************************/
+N
+N/****************************************************************************
+N *
+N * Function:      vSINUSCOSINUS_GetVersion
+N *
+N * Purpose:       Retrieve pointers to module and header revision and tag string
+N *
+N * Inputs:        none
+N *
+N * Outputs:       pau8ModuleRevision - pointer to module revision string
+N *                pau8ModuleTag      - pointer to module tag string
+N *                pau8HeaderRevision - pointer to header revision string
+N *                pau8HeaderTag      - pointer to header tag string
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSINUSCOSINUS_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                              uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag);
+N
+N/****************************************************************************
+N *
+N * Function:      vCopySinCosTableROM2RAM
+N *
+N * Purpose:       copy sin-table from ROM to RAM
+N *
+N * Inputs:        void
+N *
+N * Outputs:       none
+N *
+N * Return Values: void
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vCopySinCosTableROM2RAM(void);
+N
+N/****************************************************************************
+N *
+N * Function:      i32SinLookUp
+N *
+N * Purpose:       sin() look up table (65536 times integer)
+N *
+N * Inputs:        int16_t angle_x_10 (10 times integer angle, 0 <= 3600 degrees)
+N *
+N * Outputs:       none
+N *
+N * Return Values: int32_t 65536 times integer sinus value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32SinLookup(int16_t angle_x_10);
+N
+N/****************************************************************************
+N *
+N * Function:      i32CosLookUp
+N *
+N * Purpose:       cos() look up table (65536 times integer)
+N *
+N * Inputs:        int16_t angle_x_10 (10 times integer angle, 0 <= 3600 degrees)
+N *
+N * Outputs:       none
+N *
+N * Return Values: int32_t 65536 times integer cos value
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nint32_t i32CosLookup(int16_t angle_x_10);
+N
+N/****************************************************************************
+N *
+N * Function:      vSinCosLookUp
+N *
+N * Purpose:       sin(), cos() look up table (65536 times integer)
+N *
+N * Inputs:        int16_t angle_x_10 (10 times integer angle, 0 <= 3600 degrees)
+N * 
+N *
+N * Outputs:       int32_t *sin_      pointer to 65536 times integer sinus value
+N *                int32_t *cos_      pointer to 65536 times integer cosinus value
+N *
+N * Return Values: none
+N *
+N * Limitations:   none
+N *
+N ***************************************************************************/
+Nvoid vSinCosLookUp(int16_t angle_x_10, int32_t *sin_, int32_t *cos_);
+N
+N/****************************************************************************/
+N
+N
+N#endif /* SINUSCOSINUS_H */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
+L 27 "..\..\..\..\lldd\src\sin_cos.c" 2
+N
+N/**********************************************
+N*                 Constants                   *
+N**********************************************/
+N
+N#define LLDD_SINUSCOSINUS_C_REVISION     "$Revision: 1.7 $"
+N#define LLDD_SINUSCOSINUS_C_TAG          "$Name: LLDD_1_6 $"
+N
+N/*********************************************/
+N
+N/**********************************************
+N*  Static variables and forward declarations  *
+N**********************************************/ 
+N
+Nstatic uint8_t au8LLDD_SINUSCOSINUS_C_REVISION[] = LLDD_SINUSCOSINUS_C_REVISION;
+Xstatic uint8_t au8LLDD_SINUSCOSINUS_C_REVISION[] = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_SINUSCOSINUS_C_TAG[]      = LLDD_SINUSCOSINUS_C_TAG;
+Xstatic uint8_t au8LLDD_SINUSCOSINUS_C_TAG[]      = "$Name: LLDD_1_6 $";
+Nstatic uint8_t au8LLDD_SINUSCOSINUS_H_REVISION[] = LLDD_SINUSCOSINUS_H_REVISION;
+Xstatic uint8_t au8LLDD_SINUSCOSINUS_H_REVISION[] = "$Revision: 1.7 $";
+Nstatic uint8_t au8LLDD_SINUSCOSINUS_H_TAG[]      = LLDD_SINUSCOSINUS_H_TAG;
+Xstatic uint8_t au8LLDD_SINUSCOSINUS_H_TAG[]      = "$Name: LLDD_1_6 $";
+N
+N/*********************************************/
+N
+N/**********************************************
+N*              Global variables               *
+N**********************************************/
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section data = ".ROMttables"
+S#define ALIGNED
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rwdata = ".ROMttables"
+N#define ALIGNED __align(8)
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma alignvar(8)
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+Nint32_t angl_sin_cos[] = {
+N/* degree   */	
+N/*0        ,*/0,
+N/*0.1      ,*/114,
+N/*0.2      ,*/228,
+N/*0.3      ,*/343,
+N/*0.4      ,*/457,
+N/*0.5      ,*/571,
+N/*0.6      ,*/686,
+N/*0.7      ,*/800,
+N/*0.8      ,*/915,
+N/*0.9      ,*/1029,
+N/*1        ,*/1143,
+N/*1.1      ,*/1258,
+N/*1.2      ,*/1372,
+N/*1.3      ,*/1486,
+N/*1.4      ,*/1601,
+N/*1.5      ,*/1715,
+N/*1.6      ,*/1829,
+N/*1.7      ,*/1944,
+N/*1.8      ,*/2058,
+N/*1.9      ,*/2172,
+N/*2        ,*/2287,
+N/*2.1      ,*/2401,
+N/*2.2      ,*/2515,
+N/*2.3      ,*/2630,
+N/*2.4      ,*/2744,
+N/*2.5      ,*/2858,
+N/*2.6      ,*/2972,
+N/*2.7      ,*/3087,
+N/*2.8      ,*/3201,
+N/*2.9      ,*/3315,
+N/*3        ,*/3429,
+N/*3.1      ,*/3544,
+N/*3.2      ,*/3658,
+N/*3.3      ,*/3772,
+N/*3.4      ,*/3886,
+N/*3.5      ,*/4000,
+N/*3.6      ,*/4115,
+N/*3.7      ,*/4229,
+N/*3.8      ,*/4343,
+N/*3.9      ,*/4457,
+N/*4        ,*/4571,
+N/*4.1      ,*/4685,
+N/*4.2      ,*/4799,
+N/*4.3      ,*/4913,
+N/*4.4      ,*/5027,
+N/*4.5      ,*/5141,
+N/*4.6      ,*/5255,
+N/*4.7      ,*/5369,
+N/*4.8      ,*/5483,
+N/*4.9      ,*/5597,
+N/*5        ,*/5711,
+N/*5.1      ,*/5825,
+N/*5.2      ,*/5939,
+N/*5.3      ,*/6053,
+N/*5.4      ,*/6167,
+N/*5.5      ,*/6281,
+N/*5.6      ,*/6395,
+N/*5.7      ,*/6509,
+N/*5.8      ,*/6622,
+N/*5.9      ,*/6736,
+N/*6        ,*/6850,
+N/*6.1      ,*/6964,
+N/*6.2      ,*/7077,
+N/*6.3      ,*/7191,
+N/*6.4      ,*/7305,
+N/*6.5      ,*/7418,
+N/*6.6      ,*/7532,
+N/*6.7      ,*/7646,
+N/*6.8      ,*/7759,
+N/*6.9      ,*/7873,
+N/*7        ,*/7986,
+N/*7.1      ,*/8100,
+N/*7.2      ,*/8213,
+N/*7.3      ,*/8327,
+N/*7.4      ,*/8440,
+N/*7.5      ,*/8554,
+N/*7.6      ,*/8667,
+N/*7.7      ,*/8780,
+N/*7.8      ,*/8894,
+N/*7.9      ,*/9007,
+N/*8        ,*/9120,
+N/*8.1      ,*/9234,
+N/*8.2      ,*/9347,
+N/*8.3      ,*/9460,
+N/*8.4      ,*/9573,
+N/*8.5      ,*/9686,
+N/*8.6      ,*/9799,
+N/*8.7      ,*/9913,
+N/*8.8      ,*/10026,
+N/*8.9      ,*/10139,
+N/*9        ,*/10252,
+N/*9.1      ,*/10365,
+N/*9.2      ,*/10477,
+N/*9.3      ,*/10590,
+N/*9.4      ,*/10703,
+N/*9.5      ,*/10816,
+N/*9.6      ,*/10929,
+N/*9.7      ,*/11042,
+N/*9.8      ,*/11154,
+N/*9.9      ,*/11267,
+N/*10       ,*/11380,
+N/*10.1     ,*/11492,
+N/*10.2     ,*/11605,
+N/*10.3     ,*/11717,
+N/*10.4     ,*/11830,
+N/*10.5     ,*/11942,
+N/*10.6     ,*/12055,
+N/*10.7     ,*/12167,
+N/*10.8     ,*/12280,
+N/*10.9     ,*/12392,
+N/*11       ,*/12504,
+N/*11.1     ,*/12617,
+N/*11.2     ,*/12729,
+N/*11.3     ,*/12841,
+N/*11.4     ,*/12953,
+N/*11.5     ,*/13065,
+N/*11.6     ,*/13177,
+N/*11.7     ,*/13289,
+N/*11.8     ,*/13401,
+N/*11.9     ,*/13513,
+N/*12       ,*/13625,
+N/*12.1     ,*/13737,
+N/*12.2     ,*/13849,
+N/*12.3     ,*/13961,
+N/*12.4     ,*/14072,
+N/*12.5     ,*/14184,
+N/*12.6     ,*/14296,
+N/*12.7     ,*/14407,
+N/*12.8     ,*/14519,
+N/*12.9     ,*/14630,
+N/*13       ,*/14742,
+N/*13.1     ,*/14853,
+N/*13.2     ,*/14965,
+N/*13.3     ,*/15076,
+N/*13.4     ,*/15187,
+N/*13.5     ,*/15299,
+N/*13.6     ,*/15410,
+N/*13.7     ,*/15521,
+N/*13.8     ,*/15632,
+N/*13.9     ,*/15743,
+N/*14       ,*/15854,
+N/*14.1     ,*/15965,
+N/*14.2     ,*/16076,
+N/*14.3     ,*/16187,
+N/*14.4     ,*/16298,
+N/*14.5     ,*/16408,
+N/*14.6     ,*/16519,
+N/*14.7     ,*/16630,
+N/*14.8     ,*/16740,
+N/*14.9     ,*/16851,
+N/*15       ,*/16961,
+N/*15.1     ,*/17072,
+N/*15.2     ,*/17182,
+N/*15.3     ,*/17293,
+N/*15.4     ,*/17403,
+N/*15.5     ,*/17513,
+N/*15.6     ,*/17623,
+N/*15.7     ,*/17734,
+N/*15.8     ,*/17844,
+N/*15.9     ,*/17954,
+N/*16       ,*/18064,
+N/*16.1     ,*/18174,
+N/*16.2     ,*/18283,
+N/*16.3     ,*/18393,
+N/*16.4     ,*/18503,
+N/*16.5     ,*/18613,
+N/*16.6     ,*/18722,
+N/*16.7     ,*/18832,
+N/*16.8     ,*/18941,
+N/*16.9     ,*/19051,
+N/*17       ,*/19160,
+N/*17.1     ,*/19270,
+N/*17.2     ,*/19379,
+N/*17.3     ,*/19488,
+N/*17.4     ,*/19597,
+N/*17.5     ,*/19707,
+N/*17.6     ,*/19816,
+N/*17.7     ,*/19925,
+N/*17.8     ,*/20034,
+N/*17.9     ,*/20142,
+N/*18       ,*/20251,
+N/*18.1     ,*/20360,
+N/*18.2     ,*/20469,
+N/*18.3     ,*/20577,
+N/*18.4     ,*/20686,
+N/*18.5     ,*/20794,
+N/*18.6     ,*/20903,
+N/*18.7     ,*/21011,
+N/*18.8     ,*/21120,
+N/*18.9     ,*/21228,
+N/*19       ,*/21336,
+N/*19.1     ,*/21444,
+N/*19.2     ,*/21552,
+N/*19.3     ,*/21660,
+N/*19.4     ,*/21768,
+N/*19.5     ,*/21876,
+N/*19.6     ,*/21984,
+N/*19.7     ,*/22091,
+N/*19.8     ,*/22199,
+N/*19.9     ,*/22307,
+N/*20       ,*/22414,
+N/*20.1     ,*/22522,
+N/*20.2     ,*/22629,
+N/*20.3     ,*/22736,
+N/*20.4     ,*/22844,
+N/*20.5     ,*/22951,
+N/*20.6     ,*/23058,
+N/*20.7     ,*/23165,
+N/*20.8     ,*/23272,
+N/*20.9     ,*/23379,
+N/*21       ,*/23486,
+N/*21.1     ,*/23592,
+N/*21.2     ,*/23699,
+N/*21.3     ,*/23806,
+N/*21.4     ,*/23912,
+N/*21.5     ,*/24019,
+N/*21.6     ,*/24125,
+N/*21.7     ,*/24231,
+N/*21.8     ,*/24337,
+N/*21.9     ,*/24444,
+N/*22       ,*/24550,
+N/*22.1     ,*/24656,
+N/*22.2     ,*/24762,
+N/*22.3     ,*/24868,
+N/*22.4     ,*/24973,
+N/*22.5     ,*/25079,
+N/*22.6     ,*/25185,
+N/*22.7     ,*/25290,
+N/*22.8     ,*/25396,
+N/*22.9     ,*/25501,
+N/*23       ,*/25606,
+N/*23.1     ,*/25712,
+N/*23.2     ,*/25817,
+N/*23.3     ,*/25922,
+N/*23.4     ,*/26027,
+N/*23.5     ,*/26132,
+N/*23.6     ,*/26237,
+N/*23.7     ,*/26342,
+N/*23.8     ,*/26446,
+N/*23.9     ,*/26551,
+N/*24       ,*/26655,
+N/*24.1     ,*/26760,
+N/*24.2     ,*/26864,
+N/*24.3     ,*/26969,
+N/*24.4     ,*/27073,
+N/*24.5     ,*/27177,
+N/*24.6     ,*/27281,
+N/*24.7     ,*/27385,
+N/*24.8     ,*/27489,
+N/*24.9     ,*/27593,
+N/*25       ,*/27696,
+N/*25.1     ,*/27800,
+N/*25.2     ,*/27903,
+N/*25.3     ,*/28007,
+N/*25.4     ,*/28110,
+N/*25.5     ,*/28213,
+N/*25.6     ,*/28317,
+N/*25.7     ,*/28420,
+N/*25.8     ,*/28523,
+N/*25.9     ,*/28626,
+N/*26       ,*/28729,
+N/*26.1     ,*/28831,
+N/*26.2     ,*/28934,
+N/*26.3     ,*/29037,
+N/*26.4     ,*/29139,
+N/*26.5     ,*/29242,
+N/*26.6     ,*/29344,
+N/*26.7     ,*/29446,
+N/*26.8     ,*/29548,
+N/*26.9     ,*/29650,
+N/*27       ,*/29752,
+N/*27.1     ,*/29854,
+N/*27.2     ,*/29956,
+N/*27.3     ,*/30058,
+N/*27.4     ,*/30159,
+N/*27.5     ,*/30261,
+N/*27.6     ,*/30362,
+N/*27.7     ,*/30463,
+N/*27.8     ,*/30565,
+N/*27.9     ,*/30666,
+N/*28       ,*/30767,
+N/*28.1     ,*/30868,
+N/*28.2     ,*/30969,
+N/*28.3     ,*/31069,
+N/*28.4     ,*/31170,
+N/*28.5     ,*/31271,
+N/*28.6     ,*/31371,
+N/*28.7     ,*/31471,
+N/*28.8     ,*/31572,
+N/*28.9     ,*/31672,
+N/*29       ,*/31772,
+N/*29.1     ,*/31872,
+N/*29.2     ,*/31972,
+N/*29.3     ,*/32072,
+N/*29.4     ,*/32171,
+N/*29.5     ,*/32271,
+N/*29.6     ,*/32370,
+N/*29.7     ,*/32470,
+N/*29.8     ,*/32569,
+N/*29.9     ,*/32668,
+N/*30       ,*/32767,
+N/*30.1     ,*/32867,
+N/*30.2     ,*/32965,
+N/*30.3     ,*/33064,
+N/*30.4     ,*/33163,
+N/*30.5     ,*/33262,
+N/*30.6     ,*/33360,
+N/*30.7     ,*/33458,
+N/*30.8     ,*/33557,
+N/*30.9     ,*/33655,
+N/*31       ,*/33753,
+N/*31.1     ,*/33851,
+N/*31.2     ,*/33949,
+N/*31.3     ,*/34047,
+N/*31.4     ,*/34144,
+N/*31.5     ,*/34242,
+N/*31.6     ,*/34339,
+N/*31.7     ,*/34437,
+N/*31.8     ,*/34534,
+N/*31.9     ,*/34631,
+N/*32       ,*/34728,
+N/*32.1     ,*/34825,
+N/*32.2     ,*/34922,
+N/*32.3     ,*/35019,
+N/*32.4     ,*/35115,
+N/*32.5     ,*/35212,
+N/*32.6     ,*/35308,
+N/*32.7     ,*/35405,
+N/*32.8     ,*/35501,
+N/*32.9     ,*/35597,
+N/*33       ,*/35693,
+N/*33.1     ,*/35789,
+N/*33.2     ,*/35885,
+N/*33.3     ,*/35980,
+N/*33.4     ,*/36076,
+N/*33.5     ,*/36171,
+N/*33.6     ,*/36267,
+N/*33.7     ,*/36362,
+N/*33.8     ,*/36457,
+N/*33.9     ,*/36552,
+N/*34       ,*/36647,
+N/*34.1     ,*/36742,
+N/*34.2     ,*/36836,
+N/*34.3     ,*/36931,
+N/*34.4     ,*/37025,
+N/*34.5     ,*/37119,
+N/*34.6     ,*/37214,
+N/*34.7     ,*/37308,
+N/*34.8     ,*/37402,
+N/*34.9     ,*/37496,
+N/*35       ,*/37589,
+N/*35.1     ,*/37683,
+N/*35.2     ,*/37777,
+N/*35.3     ,*/37870,
+N/*35.4     ,*/37963,
+N/*35.5     ,*/38056,
+N/*35.6     ,*/38150,
+N/*35.7     ,*/38242,
+N/*35.8     ,*/38335,
+N/*35.9     ,*/38428,
+N/*36       ,*/38521,
+N/*36.1     ,*/38613,
+N/*36.2     ,*/38705,
+N/*36.3     ,*/38798,
+N/*36.4     ,*/38890,
+N/*36.5     ,*/38982,
+N/*36.6     ,*/39074,
+N/*36.7     ,*/39165,
+N/*36.8     ,*/39257,
+N/*36.9     ,*/39349,
+N/*37       ,*/39440,
+N/*37.1     ,*/39531,
+N/*37.2     ,*/39623,
+N/*37.3     ,*/39714,
+N/*37.4     ,*/39804,
+N/*37.5     ,*/39895,
+N/*37.6     ,*/39986,
+N/*37.7     ,*/40077,
+N/*37.8     ,*/40167,
+N/*37.9     ,*/40257,
+N/*38       ,*/40347,
+N/*38.1     ,*/40438,
+N/*38.2     ,*/40528,
+N/*38.3     ,*/40617,
+N/*38.4     ,*/40707,
+N/*38.5     ,*/40797,
+N/*38.6     ,*/40886,
+N/*38.7     ,*/40975,
+N/*38.8     ,*/41065,
+N/*38.9     ,*/41154,
+N/*39       ,*/41243,
+N/*39.1     ,*/41331,
+N/*39.2     ,*/41420,
+N/*39.3     ,*/41509,
+N/*39.4     ,*/41597,
+N/*39.5     ,*/41686,
+N/*39.6     ,*/41774,
+N/*39.7     ,*/41862,
+N/*39.8     ,*/41950,
+N/*39.9     ,*/42038,
+N/*40       ,*/42125,
+N/*40.1     ,*/42213,
+N/*40.2     ,*/42300,
+N/*40.3     ,*/42388,
+N/*40.4     ,*/42475,
+N/*40.5     ,*/42562,
+N/*40.6     ,*/42649,
+N/*40.7     ,*/42735,
+N/*40.8     ,*/42822,
+N/*40.9     ,*/42909,
+N/*41       ,*/42995,
+N/*41.1     ,*/43081,
+N/*41.2     ,*/43167,
+N/*41.3     ,*/43253,
+N/*41.4     ,*/43339,
+N/*41.5     ,*/43425,
+N/*41.6     ,*/43511,
+N/*41.7     ,*/43596,
+N/*41.8     ,*/43681,
+N/*41.9     ,*/43767,
+N/*42       ,*/43852,
+N/*42.1     ,*/43937,
+N/*42.2     ,*/44021,
+N/*42.3     ,*/44106,
+N/*42.4     ,*/44191,
+N/*42.5     ,*/44275,
+N/*42.6     ,*/44359,
+N/*42.7     ,*/44443,
+N/*42.8     ,*/44527,
+N/*42.9     ,*/44611,
+N/*43       ,*/44695,
+N/*43.1     ,*/44779,
+N/*43.2     ,*/44862,
+N/*43.3     ,*/44945,
+N/*43.4     ,*/45028,
+N/*43.5     ,*/45112,
+N/*43.6     ,*/45194,
+N/*43.7     ,*/45277,
+N/*43.8     ,*/45360,
+N/*43.9     ,*/45442,
+N/*44       ,*/45525,
+N/*44.1     ,*/45607,
+N/*44.2     ,*/45689,
+N/*44.3     ,*/45771,
+N/*44.4     ,*/45853,
+N/*44.5     ,*/45934,
+N/*44.6     ,*/46016,
+N/*44.7     ,*/46097,
+N/*44.8     ,*/46178,
+N/*44.9     ,*/46259,
+N/*45       ,*/46340,
+N/*45.1     ,*/46421,
+N/*45.2     ,*/46502,
+N/*45.3     ,*/46582,
+N/*45.4     ,*/46663,
+N/*45.5     ,*/46743,
+N/*45.6     ,*/46823,
+N/*45.7     ,*/46903,
+N/*45.8     ,*/46983,
+N/*45.9     ,*/47063,
+N/*46       ,*/47142,
+N/*46.1     ,*/47222,
+N/*46.2     ,*/47301,
+N/*46.3     ,*/47380,
+N/*46.4     ,*/47459,
+N/*46.5     ,*/47538,
+N/*46.6     ,*/47616,
+N/*46.7     ,*/47695,
+N/*46.8     ,*/47773,
+N/*46.9     ,*/47851,
+N/*47       ,*/47929,
+N/*47.1     ,*/48007,
+N/*47.2     ,*/48085,
+N/*47.3     ,*/48163,
+N/*47.4     ,*/48240,
+N/*47.5     ,*/48318,
+N/*47.6     ,*/48395,
+N/*47.7     ,*/48472,
+N/*47.8     ,*/48549,
+N/*47.9     ,*/48626,
+N/*48       ,*/48702,
+N/*48.1     ,*/48779,
+N/*48.2     ,*/48855,
+N/*48.3     ,*/48931,
+N/*48.4     ,*/49007,
+N/*48.5     ,*/49083,
+N/*48.6     ,*/49159,
+N/*48.7     ,*/49234,
+N/*48.8     ,*/49310,
+N/*48.9     ,*/49385,
+N/*49       ,*/49460,
+N/*49.1     ,*/49535,
+N/*49.2     ,*/49610,
+N/*49.3     ,*/49685,
+N/*49.4     ,*/49759,
+N/*49.5     ,*/49833,
+N/*49.6     ,*/49908,
+N/*49.7     ,*/49982,
+N/*49.8     ,*/50056,
+N/*49.9     ,*/50129,
+N/*50       ,*/50203,
+N/*50.1     ,*/50276,
+N/*50.2     ,*/50350,
+N/*50.3     ,*/50423,
+N/*50.4     ,*/50496,
+N/*50.5     ,*/50569,
+N/*50.6     ,*/50641,
+N/*50.7     ,*/50714,
+N/*50.8     ,*/50786,
+N/*50.9     ,*/50858,
+N/*51       ,*/50931,
+N/*51.1     ,*/51002,
+N/*51.2     ,*/51074,
+N/*51.3     ,*/51146,
+N/*51.4     ,*/51217,
+N/*51.5     ,*/51289,
+N/*51.6     ,*/51360,
+N/*51.7     ,*/51431,
+N/*51.8     ,*/51501,
+N/*51.9     ,*/51572,
+N/*52       ,*/51643,
+N/*52.1     ,*/51713,
+N/*52.2     ,*/51783,
+N/*52.3     ,*/51853,
+N/*52.4     ,*/51923,
+N/*52.5     ,*/51993,
+N/*52.6     ,*/52062,
+N/*52.7     ,*/52132,
+N/*52.8     ,*/52201,
+N/*52.9     ,*/52270,
+N/*53       ,*/52339,
+N/*53.1     ,*/52408,
+N/*53.2     ,*/52476,
+N/*53.3     ,*/52545,
+N/*53.4     ,*/52613,
+N/*53.5     ,*/52681,
+N/*53.6     ,*/52749,
+N/*53.7     ,*/52817,
+N/*53.8     ,*/52884,
+N/*53.9     ,*/52952,
+N/*54       ,*/53019,
+N/*54.1     ,*/53086,
+N/*54.2     ,*/53153,
+N/*54.3     ,*/53220,
+N/*54.4     ,*/53287,
+N/*54.5     ,*/53353,
+N/*54.6     ,*/53420,
+N/*54.7     ,*/53486,
+N/*54.8     ,*/53552,
+N/*54.9     ,*/53618,
+N/*55       ,*/53683,
+N/*55.1     ,*/53749,
+N/*55.2     ,*/53814,
+N/*55.3     ,*/53880,
+N/*55.4     ,*/53945,
+N/*55.5     ,*/54009,
+N/*55.6     ,*/54074,
+N/*55.7     ,*/54139,
+N/*55.8     ,*/54203,
+N/*55.9     ,*/54267,
+N/*56       ,*/54331,
+N/*56.1     ,*/54395,
+N/*56.2     ,*/54459,
+N/*56.3     ,*/54522,
+N/*56.4     ,*/54586,
+N/*56.5     ,*/54649,
+N/*56.6     ,*/54712,
+N/*56.7     ,*/54775,
+N/*56.8     ,*/54838,
+N/*56.9     ,*/54900,
+N/*57       ,*/54963,
+N/*57.1     ,*/55025,
+N/*57.2     ,*/55087,
+N/*57.3     ,*/55149,
+N/*57.4     ,*/55210,
+N/*57.5     ,*/55272,
+N/*57.6     ,*/55333,
+N/*57.7     ,*/55395,
+N/*57.8     ,*/55456,
+N/*57.9     ,*/55516,
+N/*58       ,*/55577,
+N/*58.1     ,*/55638,
+N/*58.2     ,*/55698,
+N/*58.3     ,*/55758,
+N/*58.4     ,*/55818,
+N/*58.5     ,*/55878,
+N/*58.6     ,*/55938,
+N/*58.7     ,*/55997,
+N/*58.8     ,*/56057,
+N/*58.9     ,*/56116,
+N/*59       ,*/56175,
+N/*59.1     ,*/56234,
+N/*59.2     ,*/56292,
+N/*59.3     ,*/56351,
+N/*59.4     ,*/56409,
+N/*59.5     ,*/56467,
+N/*59.6     ,*/56525,
+N/*59.7     ,*/56583,
+N/*59.8     ,*/56641,
+N/*59.9     ,*/56698,
+N/*60       ,*/56755,
+N/*60.1     ,*/56812,
+N/*60.2     ,*/56869,
+N/*60.3     ,*/56926,
+N/*60.4     ,*/56983,
+N/*60.5     ,*/57039,
+N/*60.6     ,*/57095,
+N/*60.7     ,*/57151,
+N/*60.8     ,*/57207,
+N/*60.9     ,*/57263,
+N/*61       ,*/57319,
+N/*61.1     ,*/57374,
+N/*61.2     ,*/57429,
+N/*61.3     ,*/57484,
+N/*61.4     ,*/57539,
+N/*61.5     ,*/57594,
+N/*61.6     ,*/57648,
+N/*61.7     ,*/57702,
+N/*61.8     ,*/57757,
+N/*61.9     ,*/57811,
+N/*62       ,*/57864,
+N/*62.1     ,*/57918,
+N/*62.2     ,*/57971,
+N/*62.3     ,*/58025,
+N/*62.4     ,*/58078,
+N/*62.5     ,*/58131,
+N/*62.6     ,*/58183,
+N/*62.7     ,*/58236,
+N/*62.8     ,*/58288,
+N/*62.9     ,*/58340,
+N/*63       ,*/58393,
+N/*63.1     ,*/58444,
+N/*63.2     ,*/58496,
+N/*63.3     ,*/58547,
+N/*63.4     ,*/58599,
+N/*63.5     ,*/58650,
+N/*63.6     ,*/58701,
+N/*63.7     ,*/58752,
+N/*63.8     ,*/58802,
+N/*63.9     ,*/58853,
+N/*64       ,*/58903,
+N/*64.1     ,*/58953,
+N/*64.2     ,*/59003,
+N/*64.3     ,*/59052,
+N/*64.4     ,*/59102,
+N/*64.5     ,*/59151,
+N/*64.6     ,*/59200,
+N/*64.7     ,*/59249,
+N/*64.8     ,*/59298,
+N/*64.9     ,*/59347,
+N/*65       ,*/59395,
+N/*65.1     ,*/59444,
+N/*65.2     ,*/59492,
+N/*65.3     ,*/59539,
+N/*65.4     ,*/59587,
+N/*65.5     ,*/59635,
+N/*65.6     ,*/59682,
+N/*65.7     ,*/59729,
+N/*65.8     ,*/59776,
+N/*65.9     ,*/59823,
+N/*66       ,*/59870,
+N/*66.1     ,*/59916,
+N/*66.2     ,*/59962,
+N/*66.3     ,*/60008,
+N/*66.4     ,*/60054,
+N/*66.5     ,*/60100,
+N/*66.6     ,*/60145,
+N/*66.7     ,*/60191,
+N/*66.8     ,*/60236,
+N/*66.9     ,*/60281,
+N/*67       ,*/60326,
+N/*67.1     ,*/60370,
+N/*67.2     ,*/60415,
+N/*67.3     ,*/60459,
+N/*67.4     ,*/60503,
+N/*67.5     ,*/60547,
+N/*67.6     ,*/60591,
+N/*67.7     ,*/60634,
+N/*67.8     ,*/60677,
+N/*67.9     ,*/60720,
+N/*68       ,*/60763,
+N/*68.1     ,*/60806,
+N/*68.2     ,*/60849,
+N/*68.3     ,*/60891,
+N/*68.4     ,*/60933,
+N/*68.5     ,*/60975,
+N/*68.6     ,*/61017,
+N/*68.7     ,*/61059,
+N/*68.8     ,*/61100,
+N/*68.9     ,*/61142,
+N/*69       ,*/61183,
+N/*69.1     ,*/61224,
+N/*69.2     ,*/61264,
+N/*69.3     ,*/61305,
+N/*69.4     ,*/61345,
+N/*69.5     ,*/61385,
+N/*69.6     ,*/61425,
+N/*69.7     ,*/61465,
+N/*69.8     ,*/61505,
+N/*69.9     ,*/61544,
+N/*70       ,*/61583,
+N/*70.1     ,*/61622,
+N/*70.2     ,*/61661,
+N/*70.3     ,*/61700,
+N/*70.4     ,*/61738,
+N/*70.5     ,*/61776,
+N/*70.6     ,*/61815,
+N/*70.7     ,*/61852,
+N/*70.8     ,*/61890,
+N/*70.9     ,*/61928,
+N/*71       ,*/61965,
+N/*71.1     ,*/62002,
+N/*71.2     ,*/62039,
+N/*71.3     ,*/62076,
+N/*71.4     ,*/62112,
+N/*71.5     ,*/62149,
+N/*71.6     ,*/62185,
+N/*71.7     ,*/62221,
+N/*71.8     ,*/62257,
+N/*71.9     ,*/62292,
+N/*72       ,*/62328,
+N/*72.1     ,*/62363,
+N/*72.2     ,*/62398,
+N/*72.3     ,*/62433,
+N/*72.4     ,*/62468,
+N/*72.5     ,*/62502,
+N/*72.6     ,*/62537,
+N/*72.7     ,*/62571,
+N/*72.8     ,*/62605,
+N/*72.9     ,*/62638,
+N/*73       ,*/62672,
+N/*73.1     ,*/62705,
+N/*73.2     ,*/62738,
+N/*73.3     ,*/62771,
+N/*73.4     ,*/62804,
+N/*73.5     ,*/62837,
+N/*73.6     ,*/62869,
+N/*73.7     ,*/62901,
+N/*73.8     ,*/62933,
+N/*73.9     ,*/62965,
+N/*74       ,*/62997,
+N/*74.1     ,*/63028,
+N/*74.2     ,*/63059,
+N/*74.3     ,*/63090,
+N/*74.4     ,*/63121,
+N/*74.5     ,*/63152,
+N/*74.6     ,*/63182,
+N/*74.7     ,*/63213,
+N/*74.8     ,*/63243,
+N/*74.9     ,*/63273,
+N/*75       ,*/63302,
+N/*75.1     ,*/63332,
+N/*75.2     ,*/63361,
+N/*75.3     ,*/63390,
+N/*75.4     ,*/63419,
+N/*75.5     ,*/63448,
+N/*75.6     ,*/63477,
+N/*75.7     ,*/63505,
+N/*75.8     ,*/63533,
+N/*75.9     ,*/63561,
+N/*76       ,*/63589,
+N/*76.1     ,*/63616,
+N/*76.2     ,*/63644,
+N/*76.3     ,*/63671,
+N/*76.4     ,*/63698,
+N/*76.5     ,*/63725,
+N/*76.6     ,*/63751,
+N/*76.7     ,*/63778,
+N/*76.8     ,*/63804,
+N/*76.9     ,*/63830,
+N/*77       ,*/63856,
+N/*77.1     ,*/63881,
+N/*77.2     ,*/63907,
+N/*77.3     ,*/63932,
+N/*77.4     ,*/63957,
+N/*77.5     ,*/63982,
+N/*77.6     ,*/64007,
+N/*77.7     ,*/64031,
+N/*77.8     ,*/64055,
+N/*77.9     ,*/64080,
+N/*78       ,*/64103,
+N/*78.1     ,*/64127,
+N/*78.2     ,*/64151,
+N/*78.3     ,*/64174,
+N/*78.4     ,*/64197,
+N/*78.5     ,*/64220,
+N/*78.6     ,*/64243,
+N/*78.7     ,*/64265,
+N/*78.8     ,*/64287,
+N/*78.9     ,*/64309,
+N/*79       ,*/64331,
+N/*79.1     ,*/64353,
+N/*79.2     ,*/64375,
+N/*79.3     ,*/64396,
+N/*79.4     ,*/64417,
+N/*79.5     ,*/64438,
+N/*79.6     ,*/64459,
+N/*79.7     ,*/64479,
+N/*79.8     ,*/64500,
+N/*79.9     ,*/64520,
+N/*80       ,*/64540,
+N/*80.1     ,*/64560,
+N/*80.2     ,*/64579,
+N/*80.3     ,*/64599,
+N/*80.4     ,*/64618,
+N/*80.5     ,*/64637,
+N/*80.6     ,*/64655,
+N/*80.7     ,*/64674,
+N/*80.8     ,*/64692,
+N/*80.9     ,*/64711,
+N/*81       ,*/64729,
+N/*81.1     ,*/64746,
+N/*81.2     ,*/64764,
+N/*81.3     ,*/64781,
+N/*81.4     ,*/64799,
+N/*81.5     ,*/64816,
+N/*81.6     ,*/64832,
+N/*81.7     ,*/64849,
+N/*81.8     ,*/64865,
+N/*81.9     ,*/64882,
+N/*82       ,*/64898,
+N/*82.1     ,*/64914,
+N/*82.2     ,*/64929,
+N/*82.3     ,*/64945,
+N/*82.4     ,*/64960,
+N/*82.5     ,*/64975,
+N/*82.6     ,*/64990,
+N/*82.7     ,*/65004,
+N/*82.8     ,*/65019,
+N/*82.9     ,*/65033,
+N/*83       ,*/65047,
+N/*83.1     ,*/65061,
+N/*83.2     ,*/65074,
+N/*83.3     ,*/65088,
+N/*83.4     ,*/65101,
+N/*83.5     ,*/65114,
+N/*83.6     ,*/65127,
+N/*83.7     ,*/65140,
+N/*83.8     ,*/65152,
+N/*83.9     ,*/65164,
+N/*84       ,*/65176,
+N/*84.1     ,*/65188,
+N/*84.2     ,*/65200,
+N/*84.3     ,*/65211,
+N/*84.4     ,*/65223,
+N/*84.5     ,*/65234,
+N/*84.6     ,*/65245,
+N/*84.7     ,*/65255,
+N/*84.8     ,*/65266,
+N/*84.9     ,*/65276,
+N/*85       ,*/65286,
+N/*85.1     ,*/65296,
+N/*85.2     ,*/65306,
+N/*85.3     ,*/65315,
+N/*85.4     ,*/65324,
+N/*85.5     ,*/65333,
+N/*85.6     ,*/65342,
+N/*85.7     ,*/65351,
+N/*85.8     ,*/65360,
+N/*85.9     ,*/65368,
+N/*86       ,*/65376,
+N/*86.1     ,*/65384,
+N/*86.2     ,*/65391,
+N/*86.3     ,*/65399,
+N/*86.4     ,*/65406,
+N/*86.5     ,*/65413,
+N/*86.6     ,*/65420,
+N/*86.7     ,*/65427,
+N/*86.8     ,*/65433,
+N/*86.9     ,*/65440,
+N/*87       ,*/65446,
+N/*87.1     ,*/65452,
+N/*87.2     ,*/65457,
+N/*87.3     ,*/65463,
+N/*87.4     ,*/65468,
+N/*87.5     ,*/65473,
+N/*87.6     ,*/65478,
+N/*87.7     ,*/65483,
+N/*87.8     ,*/65487,
+N/*87.9     ,*/65491,
+N/*88       ,*/65496,
+N/*88.1     ,*/65499,
+N/*88.2     ,*/65503,
+N/*88.3     ,*/65507,
+N/*88.4     ,*/65510,
+N/*88.5     ,*/65513,
+N/*88.6     ,*/65516,
+N/*88.7     ,*/65519,
+N/*88.8     ,*/65521,
+N/*88.9     ,*/65523,
+N/*89       ,*/65526,
+N/*89.1     ,*/65527,
+N/*89.2     ,*/65529,
+N/*89.3     ,*/65531,
+N/*89.4     ,*/65532,
+N/*89.5     ,*/65533,
+N/*89.6     ,*/65534,
+N/*89.7     ,*/65535,
+N/*89.8     ,*/65535,
+N/*89.9     ,*/65535,
+N/*90       ,*/65536
+N          	};
+N
+N#if defined(__GHS__) || defined(__ghs__)
+X#if 0L || 0L
+S#pragma ghs section data = "default"
+N#endif /* defined(__GHS__) || defined(__ghs__) */
+N
+N#if defined(__arm__) && defined(__ARMCC_VERSION)
+X#if 1L && 1L
+N#pragma arm section rwdata
+N#endif /* defined(__arm__) && defined(__ARMCC_VERSION) */
+N
+N/*********************************************/
+N
+Nint32_t i32SinCosLookup[901];
+N
+N/* FLAG TO JUDGE IF TABLE WAS COPIED FROM ROM TO RAM */
+Nbool_t tLookupTableIsInitialized = C_FALSE; 
+Xbool_t tLookupTableIsInitialized = (0); 
+N
+N/**********************************************
+N*             Function definition             *
+N**********************************************/
+N
+Nvoid vSINUSCOSINUS_GetVersion(uint8_t** pau8ModuleRevision, uint8_t** pau8ModuleTag,
+N                              uint8_t** pau8HeaderRevision, uint8_t** pau8HeaderTag)
+N{
+N   *pau8ModuleRevision = &au8LLDD_SINUSCOSINUS_C_REVISION[0];
+N   *pau8ModuleTag      = &au8LLDD_SINUSCOSINUS_C_TAG[0];
+N   *pau8HeaderRevision = &au8LLDD_SINUSCOSINUS_H_REVISION[0];
+N   *pau8HeaderTag      = &au8LLDD_SINUSCOSINUS_H_TAG[0];
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vCopySinCosTableROM2RAM(void)
+N{
+N    asm_copyfunction((uint32_t)&angl_sin_cos[0], (uint32_t)&angl_sin_cos[900], (uint32_t)&i32SinCosLookup[0]);
+X    (asm_copy_word)((uint32_t)&angl_sin_cos[0], (uint32_t)&angl_sin_cos[900], (uint32_t)&i32SinCosLookup[0]);
+N    tLookupTableIsInitialized = C_TRUE;
+X    tLookupTableIsInitialized = (1);
+N}
+N
+N/****************************************************************************/
+N    
+Nint32_t i32SinLookup(int16_t angle_x_10)
+N{
+N    int16_t ix, sin_ix, cos_ix;
+N    int16_t angle;
+N
+N    if (C_FALSE == tLookupTableIsInitialized)
+X    if ((0) == tLookupTableIsInitialized)
+N        vCopySinCosTableROM2RAM();
+N	
+N    angle = angle_x_10 % 3600;
+N
+N    if (angle < 0)
+N    {
+N        angle += 3600;
+N    }
+N
+N    ix = angle % 900;
+N
+N    sin_ix = ix;
+N    cos_ix = (900 - ix);
+N
+N    if( (angle >= 0 && angle < 900) || angle == 3600 ) 
+N    {
+N        return i32SinCosLookup[sin_ix];
+N    }
+N    else if( angle >= 900 && angle < 1800 )
+N    {
+N        return i32SinCosLookup[cos_ix];
+N    }
+N    else if( angle >= 1800 && angle < 2700 ) 
+N    {
+N        return (-i32SinCosLookup[sin_ix]);
+N    }
+N    else 
+N    {
+N        return (-i32SinCosLookup[cos_ix]);
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nint32_t i32CosLookup(int16_t angle_x_10)
+N{
+N    int16_t ix, sin_ix, cos_ix;
+N    int16_t angle;
+N
+N    if (C_FALSE == tLookupTableIsInitialized)
+X    if ((0) == tLookupTableIsInitialized)
+N       vCopySinCosTableROM2RAM();
+N    
+N    angle = angle_x_10 % 3600;
+N
+N    if (angle < 0)
+N    {
+N        angle += 3600;
+N    }
+N
+N    ix = angle % 900;
+N
+N    sin_ix = ix;
+N    cos_ix = (900 - ix);
+N
+N    if( (angle >= 0 && angle < 900) || angle == 3600 ) 
+N    {
+N        return i32SinCosLookup[cos_ix];	
+N    }
+N    else if( angle >= 900 && angle < 1800 )
+N    {
+N        return (-i32SinCosLookup[sin_ix]);
+N    }
+N    else if( angle >= 1800 && angle < 2700 ) 
+N    {
+N       return (-i32SinCosLookup[cos_ix]);
+N    }
+N    else 
+N    {
+N        return i32SinCosLookup[sin_ix];		
+N    }
+N}
+N
+N/****************************************************************************/
+N
+Nvoid vSinCosLookUp(int16_t angle_x_10, int32_t *sin_, int32_t *cos_)
+N{
+N    int16_t ix, sin_ix, cos_ix;
+N    int32_t val_sin, val_cos;
+N    int16_t angle;
+N
+N    if ((C_NULL != sin_) && (C_NULL != cos_))
+X    if ((((void*)0) != sin_) && (((void*)0) != cos_))
+N    {
+N        if (C_FALSE == tLookupTableIsInitialized)
+X        if ((0) == tLookupTableIsInitialized)
+N            vCopySinCosTableROM2RAM();
+N        
+N        angle = angle_x_10 % 3600;
+N        
+N        if (angle < 0)
+N        {
+N            angle += 3600;
+N        }
+N        
+N        ix = angle % 900;
+N        
+N        sin_ix = ix;
+N        cos_ix = (900 - ix);
+N        
+N        if( (angle >= 0 && angle < 900) || angle == 3600 ) 
+N        {
+N            val_sin = i32SinCosLookup[sin_ix];
+N            val_cos = i32SinCosLookup[cos_ix];	
+N        }
+N        else if( angle >= 900 && angle < 1800 )
+N        {
+N            val_sin = i32SinCosLookup[cos_ix];
+N            val_cos = -i32SinCosLookup[sin_ix];
+N        }
+N        else if( angle >= 1800 && angle < 2700 ) 
+N        {
+N           val_sin = -i32SinCosLookup[sin_ix];
+N           val_cos = -i32SinCosLookup[cos_ix];
+N        }
+N        else 
+N        {
+N            val_sin = -i32SinCosLookup[cos_ix];
+N            val_cos = i32SinCosLookup[sin_ix];		
+N        }
+N        
+N        *sin_ = val_sin;
+N        *cos_ = val_cos; 
+N    }
+N}
+N
+N/****************************************************************************/
+N
+N
+N#endif /* GA_USE_MATH_LIB */
+N
+N/****************************************************************************/
+N
+N
+N/***********************  BEGIN of DISCLAIMER   *****************************
+N
+N- TOSHIBA is continually working to improve the quality and reliability of
+N  its products.
+N  Nevertheless, semiconductor devices in general can malfunction or fail
+N  due to their inherent electrical sensitivity and vulnerability to physical
+N  stress. It is the responsibility of the buyer, when utilizing TOSHIBA
+N  products, to comply with the standards of safety in making a safe design
+N  for the entire system, and to avoid situations in which a malfunction or
+N  failure of such TOSHIBA products could cause loss of human life,
+N  bodily injury or damage to property.
+N
+N  In developing your designs, please ensure that TOSHIBA products are used
+N  within specified operating ranges as set forth in the most recent TOSHIBA
+N  products specifications. Also, please keep in mind the precautions and
+N  conditions set forth in the “Handling Guide for Semiconductor Devices, or
+N  TOSHIBA Semiconductor Reliability Handbook etc..
+N
+N- The Toshiba products listed in this document are intended for usage in
+N  general electronics applications (computer, personal equipment,
+N  office equipment, measuring equipment,industrial robotics, domestic
+N  appliances, etc.). These Toshiba products are neither intended nor
+N  warranted for usage in equipment that requires extraordinarily high quality
+N  and/or reliability or a malfunction or failure of which may cause loss
+N  of human life or bodily injury (“Unintended Usage).
+N  Unintended Usage include atomic energy control instruments, airplane or
+N  spaceship instruments, transportation instruments, traffic signal
+N  instruments, combustion control instruments, medical instruments,
+N  all types of safety devices, etc..
+N  Unintended Usage of Toshiba products listed in this document shall be made
+N  at the customer’s own risk.
+N
+N- Toshiba assumes no liability for any damage or losses (including but not
+N  limited to, loss of business profit,business interruption, loss of business
+N  information,and other pecuniary losses) occurring from the use of,
+N  or inability to use, this product.
+N
+N- The products described in this document are subject to the foreign exchange
+N  and foreign trade laws.
+N
+N- The products described in this document contain components made in the
+N  United States and subject to export control of the U.S. authorities.
+N  Diversion contrary to the U.S. law is prohibited.
+N
+N- The information contained herein is presented only as a guide for the
+N  applications of our products.
+N  No responsibility is assumed by TOSHIBA CORPORATION for any infringements
+N  of intellectual property or other rights of the third parties which may
+N  result from its use.
+N  No license is granted by implication or otherwise under any intellectual
+N  property or other rights of TOSHIBA CORPORATION or others.
+N
+N- The information contained herein is subject to change without notice.
+N
+N****************************  END of DISCLAIMER ****************************/
+N
